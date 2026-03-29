@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "export DJANGO_SETTINGS_MODULE=waybound.settings.prod && python manage.py migrate --no-input && python manage.py collectstatic --no-input && python manage.py create_staff_roles && gunicorn waybound.wsgi --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120"
+startCommand = "export DJANGO_SETTINGS_MODULE=waybound.settings.prod && python manage.py migrate tours 0004 --no-input && python manage.py migrate tours 0006 --fake && python manage.py migrate --no-input && python manage.py collectstatic --no-input && python manage.py create_staff_roles && gunicorn waybound.wsgi --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120"
 healthcheckPath = "/api/v1/health/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
