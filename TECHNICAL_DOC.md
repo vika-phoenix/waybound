@@ -1,0 +1,663 @@
+# Waybound - Technical Documentation
+
+> Small-group adventure tour booking platform. Django REST API backend + vanilla HTML/JS frontend.
+
+---
+
+## Table of Contents
+
+1. [Architecture Overview](#architecture-overview)
+2. [Tech Stack](#tech-stack)
+3. [Project Structure](#project-structure)
+4. [Backend Apps](#backend-apps)
+5. [API Endpoints](#api-endpoints)
+6. [Frontend Pages](#frontend-pages)
+7. [Database Models](#database-models)
+8. [Authentication & Authorization](#authentication--authorization)
+9. [Payment Flow](#payment-flow)
+10. [Booking Lifecycle](#booking-lifecycle)
+11. [Cancellation & Refund Logic](#cancellation--refund-logic)
+12. [Scheduled Jobs](#scheduled-jobs)
+13. [Admin Panel](#admin-panel)
+14. [Local Development Setup](#local-development-setup)
+
+---
+
+## Architecture Overview
+
+```
+Frontend (vanilla HTML/JS)          Backend (Django REST)
+  +-----------------------+          +------------------------+
+  | 29 HTML pages         |  ---->>  | /api/v1/               |
+  | nav.js, config.js     |  JSON    | Django 4.2 + DRF       |
+  | No build step needed  |          | APScheduler (bg jobs)  |
+  +-----------------------+          +------------------------+
+                                            |
+                            +---------------+----------------+
+                            |               |                |
+                       PostgreSQL     Cloudflare R2     YooKassa
+                       (Railway)      (media files)    (payments)
+```
+
+- **Backend**: Django 4.2 REST API on Railway, PostgreSQL, WhiteNoise for static, Cloudflare R2 for media uploads
+- **Frontend**: Plain HTML/CSS/JS (no React/Vue), served separately (Cloudflare Pages or any static host)
+- **Payments**: YooKassa (Russian + international cards), with CBR exchange rate conversion
+- **Email**: Brevo (production), console output (local dev)
+- **Scheduler**: APScheduler with DjangoJobStore for recurring background jobs
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Language | Python 3.11+ |
+| Framework | Django 4.2.11, Django REST Framework 3.15 |
+| Database | SQLite (dev), PostgreSQL (prod) |
+| Auth | JWT (simplejwt), django-allauth (OAuth) |
+| Payments | YooKassa SDK 3.3 |
+| Email | django-anymail + Brevo |
+| Scheduler | APScheduler + django-apscheduler |
+| Media storage | Cloudflare R2 via django-storages + boto3 |
+| Static files | WhiteNoise |
+| Admin UI | django-jazzmin |
+| Hosting | Railway (backend), Cloudflare Pages (frontend) |
+| Frontend | Vanilla HTML, CSS, JavaScript |
+
+---
+
+## Project Structure
+
+```
+main/
++-- backend/
+|   +-- waybound/                  # Django project
+|   |   +-- settings/
+|   |   |   +-- base.py            # Shared config (apps, JWT, CORS, allauth, jazzmin)
+|   |   |   +-- dev.py             # Dev: SQLite, DEBUG=True, console email
+|   |   |   +-- prod.py            # Prod: PostgreSQL, Brevo, R2, security headers
+|   |   +-- urls.py                # Root URL conf
+|   |   +-- api_urls.py            # /api/v1/ routes
+|   |   +-- wsgi.py
+|   |   +-- contact_view.py        # Contact form endpoint
+|   +-- apps/
+|   |   +-- users/                 # Auth, profiles, verification, OTP
+|   |   +-- tours/                 # Tour CRUD, departures, photos, waitlist
+|   |   +-- bookings/              # Bookings, enquiries, scheduler
+|   |   +-- payments/              # YooKassa initiate + webhook
+|   |   +-- reviews/               # Tour reviews + moderation
+|   +-- manage.py
+|   +-- requirements.txt
+|   +-- Procfile
+|   +-- railway.toml
+|   +-- .env.example
+|
++-- frontend/
+|   +-- waybound.html              # Landing page
+|   +-- adventures.html            # Tour browsing + filters
+|   +-- tour_detail_page.html      # Single tour page + booking
+|   +-- booking.html               # Checkout
+|   +-- operator-dashboard.html    # Operator portal
+|   +-- operator-tour-create.html  # Tour creation form
+|   +-- (24 more HTML pages)
+|   +-- nav.js                     # Shared navigation
+|   +-- config.js                  # API base URL config
+|
++-- TECHNICAL_DOC.md               # This file
++-- PROD_SETUP.md                  # Production deployment guide
+```
+
+---
+
+## Backend Apps
+
+### 1. Users (`apps/users/`)
+
+Handles authentication, user profiles, operator verification, and social OAuth.
+
+**Key files:**
+- `models.py` - User (custom, email-based), VerificationDocument, OTPCode
+- `views.py` - 15 endpoints: register, login, logout, OAuth, OTP, password reset, profile
+- `social_adapter.py` - Custom allauth adapter for OAuth (Google, Apple, Yandex, VK)
+- `otp_service.py` - Phone OTP generation and verification
+- `management/commands/create_staff_roles.py` - Creates admin Groups (Bookings Manager, Content Reviewer, Support Staff)
+
+**User roles:**
+- `tourist` - Books tours, leaves reviews, manages wishlist
+- `operator` - Creates tours, manages departures, handles bookings/enquiries
+- `admin` - Full Django admin access
+
+### 2. Tours (`apps/tours/`)
+
+Tour listings with rich content: departures, itinerary, accommodation, photos, FAQs, cancellation policy.
+
+**Key files:**
+- `models.py` - Tour (main), DepartureDate, DayItinerary, StayBlock, CancelPeriod, TourPhoto, TourFAQ, SavedTour, WaitlistEntry
+- `views.py` - CRUD, filtering, photo upload, wishlist, waitlist
+- `serializers.py` - Read + write serializers with nested create/update
+- `emails.py` - Tour-related email templates
+- `telegram.py` - Telegram notification helpers
+
+**Tour types:**
+- `multi` - Multi-day tours with fixed departure dates
+- `single` - Single-day tours bookable on any date
+
+**Tour status flow:** `draft` -> `review` -> `live` -> `paused`/`archived`
+
+**Departure status:** `open` | `guaranteed` | `full` | `cancelled`
+
+### 3. Bookings (`apps/bookings/`)
+
+Booking lifecycle, enquiry system, and all scheduled background jobs.
+
+**Key files:**
+- `models.py` - Booking, EnquiryMessage, EnquiryReply
+- `views.py` - Create/cancel bookings, operator confirm, enquiry threads
+- `scheduler.py` - 6 background jobs (auto-cancel, reminders, auto-complete)
+
+**Booking status flow:** `pending` -> `confirmed` -> `completed` | `cancelled` | `refunded`
+
+### 4. Payments (`apps/payments/`)
+
+YooKassa integration for deposits and balance payments.
+
+**Key files:**
+- `views.py` - `initiate/` (create YooKassa payment) + `webhook/` (handle payment confirmation)
+
+**Payment methods:** `yookassa` (card), `sbp` (Russian fast payment), `bank` (bank transfer)
+
+### 5. Reviews (`apps/reviews/`)
+
+Tourist reviews with operator replies and admin moderation.
+
+**Key files:**
+- `models.py` - TourReview (1-5 stars, title, body, status, operator_reply)
+- `views.py` - List, create, operator reply
+- On save: auto-updates `tour.rating` and `tour.review_count`
+
+**Review status flow:** `pending` -> `approved` | `rejected`
+
+---
+
+## API Endpoints
+
+Base URL: `/api/v1/`
+
+### Auth (`/api/v1/auth/`)
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| POST | `register/tourist/` | Tourist sign-up | No |
+| POST | `register/operator/` | Operator sign-up | No |
+| POST | `login/` | Email/password login -> JWT | No |
+| POST | `logout/` | Blacklist refresh token | Yes |
+| GET/PATCH | `me/` | Get/update profile | Yes |
+| POST | `change-password/` | Change password | Yes |
+| POST | `password-reset/` | Request reset email | No |
+| POST | `password-reset/confirm/` | Confirm reset with token | No |
+| POST | `social/token/` | OAuth JWT exchange | No |
+| POST | `otp/request/` | Request phone OTP | No |
+| POST | `otp/verify/` | Verify OTP -> JWT | No |
+| POST | `verify/` | Upload verification doc | Operator |
+| GET | `social/connections/` | List connected OAuth accounts | Yes |
+| DELETE | `social/connections/<provider>/` | Disconnect OAuth | Yes |
+| POST | `token/refresh/` | Refresh JWT | No |
+
+### Tours (`/api/v1/tours/`)
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/` | List tours (public, filterable) | No |
+| POST | `/` | Create tour | Operator |
+| GET | `operator/` | My tours (operator) | Operator |
+| GET | `saved/` | My saved tours | Tourist |
+| GET | `<slug>/` | Tour detail | No |
+| PATCH | `<slug>/` | Edit tour | Operator (owner) |
+| DELETE | `<slug>/` | Archive tour | Operator (owner) |
+| PATCH | `<slug>/publish/` | Submit for review / publish | Operator (owner) |
+| POST/DELETE | `<slug>/save/` | Save/unsave tour | Tourist |
+| POST | `<slug>/photos/` | Upload tour photo | Operator (owner) |
+| DELETE | `<slug>/photos/<id>/` | Delete photo | Operator (owner) |
+| POST | `<slug>/stays/<night>/photos/` | Upload stay photo | Operator (owner) |
+| DELETE | `<slug>/stays/photos/<id>/` | Delete stay photo | Operator (owner) |
+| POST | `<slug>/waitlist/` | Join waitlist | No |
+
+**Tour list filters:** category, difficulty, country, tour_type, status, search, ordering, date range
+
+### Bookings (`/api/v1/bookings/`)
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/` | My bookings | Tourist |
+| GET | `<pk>/` | Booking detail | Tourist/Operator |
+| POST | `<pk>/cancel/` | Cancel booking | Tourist |
+| POST | `<pk>/cancel-preview/` | Preview refund amount | Tourist |
+| GET | `operator/` | Bookings for my tours | Operator |
+| POST | `<pk>/confirm/` | Confirm booking | Operator |
+| POST | `<pk>/message/` | Message tourist | Operator |
+| GET | `enquiries/` | Enquiries for my tours | Operator |
+| GET | `enquiries/mine/` | My enquiries | Tourist |
+| POST | `enquiries/<pk>/reply/` | Reply to enquiry | Operator |
+| POST | `enquiries/<pk>/tourist-reply/` | Follow-up on enquiry | Tourist |
+| POST | `enquiries/<pk>/read/` | Mark enquiry as read | Operator |
+
+### Payments (`/api/v1/payments/`)
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| POST | `initiate/` | Start YooKassa payment | Tourist |
+| POST | `webhook/` | YooKassa callback | No (HMAC verified) |
+
+### Reviews (`/api/v1/reviews/`)
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/` | Approved reviews (public) | No |
+| GET | `mine/` | My reviews | Tourist |
+| GET | `operator/` | Reviews for my tours | Operator |
+| POST | `<pk>/reply/` | Reply to review | Operator |
+
+### Other
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/v1/health/` | Health check |
+| POST | `/api/v1/contact/` | Contact form |
+| GET | `/admin/` | Django admin panel |
+
+---
+
+## Frontend Pages
+
+### Public Pages
+
+| File | Purpose |
+|------|---------|
+| `waybound.html` | Landing page - hero, featured tours, trust badges, CTA |
+| `adventures.html` | Tour search + filter (destination, category, difficulty, price, duration, guaranteed, dates) |
+| `tour_detail_page.html` | Tour detail: itinerary, stays, photos, map, reviews, departure picker, booking form |
+| `about.html` | Company story |
+| `how-it-works.html` | Platform explainer (search -> book -> travel) |
+| `help.html` | FAQ & help center (8 sections, 35 questions, live search) |
+| `contact.html` | Contact form |
+| `reviews.html` | Browse all approved reviews |
+| `small-group-benefits.html` | Why small groups (max 15 people) |
+| `operator.html` | Operator onboarding landing page |
+| `rewards.html` | Rewards program info |
+
+### Auth Pages
+
+| File | Purpose |
+|------|---------|
+| `signin.html` | Login (email + Google/Apple/Yandex/VK OAuth) |
+| `signup.html` | Tourist registration |
+| `signup-operator.html` | Operator registration + ID upload |
+| `reset-password.html` | Password reset flow |
+
+### Tourist Dashboard
+
+| File | Purpose |
+|------|---------|
+| `my-bookings.html` | View bookings, pay balance, cancel, leave review |
+| `my-reviews.html` | View submitted reviews |
+| `my-messages.html` | Enquiry conversations |
+| `saved-tours.html` | Wishlist |
+| `settings.html` | Profile, password, preferences |
+| `booking.html` | Checkout page (pre-payment) |
+| `booking-confirmation.html` | Post-booking confirmation |
+
+### Operator Dashboard
+
+| File | Purpose |
+|------|---------|
+| `operator-dashboard.html` | Full portal: bookings, enquiries, tours, stats |
+| `operator-tour-create.html` | Create/edit tour: all fields, departures, itinerary, stays, photos, FAQs, cancel policy |
+
+### Legal
+
+| File | Purpose |
+|------|---------|
+| `terms.html` | Terms of service (tourists) |
+| `terms-experts.html` | Terms for operators/experts |
+| `privacy.html` | Privacy policy |
+| `trust-safety.html` | Trust & safety: guarantees, cooling-off, cancellation |
+
+### Configuration
+
+| File | Purpose |
+|------|---------|
+| `nav.js` | Shared navigation component (injected into all pages) |
+| `config.js` | API base URL - change this when switching between local and prod |
+| `404.html` | Error page |
+
+---
+
+## Database Models
+
+### Users
+
+```
+User
+  - email (unique, login identifier)
+  - role: tourist | operator | admin
+  - first_name, last_name, phone, country, bio
+  - avatar (image)
+  - is_verified (operator verification status)
+  - email_verified, phone_verified
+  - marketing_emails, telegram_chat_id
+
+VerificationDocument
+  - operator -> User (OneToOne)
+  - document (image)
+  - status: pending | approved | rejected
+
+OTPCode
+  - phone, code, created_at, used
+```
+
+### Tours
+
+```
+Tour
+  - operator -> User
+  - title, slug (unique), status: draft|review|live|paused|archived
+  - category, categories (multi-select JSON), difficulty, tour_type: multi|single
+  - country, destination, region, lat/lng, timezone
+  - days (1-60), price_adult, price_child (default 85% of adult), currency
+  - max_group (max 15), min_group, deposit_pct (0-100%), balance_due_days
+  - description (HTML), highlights, includes, excludes, requirements
+  - meeting_point, meeting_time, end_point
+  - language, languages (multi-select), difficulty_note, extras (JSON)
+  - rating, review_count, booking_count (denormalized)
+
+DepartureDate
+  - tour -> Tour
+  - start_date, end_date, spots_total, spots_left
+  - status: open | guaranteed | full | cancelled
+  - price_override, notes
+
+DayItinerary       (day_number, title, description, meals, elevation)
+StayBlock          (property_name, type, comfort_level, night_from/to, room_types)
+PropertyPhoto      (stay -> StayBlock, image, order, caption)
+CancelPeriod       (days_before_min/max, penalty_pct, label)
+TourPhoto          (image, order, caption - hero photo = order 0)
+TourFAQ            (question, answer, order)
+SavedTour          (tourist -> User, tour -> Tour)
+WaitlistEntry      (tour, email, departure_label)
+```
+
+### Bookings
+
+```
+Booking
+  - tourist -> User (nullable for guest), tour -> Tour, departure -> DepartureDate
+  - reference: TRP-XXXXXX (auto-generated)
+  - status: pending | confirmed | completed | cancelled | refunded
+  - adults, children, infants
+  - first_name, last_name, email, phone, country
+  - emergency_name, emergency_phone, notes
+  - room_preference, selected_extras
+  - cancel_policy_snapshot (JSON - frozen at booking time)
+  - departure_date
+  - price_adult, price_child, total_price, extras_cost, room_supplement_cost
+  - deposit_paid, deposit_status: pending|paid|failed
+  - balance_due_date, balance_paid, balance_status
+  - payment_method: yookassa|sbp|bank
+  - refund_amount, refund_status: none|pending|issued|manual
+  - cooling_off_until (datetime - penalty-free cancel window)
+  - created_at, confirmed_at, cancelled_at
+
+EnquiryMessage
+  - tour -> Tour, sender -> User (nullable)
+  - name, email, preferred_from/to, adults, children, infants, message
+  - read_by_operator, operator_reply, replied_at
+
+EnquiryReply
+  - enquiry -> EnquiryMessage, sender -> User
+  - text, is_from_operator
+```
+
+### Reviews
+
+```
+TourReview
+  - tour -> Tour, booking -> Booking (optional), tourist -> User
+  - rating (1-5), title, body
+  - operator_reply, replied_at
+  - status: pending | approved | rejected
+  - unique_together: (tourist, tour)
+```
+
+---
+
+## Authentication & Authorization
+
+### JWT Flow
+1. User logs in via `/auth/login/` or `/auth/social/token/`
+2. Backend returns `access` (60 min) + `refresh` (30 days) tokens
+3. Frontend sends `Authorization: Bearer <access>` on every API call
+4. On 401, frontend calls `/auth/token/refresh/` with the refresh token
+5. Logout blacklists the refresh token
+
+### OAuth Providers
+- **Google** - Standard OAuth2
+- **Apple** - Sign in with Apple (requires Apple Developer account)
+- **Yandex** - Yandex ID (for Russian users)
+- **VK** - VKontakte (for Russian users)
+
+Flow: Frontend redirects to provider -> provider redirects to `/accounts/<provider>/login/callback/` -> allauth creates/links user -> frontend calls `/auth/social/token/` with provider + access_token -> backend returns JWT
+
+### Staff Roles (Django Groups)
+
+| Role | Bookings | Tours | Users | Reviews | Enquiries |
+|------|----------|-------|-------|---------|-----------|
+| Bookings Manager | View + Edit | View | View | - | View + Edit |
+| Content Reviewer | View | Full CRUD | - | View + Edit | - |
+| Support Staff | View | View | View | View | View + Edit |
+
+Created via: `python manage.py create_staff_roles`
+
+---
+
+## Payment Flow
+
+```
+Tourist clicks "Book Now"
+        |
+        v
+Frontend -> POST /bookings/ (create booking, status=pending)
+        |
+        v
+Frontend -> POST /payments/initiate/ { booking_id, payment_type: "deposit" }
+        |
+        v
+Backend creates YooKassa Payment (converts to RUB via CBR rate if needed)
+        |
+        v
+Backend returns { payment_id, confirmation_url }
+        |
+        v
+Frontend embeds YooKassa payment iframe/redirects
+        |
+        v
+Tourist pays -> YooKassa sends webhook -> POST /payments/webhook/
+        |
+        v
+Backend updates booking.deposit_paid, deposit_status='paid'
+If deposit >= total_price: balance_status='paid' too
+        |
+        v
+Operator confirms booking -> status='confirmed'
+        |
+        v
+(Later) Tourist pays balance via same flow with payment_type="balance"
+```
+
+**Deposit calculation:** The deposit is the higher of:
+- Tour's base `deposit_pct` (operator-configurable, 0-100%)
+- Current cancellation penalty percentage (protects operator for last-minute bookings)
+
+**Currency:** All YooKassa payments are in RUB. If tour is priced in another currency, the backend fetches the CBR daily exchange rate and converts.
+
+---
+
+## Booking Lifecycle
+
+```
+                    +-- Tourist doesn't pay deposit within 24h --> auto-cancel
+                    |
+[PENDING] ----------+-- Tourist pays deposit
+                    |
+                    +-- Operator doesn't confirm within 48h --> auto-cancel + refund
+                    |
+                    v
+[CONFIRMED] --------+-- Tourist cancels --> refund per policy --> [CANCELLED]
+                    |
+                    +-- Operator cancels --> full refund (platform rule) --> [REFUNDED]
+                    |
+                    +-- Tour ends + 24h --> [COMPLETED]
+                                               |
+                                               v
+                                        Review reminder (5 days later)
+```
+
+---
+
+## Cancellation & Refund Logic
+
+### Platform rules (non-negotiable)
+
+1. **Cooling-off window:** Every booking gets a penalty-free cancellation window:
+   - 30 minutes if departure is >7 days away
+   - 15 minutes if departure is <=7 days away
+
+2. **Operator cancels = full refund:** If the operator cancels a confirmed booking, tourist gets 100% back. No exceptions.
+
+### Default cancellation tiers (operator can customize)
+
+| Days before departure | Penalty | Refund |
+|---|---|---|
+| 30+ days | 0% | 100% |
+| 14-29 days | 50% | 50% |
+| 0-13 days | 100% | 0% |
+
+Operators can set stricter or more generous tiers. The policy is snapshotted into `booking.cancel_policy_snapshot` at booking time so later changes don't affect existing bookings.
+
+---
+
+## Scheduled Jobs
+
+All jobs run via APScheduler with DjangoJobStore (persisted to database).
+
+| Job | Frequency | What it does |
+|-----|-----------|-------------|
+| `auto_cancel_expired_bookings` | Hourly | Cancel bookings with no deposit after 24h; cancel unconfirmed bookings after 48h; cancel past-departure PENDING bookings |
+| `auto_complete_bookings` | Every 6h | Mark CONFIRMED bookings as COMPLETED 24h after tour ends; send review request email |
+| `send_review_reminders` | Daily | Follow-up review reminder 5 days after completion if no review submitted |
+| `send_deposit_reminders` | Hourly | Remind tourist at 12h and 22h after booking if deposit not paid |
+| `send_balance_reminders` | Daily | Remind tourist 14/7/3 days before balance due date |
+| `send_operator_balance_reminders` | Every 6h | Notify operators about unpaid balances with adaptive frequency (weekly -> every 3 days -> daily based on proximity to penalty escalation) |
+
+---
+
+## Admin Panel
+
+URL: `/admin/` - Powered by django-jazzmin (AdminLTE3 theme)
+
+### Registered models and actions
+
+**Users:**
+- User - full CRUD, role filtering
+- VerificationDocument - approve/reject actions with email notifications
+- OTPCode - view/filter
+
+**Tours:**
+- Tour - inline editors for departures, itinerary, stays, cancellation periods, photos, FAQs
+- Actions: publish, pause, reject, delete_safe
+- SavedTour - list display
+
+**Bookings:**
+- Booking - list + filter by status/currency/payment, actions: confirm, mark_completed
+- EnquiryMessage - mark as read
+
+**Reviews:**
+- TourReview - actions: approve, reject
+
+**Auth:**
+- Groups (staff roles)
+
+**APScheduler:**
+- DjangoJob, DjangoJobExecution (view scheduled job status)
+
+---
+
+## Local Development Setup
+
+### Prerequisites
+- Python 3.11+
+- Git
+
+### First-time setup
+
+```bash
+# 1. Clone
+git clone https://github.com/vika-phoenix/waybound.git
+cd waybound
+
+# 2. Backend setup
+cd backend
+python -m venv venv
+source venv/bin/activate          # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# 3. Environment
+cp .env.example .env
+# Edit .env - set DJANGO_SECRET_KEY to any long random string
+# Everything else has sensible defaults for local dev
+
+# 4. Database
+python manage.py migrate
+
+# 5. Create admin user
+python manage.py createsuperuser
+
+# 6. Create staff roles
+python manage.py create_staff_roles
+
+# 7. (Optional) Load sample data
+python manage.py loaddata apps/tours/fixtures/initial_tours.json
+
+# 8. Run server
+python manage.py runserver
+# API at http://localhost:8000/api/v1/
+# Admin at http://localhost:8000/admin/
+```
+
+### Frontend setup
+
+```bash
+# From project root
+cd frontend
+
+# Option 1: VS Code Live Server (right-click waybound.html -> Open with Live Server)
+# Option 2: Python HTTP server
+python -m http.server 5500
+
+# Edit config.js to point API_BASE to your backend:
+# const API_BASE = 'http://localhost:8000/api/v1';
+```
+
+### Settings
+
+- **Local dev** uses `waybound.settings.dev` automatically (SQLite, DEBUG=True, console email)
+- **Production** uses `waybound.settings.prod` (PostgreSQL, Brevo, R2, security headers)
+- Settings are split: `base.py` (shared) -> imported by `dev.py` or `prod.py`
+
+### Key local dev notes
+
+- Emails print to terminal (console backend) - no real email sending
+- SQLite database stored at `backend/db.sqlite3`
+- Media uploads go to `backend/media/`
+- No need for R2, Brevo, or YooKassa for basic local testing
+- YooKassa test mode works with test shop ID/secret from .env.example
+- OAuth won't work locally without provider credentials
