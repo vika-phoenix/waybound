@@ -51,7 +51,8 @@ AWS_S3_REGION_NAME       = 'auto'
 AWS_S3_FILE_OVERWRITE    = False
 AWS_DEFAULT_ACL          = None   # R2 doesn't support ACLs — public access via bucket policy
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-MEDIA_URL                = config('R2_PUBLIC_URL', default='')     # https://pub-xxxx.r2.dev/ or custom domain
+_media_url               = config('R2_PUBLIC_URL', default='/media/')
+MEDIA_URL                = _media_url if _media_url.endswith('/') else _media_url + '/'
 
 # ── Logging ───────────────────────────────────────────────────
 LOGGING = {
