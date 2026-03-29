@@ -7,14 +7,15 @@
 ## Table of Contents
 
 1. [Production Architecture](#production-architecture)
-2. [Railway Deployment](#railway-deployment)
+2. [Railway Deployment](#railway-deployment) (includes Gotchas & Troubleshooting)
 3. [External Services Setup](#external-services-setup)
 4. [Environment Variables Reference](#environment-variables-reference)
 5. [Post-Deploy Checklist](#post-deploy-checklist)
 6. [Services That Can't Be Tested Locally](#services-that-cant-be-tested-locally)
-7. [Frontend / UI Polish (Do Later)](#frontend--ui-polish-do-later)
-8. [Features for Later (Once You Have More Tourists)](#features-for-later-once-you-have-more-tourists)
-9. [Known Limitations](#known-limitations)
+7. [Business & Legal Tasks](#business--legal-tasks-do-before--shortly-after-launch)
+8. [Frontend / UI Polish (Do Later)](#frontend--ui-polish-do-later)
+9. [Features for Later (Once You Have More Tourists)](#features-for-later-once-you-have-more-tourists)
+10. [Known Limitations](#known-limitations)
 
 ---
 
@@ -84,13 +85,49 @@ migrate -> collectstatic -> create_staff_roles -> gunicorn
    /root/.nix-profile/bin/python3 manage.py loaddata apps/tours/fixtures/initial_tours.json
    ```
 
-### Troubleshooting
+### Railway Gotchas (Lessons Learned)
 
-- **Build fails**: Check that root directory is `backend`
-- **Health check fails**: Check Deploy logs (not Build logs) for the real error
-- **Migration conflicts**: Delete PostgreSQL service, recreate, redeploy
-- **Missing env var crash**: Add the variable in Railway Variables tab with empty value if not needed yet
-- **Shell commands**: Python path on Railway is `/root/.nix-profile/bin/python3`, not `python`
+These are real issues encountered during deployment. **Read this before debugging.**
+
+1. **Root directory must be `backend`** — Railway builds from repo root by default. Set it in Settings -> General -> Root Directory.
+
+2. **`ALLOWED_HOSTS` must include `localhost`** — Railway's healthcheck pings from inside the container using `localhost`. Without it, Django returns 400 and healthcheck fails forever.
+   ```
+   DJANGO_ALLOWED_HOSTS = .railway.app,localhost
+   ```
+
+3. **`SECURE_SSL_REDIRECT` must be `False`** — Railway handles SSL at the proxy. If Django also redirects to HTTPS, you get an infinite redirect loop (blank page). Already set in `prod.py`.
+
+4. **`CSRF_TRUSTED_ORIGINS` is required** — Without it, Django admin login returns 403 Forbidden. Must include full URL with protocol. Already set in `prod.py`.
+
+5. **`SECURE_PROXY_SSL_HEADER` is required** — Railway terminates SSL at its proxy. Django needs to trust `X-Forwarded-Proto`. Already set in `prod.py`.
+
+6. **Domain target port must match gunicorn** — Gunicorn binds to `$PORT` (Railway assigns, usually 8080). When generating a domain, set target port to `8080`. Check deploy logs for actual port.
+
+7. **`DATABASE_URL` — do NOT set manually** — Railway auto-injects this from the PostgreSQL addon. Setting it manually breaks things.
+
+8. **Environment variables without defaults crash the app** — Any `config('KEY')` without `default=''` in `base.py` crashes on Railway if that variable isn't set.
+
+9. **Squash migrations before first deploy** — Partial failures create tables without recording the migration, leading to "table already exists" errors. Always start with clean initial migrations.
+
+10. **Use `--preload` with gunicorn** — Without it, each worker independently boots Django and starts the scheduler, causing duplicate job warnings. With `--preload`, Django boots once in master, workers fork from it.
+
+11. **Railway shell may not have `python` in PATH** — Use `/root/.nix-profile/bin/python3` or add commands to `railway.toml` start command instead.
+
+12. **Check Deploy logs, not Database logs** — PostgreSQL logs show checkpoint info, not your app errors. Always look at the Django service logs.
+
+### Troubleshooting Quick Reference
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Build fails | Wrong root directory | Set to `backend` in Railway Settings |
+| Healthcheck fails | `localhost` not in `ALLOWED_HOSTS` | Add `localhost` to `DJANGO_ALLOWED_HOSTS` |
+| Blank page / infinite redirect | `SECURE_SSL_REDIRECT = True` | Set to `False` in `prod.py` |
+| Admin login 403 CSRF | Missing `CSRF_TRUSTED_ORIGINS` | Add Railway URL to env var |
+| "table already exists" | Partial migration state | Delete PostgreSQL, recreate, redeploy |
+| App crash on startup | Missing env var with no default | Add `default=''` or set the variable |
+| Duplicate scheduler warnings | Multiple workers starting scheduler | Use `--preload` in gunicorn command |
+| Nothing loads at all | Wrong target port in domain settings | Set to `8080` (check deploy logs) |
 
 ---
 
@@ -281,7 +318,8 @@ const API_BASE = 'https://your-backend.railway.app/api/v1';
 |----------|---------|-------|
 | `DJANGO_SETTINGS_MODULE` | `waybound.settings.prod` | Always this value |
 | `DJANGO_SECRET_KEY` | `a8f3k...long-random-string` | Generate with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
-| `DJANGO_ALLOWED_HOSTS` | `.railway.app` | Leading dot = wildcard |
+| `DJANGO_ALLOWED_HOSTS` | `.railway.app,localhost` | **Must include `localhost`** for Railway healthcheck |
+| `CSRF_TRUSTED_ORIGINS` | `https://waybound-production.up.railway.app` | Full URL with protocol, comma-separated if multiple |
 | `DATABASE_URL` | (auto-injected by Railway) | Do NOT set manually |
 
 ### Required for features to work
@@ -393,9 +431,26 @@ These are design and UX improvements that don't affect core functionality. Do th
 
 ---
 
+## Business & Legal Tasks (Do Before / Shortly After Launch)
+
+These require real business details, not code changes.
+
+- [ ] **Business address on privacy pages** — Once you have a registered business address, update the privacy policy and terms pages with the real mailing address
+- [ ] **Business email on legal pages** — Replace placeholder contact email with the actual business email
+- [ ] **Junior staff contact emails** — Once junior team members are onboarded, add their individual email addresses for customer-facing contact (support, enquiries)
+- [ ] **Privacy policy review** — Have a lawyer review privacy policy for compliance with Russian data protection laws (152-FZ) and GDPR if targeting EU tourists
+- [ ] **Cookie consent** — Add cookie consent banner if targeting EU users
+
+---
+
 ## Features for Later (Once You Have More Tourists)
 
 These are features that make sense only once you have real traffic and data. Building them now would be premature.
+
+### Communication & support
+- [ ] **Live chat system** — Real-time chat between tourists and support staff / AI assistant. Options: embed Crisp/Tawk.to (free tier), or build custom with Django Channels + WebSocket
+- [ ] **AI chat assistant** — Integrate with Anthropic API to answer common questions about tours, bookings, cancellation policy (ANTHROPIC_API_KEY env var already exists in base.py)
+- [ ] **In-app messaging** — Tourist ↔ Operator direct messaging beyond the current enquiry system
 
 ### Growth & engagement
 - [ ] **Referral program** - Tourist refers friend, both get discount (rewards.html exists but isn't wired to backend)

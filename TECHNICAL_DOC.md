@@ -20,6 +20,9 @@
 12. [Scheduled Jobs](#scheduled-jobs)
 13. [Admin Panel](#admin-panel)
 14. [Local Development Setup](#local-development-setup)
+15. [Deploying to Production (Railway)](#deploying-to-production-railway)
+16. [Git Workflow](#git-workflow)
+17. [Railway Gotchas & Lessons Learned](#railway-gotchas--lessons-learned)
 
 ---
 
@@ -44,6 +47,7 @@ Frontend (vanilla HTML/JS)          Backend (Django REST)
 - **Payments**: YooKassa (Russian + international cards), with CBR exchange rate conversion
 - **Email**: Brevo (production), console output (local dev)
 - **Scheduler**: APScheduler with DjangoJobStore for recurring background jobs
+- **Live URL**: `https://waybound-production.up.railway.app`
 
 ---
 
@@ -89,7 +93,7 @@ main/
 |   +-- manage.py
 |   +-- requirements.txt
 |   +-- Procfile
-|   +-- railway.toml
+|   +-- railway.toml               # Railway deploy config
 |   +-- .env.example
 |
 +-- frontend/
@@ -104,7 +108,7 @@ main/
 |   +-- config.js                  # API base URL config
 |
 +-- TECHNICAL_DOC.md               # This file
-+-- PROD_SETUP.md                  # Production deployment guide
++-- PROD_SETUP.md                  # Production setup, external services, roadmap
 ```
 
 ---
@@ -455,7 +459,7 @@ Flow: Frontend redirects to provider -> provider redirects to `/accounts/<provid
 | Content Reviewer | View | Full CRUD | - | View + Edit | - |
 | Support Staff | View | View | View | View | View + Edit |
 
-Created via: `python manage.py create_staff_roles`
+Created via: `python manage.py create_staff_roles` (runs automatically on every deploy)
 
 ---
 
@@ -547,7 +551,7 @@ Operators can set stricter or more generous tiers. The policy is snapshotted int
 
 ## Scheduled Jobs
 
-All jobs run via APScheduler with DjangoJobStore (persisted to database).
+All jobs run via APScheduler with DjangoJobStore (persisted to database). The scheduler starts once via `--preload` in gunicorn.
 
 | Job | Frequency | What it does |
 |-----|-----------|-------------|
@@ -655,9 +659,162 @@ python -m http.server 5500
 
 ### Key local dev notes
 
-- Emails print to terminal (console backend) - no real email sending
+- Emails print to terminal (console backend) — no real email sending
 - SQLite database stored at `backend/db.sqlite3`
 - Media uploads go to `backend/media/`
 - No need for R2, Brevo, or YooKassa for basic local testing
 - YooKassa test mode works with test shop ID/secret from .env.example
 - OAuth won't work locally without provider credentials
+- Changes to `base.py` affect both local and prod — be careful
+- Changes to `prod.py` only affect Railway — safe to change locally
+- Changes to `dev.py` only affect local — safe to change
+
+---
+
+## Deploying to Production (Railway)
+
+### How it works
+
+Every `git push` to `main` triggers automatic deployment on Railway. The start command in `railway.toml` runs:
+
+```
+DJANGO_SETTINGS_MODULE=prod -> migrate -> collectstatic -> create_staff_roles -> gunicorn (--preload)
+```
+
+### Pushing changes
+
+**Always run from the project root** (`c:\Users\deadv\Downloads\tour_pj\main`), NOT from `backend/`:
+
+```bash
+cd c:\Users\deadv\Downloads\tour_pj\main
+git add backend/path/to/file.py
+git commit -m "description of change"
+git push
+```
+
+If you run `git add` from inside `backend/`, you need paths relative to `backend/` (no `backend/` prefix). This is confusing — just always run from the project root.
+
+### After pushing
+
+1. Go to Railway dashboard — the deploy starts automatically
+2. Watch the **Deploy logs** (not Build logs)
+3. Wait for the healthcheck to pass (up to 5 minutes)
+4. If it fails, check the deploy logs for the actual error
+
+### Creating a superuser
+
+Since Railway shell doesn't always have Python available, add these **Variables** in Railway temporarily:
+
+```
+DJANGO_SUPERUSER_EMAIL    = admin@waybound.com
+DJANGO_SUPERUSER_PASSWORD = your-secure-password
+```
+
+Then change the start command in `railway.toml` to include:
+```
+... && python manage.py createsuperuser --no-input --email $DJANGO_SUPERUSER_EMAIL || true && gunicorn ...
+```
+
+Push, deploy, verify login works at `/admin/`, then remove the createsuperuser line and push again.
+
+---
+
+## Git Workflow
+
+### Structure
+- Git root is `main/` (the project root)
+- Backend code is in `backend/`
+- Frontend code is in `frontend/`
+- Always run git commands from the project root
+
+### Pushing changes
+```bash
+cd c:\Users\deadv\Downloads\tour_pj\main
+
+# Stage specific files
+git add backend/apps/tours/models.py frontend/adventures.html
+
+# Or stage all changes in a directory
+git add backend/apps/
+
+# Commit and push
+git commit -m "description"
+git push
+```
+
+### What NOT to commit
+- `.env` files (already in .gitignore)
+- `db.sqlite3` (already in .gitignore)
+- `__pycache__/` (already in .gitignore)
+- API keys, secrets, passwords
+
+### If migrations get corrupted on Railway
+1. Delete all migration files locally: `find apps -path "*/migrations/*.py" -not -name "__init__.py" -delete`
+2. Regenerate: `python manage.py makemigrations users tours bookings reviews payments`
+3. Test locally: `rm db.sqlite3 && python manage.py migrate`
+4. Delete PostgreSQL in Railway and recreate it
+5. Push the new migrations
+
+---
+
+## Railway Gotchas & Lessons Learned
+
+These are real issues encountered during deployment. Reference this before debugging.
+
+### 1. ALLOWED_HOSTS must include `localhost`
+Railway's healthcheck pings from inside the container using `localhost`. Without it, Django returns 400 and healthcheck fails forever.
+```
+DJANGO_ALLOWED_HOSTS = .railway.app,localhost
+```
+
+### 2. SECURE_SSL_REDIRECT must be False
+Railway handles SSL at the proxy level. If Django also redirects to HTTPS, you get an infinite redirect loop (browser shows blank page, curl shows "too many redirections").
+```python
+SECURE_SSL_REDIRECT = False  # in prod.py
+```
+
+### 3. CSRF_TRUSTED_ORIGINS is required
+Without it, Django admin login returns 403 Forbidden. Must include the full Railway URL with protocol:
+```python
+CSRF_TRUSTED_ORIGINS = ['https://waybound-production.up.railway.app']
+```
+
+### 4. SECURE_PROXY_SSL_HEADER is required
+Railway terminates SSL at the proxy. Django needs to trust the `X-Forwarded-Proto` header to know the original request was HTTPS:
+```python
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+```
+
+### 5. Domain port must match gunicorn's port
+Gunicorn binds to `$PORT` (Railway assigns this, usually 8080). When generating a domain in Railway -> Settings -> Networking, set the target port to `8080`. Check the deploy logs for the actual port:
+```
+[INFO] Listening at: http://0.0.0.0:8080
+```
+
+### 6. DATABASE_URL — do NOT set manually
+Railway auto-injects this from the PostgreSQL service. Setting it manually (even blank) breaks things.
+
+### 7. Environment variables with no default crash the app
+Any `config('KEY')` without `default=''` in base.py will crash on Railway if that variable isn't set. Always add defaults for optional keys:
+```python
+ANTHROPIC_API_KEY = config('ANTHROPIC_API_KEY', default='')
+```
+
+### 8. MEDIA_URL must end with a slash
+If `R2_PUBLIC_URL` is empty or missing the trailing `/`, Django throws `urls.E006`. The prod.py handles this automatically now.
+
+### 9. Squash migrations before first deploy
+Don't deploy with 30+ incremental migrations — partial failures create tables without recording the migration, leading to "table already exists" / "table does not exist" whack-a-mole. Squash into clean initials first.
+
+### 10. Use `--preload` with gunicorn
+Without `--preload`, each gunicorn worker independently boots Django and starts the scheduler. This causes duplicate scheduler job warnings in the logs. With `--preload`, Django boots once in the master process, then workers fork from it.
+
+### 11. Railway shell may not have Python
+`python` and `python3` may not be in PATH. If you need a shell command, add it to the start command in `railway.toml` instead:
+```
+... && python manage.py some_command || true && gunicorn ...
+```
+The `|| true` ensures the deploy continues even if the command fails (e.g., superuser already exists).
+
+### 12. Deploy logs vs Database logs
+In Railway, make sure you're looking at the **Django service** logs, not the **PostgreSQL service** logs. PostgreSQL logs show checkpoint and replication info, not your app errors.
