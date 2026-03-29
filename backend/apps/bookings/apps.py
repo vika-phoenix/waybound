@@ -11,7 +11,8 @@ class BookingsConfig(AppConfig):
     def ready(self):
         # Skip management commands that don't need the scheduler
         skip = {'makemigrations', 'migrate', 'collectstatic', 'shell',
-                'test', 'createsuperuser', 'showmigrations', 'sqlmigrate'}
+                'test', 'createsuperuser', 'showmigrations', 'sqlmigrate',
+                'create_staff_roles'}
         if set(sys.argv) & skip:
             return
 
@@ -19,12 +20,6 @@ class BookingsConfig(AppConfig):
         # RUN_MAIN=true is set only in the child (real server) process — avoid double-start.
         if 'runserver' in sys.argv and os.environ.get('RUN_MAIN') != 'true':
             return
-
-        # In production (gunicorn), multiple workers each call ready().
-        # Only start the scheduler once using an env flag to avoid duplicate job warnings.
-        if os.environ.get('SCHEDULER_STARTED') == '1':
-            return
-        os.environ['SCHEDULER_STARTED'] = '1'
 
         from .scheduler import start_scheduler
         start_scheduler()
