@@ -7,7 +7,9 @@
  */
 // DEV: http://127.0.0.1:8000
 // PRODUCTION: replace with your Railway backend URL e.g. https://YOUR-APP.up.railway.app
-var _API_BASE = 'http://127.0.0.1:8000';
+var _API_BASE = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000'
+  : 'https://waybound-production.up.railway.app';
 
 window.WAYBOUND_CONFIG = {
   API_BASE: _API_BASE,
