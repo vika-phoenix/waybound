@@ -29,6 +29,8 @@ SECURE_HSTS_PRELOAD          = True
 SECURE_BROWSER_XSS_FILTER   = True
 SECURE_CONTENT_TYPE_NOSNIFF  = True
 X_FRAME_OPTIONS              = 'DENY'
+CSRF_TRUSTED_ORIGINS         = config('CSRF_TRUSTED_ORIGINS', cast=Csv(), default='https://waybound-production.up.railway.app')
+SECURE_PROXY_SSL_HEADER      = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # ── Email: Brevo (Sendinblue) via django-anymail ──────────────
 EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
