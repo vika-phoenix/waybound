@@ -17,9 +17,14 @@ class BookingsConfig(AppConfig):
 
         # In dev, Django's autoreloader runs two processes.
         # RUN_MAIN=true is set only in the child (real server) process — avoid double-start.
-        # In production (gunicorn/uvicorn), RUN_MAIN is not set → start normally.
         if 'runserver' in sys.argv and os.environ.get('RUN_MAIN') != 'true':
             return
+
+        # In production (gunicorn), multiple workers each call ready().
+        # Only start the scheduler once using an env flag to avoid duplicate job warnings.
+        if os.environ.get('SCHEDULER_STARTED') == '1':
+            return
+        os.environ['SCHEDULER_STARTED'] = '1'
 
         from .scheduler import start_scheduler
         start_scheduler()
