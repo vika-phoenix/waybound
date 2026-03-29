@@ -1,0 +1,9 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "python manage.py migrate --no-input && python manage.py collectstatic --no-input && python manage.py create_staff_roles && gunicorn waybound.wsgi --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120"
+healthcheckPath = "/api/tours/"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

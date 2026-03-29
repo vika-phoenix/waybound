@@ -1,0 +1,161 @@
+{
+  "info": {
+    "name": "Waybound API — Auth (Tasks 9-12)",
+    "_postman_id": "waybound-auth-v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base", "value": "http://127.0.0.1:8000/api/v1" },
+    { "key": "access",  "value": "" },
+    { "key": "refresh", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health check",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/auth/health/",
+        "description": "Should return {status: ok}"
+      }
+    },
+    {
+      "name": "Task 9 — Register tourist",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "var r = pm.response.json();",
+          "pm.collectionVariables.set('access',  r.access);",
+          "pm.collectionVariables.set('refresh', r.refresh);"
+        ]}
+      }],
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/auth/register/tourist/",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"tourist@example.com\",\n  \"password\": \"TestPass123!\",\n  \"password2\": \"TestPass123!\",\n  \"first_name\": \"Anna\",\n  \"last_name\": \"Smith\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Task 9 — Register operator",
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/auth/register/operator/",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"guide@example.com\",\n  \"password\": \"TestPass123!\",\n  \"password2\": \"TestPass123!\",\n  \"first_name\": \"Benard\",\n  \"last_name\": \"Ochieng\",\n  \"phone\": \"+254712345678\",\n  \"company_name\": \"Benard Safaris\",\n  \"country\": \"Kenya\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Task 9 — Login",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "var r = pm.response.json();",
+          "pm.collectionVariables.set('access',  r.access);",
+          "pm.collectionVariables.set('refresh', r.refresh);"
+        ]}
+      }],
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/auth/login/",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"tourist@example.com\",\n  \"password\": \"TestPass123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Task 9 — Get /me",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/auth/me/",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access}}" }]
+      }
+    },
+    {
+      "name": "Task 9 — Update /me (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "url": "{{base}}/auth/me/",
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Anna\",\n  \"bio\": \"I love trekking in the mountains.\",\n  \"country\": \"Russia\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Task 9 — Change password",
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/auth/change-password/",
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"current_password\": \"TestPass123!\",\n  \"new_password\": \"NewPass456!\",\n  \"new_password2\": \"NewPass456!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Task 9 — Logout",
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/auth/logout/",
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh\": \"{{refresh}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Task 12 — OTP: Request code",
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/auth/otp/request/",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"+79161234567\"\n}"
+        },
+        "description": "In dev mode the code is printed to the Django console AND returned in dev_code field."
+      }
+    },
+    {
+      "name": "Task 12 — OTP: Verify code",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "var r = pm.response.json();",
+          "if (r.access) pm.collectionVariables.set('access', r.access);",
+          "if (r.refresh) pm.collectionVariables.set('refresh', r.refresh);"
+        ]}
+      }],
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/auth/otp/verify/",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"+79161234567\",\n  \"code\": \"123456\"\n}"
+        },
+        "description": "Replace code with the value printed to the Django console."
+      }
+    }
+  ]
+}

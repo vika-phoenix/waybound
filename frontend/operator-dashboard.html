@@ -1,0 +1,2518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operator Dashboard &mdash; Waybound</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300..700&family=Playfair+Display:ital,wght@0,400..900;1,400..700&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+
+/* ══ THEME VARIABLES (default = ocean) ══ */
+body{
+  transition:background .35s,color .35s;
+  --ink:#0d1f2d; --paper:#f0f5f9; --white:#ffffff;
+  --ac:#4fa8d4;  --ad:#2080ae;
+  --mu:#607a8a;  --ln:#c0d4e0;
+  --ha-bg:#e8f4fb; --ha-bd:#94c8e4; --ha-tx:#0e5070;
+  --hb-bg:#e6f4f0; --hb-bd:#88c4b4; --hb-tx:#0e4840;
+  --tr-bg:#f4f9fc;
+  --df:'Fraunces',serif;
+  --bf:'Space Grotesk',sans-serif;
+}
+/* warm */
+body.warm{
+  --ink:#1C140C; --paper:#FFFFFF; --white:#FFFFFF;
+  --ac:#C05430;  --ad:#9A3A20;
+  --mu:#8C7A68;  --ln:#EFE6D8;
+  --ha-bg:#FBF0EB; --ha-bd:#EECCB8; --ha-tx:#8C3010;
+  --hb-bg:#EEF5EC; --hb-bd:#B0D0A8; --hb-tx:#2A5030;
+  --tr-bg:#FBF8F4;
+  --df:'Playfair Display',serif;
+  --bf:'DM Sans',sans-serif;
+}
+/* ivory */
+body.ivory{
+  --ink:#1A1208; --paper:#FAF6EE; --white:#FAF6EE;
+  --ac:#B84D2A;  --ad:#96381A;
+  --mu:#8A7862;  --ln:#DDD0BC;
+  --ha-bg:#F8EFE6; --ha-bd:#E0C8A8; --ha-tx:#7A3010;
+  --hb-bg:#EAF0E4; --hb-bd:#A8C8A0; --hb-tx:#285030;
+  --tr-bg:#F2EAD8;
+  --df:'Playfair Display',serif;
+  --bf:'DM Sans',sans-serif;
+}
+/* gold */
+body.gold{
+  --ink:#1a1a2e; --paper:#f7f4ef; --white:#ffffff;
+  --ac:#c8a96e;  --ad:#a8893e;
+  --mu:#8a8070;  --ln:#ddd8d0;
+  --ha-bg:#fdf8ed; --ha-bd:#e8d9a0; --ha-tx:#7a6020;
+  --hb-bg:#edf5ef; --hb-bd:#a0c8a8; --hb-tx:#2d5a38;
+  --tr-bg:#faf8f5;
+  --df:'Playfair Display',serif;
+  --bf:'DM Sans',sans-serif;
+}
+/* forest */
+body.forest{
+  --ink:#1e2a22; --paper:#f2f7f3; --white:#ffffff;
+  --ac:#6aab7a;  --ad:#3d7a50;
+  --mu:#6a8070;  --ln:#c4d8c8;
+  --ha-bg:#edf7ee; --ha-bd:#aad4b0; --ha-tx:#245530;
+  --hb-bg:#e8f5ec; --hb-bd:#96c8a0; --hb-tx:#1a4828;
+  --tr-bg:#f4faf5;
+  --df:'Libre Baskerville',serif;
+  --bf:'Outfit',sans-serif;
+}
+/* ocean (explicit — same as :root default) */
+body.ocean{
+  --ink:#0d1f2d; --paper:#f0f5f9; --white:#ffffff;
+  --ac:#4fa8d4;  --ad:#2080ae;
+  --mu:#607a8a;  --ln:#c0d4e0;
+  --ha-bg:#e8f4fb; --ha-bd:#94c8e4; --ha-tx:#0e5070;
+  --hb-bg:#e6f4f0; --hb-bd:#88c4b4; --hb-tx:#0e4840;
+  --tr-bg:#f4f9fc;
+  --df:'Fraunces',serif;
+  --bf:'Space Grotesk',sans-serif;
+}
+/* terra */
+body.terra{
+  --ink:#2a1f1a; --paper:#faf6f2; --white:#ffffff;
+  --ac:#d4735e;  --ad:#b05040;
+  --mu:#907060;  --ln:#e0cec4;
+  --ha-bg:#fdf0ec; --ha-bd:#e0a898; --ha-tx:#7a2818;
+  --hb-bg:#edf5ec; --hb-bd:#98c898; --hb-tx:#285030;
+  --tr-bg:#faf4f0;
+  --df:'Playfair Display',serif;
+  --bf:'DM Sans',sans-serif;
+}
+
+/* ══ BASE ══ */
+body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',sans-serif);transition:background .35s,color .35s;min-height:100vh;}
+
+/* ══ NAV ══ */
+
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--ink);height:62px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;gap:12px;
+  transition:background .35s;
+}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--df);font-size:19px;font-weight:400;color:var(--ac);letter-spacing:.03em;flex-shrink:0;text-decoration:none;transition:color .35s,font-family .35s}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .35s}
+.logo-mark svg{width:16px;height:16px}
+.nav-search{flex:1;max-width:190px;display:flex;align-items:center;gap:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:0;overflow:hidden;font-size:12px;color:rgba(255,255,255,.38);font-family:var(--bf);transition:border-color .2s}
+.nav-search:hover{border-color:rgba(255,255,255,.28)}
+.nav-links{display:flex}
+.nav-link{font-size:12px;font-weight:500;color:rgba(255,255,255,.4);padding:6px 9px;cursor:pointer;font-family:var(--bf);transition:color .15s}
+.nav-link.on,.nav-link:hover{color:var(--ac)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-ghost-sm{font-size:12px;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.16);border-radius:5px;padding:6px 12px;background:none;cursor:pointer;font-family:var(--bf);font-weight:500}
+.btn-ac-sm{font-size:12px;font-weight:600;color:var(--ink);background:var(--ac);border:none;border-radius:5px;padding:7px 14px;cursor:pointer;font-family:var(--bf);transition:background .35s,color .35s}
+
+/* ── Gear button ── */
+.gear{
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:rgba(255,255,255,.5);font-size:15px;
+  transition:background .15s,color .15s;flex-shrink:0;
+}
+.gear:hover{background:rgba(255,255,255,.16);color:rgba(255,255,255,.8)}
+.gear.open{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.3)}
+
+/* ══ SETTINGS DRAWER ══ */
+.overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(5px);
+  animation:fadein .2s ease;
+}
+.overlay.open{display:block}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:330px;
+  background:var(--white);
+  border-left:1px solid var(--ln);
+  display:flex;flex-direction:column;
+  transform:translateX(330px);
+  transition:transform .3s cubic-bezier(.4,0,.2,1),background .35s,border-color .35s;
+  z-index:501;
+}
+.overlay.open .drawer{transform:translateX(0)}
+.drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;height:60px;
+  background:var(--ink);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  flex-shrink:0;
+  transition:background .35s;
+}
+.drawer-title{font-family:var(--df);font-size:17px;font-weight:400;color:var(--ac);transition:font-family .35s,color .35s}
+.drawer-close{
+  width:30px;height:30px;border-radius:7px;
+  background:rgba(255,255,255,.1);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.6);font-size:16px;
+}
+.drawer-close:hover{background:rgba(255,255,255,.2);color:#fff}
+
+.drawer-body{flex:1;overflow-y:auto;padding:22px}
+.drawer-body::-webkit-scrollbar{width:4px}
+.drawer-body::-webkit-scrollbar-track{background:transparent}
+.drawer-body::-webkit-scrollbar-thumb{background:var(--ln);border-radius:2px}
+
+.d-section-label{
+  font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--mu);
+  margin-bottom:14px;font-family:var(--bf);
+  transition:color .35s;
+}
+
+/* theme grid in drawer */
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px}
+.th-opt{
+  border:2px solid var(--ln);border-radius:10px;
+  padding:11px 11px 10px;cursor:pointer;
+  background:var(--white);
+  transition:border-color .2s,box-shadow .2s,background .35s;
+  position:relative;
+}
+.th-opt:hover{border-color:var(--ac)}
+.th-opt.sel{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}
+.th-opt.sel .th-check{opacity:1;transform:scale(1)}
+.th-check{
+  position:absolute;top:8px;right:8px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--ac);display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--ink);font-weight:700;
+  opacity:0;transform:scale(.7);transition:opacity .15s,transform .15s,background .35s,color .35s;
+}
+.th-swatches{display:flex;gap:4px;margin-bottom:8px}
+.th-sw{width:18px;height:18px;border-radius:5px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.th-name{font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:2px;transition:color .35s}
+.th-desc{font-size:10.5px;color:var(--mu);font-family:var(--bf);line-height:1.4;transition:color .35s}
+.th-default-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:600;color:var(--ha-tx);
+  background:var(--ha-bg);border:1px solid var(--ha-bd);
+  border-radius:100px;padding:2px 7px;margin-top:5px;
+  transition:all .35s;
+}
+
+.drawer-apply{
+  width:100%;padding:13px;
+  background:var(--ac);color:var(--ink);
+  border:none;border-radius:7px;
+  font-size:14px;font-weight:700;font-family:var(--bf);
+  cursor:pointer;transition:filter .2s,background .35s,color .35s;
+  margin-bottom:4px;
+}
+.drawer-apply:hover{filter:brightness(1.08)}
+.drawer-divider{height:1px;background:var(--ln);margin:20px 0;transition:background .35s}
+.drawer-note{font-size:11.5px;color:var(--mu);font-family:var(--bf);line-height:1.65;transition:color .35s}
+
+/* ══ HERO ══ */
+.hero{background:var(--paper);padding:42px 26px 38px;position:relative;overflow:hidden;transition:background .35s}
+.hero::after{
+  content:'';position:absolute;top:-80px;right:-60px;
+  width:300px;height:300px;border-radius:50%;
+  background:color-mix(in srgb,var(--ac) 10%,transparent);
+  filter:blur(65px);pointer-events:none;transition:background .35s;
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--ha-bg);border:1px solid var(--ha-bd);
+  border-radius:100px;padding:5px 15px;
+  font-size:11px;font-weight:500;color:var(--ha-tx);
+  margin-bottom:18px;font-family:var(--bf);
+  position:relative;z-index:1;transition:all .35s;
+}
+.ey-dot{width:6px;height:6px;border-radius:50%;background:var(--ac);flex-shrink:0;transition:background .35s}
+.hero h1{
+  font-family:var(--df);font-size:38px;font-weight:400;
+  color:var(--ink);line-height:1.08;margin-bottom:14px;
+  letter-spacing:-.02em;position:relative;z-index:1;
+  transition:font-family .35s,color .35s;
+}
+.hero h1 em{font-style:italic;color:var(--ad);transition:color .35s}
+.hero-sub{font-size:14px;color:var(--mu);line-height:1.65;max-width:400px;margin-bottom:28px;font-family:var(--bf);position:relative;z-index:1;transition:color .35s}
+.hero-btns{display:flex;gap:10px;position:relative;z-index:1}
+.btn-primary{font-size:13.5px;font-weight:600;color:var(--white);background:var(--ink);border:none;border-radius:6px;padding:13px 25px;cursor:pointer;font-family:var(--bf);transition:background .35s,color .35s}
+.btn-outline{font-size:13.5px;font-weight:500;color:var(--ink);background:transparent;border:1.5px solid var(--ln);border-radius:6px;padding:12px 22px;cursor:pointer;font-family:var(--bf);transition:border-color .2s,color .35s}
+.btn-outline:hover{border-color:var(--ink)}
+
+.hero-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:30px}
+.htile{border-radius:11px 11px 0 0;overflow:hidden;position:relative;height:158px}
+.htile-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px}
+.htile-lbl{position:absolute;bottom:10px;left:12px;font-size:11px;font-weight:600;color:#fff;letter-spacing:.02em;font-family:var(--df);line-height:1.3}
+.htile-cnt{position:absolute;bottom:10px;right:10px;font-size:9.5px;color:rgba(255,255,255,.44);font-family:var(--bf)}
+
+/* ─ Tile image gradients per theme ─ */
+.warm   .ti1,.ivory .ti1{background:linear-gradient(150deg,#5C2010,#A83828)}
+.warm   .ti2,.ivory .ti2{background:linear-gradient(150deg,#1A3A20,#2E7A40)}
+.warm   .ti3,.ivory .ti3{background:linear-gradient(150deg,#1A1A3A,#2E3578)}
+.gold   .ti1{background:linear-gradient(150deg,#2c1e0e,#6b4c25)}
+.gold   .ti2{background:linear-gradient(150deg,#142414,#2a5530)}
+.gold   .ti3{background:linear-gradient(150deg,#151525,#262655)}
+.forest .ti1{background:linear-gradient(150deg,#0e2a16,#1a5832)}
+.forest .ti2{background:linear-gradient(150deg,#141e0e,#2a4e20)}
+.forest .ti3{background:linear-gradient(150deg,#0e1e28,#1a3a50)}
+.ocean  .ti1{background:linear-gradient(150deg,#0a182a,#0a4078)}
+.ocean  .ti2{background:linear-gradient(150deg,#081820,#0a4858)}
+.ocean  .ti3{background:linear-gradient(150deg,#0a1a18,#0a4838)}
+.terra  .ti1{background:linear-gradient(150deg,#3a1808,#8a3818)}
+.terra  .ti2{background:linear-gradient(150deg,#1a2816,#2a5828)}
+.terra  .ti3{background:linear-gradient(150deg,#181826,#2a2858)}
+
+/* ─ Card image gradients per theme ─ */
+.warm  .ci1,.ivory .ci1{background:linear-gradient(145deg,#5C2010,#A03828)}
+.warm  .ci2,.ivory .ci2{background:linear-gradient(145deg,#0A2840,#183870)}
+.warm  .ci3,.ivory .ci3{background:linear-gradient(145deg,#0A2A20,#185040)}
+.warm  .ci4,.ivory .ci4{background:linear-gradient(145deg,#1A1A40,#303880)}
+.gold  .ci1{background:linear-gradient(145deg,#2c1e0e,#6b4c25)}
+.gold  .ci2{background:linear-gradient(145deg,#151525,#262660)}
+.gold  .ci3{background:linear-gradient(145deg,#142414,#2a5530)}
+.gold  .ci4{background:linear-gradient(145deg,#251610,#5e3018)}
+.forest .ci1{background:linear-gradient(145deg,#0e2a16,#1a5832)}
+.forest .ci2{background:linear-gradient(145deg,#0e1e28,#1a3a52)}
+.forest .ci3{background:linear-gradient(145deg,#141e0e,#2a4e20)}
+.forest .ci4{background:linear-gradient(145deg,#182618,#264038)}
+.ocean  .ci1{background:linear-gradient(145deg,#0a182a,#0a4078)}
+.ocean  .ci2{background:linear-gradient(145deg,#081820,#0a4858)}
+.ocean  .ci3{background:linear-gradient(145deg,#0a1a18,#0a5040)}
+.ocean  .ci4{background:linear-gradient(145deg,#160a28,#3a1870)}
+.terra  .ci1{background:linear-gradient(145deg,#3a1808,#8a3818)}
+.terra  .ci2{background:linear-gradient(145deg,#181826,#2a2858)}
+.terra  .ci3{background:linear-gradient(145deg,#1a2816,#2a5828)}
+.terra  .ci4{background:linear-gradient(145deg,#281008,#704020)}
+
+/* ══ STATS ══ */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--white);border-bottom:1px solid var(--ln);transition:background .35s,border-color .35s}
+.stat{padding:18px 10px;text-align:center;border-right:1px solid var(--ln);transition:border-color .35s}
+.stat:last-child{border-right:none}
+.stat-n{font-family:var(--df);font-size:25px;font-weight:400;color:var(--ad);line-height:1;margin-bottom:3px;transition:color .35s,font-family .35s}
+.stat-l{font-size:9.5px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;font-family:var(--bf)}
+
+/* ══ SECTIONS ══ */
+.sec{padding:28px 26px 0;background:var(--white);transition:background .35s}
+.sec-paper{padding:28px 26px 0;background:var(--paper);transition:background .35s}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.sec-ey{font-size:10px;font-weight:500;color:var(--ad);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-family:var(--bf);transition:color .35s}
+.sec-h2{font-family:var(--df);font-size:22px;font-weight:400;color:var(--ink);line-height:1.2;transition:font-family .35s,color .35s}
+.sec-h2 em{font-style:italic;color:var(--ad);transition:color .35s}
+.sec-link{font-size:12px;color:var(--mu);cursor:pointer;border-bottom:1px solid var(--ln);padding-bottom:1px;white-space:nowrap;margin-top:8px;font-family:var(--bf);transition:color .35s,border-color .35s}
+.sec-link:hover{color:var(--ad)}
+
+/* ══ PILLS ══ */
+.pills{display:flex;gap:7px;padding:13px 26px;overflow-x:auto;background:var(--white);border-bottom:1px solid var(--ln);transition:background .35s,border-color .35s}
+.pills::-webkit-scrollbar{display:none}
+.pill{padding:6px 15px;border-radius:100px;border:1.5px solid var(--ln);font-size:12.5px;font-weight:500;color:var(--mu);cursor:pointer;white-space:nowrap;background:var(--white);font-family:var(--bf);transition:all .15s}
+.pill:hover{border-color:var(--ac);color:var(--ink)}
+.pill.on{background:var(--ink);border-color:var(--ink);color:var(--ac);font-weight:600}
+
+/* ══ CARDS ══ */
+.card-scroll{display:flex;gap:13px;padding:18px 26px 28px;overflow-x:auto;background:var(--paper);transition:background .35s}
+.card-scroll::-webkit-scrollbar{display:none}
+.tcard{flex-shrink:0;width:192px;border-radius:9px;overflow:hidden;background:var(--white);border:1px solid var(--ln);cursor:pointer;transition:box-shadow .2s,transform .2s,background .35s,border-color .35s}
+.tcard:hover{box-shadow:0 8px 28px rgba(0,0,0,.09);transform:translateY(-2px)}
+.tcard-img{height:130px;position:relative;display:flex;align-items:center;justify-content:center;font-size:38px}
+.tc-badge{position:absolute;top:9px;left:9px;font-size:9.5px;font-weight:600;padding:3px 9px;border-radius:100px;background:var(--ac);color:var(--ink);font-family:var(--bf);transition:background .35s,color .35s}
+.tc-disc{position:absolute;top:9px;right:9px;background:#b04040;color:#fff;font-size:9.5px;font-weight:700;padding:3px 7px;border-radius:4px;font-family:var(--bf)}
+.tc-guide{position:absolute;bottom:7px;left:7px;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.93);border-radius:100px;padding:3px 8px 3px 3px}
+.tc-av{width:18px;height:18px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--ac);flex-shrink:0;font-family:var(--bf);transition:background .35s,color .35s}
+.tc-gname{font-size:10px;font-weight:500;color:var(--ink);font-family:var(--bf)}
+.tcard-body{padding:12px 13px 13px}
+.tc-loc{font-size:10px;font-weight:500;color:var(--ad);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;font-family:var(--bf);transition:color .35s}
+.tc-ttl{font-family:var(--df);font-size:13px;font-weight:400;color:var(--ink);line-height:1.35;margin-bottom:9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:font-family .35s,color .35s}
+.tc-foot{display:flex;justify-content:space-between;align-items:center}
+.tc-rat{font-size:11px;color:var(--mu);font-family:var(--bf)}.tc-rat b{color:var(--ad)}
+.tc-price{font-family:var(--df);font-size:20px;font-weight:400;color:var(--ink);line-height:1;transition:font-family .35s,color .35s}
+.tc-days{font-size:9.5px;color:var(--mu);text-align:right;margin-top:1px;font-family:var(--bf)}
+.tc-dates{margin-top:8px;padding-top:8px;border-top:1px solid var(--ln);font-size:10.5px;color:var(--mu);display:flex;align-items:center;gap:5px;font-family:var(--bf);transition:border-color .35s}
+.tc-chip{background:var(--ha-bg);color:var(--ha-tx);border:1px solid var(--ha-bd);border-radius:4px;padding:2px 7px;font-size:9.5px;font-weight:600;transition:all .35s}
+
+/* ══ TRUST ══ */
+.trust{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--ln);transition:background .35s}
+.trust-item{background:var(--white);padding:17px 16px;display:flex;align-items:flex-start;gap:10px;transition:background .35s}
+.trust-ic{width:32px;height:32px;border-radius:7px;background:var(--ha-bg);border:1px solid var(--ha-bd);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .35s}
+.trust-item h4{font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:2px;font-family:var(--bf)}
+.trust-item p{font-size:11px;color:var(--mu);line-height:1.5;font-family:var(--bf)}
+
+/* ══ OPERATOR ══ */
+.operator{padding:30px 26px;background:var(--hb-bg);border-top:1px solid var(--hb-bd);transition:background .35s,border-color .35s}
+.op-ey{font-size:10px;font-weight:500;color:var(--hb-tx);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;font-family:var(--bf);transition:color .35s}
+.op-h2{font-family:var(--df);font-size:26px;font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:9px;transition:font-family .35s,color .35s}
+.op-h2 em{font-style:italic;color:var(--ad)}
+.op-sub{font-size:13.5px;color:var(--mu);line-height:1.65;margin-bottom:20px;font-family:var(--bf)}
+.op-row{display:flex;align-items:center;gap:13px}
+.op-note{font-size:12px;color:var(--mu);font-style:italic;font-family:var(--df)}
+.op-stats{display:flex;gap:28px;margin-top:20px;padding-top:16px;border-top:1px solid var(--hb-bd);transition:border-color .35s}
+.op-stat strong{display:block;font-family:var(--df);font-size:24px;font-weight:400;color:var(--ad);line-height:1;margin-bottom:2px;transition:font-family .35s,color .35s}
+.op-stat span{font-size:11px;color:var(--mu);font-family:var(--bf)}
+
+/* ══ FOOTER ══ */
+.footer{background:var(--ink);padding:32px 26px 24px;transition:background .35s}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:20px;margin-bottom:22px}
+.foot-logo{font-family:var(--df);font-size:18px;color:var(--ac);display:flex;align-items:center;gap:8px;margin-bottom:9px;transition:color .35s,font-family .35s}
+.foot-desc{font-size:11.5px;color:rgba(255,255,255,.24);line-height:1.65;font-family:var(--bf)}
+.foot-col-h{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:11px;font-family:var(--bf)}
+.footer a{text-decoration:none;}
+.foot-link{display:block;font-size:12px;color:rgba(255,255,255,.42);padding:3.5px 0;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s;}
+.foot-link:hover{color:rgba(255,255,255,.8);}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:15px;display:flex;justify-content:space-between;align-items:center}
+.foot-copy{font-size:11px;color:rgba(255,255,255,.18);font-family:var(--bf)}
+.foot-soc{display:flex;gap:7px}
+.soc-btn{width:27px;height:27px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:rgba(255,255,255,.3)}
+
+/* ── Explore by style cards ── */
+.style-card{flex:0 0 180px;border-radius:12px;overflow:hidden;position:relative;height:220px;cursor:pointer;transition:transform .2s}
+.style-card:hover{transform:translateY(-4px)}
+.style-card-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:56px;transition:transform .3s}
+.style-card:hover .style-card-bg{transform:scale(1.06)}
+.style-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 60%)}
+.style-card-body{position:absolute;bottom:14px;left:14px;right:14px}
+.style-card-title{font-size:13px;font-weight:700;color:#fff;font-family:var(--df);margin-bottom:3px}
+.style-card-sub{font-size:10.5px;color:rgba(255,255,255,.75);font-family:var(--bf)}
+
+/* Featured tour cards - homepage */
+.feat-row{display:flex;gap:16px;overflow-x:auto;padding:0 24px 24px;-ms-overflow-style:none;scrollbar-width:none}
+.feat-row::-webkit-scrollbar{display:none}
+.feat-card{flex:0 0 272px;background:var(--white);border:1.5px solid var(--ln);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s}
+.feat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.feat-card-img{height:136px;background:var(--ha-bg);display:flex;align-items:center;justify-content:center;font-size:54px;position:relative}
+.feat-card-badge{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;font-family:var(--bf)}
+.feat-card-body{padding:14px}
+.feat-card-dest{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-bottom:3px}
+.feat-card-title{font-family:var(--df);font-size:14px;color:var(--ink);margin-bottom:8px;line-height:1.35}
+.feat-card-foot{display:flex;align-items:center;justify-content:space-between}
+.feat-card-price{font-family:var(--df);font-size:15px;font-weight:700;color:var(--ink)}
+.feat-card-rating{font-size:12px;color:var(--mu);font-family:var(--bf)}
+.feat-spots-low{color:#c0392b;font-size:11px;font-weight:600;font-family:var(--bf);margin-top:5px}
+
+/* ── Hamburger button (logged-out) ── */
+.nav-hamburger{
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4.5px;cursor:pointer;transition:background .15s,border-color .15s;
+  flex-shrink:0;
+}
+.nav-hamburger:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
+.nav-hamburger span{
+  display:block;width:16px;height:1.8px;border-radius:2px;
+  background:rgba(255,255,255,.65);transition:background .15s;
+}
+.nav-hamburger:hover span{background:rgba(255,255,255,.9)}
+.nav-hamburger.open{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.32)}
+
+/* ── User avatar button (logged-in) ── */
+.nav-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--ac);border:2px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;flex-shrink:0;overflow:hidden;
+  transition:border-color .15s,box-shadow .15s;
+  position:relative;
+}
+.nav-avatar:hover{border-color:rgba(255,255,255,.6);box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+
+/* ── Dropdown menu ── */
+.nav-dropdown{
+  position:absolute;top:calc(100% + 10px);right:0;
+  width:220px;
+  background:var(--white);border:1px solid var(--ln);border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.14);
+  padding:6px 0;
+  display:none;z-index:2000;
+  animation:dropIn .18s ease;
+}
+.nav-dropdown.open{display:block;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.nav-dropdown-head{
+  padding:12px 16px 10px;
+  border-bottom:1px solid var(--ln);
+  margin-bottom:4px;
+}
+.nav-dropdown-name{font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);}
+.nav-dropdown-email{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px;}
+.nav-dd-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 16px;
+  font-size:13px;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;transition:background .12s;
+  text-decoration:none;
+}
+.nav-dd-item:hover{background:var(--paper)}
+.nav-dd-item .dd-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-dd-item.dd-danger{color:#c0392b;}
+.nav-dd-item.dd-danger:hover{background:#fef0ee;}
+.nav-dd-sep{height:1px;background:var(--ln);margin:4px 0;}
+/* position wrapper */
+.nav-r-wrap{position:relative;display:flex;align-items:center;gap:8px;}
+
+
+.auth-wall{max-width:440px;margin:80px auto;text-align:center;padding:0 24px}
+.auth-wall-ico{font-size:44px;margin-bottom:14px}
+.auth-wall-title{font-family:var(--df);font-size:24px;color:var(--ink);margin-bottom:8px}
+.auth-wall-sub{font-size:13.5px;color:var(--mu);font-family:var(--bf);line-height:1.6;margin-bottom:22px}
+.auth-wall-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{display:inline-block;padding:10px 24px;background:var(--ac);color:var(--ink);border:none;border-radius:7px;font-size:13px;font-weight:700;font-family:var(--bf);cursor:pointer;text-decoration:none;transition:background .15s}
+.btn-primary:hover{background:var(--ad);color:#fff}
+.btn-outline{display:inline-block;padding:10px 24px;background:none;color:var(--ink);border:1.5px solid var(--ln);border-radius:7px;font-size:13px;font-weight:600;font-family:var(--bf);cursor:pointer;text-decoration:none;transition:all .15s}
+.btn-outline:hover{border-color:var(--ac);color:var(--ac)}
+.role-wall{max-width:480px;margin:60px auto;text-align:center;padding:0 24px}
+.dash-pg{max-width:1060px;margin:0 auto;padding:32px 24px 80px}
+@media(max-width:640px){.dash-pg{padding:20px 16px 60px}}
+.dash-hero{margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.dash-hero-left{display:flex;align-items:center;gap:14px}
+.dash-hero-av{width:48px;height:48px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--ink);font-family:var(--bf);flex-shrink:0}
+.dash-hero-name{font-family:var(--df);font-size:22px;color:var(--ink)}
+.dash-hero-role{font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:2px}
+.btn-ac{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--ac);color:var(--ink);border:none;border-radius:7px;font-size:13px;font-weight:700;font-family:var(--bf);cursor:pointer;text-decoration:none;transition:background .15s}
+.btn-ac:hover{background:var(--ad);color:#fff}
+.dash-tabs{display:flex;gap:2px;border-bottom:2px solid var(--ln);margin-bottom:28px;overflow-x:auto}
+.dash-tabs::-webkit-scrollbar{display:none}
+.dash-tab{padding:10px 18px;font-size:13px;font-weight:500;font-family:var(--bf);color:var(--mu);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap}
+.dash-tab:hover{color:var(--ink)}
+.dash-tab.active{color:var(--ac);border-bottom-color:var(--ac);font-weight:700}
+.dash-panel{display:none}
+.dash-panel.active{display:block}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+@media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:18px 20px}
+.stat-card-label{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-bottom:6px}
+.stat-card-num{font-family:var(--df);font-size:28px;color:var(--ink)}
+.stat-card-sub{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:4px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.panel-title{font-family:var(--df);font-size:18px;color:var(--ink)}
+.tour-card{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;margin-bottom:10px;overflow:hidden;transition:box-shadow .2s;display:flex;align-items:stretch}
+.tour-card:hover{box-shadow:0 4px 18px rgba(0,0,0,.08)}
+.tc-thumb{flex:0 0 130px;width:130px;background:color-mix(in srgb,var(--ac) 10%,var(--paper));position:relative;overflow:hidden}
+.tc-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.tc-thumb-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mu);font-family:var(--bf);text-align:center;padding:8px}
+.tour-card-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:12px;flex:1;min-width:0}
+@media(max-width:600px){.tour-card{flex-direction:column}.tc-thumb{flex:0 0 auto;width:100%;height:120px}.tour-card-inner{flex-wrap:wrap}}
+.tour-card-body{flex:1;min-width:0}
+.tour-card-title{font-family:var(--df);font-size:15px;color:var(--ink);margin-bottom:3px}
+.tour-card-meta{font-size:11.5px;color:var(--mu);font-family:var(--bf);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tour-status{display:inline-block;font-size:10.5px;font-weight:700;font-family:var(--bf);padding:3px 10px;border-radius:100px}
+.tour-status.published{background:#e3f4e3;color:#1a7030;font-size:13px;padding:5px 13px;line-height:1;vertical-align:middle}
+.tour-status.draft{background:var(--paper);color:var(--mu);border:1px solid var(--ln)}
+.tour-status.pending{background:#fff4e0;color:#9a6000}
+.tour-card-actions{padding:0;display:flex;gap:8px;flex-shrink:0;min-width:210px}
+@media(max-width:560px){.tour-card-actions{display:none}}
+.btn-sm{font-size:12px;font-weight:600;font-family:var(--bf);padding:6px 14px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s;border:1.5px solid var(--ln);background:none;color:var(--ink);min-width:72px;text-align:center;box-sizing:border-box}
+.btn-sm:hover{border-color:var(--ac);color:var(--ac)}
+.btn-sm.filled{background:var(--ac);border-color:var(--ac);color:var(--ink)}
+.btn-sm.filled:hover{background:var(--ad);color:#fff}
+.bk-wrap{margin-bottom:12px}
+.bk-card{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;transition:border-radius .2s}
+.bk-card.expanded{border-radius:12px 12px 0 0;border-bottom-color:transparent}
+.msg-card{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;margin-bottom:10px;padding:14px 18px;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.msg-card:hover{border-color:var(--ac);box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.msg-card-chevron{font-size:20px;color:var(--mu);line-height:1;margin-top:6px;display:block;text-align:right}
+.bk-card-left{display:flex;flex-direction:column;gap:4px}
+.bk-card-tour{font-family:var(--df);font-size:14px;color:var(--ink)}
+.bk-card-meta{font-size:12px;color:var(--mu);font-family:var(--bf);display:flex;gap:10px;flex-wrap:wrap}
+.bk-card-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.bk-status{font-size:11px;font-weight:700;font-family:var(--bf);padding:3px 10px;border-radius:100px}
+.bk-status.confirmed{background:#e3f4e3;color:#1a7030}
+.bk-status.pending{background:#fff4e0;color:#9a6000}
+.bk-status.completed{background:#e3eef8;color:#1a4a80}
+.bk-status.cancelled{background:#fdecea;color:#a02010}
+.bk-status.deposit-paid{background:#e8f0fe;color:#1a4090}
+.bk-status.balance-due{background:#fff4e0;color:#9a6000}
+.bk-price{font-family:var(--df);font-size:15px;color:var(--ink)}
+.bk-expand-btn{background:none;border:none;cursor:pointer;color:var(--ac);font-size:12px;font-family:var(--bf);font-weight:600;padding:0;transition:color .15s}
+.bk-expand-btn:hover{color:var(--ad)}
+.bk-detail{max-height:0;overflow:hidden;transition:max-height .35s ease;border:1.5px solid var(--ln);border-top:none;border-radius:0 0 12px 12px;background:var(--white)}
+.bk-detail.open{max-height:900px}
+.bk-detail-inner{padding:14px 18px;background:var(--paper);border-top:1px solid var(--ln);display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.bk-detail-inner{grid-template-columns:1fr}}
+.bk-dl{display:flex;flex-direction:column;gap:2px}
+.bk-dt{font-size:10.5px;font-weight:700;color:var(--mu);font-family:var(--bf);text-transform:uppercase;letter-spacing:.06em}
+.bk-dd{font-size:13px;color:var(--ink);font-family:var(--bf)}
+.checklist-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln)}
+.checklist-item:last-child{border-bottom:none}
+.checklist-ico{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.checklist-ico.done{background:#e3f4e3}
+.checklist-ico.pending{background:#fff4e0}
+.checklist-ico.required{background:#fdecea}
+.checklist-label{flex:1;font-size:13px;color:var(--ink);font-family:var(--bf)}
+.checklist-sub{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:1px}
+.checklist-action{font-size:12px;font-weight:600;color:var(--ac);font-family:var(--bf);cursor:pointer;white-space:nowrap;text-decoration:none}
+.checklist-action:hover{color:var(--ad)}
+.upcoming-item{background:var(--white);border:1.5px solid var(--ln);border-radius:10px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.upcoming-tour{font-family:var(--df);font-size:14px;color:var(--ink)}
+.upcoming-meta{font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:2px}
+.upcoming-date{font-size:13px;font-weight:700;color:var(--ac);font-family:var(--bf);white-space:nowrap}
+.rv-card{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;margin-bottom:12px;padding:18px}
+.rv-card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:12px}
+.rv-card-tour{font-size:15px;font-weight:700;color:var(--ink);font-family:var(--df);line-height:1.3}
+.rv-card-reviewer{font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:2px}
+.rv-stars{font-size:13px;color:#e8a020}
+.rv-card-text{font-size:13.5px;color:var(--ink);font-family:var(--bf);line-height:1.6;margin-bottom:12px}
+.rv-reply-area{background:var(--paper);border-radius:8px;padding:12px 14px;border:1px solid var(--ln)}
+.rv-reply-label{font-size:11px;font-weight:700;color:var(--mu);font-family:var(--bf);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.rv-reply-text{font-size:13px;color:var(--ink);font-family:var(--bf);line-height:1.5}
+.rv-reply-input{width:100%;border:1.5px solid var(--ln);border-radius:8px;padding:10px 12px;font-size:13px;font-family:var(--bf);color:var(--ink);background:var(--white);resize:vertical;min-height:70px;transition:border-color .15s}
+.rv-reply-input:focus{outline:none;border-color:var(--ac)}
+.earnings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:600px){.earnings-grid{grid-template-columns:1fr}}
+.earnings-card{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:20px}
+.earnings-card-label{font-size:12px;color:var(--mu);font-family:var(--bf);margin-bottom:6px}
+.earnings-card-val{font-family:var(--df);font-size:30px;color:var(--ink)}
+.earnings-card-note{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:4px}
+.earnings-table{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;overflow:hidden}
+.et-head{display:grid;grid-template-columns:2.5fr .7fr .7fr 1fr 1fr;padding:11px 16px;background:var(--paper);border-bottom:1px solid var(--ln);font-size:11px;font-weight:700;color:var(--mu);font-family:var(--bf);text-transform:uppercase;letter-spacing:.06em}
+.et-row{display:grid;grid-template-columns:2.5fr .7fr .7fr 1fr 1fr;padding:12px 16px;border-bottom:1px solid var(--ln);font-size:13px;font-family:var(--bf);color:var(--ink)}
+.et-row:last-child{border-bottom:none}
+.et-row:hover{background:var(--paper)}
+.dash-empty{text-align:center;padding:50px 20px}
+.dash-empty-ico{font-size:38px;margin-bottom:10px}
+.dash-empty-title{font-family:var(--df);font-size:17px;color:var(--ink);margin-bottom:6px}
+.dash-empty-sub{font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:18px}
+.spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--ln);border-top-color:var(--ac);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+
+.footer{background:var(--ink);padding:32px 26px 24px;transition:background .35s}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:20px;margin-bottom:22px}
+.foot-logo{font-family:var(--df);font-size:18px;color:var(--ac);display:flex;align-items:center;gap:8px;margin-bottom:9px;transition:color .35s,font-family .35s}
+.foot-desc{font-size:11.5px;color:rgba(255,255,255,.24);line-height:1.65;font-family:var(--bf)}
+.foot-col-h{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:11px;font-family:var(--bf)}
+.footer a{text-decoration:none;}
+.foot-link{display:block;font-size:12px;color:rgba(255,255,255,.42);padding:3.5px 0;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s;}
+.foot-link:hover{color:rgba(255,255,255,.8);}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:15px;display:flex;justify-content:space-between;align-items:center}
+.foot-copy{font-size:11px;color:rgba(255,255,255,.18);font-family:var(--bf)}
+.foot-soc{display:flex;gap:7px}
+.soc-btn{width:27px;height:27px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:rgba(255,255,255,.3)}
+
+/* ── Explore by style cards ── */
+.style-card{flex:0 0 180px;border-radius:12px;overflow:hidden;position:relative;height:220px;cursor:pointer;transition:transform .2s}
+.style-card:hover{transform:translateY(-4px)}
+.style-card-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:56px;transition:transform .3s}
+.style-card:hover .style-card-bg{transform:scale(1.06)}
+.style-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 60%)}
+.style-card-body{position:absolute;bottom:14px;left:14px;right:14px}
+.style-card-title{font-size:13px;font-weight:700;color:#fff;font-family:var(--df);margin-bottom:3px}
+.style-card-sub{font-size:10.5px;color:rgba(255,255,255,.75);font-family:var(--bf)}
+
+/* Featured tour cards - homepage */
+.feat-row{display:flex;gap:16px;overflow-x:auto;padding:0 24px 24px;-ms-overflow-style:none;scrollbar-width:none}
+.feat-row::-webkit-scrollbar{display:none}
+.feat-card{flex:0 0 272px;background:var(--white);border:1.5px solid var(--ln);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s}
+.feat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.feat-card-img{height:136px;background:var(--ha-bg);display:flex;align-items:center;justify-content:center;font-size:54px;position:relative}
+.feat-card-badge{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;font-family:var(--bf)}
+.feat-card-body{padding:14px}
+.feat-card-dest{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-bottom:3px}
+.feat-card-title{font-family:var(--df);font-size:14px;color:var(--ink);margin-bottom:8px;line-height:1.35}
+.feat-card-foot{display:flex;align-items:center;justify-content:space-between}
+.feat-card-price{font-family:var(--df);font-size:15px;font-weight:700;color:var(--ink)}
+.feat-card-rating{font-size:12px;color:var(--mu);font-family:var(--bf)}
+.feat-spots-low{color:#c0392b;font-size:11px;font-weight:600;font-family:var(--bf);margin-top:5px}
+
+/* ── Hamburger button (logged-out) ── */
+.nav-hamburger{
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4.5px;cursor:pointer;transition:background .15s,border-color .15s;
+  flex-shrink:0;
+}
+.nav-hamburger:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
+.nav-hamburger span{
+  display:block;width:16px;height:1.8px;border-radius:2px;
+  background:rgba(255,255,255,.65);transition:background .15s;
+}
+.nav-hamburger:hover span{background:rgba(255,255,255,.9)}
+.nav-hamburger.open{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.32)}
+
+/* ── User avatar button (logged-in) ── */
+.nav-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--ac);border:2px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;flex-shrink:0;overflow:hidden;
+  transition:border-color .15s,box-shadow .15s;
+  position:relative;
+}
+.nav-avatar:hover{border-color:rgba(255,255,255,.6);box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+
+/* ── Dropdown menu ── */
+.nav-dropdown{
+  position:absolute;top:calc(100% + 10px);right:0;
+  width:220px;
+  background:var(--white);border:1px solid var(--ln);border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.14);
+  padding:6px 0;
+  display:none;z-index:2000;
+  animation:dropIn .18s ease;
+}
+.nav-dropdown.open{display:block;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.nav-dropdown-head{
+  padding:12px 16px 10px;
+  border-bottom:1px solid var(--ln);
+  margin-bottom:4px;
+}
+.nav-dropdown-name{font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);}
+.nav-dropdown-email{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px;}
+.nav-dd-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 16px;
+  font-size:13px;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;transition:background .12s;
+  text-decoration:none;
+}
+.nav-dd-item:hover{background:var(--paper)}
+.nav-dd-item .dd-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-dd-item.dd-danger{color:#c0392b;}
+.nav-dd-item.dd-danger:hover{background:#fef0ee;}
+.nav-dd-sep{height:1px;background:var(--ln);margin:4px 0;}
+/* position wrapper */
+.nav-r-wrap{position:relative;display:flex;align-items:center;gap:8px;}
+</style>
+<script src="toast.js"></script>
+<script src="config.js"></script>
+</head>
+<body class="ocean">
+
+<div class="overlay" id="overlay" onclick="overlayClick(event)"><div class="drawer"><div class="drawer-head"><div class="drawer-title">Appearance</div><button class="drawer-close" onclick="closeSettings()">&#x2715;</button></div><div class="drawer-body"><div class="d-section-label">Choose your theme</div><div class="theme-grid" id="themeGrid"></div><button class="drawer-apply" onclick="applyPending()">Apply theme</button><div class="drawer-divider"></div><p class="drawer-note">Your choice is saved locally.</p></div></div></div>
+
+<nav class="nav">
+  <a class="logo" href="waybound.html"><div class="logo-mark" id="lm"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound</a>
+  <div class="nav-search"><span style="padding:0 10px;font-size:13px;flex-shrink:0">🔍</span><input id="navSearchInput" type="text" placeholder="Where to go?" autocomplete="off" style="background:none;border:none;outline:none;width:100%;padding:7px 14px 7px 0;font-size:12px;color:rgba(255,255,255,.7);font-family:var(--bf);" onkeydown="if(event.key==='Enter'){var q=this.value.trim();if(q)window.location.href='adventures.html?q='+encodeURIComponent(q);}"></div>
+  <div class="nav-links"><a class="nav-link" href="adventures.html">Adventures</a><a class="nav-link" href="how-it-works.html">How it works</a><a class="nav-link" href="about.html">About</a><a class="nav-link" href="help.html">Help</a><a class="nav-link" href="contact.html">Contact</a></div>
+  <div class="nav-r nav-r-wrap"><button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin.html'">Sign in / Sign up</button><a class="btn-ac-sm" href="operator.html" style="text-decoration:none" id="navListTourBtn">List a tour</a><div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" title="My account" style="display:none"></div><div class="nav-dropdown" id="navDropdown"></div></div>
+</nav>
+
+
+<div class="auth-wall" id="authWall" style="display:none">
+  <div class="auth-wall-ico">&#x1F512;</div>
+  <div class="auth-wall-title">Sign in to your operator account</div>
+  <div class="auth-wall-sub">Manage your tours, view bookings, track earnings and respond to reviews.</div>
+  <div class="auth-wall-btns">
+    <a class="btn-primary" href="signin.html">Sign in</a>
+    <a class="btn-outline" href="signup-operator.html">Create operator account</a>
+  </div>
+</div>
+
+<div class="role-wall" id="roleWall" style="display:none">
+  <div style="font-size:44px;margin-bottom:14px">&#x1F9ED;</div>
+  <div style="font-family:var(--df);font-size:22px;color:var(--ink);margin-bottom:8px">Operator accounts only</div>
+  <div style="font-size:13.5px;color:var(--mu);font-family:var(--bf);line-height:1.6;margin-bottom:22px">Your account is registered as a traveller. To list and manage tours you need a separate operator account.</div>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a class="btn-primary" href="signup-operator.html">Create operator account</a>
+    <a class="btn-outline" href="waybound.html">Browse adventures</a>
+  </div>
+</div>
+
+<div id="dashMain" style="display:none">
+<div class="dash-pg">
+
+  <!-- Verification upload modal -->
+  <div id="verifyModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
+    <div style="background:var(--white);border-radius:14px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)">
+      <div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:6px">Upload verification document</div>
+      <div style="font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:18px">Upload a clear photo of your passport or national ID.</div>
+      <input type="file" id="verifyDocInput" accept="image/*" style="width:100%;margin-bottom:14px;font-family:var(--bf);font-size:13px">
+      <div id="verifyMsg" style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-bottom:12px;display:none"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="closeVerifyModal()" style="background:none;border:1.5px solid var(--ln);border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:var(--bf)">Cancel</button>
+        <button onclick="submitVerifyDoc()" style="background:var(--ac);border:none;border-radius:6px;padding:8px 20px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:var(--bf)">Submit document</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cancel booking modal -->
+  <div id="cancelBkModal" style="display:none;position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:16px">
+    <div style="background:var(--white);border-radius:16px;padding:28px 28px 22px;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2)">
+      <div style="font-size:28px;margin-bottom:10px;text-align:center">🚫</div>
+      <div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:6px;text-align:center">Cancel this booking?</div>
+      <div id="cancelBkMeta" style="font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:16px;text-align:center;line-height:1.55"></div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);font-family:var(--bf);margin-bottom:5px">Message to traveller <span style="font-weight:400;text-transform:none">(optional)</span></div>
+        <textarea id="cancelBkReason" style="width:100%;min-height:72px;padding:9px 12px;border:1.5px solid var(--ln);border-radius:7px;font-size:13px;font-family:var(--bf);color:var(--ink);background:var(--paper);resize:vertical;box-sizing:border-box;outline:none;transition:border-color .15s" placeholder="Let the traveller know why you're cancelling…" onfocus="this.style.borderColor='var(--ac)'" onblur="this.style.borderColor='var(--ln)'"></textarea>
+        <div style="font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:4px">This message will appear in their email and inbox.</div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="cancelBkModalResolve(false)" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--bf);color:var(--ink);font-weight:500">Keep booking</button>
+        <button onclick="cancelBkModalResolve(true)" style="background:#c0392b;color:#fff;border:none;border-radius:7px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--bf)">Cancel booking</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message traveller modal -->
+  <div id="msgTravModal" style="display:none;position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeMsgTravModal()">
+    <div style="background:var(--white);border-radius:16px;padding:28px 28px 22px;max-width:440px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2)">
+      <div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:4px">Message traveller</div>
+      <div id="msgTravSub" style="font-size:12.5px;color:var(--mu);font-family:var(--bf);margin-bottom:16px"></div>
+      <textarea id="msgTravBody" style="width:100%;min-height:90px;padding:10px 13px;border:1.5px solid var(--ln);border-radius:8px;font-size:13px;font-family:var(--bf);color:var(--ink);background:var(--paper);resize:vertical;box-sizing:border-box;outline:none;transition:border-color .15s" placeholder="Write your message to the traveller&#x2026;" onfocus="this.style.borderColor='var(--ac)'" onblur="this.style.borderColor='var(--ln)'"></textarea>
+      <div style="font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:5px;margin-bottom:14px">Sent via email and appears in their Waybound inbox.</div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="closeMsgTravModal()" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--bf);color:var(--ink);font-weight:500">Cancel</button>
+        <button id="msgTravSendBtn" onclick="sendMsgTraveller()" style="background:var(--ac);color:var(--ink);border:none;border-radius:7px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--bf)">Send message</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom confirm dialog (replaces browser confirm()) -->
+  <div id="confirmDialog" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
+    <div style="background:var(--white);border-radius:14px;padding:28px 28px 22px;max-width:380px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)">
+      <div id="confirmDialogIcon" style="font-size:28px;margin-bottom:12px;text-align:center"></div>
+      <div id="confirmDialogTitle" style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:8px;text-align:center"></div>
+      <div id="confirmDialogMsg" style="font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:22px;text-align:center;line-height:1.55"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="confirmDialogResolve(false)" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--bf);color:var(--ink)">Cancel</button>
+        <button id="confirmDialogOk" onclick="confirmDialogResolve(true)" style="border:none;border-radius:7px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--bf)">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Copy tour modal -->
+  <div id="copyTourModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto">
+    <div style="background:var(--white);border-radius:16px;padding:24px;max-width:560px;width:92%;box-shadow:0 8px 40px rgba(0,0,0,.18);margin-bottom:40px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf)">Copy a tour</div>
+        <button onclick="closeCopyTourModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--mu);padding:0;line-height:1">&times;</button>
+      </div>
+      <input id="copyTourSearch" type="text" placeholder="Search your tours…" oninput="filterCopyTours()" style="width:100%;border:1.5px solid var(--ln);border-radius:8px;padding:9px 13px;font-size:13px;font-family:var(--bf);margin-bottom:14px;outline:none">
+      <div id="copyTourGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-height:380px;overflow-y:auto"></div>
+    </div>
+  </div>
+
+  <div class="dash-hero">
+    <div class="dash-hero-left">
+      <div class="dash-hero-av" id="dashAv"></div>
+      <div>
+        <div class="dash-hero-name" id="dashName">Operator dashboard</div>
+        <div class="dash-hero-role">&#x2B50; Tour operator &nbsp;&middot;&nbsp; <span id="dashEmail"></span></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button onclick="openCopyTourModal()" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:8px 14px;font-size:13px;font-family:var(--bf);color:var(--ink);cursor:pointer;font-weight:500">&#x2398; Copy a tour</button>
+      <a class="btn-ac" href="operator-tour-create.html">&#x2795; New tour</a>
+    </div>
+  </div>
+
+  <div class="dash-tabs">
+    <button class="dash-tab active" id="tab-overview" onclick="showTab('overview',this)">Overview</button>
+    <button class="dash-tab" id="tab-tours" onclick="showTab('tours',this)">My tours</button>
+    <button class="dash-tab" id="tab-bookings" onclick="showTab('bookings',this)">Bookings</button>
+    <button class="dash-tab" id="tab-messages" onclick="showTab('messages',this)">Messages<span id="msgBadge" style="display:none;background:#e03030;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:6px;font-family:var(--bf);vertical-align:middle"></span></button>
+    <button class="dash-tab" id="tab-reviews" onclick="showTab('reviews',this)">Reviews</button>
+    <button class="dash-tab" id="tab-earnings" onclick="showTab('earnings',this)">Earnings</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="dash-panel active" id="panel-overview">
+
+    <!-- Verification banner — shown only on overview tab -->
+    <div id="verifyBanner" style="display:none;background:#fff8e1;border:1.5px solid #f9c040;border-radius:10px;padding:14px 18px;margin-bottom:18px;gap:14px;align-items:flex-start">
+      <span style="font-size:22px;flex-shrink:0">&#x1F4CB;</span>
+      <div style="flex:1">
+        <div id="verifyBannerTitle" style="font-size:14px;font-weight:700;color:#7a5800;font-family:var(--bf);margin-bottom:4px">Your account is not yet verified</div>
+        <div id="verifyBannerSub" style="font-size:13px;color:#7a5800;font-family:var(--bf);margin-bottom:10px">Upload your ID to start listing tours and accepting bookings.</div>
+        <button id="verifyBannerBtn" onclick="openVerifyModal()" style="background:#f9c040;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;color:#4a3500;cursor:pointer;font-family:var(--bf)">Upload verification document &#x2192;</button>
+      </div>
+      <button onclick="document.getElementById('verifyBanner').style.display='none'" style="background:none;border:none;cursor:pointer;color:#9a7800;font-size:18px;line-height:1;padding:0;flex-shrink:0" title="Dismiss">&times;</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-card-label">Active tours</div><div class="stat-card-num" id="sActiveTours">&#x2014;</div><div class="stat-card-sub">published &amp; live</div></div>
+      <div class="stat-card"><div class="stat-card-label">Total bookings</div><div class="stat-card-num" id="sTotalBk">&#x2014;</div><div class="stat-card-sub">all time</div></div>
+      <div class="stat-card"><div class="stat-card-label">Avg rating</div><div class="stat-card-num" id="sAvgRating">&#x2014;</div><div class="stat-card-sub">across all tours</div></div>
+      <div class="stat-card"><div class="stat-card-label">Total earned</div><div class="stat-card-num" id="sTotalEarned">&#x2014;</div><div class="stat-card-sub">completed bookings</div></div>
+    </div>
+
+    <!-- Verification checklist -->
+    <div style="background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:20px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-family:var(--df);font-size:16px;color:var(--ink)">Account setup</div>
+        <div style="font-size:12px;color:var(--mu);font-family:var(--bf)" id="setupProgress">0 / 5 complete</div>
+      </div>
+      <div id="checklistItems"></div>
+    </div>
+
+    <!-- Upcoming departures -->
+    <div class="panel-head"><div class="panel-title">Upcoming departures</div><div class="stat-card-sub" id="upcomingNote"></div></div>
+    <div id="upcomingList" style="margin-bottom:20px"></div>
+
+    <!-- Recent bookings -->
+    <div class="panel-head"><div class="panel-title">Recent bookings</div><button class="btn-sm" onclick="showTab('bookings',document.getElementById('tab-bookings'))">View all</button></div>
+    <div id="ovBkList"><div style="text-align:center;padding:24px"><div class="spinner"></div></div></div>
+  </div>
+
+  <div class="dash-panel" id="panel-tours">
+    <div class="panel-head">
+      <div class="panel-title">My tours</div>
+      <select id="tourFilter" onchange="filterTours()" style="font-size:12px;font-family:var(--bf);border:1.5px solid var(--ln);border-radius:6px;padding:6px 10px;background:var(--white);color:var(--ink);cursor:pointer">
+        <option value="">All statuses</option>
+        <option value="live">Live</option>
+        <option value="draft">Draft</option>
+        <option value="review">In review</option>
+        <option value="paused">Paused</option>
+        <option value="archived">Archived</option>
+      </select>
+    </div>
+    <div id="tourList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
+    <div id="emptyToursState" style="display:none;text-align:center;padding:60px 20px;color:var(--muted)">
+      <div style="font-size:48px;margin-bottom:16px">🗺️</div>
+      <div style="font-size:18px;font-weight:600;color:var(--ink);margin-bottom:8px">No tours yet</div>
+      <div style="font-size:14px;margin-bottom:24px">Create your first tour listing to start accepting bookings.</div>
+      <a href="operator-tour-create.html" style="background:var(--accent,#4fa8d4);color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px">Create your first tour →</a>
+    </div>
+  </div>
+
+  <!-- BOOKINGS -->
+  <div class="dash-panel" id="panel-bookings">
+    <div class="panel-head">
+      <div class="panel-title">Bookings</div>
+      <select id="bkFilter" onchange="filterBookings()" style="font-size:12px;font-family:var(--bf);border:1.5px solid var(--ln);border-radius:6px;padding:6px 10px;background:var(--white);color:var(--ink);cursor:pointer">
+        <option value="all">All statuses</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="pending">Pending payment</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div id="bkList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div class="dash-panel" id="panel-messages">
+    <div class="panel-head">
+      <div class="panel-title">Messages</div>
+      <div id="msgNote" style="font-size:12px;color:var(--mu);font-family:var(--bf)"></div>
+    </div>
+    <div id="msgList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div class="dash-panel" id="panel-reviews">
+    <div class="panel-head">
+      <div class="panel-title">Reviews</div>
+      <div class="stat-card-sub" id="rvSummary"></div>
+    </div>
+    <div id="rvList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
+  </div>
+
+  <!-- EARNINGS -->
+  <div class="dash-panel" id="panel-earnings">
+    <div class="panel-head"><div class="panel-title">Earnings</div></div>
+    <div class="earnings-grid">
+      <div class="earnings-card"><div class="earnings-card-label">Total earned (all time)</div><div class="earnings-card-val" id="earnTotal">&#x2014;</div><div class="earnings-card-note">from completed bookings</div></div>
+      <div class="earnings-card"><div class="earnings-card-label">This month</div><div class="earnings-card-val" id="earnMonth">&#x2014;</div><div class="earnings-card-note" id="earnNote">completed this month</div></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:11px;color:var(--mu);font-family:var(--bf)" id="earnSortLabel">Sorted by date (newest first)</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn-ghost-sm" style="font-size:11px;padding:4px 10px" onclick="setEarnSort('date')">By date</button>
+        <button class="btn-ghost-sm" style="font-size:11px;padding:4px 10px" onclick="setEarnSort('tour')">By tour</button>
+      </div>
+    </div>
+    <div class="earnings-table">
+      <div class="et-head"><div>Tour</div><div>Bookings</div><div>Guests</div><div>Departure</div><div>Amount</div></div>
+      <div id="earnRows"><div style="text-align:center;padding:30px;color:var(--mu);font-family:var(--bf);font-size:13px">Loading&hellip;</div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<footer class="footer"><div class="foot-grid"><div><a class="foot-logo" href="waybound.html"><div class="foot-logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound</a><p class="foot-tag">Small groups. Real guides. Genuine places.</p></div><div><div class="foot-col-title">Explore</div><a class="foot-link" href="adventures.html">All adventures</a><a class="foot-link" href="how-it-works.html">How it works</a></div><div><div class="foot-col-title">Company</div><a class="foot-link" href="about.html">About us</a><a class="foot-link" href="contact.html">Contact</a></div><div><div class="foot-col-title">Help</div><a class="foot-link" href="help.html">Help center</a><a class="foot-link" href="trust-safety.html">Trust &amp; Safety</a><a class="foot-link" href="terms.html">Terms</a></div></div><div class="foot-bottom"><span class="foot-copy">&copy; 2026 Waybound. All rights reserved.</span></div></footer>
+
+<script>
+const THEMES={ocean:{name:'Deep Ocean',desc:'Cool blue, refined',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Light & Warm',desc:'White base, bright energy',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Ivory & Earthy',desc:'Warm parchment, handcrafted',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Parchment & Gold',desc:'Warm gold, sophisticated',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Forest & Sage',desc:'Muted green, natural feel',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Terracotta',desc:'Earthy red, bold warmth',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
+let current=localStorage.getItem('waybound-theme')||'ocean', pending=current;
+document.body.className=current;
+function renderGrid(){document.getElementById('themeGrid').innerHTML=Object.entries(THEMES).map(([k,d])=>`<div class="th-opt${k===current?' sel':''}" data-k="${k}" onclick="previewTheme('${k}')"><div class="th-check">✓</div><div class="th-swatches">${d.sw.map(s=>`<div class="th-sw" style="background:${s}"></div>`).join('')}</div><div class="th-name">${d.name}</div><div class="th-desc">${d.desc}</div>${d.def?`<span class="th-default-tag">★ Default</span>`:''}</div>`).join('');}
+function openSettings(){var dd=document.getElementById('navDropdown');if(dd)dd.classList.remove('open');pending=current;renderGrid();document.getElementById('overlay').classList.add('open');}
+function closeSettings(){document.body.className=current;document.getElementById('overlay').classList.remove('open');}
+function overlayClick(e){if(e.target===document.getElementById('overlay'))closeSettings();}
+function previewTheme(k){pending=k;document.querySelectorAll('.th-opt').forEach(el=>el.classList.toggle('sel',el.dataset.k===k));document.body.className=k;}
+function applyPending(){current=pending;localStorage.setItem('waybound-theme',current);document.getElementById('overlay').classList.remove('open');}
+
+
+// Hero destination tiles
+(function() {
+  var tiles = [
+    {cls:'ti1', dest:'Georgia',   sub:'Kazbegi & Svaneti',    cnt:'8 tours',  emoji:'🏔️'},
+    {cls:'ti2', dest:'Kenya',     sub:'Masai Mara Safari',    cnt:'5 tours',  emoji:'🦁'},
+    {cls:'ti3', dest:'Japan',     sub:'Kyoto & Tokyo',        cnt:'12 tours', emoji:'⛩️'},
+    {cls:'ti1', dest:'Morocco',   sub:'Sahara Expedition',    cnt:'6 tours',  emoji:'🏜️'},
+    {cls:'ti2', dest:'Croatia',   sub:'Dalmatian Islands',    cnt:'9 tours',  emoji:'🌊'},
+    {cls:'ti3', dest:'Iceland',   sub:'Northern Lights',      cnt:'4 tours',  emoji:'🌌'},
+  ];
+  var grid = document.getElementById('heroTiles');
+  if (!grid) return;
+  grid.innerHTML = tiles.map(function(t) {
+    return '<div class="htile ' + t.cls + '" data-dest="' + t.dest + '" style="cursor:pointer">'
+      + '<div class="htile-bg">' + t.emoji + '</div>'
+      + '<div class="htile-lbl">' + t.dest + '<br><span style="font-weight:400;opacity:.7">' + t.sub + '</span></div>'
+      + '<div class="htile-cnt">' + t.cnt + '</div>'
+      + '</div>';
+  }).join('');
+  grid.querySelectorAll('.htile').forEach(function(el) {
+    el.addEventListener('click', function() {
+      window.location.href = 'adventures.html?dest=' + encodeURIComponent(el.dataset.dest);
+    });
+  });
+})();
+
+
+// Explore by style cards
+(function() {
+  var styles = [
+    {title:'Trekking',       sub:'Mountain & highland',  emoji:'🏔️', cls:'ti1'},
+    {title:'Safari',         sub:'Wildlife & wilderness',emoji:'🦁', cls:'ti2'},
+    {title:'Culture',        sub:'History & local life', emoji:'🏛️', cls:'ti3'},
+    {title:'Sailing',        sub:'Coast & island hops',  emoji:'⛵', cls:'ti1'},
+    {title:'Food & Wine',    sub:'Taste the destination',emoji:'🍷', cls:'ti2'},
+    {title:'Wellness',       sub:'Yoga, retreat & spa',  emoji:'🧘', cls:'ti3'},
+    {title:'Adventure',      sub:'Adrenaline & extremes',emoji:'🪂', cls:'ti1'},
+    {title:'Photography',    sub:'Capture the world',    emoji:'📷', cls:'ti2'},
+  ];
+  var scroll = document.getElementById('cardScroll');
+  if (!scroll) return;
+  scroll.innerHTML = styles.map(function(s) {
+    return '<div class="style-card ' + s.cls + '" data-cat="' + s.title + '" style="cursor:pointer">'
+      + '<div class="style-card-bg">' + s.emoji + '</div>'
+      + '<div class="style-card-overlay"></div>'
+      + '<div class="style-card-body">'
+      + '<div class="style-card-title">' + s.title + '</div>'
+      + '<div class="style-card-sub">' + s.sub + '</div>'
+      + '</div></div>';
+  }).join('');
+  // Attach click handlers
+  document.querySelectorAll('.style-card[data-cat]').forEach(function(el) {
+    el.addEventListener('click', function() {
+      window.location.href = 'adventures.html?cat=' + encodeURIComponent(el.dataset.cat);
+    });
+  });
+})();
+
+
+
+/* Featured tours - homepage */
+var TOURS_API = window.API_V1 + '/tours/';
+
+function goFeatured(el) {
+  window.location.href = 'tour_detail_page.html?slug=' + el.dataset.slug;
+}
+
+async function loadFeaturedTours() {
+  try {
+    var res = await fetch(TOURS_API + '?featured=true');
+    if (!res.ok) return;
+    var data = await res.json();
+    var tours = data.results || [];
+    if (!tours.length) return;
+
+    var row = document.getElementById('featuredToursRow');
+    var sec = document.getElementById('featuredToursSec');
+    if (!row || !sec) return;
+
+    var html = '';
+    for (var i = 0; i < tours.length; i++) {
+      var t = tours[i];
+      var dayLabel = t.days === 1 ? '1 day' : t.days + ' days';
+      var price = '₽' + parseInt(t.price).toLocaleString('ru-RU');
+      var spots = t.spots_left <= 3
+        ? '<div class="feat-spots-low">🔥 Only ' + t.spots_left + ' spots left</div>'
+        : '';
+      html += '<div class="feat-card" data-slug="' + t.slug + '" onclick="goFeatured(this)">';
+      html += '<div class="feat-card-img">' + (t.emoji || '🌍');
+      html += '<div class="feat-card-badge">' + dayLabel + '</div></div>';
+      html += '<div class="feat-card-body">';
+      html += '<div class="feat-card-dest">📍 ' + t.destination + '</div>';
+      html += '<div class="feat-card-title">' + t.title + '</div>';
+      html += '<div class="feat-card-foot">';
+      html += '<div class="feat-card-price">' + price + '<span style="font-size:11px;color:var(--mu);font-weight:400"> /person</span></div>';
+      html += '<div class="feat-card-rating">⭐ ' + parseFloat(t.rating).toFixed(2) + ' (' + t.review_count + ')</div>';
+      html += '</div>' + spots + '</div></div>';
+    }
+    row.innerHTML = html;
+    sec.style.display = 'block';
+  } catch(e) {
+    // Backend not running - section stays hidden
+  }
+}
+
+loadFeaturedTours();
+
+var ACCT_API = window.API_V1;
+var _tours = [], _bookings = [], _reviews = [], _enquiries = [];
+var _expandedCards = {};  // tracks which msg cards are open
+var _opMsgPollTimer = null;
+var _autoOpenCard = parseInt(new URLSearchParams(window.location.search).get('open') || '0') || 0;
+
+var _symMap = { RUB:'₽', USD:'$', EUR:'€', GBP:'£', CNY:'¥', TRY:'₺', KZT:'₸' };
+function fmtP(n, cur) {
+  var sym = cur ? (_symMap[cur] || (cur + ' ')) : '₽';
+  return sym + parseInt(parseFloat(n)||0).toLocaleString('ru-RU');
+}
+function fmtD(s) {
+  if (!s) return '—';
+  var d = new Date(s + (s.length === 10 ? 'T00:00:00' : ''));
+  if (isNaN(d)) return s;
+  var mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return d.getDate() + ' ' + mos[d.getMonth()] + ' ' + d.getFullYear();
+}
+function ah() {
+  var h = { 'Content-Type':'application/json' };
+  var t = localStorage.getItem('waybound_access');
+  if (t) h['Authorization'] = 'Bearer ' + t;
+  return h;
+}
+
+async function fetchAuth(url, opts) {
+  opts = opts || {};
+  opts.headers = opts.headers || ah();
+  var res = await fetch(url, opts);
+  if (res.status !== 401) return res;
+  var rt = localStorage.getItem('waybound_refresh');
+  if (!rt) { window.location.href = 'signin.html?next=' + encodeURIComponent(window.location.href); return res; }
+  var rr = await fetch(ACCT_API + '/auth/token/refresh/', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({refresh: rt})
+  });
+  if (!rr.ok) {
+    localStorage.removeItem('waybound_access'); localStorage.removeItem('waybound_refresh'); localStorage.removeItem('waybound_user');
+    window.location.href = 'signin.html?next=' + encodeURIComponent(window.location.href); return res;
+  }
+  var rd = await rr.json();
+  localStorage.setItem('waybound_access', rd.access);
+  if (rd.refresh) localStorage.setItem('waybound_refresh', rd.refresh);
+  opts.headers['Authorization'] = 'Bearer ' + rd.access;
+  return await fetch(url, opts);
+}
+
+(function init() {
+  var u = null;
+  try { u = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch(e) {}
+  if (!u || !u.email) { document.getElementById('authWall').style.display = 'block'; return; }
+  if (u.role !== 'operator') { document.getElementById('roleWall').style.display = 'block'; return; }
+  document.getElementById('dashMain').style.display = 'block';
+  var name = ((u.first_name||'') + ' ' + (u.last_name||'')).trim() || u.email;
+  var ini  = name.split(' ').filter(Boolean).map(function(w){ return w[0]; }).join('').toUpperCase().slice(0,2);
+  var dashAv = document.getElementById('dashAv');
+  if (u.photo_url) {
+    dashAv.innerHTML = '<img src="' + u.photo_url + '" alt="' + ini + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  } else {
+    dashAv.textContent = ini;
+  }
+  document.getElementById('dashName').textContent  = name;
+  document.getElementById('dashEmail').textContent = u.email;
+  // Restore active tab: ?tab= param → URL hash → localStorage fallback
+  var tabParam = new URLSearchParams(window.location.search).get('tab') || '';
+  var hash = window.location.hash.replace('#', '');
+  var savedTab = '';
+  try { savedTab = localStorage.getItem('waybound_dash_tab') || ''; } catch(e) {}
+  var activeTab = tabParam || hash || savedTab;
+  if (['overview','tours','bookings','messages','reviews','earnings'].indexOf(activeTab) >= 0) {
+    showTab(activeTab, document.getElementById('tab-' + activeTab));
+  }
+  // Remove ?tab= from the URL so it doesn't override the hash on future refreshes
+  if (tabParam) {
+    var sp = new URLSearchParams(window.location.search);
+    sp.delete('tab');
+    var newUrl = window.location.pathname + (sp.toString() ? '?' + sp.toString() : '') + window.location.hash;
+    window.history.replaceState(null, '', newUrl);
+  }
+  loadAll();
+})();
+
+// ── Copy tour modal ──
+function openCopyTourModal() {
+  document.getElementById('copyTourSearch').value = '';
+  renderCopyTourGrid('');
+  document.getElementById('copyTourModal').style.display = 'flex';
+}
+function closeCopyTourModal() {
+  document.getElementById('copyTourModal').style.display = 'none';
+}
+function filterCopyTours() {
+  renderCopyTourGrid(document.getElementById('copyTourSearch').value);
+}
+function renderCopyTourGrid(query) {
+  var grid = document.getElementById('copyTourGrid');
+  if (!grid) return;
+  var q = (query || '').toLowerCase().trim();
+  var tours = (_tours || []).filter(function(t) {
+    return t.status !== 'archived' && (!q || (t.title||'').toLowerCase().includes(q) || (t.destination||'').toLowerCase().includes(q));
+  });
+  if (!tours.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;font-size:13px;color:var(--mu);font-family:var(--bf)">' + (q ? 'No tours match your search.' : 'No tours to copy yet.') + '</div>';
+    return;
+  }
+  var statusColors = { live:'#1a7a40', draft:'#606070', review:'#7a5800', paused:'#7a5800', archived:'#606070' };
+  var statusLabels = { live:'Live', draft:'Draft', review:'In review', paused:'Paused', archived:'Archived' };
+  grid.innerHTML = tours.map(function(t) {
+    var color = statusColors[t.status] || '#606070';
+    var label = statusLabels[t.status] || t.status;
+    return '<div onclick="selectCopyTour(\'' + t.slug + '\')" style="border:1.5px solid var(--ln);border-radius:10px;padding:12px 14px;cursor:pointer;transition:border-color .15s,box-shadow .15s;background:var(--white)" onmouseover="this.style.borderColor=\'var(--ac)\';this.style.boxShadow=\'0 2px 10px rgba(0,0,0,.08)\'" onmouseout="this.style.borderColor=\'var(--ln)\';this.style.boxShadow=\'none\'">'
+      + '<div style="font-size:20px;margin-bottom:8px;text-align:center;background:var(--ha-bg);border-radius:6px;padding:8px">&#x1F5FA;&#xFE0F;</div>'
+      + '<div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (t.title||'Untitled tour') + '</div>'
+      + '<div style="font-size:11px;color:var(--mu);font-family:var(--bf);margin-bottom:6px">' + (t.destination||'—') + '</div>'
+      + '<span style="font-size:10px;font-weight:600;color:' + color + ';background:' + color + '18;border-radius:4px;padding:2px 7px;font-family:var(--bf)">' + label + '</span>'
+      + '</div>';
+  }).join('');
+}
+function selectCopyTour(slug) {
+  closeCopyTourModal();
+  window.location.href = 'operator-tour-create.html?copy=' + encodeURIComponent(slug);
+}
+
+// ── Custom confirm dialog ──
+var _confirmResolve = null;
+function showConfirm(opts) {
+  return new Promise(function(resolve) {
+    _confirmResolve = resolve;
+    var d = document.getElementById('confirmDialog');
+    document.getElementById('confirmDialogIcon').textContent  = opts.icon  || '⚠️';
+    document.getElementById('confirmDialogTitle').textContent = opts.title || 'Are you sure?';
+    document.getElementById('confirmDialogMsg').textContent   = opts.msg   || '';
+    var ok = document.getElementById('confirmDialogOk');
+    ok.textContent        = opts.ok    || 'Confirm';
+    ok.style.background   = opts.danger ? '#c0392b' : 'var(--ac)';
+    ok.style.color        = opts.danger ? '#fff'    : 'var(--ink)';
+    d.style.display = 'flex';
+  });
+}
+function confirmDialogResolve(val) {
+  document.getElementById('confirmDialog').style.display = 'none';
+  if (_confirmResolve) { _confirmResolve(val); _confirmResolve = null; }
+}
+
+var _bkPollTimer = null;
+function startBkPolling() {
+  stopBkPolling();
+  _bkPollTimer = setInterval(async function() {
+    var prev = _bookings.map(function(b){ return b.id + ':' + b.status; }).sort().join(',');
+    await loadBookings();
+    var next = _bookings.map(function(b){ return b.id + ':' + b.status; }).sort().join(',');
+    if (next !== prev) { renderOverview(); renderEarnings(); }
+  }, 15000);
+}
+function stopBkPolling() {
+  if (_bkPollTimer) { clearInterval(_bkPollTimer); _bkPollTimer = null; }
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.dash-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.dash-tab').forEach(function(t){ t.classList.remove('active'); });
+  var el = document.getElementById('panel-' + name);
+  if (el) el.classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.history.replaceState(null,'','#' + name);
+  try { localStorage.setItem('waybound_dash_tab', name); } catch(e) {}
+  if (name === 'messages') { stopBkPolling(); startOpMsgPolling(); }
+  else if (name === 'bookings') { stopOpMsgPolling(); loadBookings().then(function(){ renderOverview(); renderEarnings(); }); startBkPolling(); }
+  else { stopOpMsgPolling(); stopBkPolling(); }
+}
+
+async function loadAll() {
+  await Promise.all([loadTours(), loadBookings(), loadReviews(), loadEnquiries()]);
+  renderOverview();
+  renderEarnings();
+  checkVerificationBanner();
+}
+
+async function checkVerificationBanner() {
+  try {
+    var r = await fetchAuth(ACCT_API + '/auth/me/', { headers: ah() });
+    if (!r.ok) return;
+    var u = await r.json();
+    var banner  = document.getElementById('verifyBanner');
+    var title   = document.getElementById('verifyBannerTitle');
+    var sub     = document.getElementById('verifyBannerSub');
+    var btn     = document.getElementById('verifyBannerBtn');
+
+    // Update identity verification checklist item (3 states)
+    var idIco    = document.getElementById('checklistIdentityIco');
+    var idItem   = document.getElementById('checklistIdentityDone');
+    var idAction = document.getElementById('checklistIdentityAction');
+    var vSt = u.verification_status || null;
+    if (u.is_verified === true) {
+      if (idIco)    { idIco.className = 'checklist-ico done'; idIco.textContent = '\u2713'; }
+      if (idItem)   idItem.style.display = 'inline';
+      if (idAction) idAction.style.display = 'none';
+    } else if (vSt === 'pending') {
+      if (idIco)    { idIco.className = 'checklist-ico'; idIco.style.cssText = 'background:#fff8e1;color:#c08000;border-color:#f0c040;font-size:13px'; idIco.textContent = '\u23F3'; }
+      if (idItem)   { idItem.style.display = 'inline'; idItem.style.color = '#c08000'; idItem.innerHTML = '\u23F3 Pending'; }
+      if (idAction) idAction.style.display = 'none';
+    } else {
+      if (idIco)    { idIco.className = 'checklist-ico required'; idIco.textContent = '\u26A0'; }
+      if (idItem)   idItem.style.display = 'none';
+      if (idAction) idAction.style.display = 'inline-block';
+    }
+
+    if (!banner) return;
+    if (u.is_verified === true) {
+      // Admin approved — hide banner entirely
+      banner.style.display = 'none';
+      return;
+    }
+    var vStatus = u.verification_status || null;
+    if (vStatus === 'pending') {
+      // Already uploaded, waiting for review — show info message, no upload button
+      if (title) title.textContent = 'Verification under review';
+      if (sub)   sub.textContent   = 'Your ID document has been submitted. We\'ll notify you once reviewed.';
+      if (btn)   btn.style.display = 'none';
+      banner.style.display = 'flex';
+    } else if (vStatus !== 'approved') {
+      // Not uploaded yet (or rejected)
+      if (title) title.textContent = vStatus === 'rejected'
+        ? 'Verification rejected — please re-upload'
+        : 'Your account is not yet verified';
+      if (sub) sub.textContent = vStatus === 'rejected'
+        ? 'Your document was not accepted. Please upload a clearer photo of your passport or national ID.'
+        : 'Upload your ID to start listing tours and accepting bookings.';
+      if (btn) btn.style.display = '';
+      banner.style.display = 'flex';
+    }
+  } catch(e) {}
+}
+
+function openVerifyModal() {
+  var m = document.getElementById('verifyModal');
+  if (m) { m.style.display = 'flex'; }
+}
+function closeVerifyModal() {
+  var m = document.getElementById('verifyModal');
+  if (m) m.style.display = 'none';
+}
+async function submitVerifyDoc() {
+  var input = document.getElementById('verifyDocInput');
+  var msg   = document.getElementById('verifyMsg');
+  if (!input || !input.files[0]) { if(msg){msg.textContent='Please select a file.';msg.style.display='block';} return; }
+  var fd = new FormData();
+  fd.append('document', input.files[0]);
+  try {
+    var r = await fetchAuth(ACCT_API + '/auth/verify/', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('waybound_access') },
+      body: fd,
+    });
+    var data = await r.json().catch(()=>({}));
+    if (r.ok) {
+      closeVerifyModal();
+      showToast('Document submitted! We will review within 48 hours.', 'success');
+      checkVerificationBanner(); // update icon and banner state immediately
+    } else {
+      if(msg){msg.textContent=data.detail||'Upload failed. Please try again.';msg.style.display='block';}
+    }
+  } catch(e) {
+    if(msg){msg.textContent='Network error. Please try again.';msg.style.display='block';}
+  }
+}
+
+async function loadEnquiries() {
+  try {
+    var r = await fetchAuth(ACCT_API + '/bookings/enquiries/', { headers: ah() });
+    if (!r.ok) throw new Error(r.status);
+    var d = await r.json();
+    _enquiries = d.results || [];
+  } catch(e) { _enquiries = []; }
+  renderEnquiries();
+}
+
+function relTime(iso) {
+  var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 60)      return 'just now';
+  if (diff < 3600)    return Math.floor(diff/60) + 'min ago';
+  if (diff < 86400)   return Math.floor(diff/3600) + 'h ago';
+  if (diff < 172800)  return 'yesterday';
+  if (diff < 2592000) return Math.floor(diff/86400) + 'd ago';
+  return fmtD(iso.slice(0,10));
+}
+
+
+function renderMessages() {
+  var el   = document.getElementById('msgList');
+  var note = document.getElementById('msgNote');
+  if (!el) return;
+  var unreadCount = _enquiries.filter(function(e){ return !e.read_by_operator; }).length;
+  var total = _enquiries.length;
+  if (note) note.textContent = total + ' message' + (total!==1?'s':'') + (unreadCount ? ' · ' + unreadCount + ' unread' : '');
+
+  var badge = document.getElementById('msgBadge');
+  if (badge) { if (unreadCount) { badge.textContent = unreadCount; badge.style.display = 'inline-block'; } else { badge.style.display = 'none'; } }
+
+  if (typeof navUpdateMsgBadge === 'function') navUpdateMsgBadge(unreadCount);
+
+  if (!total) {
+    el.innerHTML = emptyState('&#x1F4AC;', 'No messages yet', 'Private tour requests and general enquiries from travellers will appear here.', '', '');
+    return;
+  }
+
+  el.innerHTML = _enquiries.map(function(enq) {
+    var isPriv    = !!(enq.preferred_from || enq.preferred_to);
+    var isUnread  = !enq.read_by_operator;
+    var hasReply  = !!(enq.operator_reply && enq.operator_reply.trim()) || (enq.replies && enq.replies.some(function(r){ return r.is_operator; }));
+    var tourTitle = enq.tour_title || (enq.tour && enq.tour.title) || 'Tour';
+    var senderName    = enq.name || 'Guest';
+    var senderInitial = senderName.trim()[0].toUpperCase();
+
+    var typeBadge = isPriv
+      ? '<span style="font-size:10px;font-weight:700;background:#fff3e0;color:#9a6000;border-radius:4px;padding:2px 7px;font-family:var(--bf)">&#x1F511; PRIVATE REQUEST</span>'
+      : '<span style="font-size:10px;font-weight:700;background:#e8f4ff;color:#1a60a0;border-radius:4px;padding:2px 7px;font-family:var(--bf)">&#x1F4AC; MESSAGE</span>';
+    var bkRefBadge = enq.booking_ref
+      ? '<span style="font-size:10px;font-weight:700;background:#eef5ec;color:#1a5030;border:1px solid #b0d0a8;border-radius:4px;padding:2px 7px;font-family:var(--bf)">&#x1F4CB; ' + enq.booking_ref + '</span>'
+      : '';
+
+    var dateRange = '';
+    if (isPriv && enq.preferred_from) {
+      dateRange = fmtD(enq.preferred_from);
+      if (enq.preferred_to && enq.preferred_to !== enq.preferred_from) dateRange += ' \u2192 ' + fmtD(enq.preferred_to);
+    }
+    var paxStr = '';
+    if (isPriv) {
+      paxStr = (enq.adults||1) + ' adult' + ((enq.adults||1)!==1?'s':'');
+      if (enq.children) paxStr += ', ' + enq.children + ' child' + (enq.children!==1?'ren':'');
+    }
+
+    // ── Last message preview ──────────────────────────────────────────────────
+    var allMsgs = enq.message ? [{ body: enq.message, isOp: false, time: enq.created_at }] : [];
+    var threadReplies = (enq.replies && enq.replies.length)
+      ? enq.replies
+      : (enq.operator_reply ? [{ body: enq.operator_reply, is_operator: true, created_at: enq.replied_at }] : []);
+    threadReplies.forEach(function(r) { allMsgs.push({ body: r.body, isOp: r.is_operator, time: r.created_at }); });
+    var lastMsg = allMsgs.length ? allMsgs[allMsgs.length - 1] : null;
+    var lastPreview = '';
+    var lastIsFromTourist = false;
+    if (lastMsg) {
+      lastIsFromTourist = !lastMsg.isOp;
+      var rawPrev = (lastMsg.isOp ? 'You: ' : senderName + ': ') + (lastMsg.body || '');
+      lastPreview = rawPrev.length > 68 ? rawPrev.slice(0, 68) + '\u2026' : rawPrev;
+    }
+
+    // NEW badge: show when unread. If last msg is from tourist, highlight preview too.
+    var newBadge = isUnread
+      ? '<span style="font-size:10px;font-weight:800;background:#e03030;color:#fff;border-radius:4px;padding:2px 8px;font-family:var(--bf);vertical-align:middle">NEW</span>'
+      : '';
+
+    return '<div class="msg-card" id="msg-card-' + enq.id + '" '
+      + 'style="border-left:3px solid ' + (isUnread ? '#e03030' : (hasReply ? '#2e9e5a' : 'var(--ln)')) + '" '
+      + 'onclick="toggleMsgCard(' + enq.id + ')">'
+      // Header
+      + '<div style="display:flex;align-items:center;gap:12px">'
+      + '<div style="width:40px;height:40px;border-radius:50%;background:var(--ac);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;font-family:var(--bf);flex-shrink:0">' + senderInitial + '</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:2px">'
+      + '<span style="font-size:14px;font-weight:' + (isUnread?'700':'600') + ';color:var(--ink);font-family:var(--bf)">' + senderName + '</span>'
+      + typeBadge
+      + bkRefBadge
+      + newBadge
+      + '</div>'
+      + '<div style="font-size:12px;color:var(--mu);font-family:var(--bf);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
+      + '<span style="color:var(--ink);opacity:.8">' + tourTitle + '</span>'
+      + (dateRange ? ' &nbsp;\u00b7&nbsp; &#x1F4C5; ' + dateRange : '')
+      + (paxStr    ? ' &nbsp;\u00b7&nbsp; &#x1F465; ' + paxStr    : '')
+      + '</div>'
+      + (lastPreview ? '<div style="font-size:11.5px;font-family:var(--bf);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;color:' + (lastIsFromTourist && isUnread ? 'var(--ink)' : 'var(--mu)') + ';font-weight:' + (lastIsFromTourist && isUnread ? '600' : '400') + '">' + lastPreview + '</div>' : '')
+      + '</div>'
+      + '<div style="text-align:right;flex-shrink:0">'
+      + '<div style="font-size:11px;color:var(--mu);font-family:var(--bf)">' + (enq.created_at ? relTime(enq.created_at) : '') + '</div>'
+      + (hasReply
+          ? '<div style="font-size:11px;color:' + (lastIsFromTourist && isUnread ? '#e03030' : '#1a7030') + ';font-weight:600;margin-top:2px">'
+            + (lastIsFromTourist && isUnread ? '&#x21A9; Reply needed' : '&#x2713; Replied')
+            + '</div>'
+          : '<div style="font-size:11px;color:#9a6030;font-weight:600;margin-top:2px">&#x23F3; New request</div>')
+      + '<div class="msg-card-chevron">&#x2304;</div>'
+      + '</div>'
+      + '</div>'
+      // ── Expandable body with thread + reply ──
+      + '<div class="msg-body" id="msg-body-' + enq.id + '" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--ln)">'
+      // Build thread
+      + (function() {
+          var t = '';
+          // Initial tourist message
+          if (enq.message) {
+            t += '<div style="margin-bottom:10px">'
+              + '<div style="font-size:11px;font-weight:600;color:var(--mu);font-family:var(--bf);margin-bottom:3px">' + senderName + ' &middot; ' + relTime(enq.created_at) + '</div>'
+              + '<div style="padding:10px 14px;background:var(--paper);border:1px solid var(--ln);border-radius:7px;font-size:13px;color:var(--ink);line-height:1.65;font-family:var(--bf)">' + (enq.message||'') + '</div>'
+              + '</div>';
+          }
+          // Replies
+          var replies = (enq.replies && enq.replies.length)
+            ? enq.replies
+            : (enq.operator_reply ? [{ body: enq.operator_reply, is_operator: true, sender_name: 'You', created_at: enq.replied_at }] : []);
+          replies.forEach(function(r) {
+            if (r.is_operator) {
+              t += '<div style="margin-bottom:10px">'
+                + '<div style="font-size:11px;font-weight:600;color:var(--mu);font-family:var(--bf);margin-bottom:3px;text-align:right">You &middot; ' + (r.created_at ? relTime(r.created_at) : '') + '</div>'
+                + '<div style="padding:10px 14px;background:var(--ha-bg);border-left:3px solid var(--ac);border-radius:0 8px 8px 0;font-size:13px;color:var(--ink);line-height:1.65;font-family:var(--bf)">' + (r.body||'') + '</div>'
+                + '</div>';
+            } else {
+              t += '<div style="margin-bottom:10px">'
+                + '<div style="font-size:11px;font-weight:600;color:var(--mu);font-family:var(--bf);margin-bottom:3px">' + (r.sender_name||senderName) + ' &middot; ' + (r.created_at ? relTime(r.created_at) : '') + '</div>'
+                + '<div style="padding:10px 14px;background:var(--paper);border:1px solid var(--ln);border-radius:7px;font-size:13px;color:var(--ink);line-height:1.65;font-family:var(--bf)">' + (r.body||'') + '</div>'
+                + '</div>';
+            }
+          });
+          // Reply input
+          t += '<div onclick="event.stopPropagation()" style="margin-top:10px">'
+            + '<textarea id="enq-rta-' + enq.id + '" style="width:100%;min-height:70px;padding:9px 12px;border:1.5px solid var(--ln);border-radius:7px;font-size:13px;font-family:var(--bf);resize:vertical;box-sizing:border-box;outline:none" placeholder="Write a reply\u2026"></textarea>'
+            + '<div style="margin-top:6px;text-align:right"><button class="btn-sm filled" onclick="event.stopPropagation();replyEnquiry(' + enq.id + ')">Send</button></div>'
+            + '</div>';
+          return t;
+        })()
+      + '</div>'
+      + '</div>';
+  }).join('');
+  // Re-open any cards that were open before re-render
+  Object.keys(_expandedCards).forEach(function(id) {
+    var b = document.getElementById('msg-body-' + id);
+    var c = document.getElementById('msg-card-' + id);
+    if (b) b.style.display = 'block';
+    if (c) {
+      c.classList.add('open');
+      var chev = c.querySelector('.msg-card-chevron');
+      if (chev) chev.textContent = '\u25b4';
+    }
+  });
+  // Auto-open card linked from email deep link (?open=<id>)
+  if (_autoOpenCard) {
+    var target = _autoOpenCard;
+    _autoOpenCard = 0;
+    var b = document.getElementById('msg-body-' + target);
+    if (b) {
+      b.style.display = 'block';
+      _expandedCards[target] = true;
+      setTimeout(function() {
+        var card = document.getElementById('msg-card-' + target);
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 80);
+    }
+  }
+}
+
+function toggleMsgCard(id) {
+  var body = document.getElementById('msg-body-' + id);
+  var card = document.getElementById('msg-card-' + id);
+  if (!body) return;
+  var opening = body.style.display === 'none';
+  body.style.display = opening ? 'block' : 'none';
+  if (card) {
+    card.classList.toggle('open', opening);
+    var chev = card.querySelector('.msg-card-chevron');
+    if (chev) chev.textContent = opening ? '\u25b4' : '\u2304';
+  }
+  if (opening) _expandedCards[id] = true; else delete _expandedCards[id];
+  if (opening) {
+    var enq = _enquiries.filter(function(e){ return e.id === id; })[0];
+    if (enq && !enq.read_by_operator) {
+      enq.read_by_operator = true;
+      var card = document.getElementById('msg-card-' + id);
+      if (card) card.style.borderLeft = '3px solid transparent';
+      renderMessages();
+      fetchAuth(ACCT_API + '/bookings/enquiries/' + id + '/read/', { method: 'PATCH', headers: ah() }).catch(function(){});
+    }
+  }
+}
+
+// alias — loadEnquiries still calls renderEnquiries
+function renderEnquiries() { renderMessages(); }
+
+function startOpMsgPolling() {
+  if (_opMsgPollTimer) return;
+  _opMsgPollTimer = setInterval(async function () {
+    var prevIds = _enquiries.map(function(e){return e.id;}).join(',');
+    var prevReplyCounts = {};
+    var prevUnreadSet = {};
+    _enquiries.forEach(function(e){
+      prevReplyCounts[e.id] = (e.replies||[]).length;
+      if (!e.read_by_operator) prevUnreadSet[e.id] = true;
+    });
+    try {
+      var r = await fetchAuth(ACCT_API + '/bookings/enquiries/', { headers: ah() });
+      if (!r.ok) return;
+      var d = await r.json();
+      var newList = d.results || [];
+      var newIds = newList.map(function(e){return e.id;}).join(',');
+      var hasNewReplies = newList.some(function(e){
+        return (e.replies||[]).length > (prevReplyCounts[e.id]||0);
+      });
+      // Also detect when tourist reply flips read_by_operator back to false
+      var hasNewUnread = newList.some(function(e){
+        return !e.read_by_operator && !prevUnreadSet[e.id];
+      });
+      if (newIds !== prevIds || hasNewReplies || hasNewUnread) {
+        _enquiries = newList;
+        renderMessages();
+      }
+    } catch(e) {}
+  }, 12000);
+}
+
+function stopOpMsgPolling() {
+  if (_opMsgPollTimer) { clearInterval(_opMsgPollTimer); _opMsgPollTimer = null; }
+}
+
+document.addEventListener('visibilitychange', function() {
+  var msgPanel = document.getElementById('panel-messages');
+  if (msgPanel && msgPanel.classList.contains('active')) {
+    if (document.hidden) stopOpMsgPolling(); else startOpMsgPolling();
+  }
+  var bkPanel = document.getElementById('panel-bookings');
+  if (bkPanel && bkPanel.classList.contains('active')) {
+    if (document.hidden) stopBkPolling(); else startBkPolling();
+  }
+});
+
+async function replyEnquiry(id) {
+  var ta = document.getElementById('enq-rta-' + id);
+  if (!ta || !ta.value.trim()) return;
+  var reply = ta.value.trim();
+  try {
+    var r = await fetchAuth(ACCT_API + '/bookings/enquiries/' + id + '/reply/', {
+      method: 'PATCH',
+      headers: ah(),
+      body: JSON.stringify({ reply: reply })
+    });
+    if (r.ok) {
+      _enquiries = _enquiries.map(function(e) {
+        if (e.id === id) {
+          var newR = { body: reply, is_operator: true, sender_name: 'You', created_at: new Date().toISOString() };
+          return Object.assign({}, e, {
+            operator_reply: reply, read_by_operator: true,
+            replies: (e.replies || []).concat([newR])
+          });
+        }
+        return e;
+      });
+      renderMessages();
+    } else {
+      showToast('Could not save reply. Try again.', 'error');
+    }
+  } catch(e) {
+    showToast('Could not reach server.', 'error');
+  }
+}
+
+async function loadTours() {
+  try {
+    var r = await fetchAuth(ACCT_API + '/tours/operator/', { headers: ah() });
+    if (!r.ok) throw new Error(r.status);
+    var d = await r.json();
+    _tours = d.results || [];
+  } catch(e) {
+    console.warn('Tours API error:', e);
+    _tours = [];
+  }
+  renderTours();
+}
+
+async function loadBookings() {
+  try {
+    var r = await fetchAuth(ACCT_API + '/bookings/operator/', { headers: ah() });
+    if (!r.ok) throw new Error(r.status);
+    var d = await r.json();
+    _bookings = d.results || [];
+  } catch(e) {
+    console.warn('Bookings API error:', e);
+    _bookings = [];
+  }
+  renderBookings();
+}
+
+async function loadReviews() {
+  try {
+    var r = await fetchAuth(ACCT_API + '/reviews/operator/', { headers: ah() });
+    if (!r.ok) throw new Error(r.status);
+    var d = await r.json();
+    _reviews = d.results || [];
+  } catch(e) { _reviews = []; }
+  renderReviews();
+}
+
+function renderOverview() {
+  var pub    = _tours.filter(function(t){ return t.status === 'live' || t.is_published; }).length;
+  var ratings = _tours.filter(function(t){ return t.rating > 0; }).map(function(t){ return parseFloat(t.rating); });
+  var avg    = ratings.length ? (ratings.reduce(function(a,b){ return a+b; },0)/ratings.length).toFixed(1) : '\u2014';
+  // Determine primary currency for overview total
+  var _ovCurCounts = {};
+  _bookings.forEach(function(b) { var c = b.currency || 'RUB'; _ovCurCounts[c] = (_ovCurCounts[c]||0) + 1; });
+  var _ovCur = 'RUB'; var _ovMax = 0;
+  for (var c in _ovCurCounts) { if (_ovCurCounts[c] > _ovMax) { _ovMax = _ovCurCounts[c]; _ovCur = c; } }
+  var earned = _bookings.filter(function(b){ return b.status==='completed' && (b.currency||'RUB')===_ovCur; })
+    .reduce(function(s,b){ return s+parseFloat(b.total_price||0); },0);
+  document.getElementById('sActiveTours').textContent = pub;
+  document.getElementById('sTotalBk').textContent     = _bookings.length;
+  document.getElementById('sAvgRating').textContent   = avg;
+  document.getElementById('sTotalEarned').textContent = fmtP(earned, _ovCur);
+
+  // Verification checklist
+  var u = null;
+  try { u = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch(e) {}
+  var checks = [
+    { label:'Profile photo & bio', sub:'Travellers trust guides they can see', done: !!(u && u.avatar), action:'settings.html' },
+    { label:'Identity verification', sub:'Upload passport or national ID', done: false, action:'settings.html#identity', id:'identity' },
+    { label:'Guide credentials', sub:'Previous tour proof, certificates', done: false, action:'settings.html#credentials' },
+    { label:'Payout method', sub:'Bank account or payment details', done: false, action:'settings.html#payout' },
+    { label:'WhatsApp / contact number', sub:'For direct traveller messaging', done: !!(u && u.phone), action:'settings.html' }
+  ];
+  var done = checks.filter(function(c){ return c.done; }).length;
+  var prog = document.getElementById('setupProgress');
+  if (prog) prog.textContent = done + ' / ' + checks.length + ' complete';
+  var cl = document.getElementById('checklistItems');
+  if (cl) {
+    cl.innerHTML = checks.map(function(c) {
+      var cls  = c.done ? 'done' : 'required';
+      var ico  = c.done ? '\u2713' : '\u26A0;';
+      var doneAttr   = c.id ? ' id="checklist' + c.id.charAt(0).toUpperCase() + c.id.slice(1) + 'Done"'   : '';
+      var actionAttr = c.id ? ' id="checklist' + c.id.charAt(0).toUpperCase() + c.id.slice(1) + 'Action"' : '';
+      var icoAttr    = c.id ? ' id="checklist' + c.id.charAt(0).toUpperCase() + c.id.slice(1) + 'Ico"'    : '';
+      return '<div class="checklist-item">'
+        + '<div' + icoAttr + ' class="checklist-ico ' + cls + '">' + ico + '</div>'
+        + '<div style="flex:1"><div class="checklist-label">' + c.label + '</div>'
+        + '<div class="checklist-sub">' + c.sub + '</div></div>'
+        + (c.done ? '<span' + doneAttr + ' style="font-size:12px;color:#2a8a40;font-family:var(--bf)">&#x2714; Done</span>'
+                  : '<span' + doneAttr + ' style="font-size:12px;color:#2a8a40;font-family:var(--bf);display:none">&#x2714; Done</span>'
+                    + '<a' + actionAttr + ' class="checklist-action" href="' + c.action + '">Set up</a>')
+        + '</div>';
+    }).join('');
+  }
+
+  // Upcoming departures (next 30 days)
+  var today = new Date(); today.setHours(0,0,0,0);
+  var in30  = new Date(today); in30.setDate(today.getDate() + 30);
+  var upcoming = _bookings.filter(function(b) {
+    if (!b.departure_date || b.status === 'cancelled') return false;
+    var d = new Date(b.departure_date);
+    return d >= today && d <= in30;
+  }).sort(function(a,b){ return new Date(a.departure_date) - new Date(b.departure_date); });
+  var upEl   = document.getElementById('upcomingList');
+  var upNote = document.getElementById('upcomingNote');
+  if (upNote) upNote.textContent = upcoming.length ? upcoming.length + ' departure' + (upcoming.length!==1?'s':'') + ' in the next 30 days' : '';
+  if (upEl) {
+    if (!upcoming.length) {
+      upEl.innerHTML = '<div style="font-size:13px;color:var(--mu);font-family:var(--bf);padding:8px 0">No departures in the next 30 days.</div>';
+    } else {
+      upEl.innerHTML = upcoming.map(function(b) {
+        var t = b.tour_detail || {};
+        return '<div class="upcoming-item">'
+          + '<div><div class="upcoming-tour">' + (t.title||'Tour') + '</div>'
+          + '<div class="upcoming-meta">&#x1F465; ' + ((b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0))) + ' guest' + (((b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0)))!==1?'s':'') + ' &nbsp;&middot;&nbsp; Ref: ' + (b.reference||('#'+b.id)) + '</div></div>'
+          + '<div class="upcoming-date">&#x1F4C5; ' + fmtD(b.departure_date) + '</div>'
+          + '</div>';
+      }).join('');
+    }
+  }
+
+  // Recent bookings (last 5)
+  var obl = document.getElementById('ovBkList');
+  if (obl) obl.innerHTML = _bookings.length ? _bookings.slice(0,5).map(function(b){ return bkCard(b, true); }).join('') : '<div style="font-size:13px;color:var(--mu);font-family:var(--bf);padding:10px 0">No bookings yet.</div>';
+}
+function renderTours() { filterTours(); }
+function filterTours() {
+  var f = document.getElementById('tourFilter').value;
+  var list;
+  if (f === '') {
+    list = _tours.filter(function(t) { return t.status !== 'archived'; });
+  } else if (f === 'archived') {
+    list = _tours.filter(function(t) { return t.status === 'archived'; });
+  } else {
+    list = _tours.filter(function(t) {
+      if (f === 'live')   return t.status === 'live';
+      if (f === 'draft')  return t.status === 'draft';
+      if (f === 'review') return t.status === 'review';
+      if (f === 'paused') return t.status === 'paused';
+      return true;
+    });
+  }
+  var emptyEl = document.getElementById('emptyToursState');
+  if (_tours.length === 0) {
+    document.getElementById('tourList').innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+  } else {
+    if (emptyEl) emptyEl.style.display = 'none';
+    document.getElementById('tourList').innerHTML = list.length ? list.map(tourCard).join('') : emptyState('&#x1F9ED;','No tours','No tours with this status.','+ New tour','operator-tour-create.html');
+  }
+}
+
+function tourCard(t) {
+  var isLive = t.status === 'live' || t.is_published === true;
+  var st  = { live:'published', draft:'draft', review:'review',
+              paused:'paused', archived:'archived' }[t.status] || (isLive ? 'published' : 'draft');
+  var stl = { published:'Live', draft:'Draft', review:'In review',
+              paused:'Paused', archived:'Archived' }[st] || st;
+  var slug = t.slug || '';
+  // Thumbnail: fixed square crop — no stretching
+  var heroHtml = '<div class="tc-thumb">'
+    + (t.hero_photo_url
+      ? '<img src="' + t.hero_photo_url + '" alt="' + t.title + '">'
+      : '<div class="tc-thumb-empty">' + (t.title||'').split(' ').slice(0,2).join(' ') + '</div>')
+    + '</div>';
+  // Private tour lock badge and copy-link button
+  var lockBadge  = t.is_private ? ' <span style="font-size:13px" title="Private tour">&#x1F512;</span>' : '';
+  var copyLinkBtn = t.is_private
+    ? '<button class="btn-sm" id="copy-link-' + slug + '" onclick="copyTourLink(\'' + slug + '\')" style="border-color:var(--ac);color:var(--ac)">&#x1F517; Copy link</button>'
+    : '';
+  // 8.2 — dynamic subtitle parts
+  var subParts = [];
+  subParts.push(t.destination ? t.destination : '<span style="color:var(--mu)">Destination not set</span>');
+  var price = parseFloat(t.price_adult || t.price || 0);
+  var priceStr = price > 0 ? fmtP(price) + '/person' : '<span style="color:var(--mu)">Price not set</span>';
+  if (price > 0 && t.price_child) {
+    var childP = parseInt(parseFloat(t.price_child));
+    priceStr += ' &middot; Child ' + fmtP(childP);
+  }
+  subParts.push(priceStr);
+  if (t.days && parseInt(t.days) > 0) subParts.push(parseInt(t.days) + ' day' + (parseInt(t.days)!==1?'s':''));
+  var subtitle = subParts.join(' &middot; ');
+  // Last edited relative time
+  var lastEdited = '';
+  if (t.updated_at) {
+    var diff = Math.floor((Date.now() - new Date(t.updated_at).getTime()) / 1000);
+    if (diff < 60) lastEdited = 'just now';
+    else if (diff < 3600) lastEdited = Math.floor(diff/60) + ' minute' + (Math.floor(diff/60)!==1?'s':'') + ' ago';
+    else if (diff < 86400) lastEdited = Math.floor(diff/3600) + ' hour' + (Math.floor(diff/3600)!==1?'s':'') + ' ago';
+    else if (diff < 86400*2) lastEdited = 'yesterday';
+    else if (diff < 86400*30) lastEdited = Math.floor(diff/86400) + ' days ago';
+    else lastEdited = new Date(t.updated_at).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+    lastEdited = 'Last edited ' + lastEdited;
+  }
+  // Next departure chip
+  var nextDep = '';
+  if (t.next_departure && t.next_departure.start) {
+    var nd = new Date(t.next_departure.start + 'T00:00:00');
+    var mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    nextDep = '&#128197; ' + nd.getDate() + ' ' + mos[nd.getMonth()];
+    if (t.next_departure.spots_left != null) nextDep += ' &middot; ' + t.next_departure.spots_left + ' spots';
+  }
+  var bookingCount = t.booking_count != null ? '&#128467; ' + t.booking_count + ' booking' + (t.booking_count !== 1 ? 's' : '') : '';
+
+  return '<div class="tour-card">'
+    + heroHtml
+    + '<div class="tour-card-inner">'
+    + '<div class="tour-card-body">'
+    // row 1: title + status badge
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">'
+    + '<div class="tour-card-title" style="margin-bottom:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + t.title + lockBadge + '</div>'
+    + '<span class="tour-status ' + st + '" style="flex-shrink:0">' + stl + '</span>'
+    + '</div>'
+    // row 2: destination · price · days
+    + '<div class="tour-card-meta" style="margin-bottom:4px">' + subtitle + '</div>'
+    // row 3: next departure + bookings + last edited
+    + '<div class="tour-card-meta" style="opacity:.8">'
+    + (nextDep ? '<span>' + nextDep + '</span>' : '')
+    + (nextDep && bookingCount ? '<span style="color:var(--ln)">·</span>' : '')
+    + (bookingCount ? '<span>' + bookingCount + '</span>' : '')
+    + (lastEdited ? ((nextDep || bookingCount) ? '<span style="color:var(--ln)">·</span>' : '') + '<span>' + lastEdited + '</span>' : '')
+    + '</div>'
+    + '</div>'
+    // actions column: Edit+Preview grouped, then status actions
+    + '<div class="tour-card-actions" style="flex-direction:column;align-items:flex-end;gap:4px;border-left:1px solid var(--ln);padding-left:16px;margin-left:4px">'
+    + '<div style="display:flex;gap:6px">'
+    + '<a class="btn-sm filled" href="operator-tour-create.html?slug=' + slug + '">Edit</a>'
+    + '<a class="btn-sm" href="tour_detail_page.html?slug=' + slug + '&from=operator">Preview</a>'
+    + copyLinkBtn
+    + '</div>'
+    + '<div style="border-top:1px solid var(--ln);margin:4px 0;width:100%"></div>'
+    + '<div style="display:flex;gap:6px">'
+    + (t.status === 'draft' ? '<button class="btn-sm" style="border-color:var(--ac);color:var(--ac)" onclick="publishTour(\'' + slug + '\')">Submit for review</button>' : '')
+    + (t.status === 'review' ? '<button class="btn-sm" style="border-color:#9a9a9a;color:#9a9a9a;cursor:default;opacity:.6" disabled title="Already submitted — under admin review">In review…</button>' : '')
+    + (t.status === 'live' ? '<button class="btn-sm" style="border-color:#9a6000;color:#9a6000" onclick="pauseTour(\'' + slug + '\')">Pause</button>' : '')
+    + (t.status === 'paused' ? '<button class="btn-sm" style="border-color:var(--ac);color:var(--ac)" onclick="unpauseTour(\'' + slug + '\')">Unpause</button>' : '')
+    + (t.status === 'draft' || t.status === 'review' ? '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="deleteDraftTour(\'' + slug + '\')">Delete</button>' : '')
+    + (t.status === 'live' || t.status === 'paused' ? '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="deleteTour(\'' + slug + '\')">Archive</button>' : '')
+    + '</div>'
+    + '</div>'
+    + '</div></div>';
+}
+
+function copyTourLink(slug) {
+  var link = window.location.origin + '/tour_detail_page.html?slug=' + slug;
+  var btn  = document.getElementById('copy-link-' + slug);
+  navigator.clipboard.writeText(link).then(function() {
+    if (btn) { btn.textContent = 'Copied!'; setTimeout(function(){ btn.innerHTML = '&#x1F517; Copy link'; }, 2000); }
+  }).catch(function() {
+    // Fallback for older browsers
+    var ta = document.createElement('textarea');
+    ta.value = link; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (btn) { btn.textContent = 'Copied!'; setTimeout(function(){ btn.innerHTML = '&#x1F517; Copy link'; }, 2000); }
+  });
+}
+
+async function publishTour(slug) {
+  // 6a: Fetch tour data and validate mandatory fields first
+  try {
+    var tr = await fetchAuth(ACCT_API + '/tours/' + slug + '/', { headers: ah() });
+    if (!tr.ok) throw new Error('fetch');
+    var t = await tr.json();
+    var missing = [];
+    if (!t.title || t.title.startsWith('Untitled tour')) missing.push('Tour name');
+    if (!t.categories || !t.categories.length) missing.push('Category (select at least one)');
+    if (!t.difficulty) missing.push('Difficulty');
+    if (!t.country) missing.push('Country');
+    if (!t.destination) missing.push('Destination / city');
+    if (!((t.price_adult || t.price) > 0)) missing.push('Price per person (must be > 0)');
+    if (!(t.max_group > 0)) missing.push('Max group size');
+    if (!(t.description || '').replace(/<[^>]*>/g, '').trim()) missing.push('Full tour description');
+    if (!t.departures || !t.departures.length) missing.push('At least 1 departure date');
+    if (!t.itinerary || !t.itinerary.some(function(d){ return d.title; })) missing.push('At least 1 itinerary day with a title');
+    if (!t.photos || t.photos.length < 3) missing.push('At least 3 photos (currently: ' + (t.photos ? t.photos.length : 0) + ')');
+    if (missing.length) {
+      // Show blocking modal with missing fields list
+      var d = document.getElementById('confirmDialog');
+      document.getElementById('confirmDialogIcon').textContent = '⚠️';
+      document.getElementById('confirmDialogTitle').textContent = 'This tour cannot be submitted yet';
+      document.getElementById('confirmDialogMsg').innerHTML =
+        'Please fill in the following before submitting:<br><br>'
+        + missing.map(function(m){ return '• ' + m; }).join('<br>');
+      var okBtn = document.getElementById('confirmDialogOk');
+      okBtn.textContent = 'Edit tour →';
+      okBtn.style.background = 'var(--ac)';
+      okBtn.style.color = 'var(--ink)';
+      d.style.display = 'flex';
+      // Override resolver to navigate to edit
+      _confirmResolve = function(val) {
+        d.style.display = 'none';
+        _confirmResolve = null;
+        if (val) window.location.href = 'operator-tour-create.html?slug=' + encodeURIComponent(slug);
+      };
+      return;
+    }
+  } catch(e) {
+    console.warn('publishTour validation fetch failed:', e);
+    showToast('Could not load tour data for validation. Please try again.', 'error');
+    return;
+  }
+
+  var ok = await showConfirm({ icon:'📋', title:'Submit for review?', msg:'Your tour will be sent to admin for review. It will go live once approved.', ok:'Submit' });
+  if (!ok) return;
+  try {
+    var r = await fetchAuth(ACCT_API + '/tours/' + slug + '/publish/', { method:'PATCH', headers:ah() });
+    var d = await r.json();
+    if (!r.ok) { showToast('Error: ' + (d.detail || r.status), 'error'); return; }
+    showToast('Tour submitted for review!', 'success');
+    loadTours();
+  } catch(e) { showToast('Could not reach server.', 'error'); }
+}
+
+async function deleteTour(slug) {
+  var t = _tours.find(function(x){ return x.slug === slug; });
+  var name = t ? (t.title || 'this tour') : 'this tour';
+  // Block if future confirmed bookings exist
+  var futureBks = _bookings.filter(function(b){
+    return (b.tour_slug === slug || (b.tour_detail && b.tour_detail.slug === slug))
+      && b.status === 'confirmed' && b.departure_date && new Date(b.departure_date) >= new Date();
+  });
+  if (futureBks.length) {
+    await showConfirm({
+      icon:'⚠️', title:'Cannot archive yet',
+      msg:'You have ' + futureBks.length + ' confirmed booking' + (futureBks.length!==1?'s':'') + ' with future departure dates. Please cancel those bookings first before archiving this tour.',
+      ok:'OK', danger:false
+    });
+    return;
+  }
+  var ok = await showConfirm({
+    icon:'📦', title:'Archive "' + name + '"?',
+    msg:'This tour will be hidden from travellers and no new bookings will be accepted. Existing confirmed bookings remain valid. You can view archived tours by selecting \'Archived\' in the filter. This action can be reversed by contacting support.',
+    ok:'Archive tour', danger:true
+  });
+  if (!ok) return;
+  const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', { method:'DELETE', headers:ah() });
+  if (r.status === 204) { showToast('Tour archived.', 'success'); loadTours(); }
+  else if (r.status === 409) { const d = await r.json().catch(()=>({})); showToast(d.detail || 'Active bookings exist — cancel them first.', 'error'); }
+  else { showToast('Could not archive tour.', 'error'); }
+}
+async function deleteDraftTour(slug) {
+  var t = _tours.find(function(x){ return x.slug === slug; });
+  var name = t ? (t.title || 'this draft') : 'this draft';
+  var ok = await showConfirm({
+    icon:'🗑️', title:'Delete "' + name + '"?',
+    msg:'This will permanently remove this tour. This cannot be undone.',
+    ok:'Delete permanently', danger:true
+  });
+  if (!ok) return;
+  const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', { method:'DELETE', headers:ah() });
+  if (r.ok || r.status === 204) { showToast('Draft deleted.','success'); loadTours(); }
+  else showToast('Could not delete draft.','error');
+}
+async function pauseTour(slug) {
+  var t = _tours.find(function(x){ return x.slug === slug; });
+  var name = t ? (t.title || 'this tour') : 'this tour';
+  var ok = await showConfirm({ icon:'⏸️', title:'Pause "' + name + '"?', msg:'It will be hidden from public listings. Existing bookings remain valid.', ok:'Pause tour' });
+  if (!ok) return;
+  const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', {
+    method:'PATCH', headers:ah(), body:JSON.stringify({status:'paused'})
+  });
+  if (r.ok) { showToast('Tour paused.','success'); loadTours(); }
+  else showToast('Could not pause tour.','error');
+}
+async function unpauseTour(slug) {
+  var t = _tours.find(function(x){ return x.slug === slug; });
+  var name = t ? (t.title || 'this tour') : 'this tour';
+  var ok = await showConfirm({ icon:'▶️', title:'Unpause "' + name + '"?', msg:'The tour will go back to Live and be visible to travellers.', ok:'Unpause' });
+  if (!ok) return;
+  const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', {
+    method:'PATCH', headers:ah(), body:JSON.stringify({status:'live'})
+  });
+  if (r.ok) { showToast('Tour is now live.','success'); loadTours(); }
+  else showToast('Could not unpause.','error');
+}
+
+function renderBookings() { filterBookings(); }
+function filterBookings() {
+  var f = document.getElementById('bkFilter').value;
+  var list = f === 'all' ? _bookings : _bookings.filter(function(b){ return b.status===f; });
+  document.getElementById('bkList').innerHTML = list.length ? list.map(function(b){ return bkCard(b, false); }).join('') : emptyState('&#x1F4CB;','No bookings','Bookings from travellers will appear here.','','');
+  // Restore previously open cards after re-render
+  Object.keys(_bkExpanded).forEach(function(id) {
+    if (_bkExpanded[id]) {
+      var el   = document.getElementById('bkd-' + id);
+      var btn  = document.getElementById('bkb-' + id);
+      var card = document.getElementById('bk-' + id);
+      if (el)   el.classList.add('open');
+      if (btn)  btn.textContent = 'Hide details \u25B4';
+      if (card) card.classList.add('expanded');
+    }
+  });
+}
+
+var _bkExpanded = {};
+function toggleBkDetail(id) {
+  var el = document.getElementById('bkd-' + id);
+  var btn = document.getElementById('bkb-' + id);
+  var card = document.getElementById('bk-' + id);
+  if (!el) return;
+  var open = el.classList.toggle('open');
+  _bkExpanded[id] = open;
+  if (btn) btn.textContent = open ? 'Hide details \u25B4' : 'Details \u25BE';
+  if (card) card.classList.toggle('expanded', open);
+}
+
+function bkCard(b, compact) {
+  var t  = b.tour_detail || {};
+  var tourTitle = b.tour_title || t.title || 'Unknown tour';
+  var _opSymMap = { RUB:'₽', USD:'$', EUR:'€', GBP:'£', CNY:'¥', TRY:'₺', KZT:'₸' };
+  var _curSym = _opSymMap[b.currency || 'RUB'] || (b.currency + ' ');
+  var _fmtA = function(n) { return _curSym + parseFloat(n||0).toLocaleString('ru-RU',{minimumFractionDigits:0,maximumFractionDigits:0}); };
+  var _depAmt   = parseFloat(b.deposit_paid  || 0);
+  var _balDue   = parseFloat(b.balance_due   || 0);
+
+  var statusLbl, statusCls;
+  if (b.status === 'pending' && b.deposit_status !== 'paid') {
+    statusLbl = 'Awaiting deposit'; statusCls = 'pending';
+  } else if (b.status === 'pending' && b.deposit_status === 'paid') {
+    statusLbl = 'Deposit paid · ' + _fmtA(_depAmt); statusCls = 'pending deposit-paid';
+  } else if (b.status === 'confirmed' && b.balance_status === 'paid') {
+    statusLbl = 'Confirmed · Fully paid'; statusCls = 'confirmed';
+  } else if (b.status === 'confirmed' && _balDue > 0) {
+    statusLbl = 'Confirmed · Balance due: ' + _fmtA(_balDue); statusCls = 'confirmed balance-due';
+  } else if (b.status === 'cancelled') {
+    var _rfAmt  = parseFloat(b.refund_amount || 0);
+    var _rfPaid = parseFloat(b.deposit_paid || 0) + parseFloat(b.balance_paid || 0);
+    var _kept   = Math.max(0, _rfPaid - _rfAmt);
+    if (_rfPaid <= 0) {
+      statusLbl = 'Cancelled'; statusCls = 'cancelled';
+    } else if (_rfAmt <= 0) {
+      statusLbl = 'Cancelled \u00B7 No refund \u00B7 Kept: ' + _fmtA(_kept); statusCls = 'cancelled';
+    } else if (_kept > 0) {
+      statusLbl = 'Cancelled \u00B7 Refunded: ' + _fmtA(_rfAmt) + ' \u00B7 Kept: ' + _fmtA(_kept); statusCls = 'cancelled';
+    } else {
+      statusLbl = 'Cancelled \u00B7 Full refund: ' + _fmtA(_rfAmt); statusCls = 'cancelled';
+    }
+  } else {
+    statusLbl = { confirmed:'Confirmed', completed:'Completed' }[b.status] || b.status;
+    statusCls = b.status;
+  }
+  var travName  = (b.first_name && b.last_name) ? b.first_name + ' ' + b.last_name
+                 : b.traveller_name || b.email || 'Traveller';
+  var travEmail = b.email || b.traveller_email || '';
+  var travPhone = b.phone || b.traveller_phone || '';
+  var requests  = b.notes || b.special_requests || '';
+  var isPrivate  = b.is_private || false;
+  var bookingRef = b.reference || ('#' + b.id);
+  var yooId      = b.yookassa_payment_id || '';
+  var depositPaid = b.deposit_status === 'paid';
+  var balancePaid = b.balance_status === 'paid';
+  var payStatus;
+  if (balancePaid) {
+    payStatus = '\u2713 Fully paid';
+  } else if (depositPaid && b.payment_method === 'bank') {
+    payStatus = 'Deposit paid \u2014 bank transfer';
+  } else if (depositPaid) {
+    payStatus = 'Deposit paid' + (yooId ? ' (YooKassa)' : '');
+  } else if (b.payment_method === 'bank') {
+    payStatus = 'Awaiting bank transfer';
+  } else if (b.status === 'cancelled') {
+    payStatus = 'Cancelled';
+  } else if (b.status === 'completed') {
+    payStatus = 'Completed';
+  } else {
+    payStatus = 'Awaiting deposit';
+  }
+  // Contact details hidden until booking is confirmed (prevents off-platform contact)
+  var contactRevealed = (b.status === 'confirmed' || b.status === 'completed');
+  var hidden = '<span style="color:var(--mu);font-style:italic;font-size:12px">Hidden until booking confirmed</span>';
+
+  var mainRow = '<div class="bk-card" id="bk-' + b.id + '">'
+    + '<div class="bk-card-left">'
+    + '<div class="bk-card-tour">' + tourTitle
+    + (isPrivate ? ' <span style="font-size:10px;background:#fff4e0;color:#9a6000;padding:2px 8px;border-radius:10px;font-family:var(--bf);font-weight:700">Private</span>' : '')
+    + '</div>'
+    + '<div class="bk-card-meta">'
+    + '<span>&#x1F464; ' + travName + '</span>'
+    + '<span>&#x1F465; ' + ((b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0))) + ' guest' + (((b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0)))!==1?'s':'') + '</span>'
+    + '<span>&#x1F4C5; ' + fmtD(b.departure_date) + '</span>'
+    + '</div></div>'
+    + '<div class="bk-card-right">'
+    + '<span class="bk-status ' + statusCls + '">' + statusLbl + '</span>'
+    + '<span class="bk-price">' + fmtP(b.total_price||0, b.currency) + '</span>'
+    + (!compact ? '<button class="bk-expand-btn" id="bkb-' + b.id + '" onclick="toggleBkDetail(' + b.id + ')">Details &#x25BE;</button>' : '')
+    + '</div></div>';
+
+  if (compact) return mainRow;
+
+  // Action buttons — operator-specific
+  var actions = '';
+  if (b.status === 'pending') {
+    actions += '<button class="btn-sm filled" onclick="confirmBooking(' + b.id + ')">Confirm booking</button>';
+  }
+  if ((b.status === 'confirmed' || b.status === 'pending') && contactRevealed) {
+    var _tn = travName.replace(/'/g, "\\'");
+    var _br = bookingRef.replace(/'/g, "\\'");
+    actions += '<button class="btn-sm" onclick="openMsgTraveller(' + b.id + ',\'' + _tn + '\',\'' + _br + '\')">&#x1F4AC; Message traveller</button>';
+  }
+  if (b.status === 'confirmed' || b.status === 'pending') {
+    actions += '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="cancelBooking(' + b.id + ')">Cancel booking</button>';
+  }
+
+  var paxParts = [(b.adults||1) + ' adult' + ((b.adults||1)!==1?'s':'')];
+  if (b.children) paxParts.push(b.children + ' child' + (b.children!==1?'ren':''));
+  if (b.infants)  paxParts.push(b.infants  + ' infant' + (b.infants !==1?'s':''));
+
+  var detailRows = [
+    { l:'Traveller',        v: travName },
+    { l:'Email',            v: contactRevealed ? (travEmail ? '<a href="mailto:' + travEmail + '" style="color:var(--ac)">' + travEmail + '</a>' : '\u2014') : hidden },
+    { l:'Phone',            v: contactRevealed ? (travPhone ? '<a href="tel:' + travPhone + '" style="color:var(--ac)">' + travPhone + '</a>' : '\u2014') : hidden },
+    { l:'Country',          v: b.country || '\u2014' },
+    { l:'Travellers',       v: paxParts.join(', ') },
+    { l:'Departure',        v: fmtD(b.departure_date) },
+    { l:'Room type',        v: b.room_preference || '\u2014' },
+    { l:'Add-ons',          v: b.selected_extras  || '\u2014' },
+    { l:'Special requests', v: requests || 'None' },
+    { l:'Emergency contact',v: contactRevealed ? (b.emergency_name ? b.emergency_name + (b.emergency_phone ? ' \u00b7 ' + b.emergency_phone : '') : '\u2014') : hidden },
+    { l:'Price per person', v: fmtP(b.price_per_person||0, b.currency) },
+    { l:'Total',            v: fmtP(b.total_price||0, b.currency) },
+    { l:'Payment status',   v: payStatus },
+    { l:'Booking ref',      v: bookingRef },
+  ];
+  // Refund info for cancelled bookings
+  if (b.status === 'cancelled') {
+    var _rfSym  = (b.payment_method === 'yookassa' || b.payment_method === 'sbp') ? '₽' : _curSym;
+    var _rfFmt  = function(n) { return _rfSym + parseFloat(n||0).toLocaleString('ru-RU',{minimumFractionDigits:0,maximumFractionDigits:0}); };
+    var _paidTotal = parseFloat(b.deposit_paid||0) + parseFloat(b.balance_paid||0);
+    var _refunded  = parseFloat(b.refund_amount||0);
+    var _kept      = Math.max(0, _paidTotal - _refunded);
+    var rfStatusLbl = b.refund_status === 'issued' ? 'Issued'
+                    : b.refund_status === 'manual' ? 'Pending manual transfer'
+                    : b.refund_status === 'pending'? 'Processing'
+                    : 'None';
+    if (_paidTotal > 0) {
+      detailRows.push({ l:'Refund to traveller', v: _refunded > 0 ? _rfFmt(_refunded) + ' (' + rfStatusLbl + ')' : 'No refund' });
+      if (_kept > 0) {
+        detailRows.push({ l:'Penalty kept', v: '<strong style="color:#1a7a40">' + _rfFmt(_kept) + '</strong>' });
+      }
+    }
+  }
+  var detailHtml = detailRows.map(function(r) {
+    return '<div class="bk-dl"><div class="bk-dt">' + r.l + '</div><div class="bk-dd">' + r.v + '</div></div>';
+  }).join('');
+
+  // Message thread indicator
+  var msgBar = '';
+  if (b.enquiry_id) {
+    if (b.msg_unread) {
+      msgBar = '<div style="display:flex;align-items:center;gap:8px;padding:8px 18px;'
+        + 'background:#fff3f0;border-top:1px solid #f0d0c8;font-family:var(--bf);font-size:12.5px">'
+        + '<span style="color:#c03020;font-weight:700">&#x1F4AC; Unread message from traveller</span>'
+        + '<button onclick="viewBookingThread(' + b.enquiry_id + ')" style="margin-left:auto;background:none;border:1.5px solid #c03020;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;color:#c03020;cursor:pointer;font-family:var(--bf)">View conversation &#x2192;</button>'
+        + '</div>';
+    } else {
+      msgBar = '<div style="display:flex;align-items:center;gap:8px;padding:8px 18px;'
+        + 'background:var(--tr-bg);border-top:1px solid var(--ln);font-family:var(--bf);font-size:12.5px">'
+        + '<span style="color:var(--mu)">&#x1F4AC; Active conversation with traveller</span>'
+        + '<button onclick="viewBookingThread(' + b.enquiry_id + ')" style="margin-left:auto;background:none;border:1.5px solid var(--ln);border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--mu);cursor:pointer;font-family:var(--bf)">View conversation &#x2192;</button>'
+        + '</div>';
+    }
+  }
+
+  return '<div class="bk-wrap">'
+    + mainRow
+    + '<div class="bk-detail" id="bkd-' + b.id + '">'
+    + '<div class="bk-detail-inner">' + detailHtml + '</div>'
+    + msgBar
+    + (actions ? '<div style="padding:10px 18px 14px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-wrap:wrap">' + actions + '</div>' : '')
+    + '</div>'
+    + '</div>';
+}
+
+function viewBookingThread(enquiryId) {
+  // Switch to Messages tab and auto-open the relevant thread
+  _autoOpenCard = enquiryId;
+  showTab('messages', document.getElementById('tab-messages'));
+}
+
+// ── Cancel booking modal ──
+var _cancelBkResolve = null;
+function showCancelBkModal(meta) {
+  return new Promise(function(resolve) {
+    _cancelBkResolve = resolve;
+    document.getElementById('cancelBkMeta').innerHTML = meta || '';
+    document.getElementById('cancelBkReason').value = '';
+    document.getElementById('cancelBkModal').style.display = 'flex';
+  });
+}
+function cancelBkModalResolve(val) {
+  var reason = val ? document.getElementById('cancelBkReason').value.trim() : null;
+  document.getElementById('cancelBkModal').style.display = 'none';
+  if (_cancelBkResolve) {
+    _cancelBkResolve(val ? { confirmed: true, reason: reason || '' } : false);
+    _cancelBkResolve = null;
+  }
+}
+
+// ── Message traveller modal ──
+var _msgTravBookingId = null;
+function openMsgTraveller(bookingId, travName, bookingRef) {
+  _msgTravBookingId = bookingId;
+  document.getElementById('msgTravSub').textContent = 'To: ' + travName + ' \u00b7 Booking ' + bookingRef;
+  document.getElementById('msgTravBody').value = '';
+  document.getElementById('msgTravModal').style.display = 'flex';
+  setTimeout(function(){ document.getElementById('msgTravBody').focus(); }, 50);
+}
+function closeMsgTravModal() {
+  document.getElementById('msgTravModal').style.display = 'none';
+  _msgTravBookingId = null;
+}
+async function sendMsgTraveller() {
+  var body = document.getElementById('msgTravBody').value.trim();
+  var btn  = document.getElementById('msgTravSendBtn');
+  if (!body || !_msgTravBookingId) return;
+  btn.disabled = true; btn.textContent = 'Sending\u2026';
+  try {
+    var r = await fetchAuth(ACCT_API + '/bookings/' + _msgTravBookingId + '/message/', {
+      method: 'POST',
+      headers: ah(),
+      body: JSON.stringify({ message: body })
+    });
+    if (r.ok) {
+      closeMsgTravModal();
+      showToast('Message sent to traveller.', 'ok');
+    } else {
+      var d = await r.json().catch(function(){ return {}; });
+      showToast('Error: ' + (d.detail || 'Could not send.'), 'error');
+    }
+  } catch(e) {
+    showToast('Network error. Please try again.', 'error');
+  }
+  btn.disabled = false; btn.textContent = 'Send message';
+}
+
+async function cancelBooking(id) {
+  var b = _bookings.find(function(x){ return x.id === id; });
+  var tourName  = b ? esc(b.tour_title || 'Tour') : 'Tour';
+  var travName  = b ? esc(((b.first_name||'') + ' ' + (b.last_name||'')).trim() || 'Traveller') : 'Traveller';
+  var depStr    = b && b.departure_date ? ' &nbsp;&middot;&nbsp; Dep: ' + fmtD(b.departure_date) : '';
+
+  // Fetch refund preview (operator cancel = always full refund)
+  var refundHtml = '';
+  try {
+    var pr = await fetchAuth(ACCT_API + '/bookings/' + id + '/cancel-preview/', { headers: ah() });
+    if (pr.ok) {
+      var pd = await pr.json();
+      var useRub = (pd.payment_method === 'yookassa' || pd.payment_method === 'sbp') && pd.refund_rub !== undefined;
+      var sym = useRub ? '₽' : (_symMap[pd.currency || 'RUB'] || (pd.currency + ' '));
+      var fN  = function(n) { return sym + parseFloat(n||0).toLocaleString('ru-RU', {minimumFractionDigits:0, maximumFractionDigits:0}); };
+      var refundShow = useRub ? pd.refund_rub : pd.refund_amount;
+      if (parseFloat(pd.refund_amount || 0) > 0) {
+        refundHtml = '<div style="background:#e8f5e9;border-radius:7px;padding:10px 13px;font-size:12px;font-family:var(--bf);margin-top:8px;margin-bottom:0;color:#1a7a40">'
+          + '&#x21A9; Full refund will be issued to traveller: <strong>' + fN(refundShow) + '</strong>'
+          + (pd.payment_method === 'bank' ? ' (manual bank transfer)' : ' (automatic, in RUB)')
+          + '</div>';
+      } else if (parseFloat(pd.total_paid || 0) <= 0) {
+        refundHtml = '<div style="font-size:12px;font-family:var(--bf);color:var(--mu);margin-top:6px">No payment made — no refund needed.</div>';
+      }
+    }
+  } catch(e) {}
+
+  var meta = '<strong>' + tourName + '</strong><br><span style="font-size:12px">' + travName + depStr + '</span>' + refundHtml;
+  var result = await showCancelBkModal(meta);
+  if (!result) return;
+  try {
+    var r = await fetchAuth(ACCT_API + '/bookings/' + id + '/cancel/', {
+      method: 'PATCH',
+      headers: ah(),
+      body: JSON.stringify({ reason: result.reason })
+    });
+    if (!r.ok) {
+      var d = await r.json();
+      showToast('Error: ' + (d.detail || r.status), 'error');
+      return;
+    }
+    var updated = await r.json().catch(function(){ return { id: id, status: 'cancelled' }; });
+    _bookings = _bookings.map(function(bk) { return bk.id === id ? updated : bk; });
+    showToast('Booking cancelled' + (result.reason ? ' — message sent to traveller' : ''), 'ok');
+  } catch(e) {
+    showToast('Network error — please try again.', 'error');
+    return;
+  }
+  renderBookings(); renderOverview(); renderEarnings();
+}
+
+async function confirmBooking(id) {
+  var b = _bookings.find(function(x){ return x.id === id; });
+  var tourName = b ? (b.tour_title || 'this tour') : 'this booking';
+  var travName = b ? (((b.first_name||'') + ' ' + (b.last_name||'')).trim() || 'the traveller') : 'the traveller';
+  var depStr   = b && b.departure_date ? ' departing ' + fmtD(b.departure_date) + '.' : '.';
+  var ok = await showConfirm({
+    icon: '✅',
+    title: 'Confirm booking?',
+    msg: 'You are confirming ' + travName + '\'s spot on ' + tourName + depStr + ' A confirmation email will be sent to them right away.',
+    ok: 'Confirm booking',
+    danger: false
+  });
+  if (!ok) return;
+  try {
+    var r = await fetchAuth(ACCT_API + '/bookings/' + id + '/confirm/', {
+      method: 'PATCH',
+      headers: ah()
+    });
+    if (!r.ok) {
+      var d = await r.json();
+      showToast('Error: ' + (d.detail || r.status), 'error');
+      return;
+    }
+    _bookings = _bookings.map(function(b) {
+      return b.id === id ? Object.assign({}, b, { status: 'confirmed' }) : b;
+    });
+    showToast('Booking confirmed — confirmation email sent to traveller.', 'ok');
+  } catch(e) {
+    showToast('Network error — please try again.', 'error');
+    return;
+  }
+  renderBookings(); renderOverview(); renderEarnings();
+}
+
+function renderReviews() {
+  var el = document.getElementById('rvList');
+  var su = document.getElementById('rvSummary');
+  if (_reviews.length && su) {
+    var avg = (_reviews.reduce(function(s,r){ return s+(r.rating||0); },0)/_reviews.length).toFixed(1);
+    su.textContent = _reviews.length + ' review' + (_reviews.length!==1?'s':'') + ' \u00b7 avg \u2B50 ' + avg;
+  } else if (su) {
+    su.textContent = '';
+  }
+  if (!_reviews.length) { el.innerHTML = emptyState('&#x2B50;','No reviews yet','Reviews from completed trips will appear here.','',''); return; }
+  el.innerHTML = _reviews.map(function(rv, i) {
+    var starsEl = '';
+    for (var si = 1; si <= 5; si++) starsEl += '<span style="color:' + (si <= Math.round(rv.rating||0) ? '#f5c842' : 'var(--ln)') + ';font-size:14px">★</span>';
+    // Pending reviews shown with a note
+    var statusNote = rv.status === 'pending'
+      ? '<span style="font-size:11px;background:#fff8e0;color:#9a6000;padding:2px 8px;border-radius:10px;font-family:var(--bf);font-weight:600;margin-left:8px">Pending approval</span>'
+      : rv.status === 'rejected'
+        ? '<span style="font-size:11px;background:#fef0ee;color:#c03020;padding:2px 8px;border-radius:10px;font-family:var(--bf);font-weight:600;margin-left:8px">Rejected</span>'
+        : '';
+    var replySection = rv.operator_reply
+      ? '<div class="rv-reply-area"><div class="rv-reply-label">Your reply</div><div class="rv-reply-text">' + rv.operator_reply + '</div></div>'
+      : '<div style="margin-top:10px"><textarea class="rv-reply-input" id="rta-' + i + '" placeholder="Write a reply\u2026"></textarea>'
+        + '<div style="margin-top:6px;text-align:right"><button class="btn-sm filled" onclick="postReply(' + i + ',' + rv.id + ')">Post reply</button></div></div>';
+    var reviewTitle = rv.title ? '<div style="font-weight:600;font-size:13.5px;margin-bottom:4px">' + rv.title + '</div>' : '';
+    return '<div class="rv-card">'
+      + '<div class="rv-card-head">'
+      + '<div><div class="rv-card-tour">' + (rv.tour_title || 'Tour') + statusNote + '</div>'
+      + '<div class="rv-card-reviewer">' + (rv.tourist_name || 'Traveller') + '</div></div>'
+      + '<div><div class="rv-stars">' + starsEl + '</div>'
+      + '<div style="font-size:11px;color:var(--mu);font-family:var(--bf);text-align:right;margin-top:2px">' + fmtD(rv.created_at?rv.created_at.slice(0,10):'') + '</div></div>'
+      + '</div>'
+      + reviewTitle
+      + '<div class="rv-card-text">' + (rv.body || '') + '</div>'
+      + replySection
+      + '</div>';
+  }).join('');
+}
+
+async function postReply(i, id) {
+  var ta = document.getElementById('rta-' + i);
+  if (!ta || !ta.value.trim()) return;
+  var reply = ta.value.trim();
+  try {
+    var r = await fetchAuth(ACCT_API + '/reviews/' + id + '/reply/', {
+      method: 'PATCH',
+      headers: ah(),
+      body: JSON.stringify({ reply: reply })
+    });
+    if (r.ok) {
+      var section = ta.closest('div');
+      if (section) section.innerHTML = '<div class="rv-reply-area"><div class="rv-reply-label">Your reply</div><div class="rv-reply-text">' + reply + '</div></div>';
+      // Update local state
+      _reviews = _reviews.map(function(rv) {
+        return rv.id === id ? Object.assign({}, rv, { operator_reply: reply }) : rv;
+      });
+    } else {
+      showToast('Could not save reply. Try again.', 'error');
+    }
+  } catch(e) {
+    // Offline: update UI only
+    var section = ta.closest('div');
+    if (section) section.innerHTML = '<div class="rv-reply-area"><div class="rv-reply-label">Your reply</div><div class="rv-reply-text">' + reply + '</div></div>';
+  }
+}
+
+var _earnSort = 'date';
+function setEarnSort(mode) {
+  _earnSort = mode;
+  var lbl = document.getElementById('earnSortLabel');
+  if (lbl) lbl.textContent = mode === 'tour' ? 'Sorted by tour name' : 'Sorted by date (newest first)';
+  renderEarnings();
+}
+
+function renderEarnings() {
+  var now   = new Date();
+
+  // Completed bookings — full revenue
+  var comp  = _bookings.filter(function(b){ return b.status === 'completed'; });
+
+  // Cancelled bookings where operator kept something
+  var withPenalty = _bookings.filter(function(b){
+    if (b.status !== 'cancelled') return false;
+    var paid = parseFloat(b.deposit_paid||0) + parseFloat(b.balance_paid||0);
+    var refunded = parseFloat(b.refund_amount||0);
+    return paid > 0 && refunded < paid;
+  });
+
+  // Determine operator's primary currency
+  var curCounts = {};
+  _bookings.forEach(function(b) { var c = b.currency || 'RUB'; curCounts[c] = (curCounts[c]||0) + 1; });
+  var primCur = 'RUB'; var maxCnt = 0;
+  for (var c in curCounts) { if (curCounts[c] > maxCnt) { maxCnt = curCounts[c]; primCur = c; } }
+
+  // Totals for summary cards
+  var primComp = comp.filter(function(b){ return (b.currency||'RUB') === primCur; });
+  var total    = primComp.reduce(function(s,b){ return s+parseFloat(b.total_price||0); }, 0);
+  var primPen  = withPenalty.filter(function(b){ return (b.currency||'RUB') === primCur; });
+  var penKept  = primPen.reduce(function(s,b){
+    return s + Math.max(0, parseFloat(b.deposit_paid||0) + parseFloat(b.balance_paid||0) - parseFloat(b.refund_amount||0));
+  }, 0);
+  var thisM = primComp.filter(function(b){
+    if (!b.departure_date) return false;
+    var d = new Date(b.departure_date);
+    return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
+  });
+  var mTotal = thisM.reduce(function(s,b){ return s+parseFloat(b.total_price||0); }, 0);
+
+  document.getElementById('earnTotal').textContent = fmtP(total + penKept, primCur);
+  document.getElementById('earnMonth').textContent = fmtP(mTotal, primCur);
+  document.getElementById('earnNote').textContent  = thisM.length + ' completed booking' + (thisM.length!==1?'s':'') + ' this month'
+    + (withPenalty.length ? ' · ' + withPenalty.length + ' cancellation penalt' + (withPenalty.length!==1?'ies':'y') : '');
+
+  // ── Group by tour + departure date ──────────────────────
+  var groups = {};
+  function addToGroup(b, type) {
+    var title = (b.tour_detail||{}).title || b.tour_title || 'Tour';
+    var dep   = b.departure_date || '';
+    var key   = title + '|' + dep + '|' + type;
+    if (!groups[key]) groups[key] = { title:title, dep:dep, type:type, cur:b.currency||'RUB', bookings:[], guests:0, amount:0 };
+    var g = groups[key];
+    var guests = (b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0));
+    g.bookings.push(b);
+    g.guests += guests;
+    if (type === 'completed') {
+      g.amount += parseFloat(b.total_price||0);
+    } else {
+      var paid = parseFloat(b.deposit_paid||0) + parseFloat(b.balance_paid||0);
+      g.amount += Math.max(0, paid - parseFloat(b.refund_amount||0));
+    }
+  }
+  comp.forEach(function(b){ addToGroup(b, 'completed'); });
+  withPenalty.forEach(function(b){ addToGroup(b, 'penalty'); });
+
+  var groupList = Object.values(groups);
+
+  // Sort
+  if (_earnSort === 'tour') {
+    groupList.sort(function(a,b){ return a.title.localeCompare(b.title) || (b.dep||'').localeCompare(a.dep||''); });
+  } else {
+    groupList.sort(function(a,b){ return (b.dep||'').localeCompare(a.dep||'') || a.title.localeCompare(b.title); });
+  }
+
+  var rows = document.getElementById('earnRows');
+  if (!groupList.length) {
+    rows.innerHTML = '<div style="text-align:center;padding:30px;color:var(--mu);font-family:var(--bf);font-size:13px">No earnings yet.</div>';
+    return;
+  }
+
+  rows.innerHTML = groupList.map(function(g){
+    var bkCount = g.bookings.length;
+    var isPenalty = g.type === 'penalty';
+    var bg = isPenalty ? ' style="background:#fffdf5"' : '';
+    var badge = isPenalty ? ' <span style="font-size:10px;background:#fff4e0;color:#9a6000;padding:1px 7px;border-radius:10px;font-family:var(--bf);font-weight:700;vertical-align:middle">Cancelled</span>' : '';
+    var amtStyle = isPenalty ? 'font-weight:600;color:#9a6000' : 'font-weight:600';
+    var amtSuffix = isPenalty ? ' <span style="font-size:10px;font-weight:400;color:var(--mu)">penalty</span>' : '';
+    return '<div class="et-row"' + bg + '>'
+      + '<div>' + g.title + badge + '</div>'
+      + '<div>' + bkCount + '</div>'
+      + '<div>' + g.guests + ' guest' + (g.guests!==1?'s':'') + '</div>'
+      + '<div>' + fmtD(g.dep) + '</div>'
+      + '<div style="' + amtStyle + '">' + fmtP(g.amount, g.cur) + amtSuffix + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function emptyState(ico, title, sub, ctaLabel, ctaHref) {
+  return '<div class="dash-empty">'
+    + '<div class="dash-empty-ico">' + ico + '</div>'
+    + '<div class="dash-empty-title">' + title + '</div>'
+    + '<div class="dash-empty-sub">' + sub + '</div>'
+    + (ctaLabel ? '<a class="btn-sm filled" href="' + ctaHref + '">' + ctaLabel + '</a>' : '')
+    + '</div>';
+}
+
+function demoTours() {
+  return [
+    { slug:'georgia-kazbegi-svaneti-trek', title:'Georgia: Kazbegi & Svaneti Trek', destination:'Georgia', days:8, price:89000, rating:'4.97', review_count:142, emoji:'&#x26F0;&#xFE0F;', is_published:true },
+    { slug:'nepal-everest-base-camp-trek', title:'Nepal: Everest Base Camp Trek', destination:'Nepal', days:18, price:195000, rating:'4.98', review_count:89, emoji:'&#x26F0;&#xFE0F;', is_published:true },
+    { slug:'morocco-draft', title:'Morocco Desert Expedition (Draft)', destination:'Morocco', days:7, price:75000, rating:'0', review_count:0, emoji:'&#x1F3DC;&#xFE0F;', is_published:false }
+  ];
+}
+function demoBks() {
+  return [
+    { id:1, status:'confirmed', departure_date:'2026-03-16', guests:2, total_price:178000, payment_ref:'PAY-001', tour_detail:{ title:'Georgia: Kazbegi & Svaneti Trek' } },
+    { id:2, status:'pending',   departure_date:'2026-04-10', guests:1, total_price:89000,  payment_ref:'',        tour_detail:{ title:'Georgia: Kazbegi & Svaneti Trek' } },
+    { id:3, status:'completed', departure_date:'2025-10-05', guests:2, total_price:390000, payment_ref:'PAY-088', tour_detail:{ title:'Nepal: Everest Base Camp Trek' } }
+  ];
+}
+function demoRevs() {
+  return [
+    { id:1, rating:5, reviewer_name:'Ana K.', tour_title:'Georgia: Kazbegi & Svaneti Trek', text:'Absolutely incredible. Sandro is a fantastic guide \u2014 knowledgeable, warm, and made us feel safe. The Svaneti towers at sunset were unforgettable.', reply:'', created_at:'2025-10-22' },
+    { id:2, rating:4, reviewer_name:'James T.', tour_title:'Georgia: Kazbegi & Svaneti Trek', text:'Great trek overall. The scenery is breathtaking. Would have liked slightly more time at Ushguli but understand the schedule.', reply:'Thanks James! We are adjusting the 2026 schedule to add an extra half day at Ushguli.', created_at:'2025-09-14' }
+  ];
+}
+
+
+// ── NAV USER STATE ──────────────────────────────────────────────────────────
+
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find c:UsersdeadvDownloadstour_pjmain -type f -name *.md -o -name *.txt -o -name *README* -o -name *TASK* -o -name *TODO*)",
+      "Bash(find c:/Users/deadv/Downloads/tour_pj/main/backend/apps/users -name *.py -not -path */venv/*)",
+      "Bash(grep -n \"\\\\\\\\u1F4CA\\\\|\\\\\\\\u1F3C6\" c:/Users/deadv/Downloads/tour_pj/main/frontend/waybound.html)",
+      "Bash(for f:*)",
+      "Bash(do sed:*)",
+      "Bash(done)",
+      "Bash(python manage.py makemigrations tours --name remove_legacy_review_model)",
+      "Bash(grep -n \"innerHTML.*bio\\\\|innerHTML.*about\" /c/Users/deadv/Downloads/tour_pj/main/frontend/*.html)",
+      "Bash(python manage.py makemigrations users --name=\"add_telegram_chat_id\")",
+      "Bash(python manage.py makemigrations tours --name=\"waitlist_departure_fk_name\")"
+    ]
+  }
+}

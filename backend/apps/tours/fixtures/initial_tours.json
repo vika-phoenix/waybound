@@ -1,0 +1,320 @@
+[
+  {
+    "model": "tours.tour",
+    "pk": 1,
+    "fields": {
+      "operator": 1,
+      "title": "Georgia: Kazbegi & Svaneti Trek",
+      "slug": "georgia-kazbegi-svaneti-trek",
+      "status": "live",
+      "category": "Trekking",
+      "difficulty": "Challenging",
+      "tour_type": "multi",
+      "country": "Georgia",
+      "destination": "Kazbegi & Svaneti",
+      "region": "Greater Caucasus",
+      "latitude": null,
+      "longitude": null,
+      "days": 8,
+      "price_adult": "89000.00",
+      "price_child": "75650.00",
+      "currency": "RUB",
+      "max_group": 12,
+      "min_group": 2,
+      "description": "<p>Eight days through the most spectacular landscapes of the Georgian Caucasus.</p>",
+      "highlights": [
+        "Trek to Gergeti Trinity Church (2170m)",
+        "Cross the Mestia-Ushguli trail",
+        "Stay in authentic guesthouses",
+        "Visit Svaneti towers — UNESCO site"
+      ],
+      "includes": [
+        "All accommodation",
+        "Breakfast & dinner daily",
+        "Licensed mountain guide",
+        "Transport from/to Tbilisi",
+        "Park permits"
+      ],
+      "excludes": [
+        "Flights to Tbilisi",
+        "Travel insurance",
+        "Lunches"
+      ],
+      "requirements": "Good fitness required. Min age 14.",
+      "meeting_point": "Tbilisi — Freedom Square metro, 07:00",
+      "end_point": "Tbilisi — same as meeting point",
+      "emoji": "⛰️",
+      "tags": [
+        "Trekking",
+        "Mountains",
+        "UNESCO",
+        "Small group"
+      ],
+      "rating": "4.97",
+      "review_count": 43,
+      "booking_count": 61,
+      "created_at": "2025-09-01T10:00:00Z",
+      "updated_at": "2025-09-01T10:00:00Z",
+      "published_at": "2025-09-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "tours.tour",
+    "pk": 2,
+    "fields": {
+      "operator": 1,
+      "title": "Kenya Safari: Masai Mara & Amboseli",
+      "slug": "kenya-safari-masai-mara-amboseli",
+      "status": "live",
+      "category": "Wildlife",
+      "difficulty": "Easy",
+      "tour_type": "multi",
+      "country": "Kenya",
+      "destination": "Masai Mara & Amboseli",
+      "region": "Rift Valley",
+      "latitude": null,
+      "longitude": null,
+      "days": 7,
+      "price_adult": "145000.00",
+      "price_child": "123250.00",
+      "currency": "RUB",
+      "max_group": 8,
+      "min_group": 2,
+      "description": "<p>Seven days across Kenya's most iconic wildlife parks.</p>",
+      "highlights": [
+        "Witness the Great Migration",
+        "Encounter the Big Five",
+        "Visit a Maasai village",
+        "Photography at golden hour"
+      ],
+      "includes": [
+        "All accommodation",
+        "All meals",
+        "Private 4x4",
+        "Expert guide",
+        "Park fees"
+      ],
+      "excludes": [
+        "Flights",
+        "Visa",
+        "Travel insurance",
+        "Drinks"
+      ],
+      "requirements": "No fitness requirements. Suitable for all ages.",
+      "meeting_point": "Nairobi — JKIA arrivals hall",
+      "end_point": "Nairobi — same",
+      "emoji": "🦁",
+      "tags": [
+        "Safari",
+        "Wildlife",
+        "Big Five",
+        "Photography"
+      ],
+      "rating": "4.89",
+      "review_count": 28,
+      "booking_count": 34,
+      "created_at": "2025-09-05T10:00:00Z",
+      "updated_at": "2025-09-05T10:00:00Z",
+      "published_at": "2025-09-05T10:00:00Z"
+    }
+  },
+  {
+    "model": "tours.departuredate",
+    "pk": 1,
+    "fields": {
+      "tour": 1,
+      "start_date": "2026-03-15",
+      "end_date": "2026-03-22",
+      "spots_total": 12,
+      "spots_left": 6,
+      "status": "open",
+      "price_override": null,
+      "notes": ""
+    }
+  },
+  {
+    "model": "tours.departuredate",
+    "pk": 2,
+    "fields": {
+      "tour": 1,
+      "start_date": "2026-04-05",
+      "end_date": "2026-04-12",
+      "spots_total": 12,
+      "spots_left": 11,
+      "status": "open",
+      "price_override": null,
+      "notes": ""
+    }
+  },
+  {
+    "model": "tours.departuredate",
+    "pk": 3,
+    "fields": {
+      "tour": 1,
+      "start_date": "2026-04-19",
+      "end_date": "2026-04-26",
+      "spots_total": 12,
+      "spots_left": 12,
+      "status": "open",
+      "price_override": null,
+      "notes": ""
+    }
+  },
+  {
+    "model": "tours.departuredate",
+    "pk": 4,
+    "fields": {
+      "tour": 2,
+      "start_date": "2026-04-10",
+      "end_date": "2026-04-16",
+      "spots_total": 8,
+      "spots_left": 4,
+      "status": "guaranteed",
+      "price_override": null,
+      "notes": "Migration season"
+    }
+  },
+  {
+    "model": "tours.dayitinerary",
+    "pk": 1,
+    "fields": {
+      "tour": 1,
+      "day_number": 1,
+      "title": "Tbilisi to Kazbegi",
+      "description": "Depart Tbilisi early. Drive through the Dariali Gorge. Evening briefing.",
+      "meals": "Dinner",
+      "elevation": ""
+    }
+  },
+  {
+    "model": "tours.dayitinerary",
+    "pk": 2,
+    "fields": {
+      "tour": 1,
+      "day_number": 2,
+      "title": "Gergeti Trinity Church trek",
+      "description": "6-hour round hike to the iconic church at 2170m.",
+      "meals": "Breakfast, Dinner",
+      "elevation": "+700m / -700m"
+    }
+  },
+  {
+    "model": "tours.dayitinerary",
+    "pk": 3,
+    "fields": {
+      "tour": 1,
+      "day_number": 3,
+      "title": "Kazbegi to Mestia transfer",
+      "description": "Long drive via Kutaisi to Svaneti.",
+      "meals": "Breakfast, Dinner",
+      "elevation": ""
+    }
+  },
+  {
+    "model": "tours.stayblock",
+    "pk": 1,
+    "fields": {
+      "tour": 1,
+      "property_name": "Kazbegi Mountain Lodge",
+      "property_type": "Guesthouse",
+      "comfort_level": "Standard",
+      "night_from": 1,
+      "night_to": 2,
+      "room_types": [
+        {
+          "name": "Single room",
+          "price_supplement": 4500
+        },
+        {
+          "name": "Twin room",
+          "price_supplement": 0
+        }
+      ]
+    }
+  },
+  {
+    "model": "tours.stayblock",
+    "pk": 2,
+    "fields": {
+      "tour": 1,
+      "property_name": "Mestia Guesthouse Nino",
+      "property_type": "Guesthouse",
+      "comfort_level": "Budget",
+      "night_from": 3,
+      "night_to": 7,
+      "room_types": [
+        {
+          "name": "Single room",
+          "price_supplement": 3000
+        },
+        {
+          "name": "Twin room",
+          "price_supplement": 0
+        }
+      ]
+    }
+  },
+  {
+    "model": "tours.cancelperiod",
+    "pk": 1,
+    "fields": {
+      "tour": 1,
+      "days_before_min": 30,
+      "days_before_max": null,
+      "penalty_pct": 0,
+      "label": "Full refund"
+    }
+  },
+  {
+    "model": "tours.cancelperiod",
+    "pk": 2,
+    "fields": {
+      "tour": 1,
+      "days_before_min": 14,
+      "days_before_max": 29,
+      "penalty_pct": 30,
+      "label": "30% cancellation fee"
+    }
+  },
+  {
+    "model": "tours.cancelperiod",
+    "pk": 3,
+    "fields": {
+      "tour": 1,
+      "days_before_min": 0,
+      "days_before_max": 13,
+      "penalty_pct": 100,
+      "label": "No refund"
+    }
+  },
+  {
+    "model": "tours.tourfaq",
+    "pk": 1,
+    "fields": {
+      "tour": 1,
+      "order": 0,
+      "question": "Is travel insurance included?",
+      "answer": "No. We strongly recommend comprehensive travel insurance before departure."
+    }
+  },
+  {
+    "model": "tours.tourfaq",
+    "pk": 2,
+    "fields": {
+      "tour": 1,
+      "order": 1,
+      "question": "What fitness level is required?",
+      "answer": "Good fitness required. Comfortable hiking 5-8 hours per day on mountain terrain."
+    }
+  },
+  {
+    "model": "tours.tourfaq",
+    "pk": 3,
+    "fields": {
+      "tour": 1,
+      "order": 2,
+      "question": "What is the minimum group size?",
+      "answer": "Tours run with a minimum of 2 participants."
+    }
+  }
+]

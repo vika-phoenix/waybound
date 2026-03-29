@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account Settings — Waybound</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300..700&family=Playfair+Display:ital,wght@0,400..900;1,400..700&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap" rel="stylesheet">
+<style>
+/* ══ THEMES ══════════════════════════════════════════════════════════ */
+body.ocean{ --ink:#0d1f2d; --paper:#f0f5f9; --white:#ffffff; --ac:#4fa8d4; --ad:#2080ae; --mu:#607a8a; --ln:#c0d4e0; --ha-bg:#e8f4fb; --ha-bd:#94c8e4; --ha-tx:#0e5070; --hb-bg:#e6f4f0; --hb-bd:#88c4b4; --hb-tx:#0e4840; --tr-bg:#f4f9fc; --df:'Fraunces',serif; --bf:'Space Grotesk',sans-serif; }
+body.warm{ --ink:#1C140C; --paper:#FFFFFF; --white:#FFFFFF; --ac:#C05430; --ad:#9A3A20; --mu:#8C7A68; --ln:#EFE6D8; --ha-bg:#FBF0EB; --ha-bd:#EECCB8; --ha-tx:#8C3010; --hb-bg:#EAF5EA; --hb-bd:#A0D0A8; --hb-tx:#205830; --tr-bg:#FBF8F5; --df:'Playfair Display',serif; --bf:'DM Sans',sans-serif; }
+body.ivory{ --ink:#1A1208; --paper:#FAF6EE; --white:#FAF6EE; --ac:#B84D2A; --ad:#96381A; --mu:#7C6848; --ln:#E4D8C4; --ha-bg:#F8EDE0; --ha-bd:#E0C098; --ha-tx:#7A3010; --hb-bg:#E8F4E8; --hb-bd:#98C898; --hb-tx:#205030; --tr-bg:#F8F4EC; --df:'Playfair Display',serif; --bf:'DM Sans',sans-serif; }
+body.gold{ --ink:#1a1a2e; --paper:#f7f4ef; --white:#ffffff; --ac:#c8a96e; --ad:#a8893e; --mu:#7a7060; --ln:#e0d4bc; --ha-bg:#fdf5e0; --ha-bd:#e8cc88; --ha-tx:#8a6010; --hb-bg:#edf4f0; --hb-bd:#98c8b0; --hb-tx:#206050; --tr-bg:#f4f0e8; --df:'Fraunces',serif; --bf:'Space Grotesk',sans-serif; }
+body.forest{ --ink:#1e2a22; --paper:#f2f7f3; --white:#ffffff; --ac:#6aab7a; --ad:#3d7a50; --mu:#5a7060; --ln:#c0d8c8; --ha-bg:#e4f4ea; --ha-bd:#90ccA0; --ha-tx:#1a5030; --hb-bg:#fdf4e0; --hb-bd:#e8cc88; --hb-tx:#8a6010; --tr-bg:#ecf5ef; --df:'Fraunces',serif; --bf:'Space Grotesk',sans-serif; }
+body.terra{ --ink:#2a1f1a; --paper:#faf6f2; --white:#ffffff; --ac:#d4735e; --ad:#b05040; --mu:#907060; --ln:#e0cec4; --ha-bg:#fdf0ec; --ha-bd:#e0a898; --ha-tx:#7a2818; --hb-bg:#edf5ec; --hb-bd:#98c898; --hb-tx:#285030; --tr-bg:#faf4f0; --df:'Playfair Display',serif; --bf:'DM Sans',sans-serif; }
+
+/* ══ BASE ════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',sans-serif);transition:background .35s,color .35s;min-height:100vh;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+
+/* ══ NAV ═════════════════════════════════════════════════════════════ */
+.nav{position:sticky;top:0;z-index:100;background:var(--ink);height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:16px;transition:background .35s;}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--df);font-size:17px;font-weight:400;color:rgba(255,255,255,.9);letter-spacing:-.02em;text-decoration:none;}
+.logo-mark{width:28px;height:28px;background:var(--ac);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-search{flex:1;max-width:190px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:7px 14px;font-size:12px;color:rgba(255,255,255,.45);font-family:var(--bf);cursor:pointer;transition:border-color .15s;}
+.nav-search:hover{border-color:rgba(255,255,255,.28)}
+.nav-links{display:flex;}
+.nav-link{font-size:12px;font-weight:500;color:rgba(255,255,255,.4);padding:6px 9px;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s;}
+.nav-link.on,.nav-link:hover{color:var(--ac)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-ghost-sm{font-size:12px;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.16);border-radius:5px;padding:6px 12px;background:transparent;cursor:pointer;font-family:var(--bf);transition:all .15s;}
+.btn-ghost-sm:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+.btn-ac-sm{font-size:12px;font-weight:600;color:var(--ink);background:var(--ac);border:none;border-radius:5px;padding:7px 14px;cursor:pointer;font-family:var(--bf);transition:background .15s;}
+.btn-ac-sm:hover{background:var(--ad)}
+/* New nav components */
+.nav-hamburger{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4.5px;cursor:pointer;transition:background .15s,border-color .15s;flex-shrink:0;}
+.nav-hamburger:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
+.nav-hamburger span{display:block;width:16px;height:1.8px;border-radius:2px;background:rgba(255,255,255,.65);transition:background .15s;}
+.nav-hamburger.open{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.32)}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--ac);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);cursor:pointer;flex-shrink:0;overflow:hidden;transition:border-color .15s,box-shadow .15s;position:relative;}
+.nav-avatar:hover{border-color:rgba(255,255,255,.6);box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.nav-dropdown{position:absolute;top:calc(100% + 10px);right:0;width:220px;background:var(--white);border:1px solid var(--ln);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.14);padding:6px 0;display:none;z-index:2000;animation:dropIn .18s ease;}
+.nav-dropdown.open{display:block;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.nav-dropdown-head{padding:12px 16px 10px;border-bottom:1px solid var(--ln);margin-bottom:4px;}
+.nav-dropdown-name{font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);}
+.nav-dropdown-email{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px;}
+.nav-dd-item{display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer;transition:background .12s;text-decoration:none;}
+.nav-dd-item:hover{background:var(--paper)}
+.nav-dd-item .dd-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-dd-item.dd-danger{color:#c0392b;}
+.nav-dd-item.dd-danger:hover{background:#fef0ee;}
+.nav-dd-sep{height:1px;background:var(--ln);margin:4px 0;}
+.nav-r-wrap{position:relative;display:flex;align-items:center;gap:8px;}
+
+/* ══ SETTINGS LAYOUT ═════════════════════════════════════════════════ */
+.settings-wrap{max-width:860px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:220px 1fr;gap:32px;align-items:start;}
+@media(max-width:680px){.settings-wrap{grid-template-columns:1fr;padding:20px 16px 60px;}}
+
+/* ══ PAGE TITLE ══════════════════════════════════════════════════════ */
+.settings-page-head{max-width:860px;margin:0 auto;padding:32px 24px 0;}
+.settings-page-title{font-family:var(--df);font-size:28px;font-weight:600;color:var(--ink);}
+.settings-page-sub{font-size:13px;color:var(--mu);font-family:var(--bf);margin-top:5px;}
+
+/* ══ SIDEBAR NAV ═════════════════════════════════════════════════════ */
+.settings-nav{background:var(--white);border:1px solid var(--ln);border-radius:14px;overflow:hidden;position:sticky;top:80px;}
+.settings-nav-section{padding:8px 0;border-bottom:1px solid var(--ln);}
+.settings-nav-section:last-child{border-bottom:none;}
+.settings-nav-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);font-family:var(--bf);padding:10px 16px 4px;}
+.settings-nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer;transition:background .12s;border:none;background:none;width:100%;text-align:left;}
+.settings-nav-item:hover{background:var(--paper)}
+.settings-nav-item.active{background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ad);font-weight:600;}
+.settings-nav-item .sn-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.settings-nav-item.danger{color:#c0392b;}
+.settings-nav-item.danger:hover{background:#fef0ee;}
+
+/* ══ SETTINGS PANELS ═════════════════════════════════════════════════ */
+.settings-panels{display:flex;flex-direction:column;gap:0;}
+.settings-panel{display:none;}
+.settings-panel.active{display:block;}
+.settings-card{background:var(--white);border:1px solid var(--ln);border-radius:14px;margin-bottom:20px;overflow:hidden;}
+.settings-card:last-child{margin-bottom:0;}
+.settings-card-head{padding:18px 24px;border-bottom:1px solid var(--ln);}
+.settings-card-title{font-family:var(--df);font-size:16px;font-weight:600;color:var(--ink);}
+.settings-card-desc{font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:3px;}
+.settings-card-body{padding:20px 24px;}
+
+/* ── Form fields ── */
+.field-row{margin-bottom:18px;}
+.field-row:last-child{margin-bottom:0;}
+.field-label{font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:5px;display:block;}
+.field-hint{font-size:11px;color:var(--mu);margin-top:4px;}
+.field-input{width:100%;padding:9px 12px;border:1.5px solid var(--ln);border-radius:8px;font-size:13px;color:var(--ink);background:var(--paper);font-family:var(--bf);transition:border-color .15s,background .35s;}
+.field-input:focus{outline:none;border-color:var(--ac);}
+.field-input:disabled{opacity:.55;cursor:not-allowed;}
+.field-row-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:480px){.field-row-two{grid-template-columns:1fr;}}
+
+/* ── Toggle switch ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--ln);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-row-info{flex:1;padding-right:20px;}
+.toggle-row-label{font-size:13px;font-weight:600;color:var(--ink);font-family:var(--bf);}
+.toggle-row-desc{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:2px;}
+.toggle-sw{width:42px;height:24px;border-radius:12px;background:var(--ln);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.toggle-sw.on{background:var(--ac);}
+.toggle-sw::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle-sw.on::after{transform:translateX(18px);}
+
+/* ── Save button ── */
+.btn-save{background:var(--ac);color:var(--ink);border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:700;font-family:var(--bf);cursor:pointer;transition:background .15s;}
+.btn-save:hover{background:var(--ad);color:#fff;}
+.btn-danger{background:transparent;color:#c0392b;border:1.5px solid #e08080;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;font-family:var(--bf);cursor:pointer;transition:all .15s;}
+.btn-danger:hover{background:#fef0ee;}
+.save-row{display:flex;align-items:center;gap:12px;padding-top:4px;}
+.save-feedback{font-size:12px;color:#27ae60;font-family:var(--bf);opacity:0;transition:opacity .3s;}
+.save-feedback.show{opacity:1;}
+/* ── Inline password error ── */
+.pw-error-banner{display:none;background:#fef0ee;border:1.5px solid #e08080;border-radius:8px;padding:11px 14px;font-size:13px;color:#c0392b;font-family:var(--bf);line-height:1.5;margin-bottom:12px;}
+.pw-error-banner.show{display:block;}
+
+/* ── Avatar upload ── */
+.avatar-section{display:flex;align-items:center;gap:20px;padding-bottom:20px;margin-bottom:20px;border-bottom:1px solid var(--ln);}
+.avatar-preview{width:72px;height:72px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:var(--ink);font-family:var(--bf);flex-shrink:0;overflow:hidden;border:3px solid var(--ln);}
+.avatar-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.avatar-actions{display:flex;flex-direction:column;gap:6px;}
+.btn-outline-sm{background:none;border:1.5px solid var(--ln);border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);cursor:pointer;transition:all .15s;}
+.btn-outline-sm:hover{border-color:var(--ac);color:var(--ac);}
+.avatar-hint{font-size:11px;color:var(--mu);font-family:var(--bf);}
+
+/* ── Theme grid (inline, no drawer) ── */
+.theme-grid-inline{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:540px){.theme-grid-inline{grid-template-columns:repeat(2,1fr);}}
+.th-opt{border:2px solid var(--ln);border-radius:10px;padding:11px 11px 10px;cursor:pointer;background:var(--white);transition:border-color .2s,box-shadow .2s,background .35s;position:relative;}
+.th-opt:hover{border-color:var(--ac)}
+.th-opt.sel{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}
+.th-opt.sel .th-check{opacity:1;transform:scale(1)}
+.th-check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ink);opacity:0;transform:scale(.6);transition:opacity .2s,transform .2s;}
+.th-swatches{display:flex;gap:4px;margin-bottom:8px;}
+.th-sw{width:18px;height:18px;border-radius:4px;}
+.th-name{font-size:12px;font-weight:700;color:var(--ink);font-family:var(--bf);}
+.th-desc{font-size:10.5px;color:var(--mu);font-family:var(--bf);margin-top:1px;}
+.th-default-tag{display:inline-block;font-size:9px;background:var(--ac);color:var(--ink);padding:2px 7px;border-radius:10px;margin-top:5px;font-weight:700;font-family:var(--bf);}
+.theme-apply-row{display:flex;align-items:center;gap:12px;margin-top:16px;}
+.live-preview-note{font-size:11.5px;color:var(--mu);font-family:var(--bf);}
+
+/* ── Password strength ── */
+.pw-strength{height:4px;border-radius:2px;background:var(--ln);margin-top:6px;overflow:hidden;}
+.pw-strength-bar{height:100%;border-radius:2px;width:0%;transition:width .3s,background .3s;}
+
+/* ── Danger zone ── */
+.danger-zone-card{border-color:#e08080;}
+.danger-zone-card .settings-card-head{border-bottom-color:#e08080;}
+
+/* ── Notification badges ── */
+.notif-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--ln);}
+.notif-row:last-child{border-bottom:none;}
+.notif-label{font-size:13px;color:var(--ink);font-family:var(--bf);}
+.notif-desc{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px;}
+.notif-controls{display:flex;gap:8px;align-items:center;}
+.notif-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;font-family:var(--bf);background:var(--paper);border:1px solid var(--ln);color:var(--mu);cursor:pointer;transition:all .15s;}
+.notif-badge.on{background:var(--ac);border-color:var(--ac);color:var(--ink);}
+
+/* ── Connected accounts ── */
+.conn-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--ln);}
+.conn-row:last-child{border-bottom:none;}
+.conn-left{display:flex;align-items:center;gap:12px;}
+.conn-ico{width:36px;height:36px;border-radius:8px;background:var(--paper);border:1px solid var(--ln);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.conn-name{font-size:13px;font-weight:600;color:var(--ink);font-family:var(--bf);}
+.conn-status{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:1px;}
+.conn-status.connected{color:#27ae60;}
+.btn-conn{font-size:11.5px;font-weight:600;font-family:var(--bf);padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s;}
+.btn-conn.connect{background:var(--ac);border:none;color:var(--ink);}
+.btn-conn.connect:hover{background:var(--ad);color:#fff;}
+.btn-conn.disconnect{background:none;border:1.5px solid var(--ln);color:var(--mu);}
+.btn-conn.disconnect:hover{border-color:#e08080;color:#c0392b;}
+
+/* ══ FOOTER ══════════════════════════════════════════════════════════ */
+footer{background:var(--ink);color:rgba(255,255,255,.45);padding:24px 32px;font-size:11.5px;font-family:var(--bf);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+footer a{color:rgba(255,255,255,.45);text-decoration:none;}
+footer a:hover{color:rgba(255,255,255,.75)}
+
+/* ══ SETTINGS OVERLAY (kept for openSettings() calls from other pages) ══ */
+.overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.4);backdrop-filter:blur(5px);animation:fadein .2s ease;}
+.overlay.open{display:block}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:330px;background:var(--white);border-left:1px solid var(--ln);display:flex;flex-direction:column;transform:translateX(330px);transition:transform .3s cubic-bezier(.4,0,.2,1),background .35s,border-color .35s;z-index:501;}
+.overlay.open .drawer{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:0 22px;height:60px;background:var(--ink);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;transition:background .35s;}
+.drawer-title{font-family:var(--df);font-size:17px;font-weight:400;color:var(--ac);transition:font-family .35s,color .35s}
+.drawer-close{width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,.1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.6);font-size:16px;}
+.drawer-close:hover{background:rgba(255,255,255,.2);color:#fff;}
+.drawer-body{flex:1;overflow-y:auto;padding:22px;}
+.d-section-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);font-family:var(--bf);margin-bottom:14px;}
+.drawer-apply{width:100%;padding:12px;background:var(--ac);color:var(--ink);border:none;border-radius:8px;font-size:13px;font-weight:700;font-family:var(--bf);cursor:pointer;margin-top:18px;transition:background .15s;}
+.drawer-apply:hover{background:var(--ad);color:#fff;}
+.drawer-divider{height:1px;background:var(--ln);margin:18px 0;}
+.drawer-note{font-size:12px;color:var(--mu);font-family:var(--bf);line-height:1.6;}
+</style>
+<script src="toast.js"></script>
+<script src="config.js"></script>
+</head>
+<body class="ocean">
+
+<!-- ══ SETTINGS OVERLAY (for theme preview from this page too) ══ -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="drawer" id="drawer">
+    <div class="drawer-head">
+      <div class="drawer-title">Appearance</div>
+      <button class="drawer-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="d-section-label">Choose your theme</div>
+      <div class="theme-grid" id="themeGrid"></div>
+      <button class="drawer-apply" onclick="applyPending()">Apply theme</button>
+      <div class="drawer-divider"></div>
+      <p class="drawer-note">Your choice is saved locally and remembered on your next visit.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav class="nav">
+  <a class="logo" href="waybound.html">
+    <div class="logo-mark" id="lm">
+      <svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg>
+    </div>
+    waybound
+  </a>
+  <div class="nav-search">🔍 Where to go?</div>
+  <div class="nav-links">
+    <a class="nav-link" href="adventures.html">Adventures</a>
+    <a class="nav-link" href="how-it-works.html">How it works</a>
+    <a class="nav-link" href="about.html">About</a>
+    <a class="nav-link" href="help.html">Help</a>
+    <a class="nav-link" href="contact.html">Contact</a>
+  </div>
+    <div class="nav-r nav-r-wrap">
+    <button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin.html'">Sign in / Sign up</button>
+    <a class="btn-ac-sm" href="operator.html" style="text-decoration:none" id="navListTourBtn">List a tour</a>
+    <div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" title="My account" style="display:none"></div>
+    <div class="nav-dropdown" id="navDropdown"></div>
+  </div>
+</nav>
+
+<!-- ══ PAGE HEAD ══ -->
+<div class="settings-page-head">
+  <div class="settings-page-title">Account settings</div>
+  <div class="settings-page-sub">Manage your profile, security, preferences and appearance</div>
+</div>
+
+<!-- ══ SETTINGS LAYOUT ══ -->
+<div class="settings-wrap">
+
+  <!-- ── SIDEBAR ── -->
+  <nav class="settings-nav">
+    <div class="settings-nav-section">
+      <div class="settings-nav-label">Account</div>
+      <button class="settings-nav-item active" onclick="showPanel('profile',this)">
+        <span class="sn-ico">👤</span>Profile
+      </button>
+      <button class="settings-nav-item" onclick="showPanel('security',this)">
+        <span class="sn-ico">🔒</span>Security
+      </button>
+      <button class="settings-nav-item" onclick="showPanel('connected',this)">
+        <span class="sn-ico">🔗</span>Connected accounts
+      </button>
+      <button class="settings-nav-item" onclick="showPanel('verification',this)" id="navVerification" style="display:none">
+        <span class="sn-ico">✅</span>Verification
+      </button>
+    </div>
+    <div class="settings-nav-section">
+      <div class="settings-nav-label">Preferences</div>
+      <button class="settings-nav-item" onclick="showPanel('appearance',this)" id="navAppearance">
+        <span class="sn-ico">🎨</span>Appearance
+      </button>
+      <button class="settings-nav-item" onclick="showPanel('notifications',this)">
+        <span class="sn-ico">🔔</span>Notifications
+      </button>
+    </div>
+    <div class="settings-nav-section">
+      <div class="settings-nav-label">Danger zone</div>
+      <button class="settings-nav-item danger" onclick="showPanel('danger',this)">
+        <span class="sn-ico">⚠️</span>Delete account
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── PANELS ── -->
+  <div class="settings-panels">
+
+    <!-- ▸ PROFILE ──────────────────────────────────────────── -->
+    <div class="settings-panel active" id="panel-profile">
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Public profile</div>
+          <div class="settings-card-desc">This is how other travellers and guides see you</div>
+        </div>
+        <div class="settings-card-body">
+          <div class="avatar-section">
+            <div class="avatar-preview" id="profileAvatar">?</div>
+            <div>
+              <input type="file" id="avatarFileInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleAvatarUpload(this)">
+              <div class="avatar-actions">
+                <button class="btn-outline-sm" onclick="document.getElementById('avatarFileInput').click()">Upload photo</button>
+                <button class="btn-outline-sm" id="removePhotoBtn" style="display:none" onclick="removeAvatar()">Remove photo</button>
+              </div>
+              <div class="avatar-hint" style="margin-top:6px">JPG or PNG, max 2 MB</div>
+              <div id="avatarUploadMsg" style="font-size:11.5px;font-family:var(--bf);margin-top:6px;display:none"></div>
+            </div>
+          </div>
+          <div class="field-row-two">
+            <div class="field-row">
+              <label class="field-label">First name</label>
+              <input class="field-input" id="firstName" type="text" placeholder="Your first name">
+            </div>
+            <div class="field-row">
+              <label class="field-label">Last name</label>
+              <input class="field-input" id="lastName" type="text" placeholder="Your last name">
+            </div>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Email address</label>
+            <input class="field-input" id="emailField" type="email" placeholder="your@email.com" disabled>
+            <div class="field-hint">Contact support to change your email address</div>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Phone number</label>
+            <input class="field-input" id="phoneField" type="tel" placeholder="+7 (999) 000-00-00">
+          </div>
+          <div class="field-row">
+            <label class="field-label">About you</label>
+            <textarea class="field-input" id="bioField" rows="3" placeholder="Tell guides and fellow travellers a little about yourself…" style="resize:vertical;min-height:70px;"></textarea>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveProfile()">Save changes</button>
+            <span class="save-feedback" id="profileFeedback">✓ Saved</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ▸ SECURITY ────────────────────────────────────────── -->
+    <div class="settings-panel" id="panel-security">
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Change password</div>
+          <div class="settings-card-desc">Use a strong password you don't use anywhere else</div>
+        </div>
+        <div class="settings-card-body">
+          <div class="field-row">
+            <label class="field-label">Current password</label>
+            <input class="field-input" id="currentPw" type="password" placeholder="Enter current password" oninput="clearPwError()">
+          </div>
+          <div class="field-row">
+            <label class="field-label">New password</label>
+            <input class="field-input" id="newPw" type="password" placeholder="At least 8 characters" oninput="updatePwStrength(this.value)">
+            <div class="pw-strength"><div class="pw-strength-bar" id="pwBar"></div></div>
+            <div class="field-hint" id="pwHint">Enter a new password</div>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Confirm new password</label>
+            <input class="field-input" id="confirmPw" type="password" placeholder="Repeat new password" oninput="clearPwError()">
+          </div>
+          <div class="pw-error-banner" id="pwErrorBanner"></div>
+          <div class="save-row">
+            <button class="btn-save" onclick="changePassword()">Update password</button>
+            <span class="save-feedback" id="pwFeedback">✓ Password updated</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ▸ CONNECTED ACCOUNTS ──────────────────────────────── -->
+    <div class="settings-panel" id="panel-connected">
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Connected accounts</div>
+          <div class="settings-card-desc">Sign in faster using your existing accounts</div>
+        </div>
+        <div class="settings-card-body">
+          <div class="conn-row">
+            <div class="conn-left">
+              <div class="conn-ico">🇬</div>
+              <div>
+                <div class="conn-name">Google</div>
+                <div class="conn-status" id="googleStatus">Not connected</div>
+              </div>
+            </div>
+            <button class="btn-conn connect" id="googleBtn" onclick="connectSocial('google')">Connect</button>
+          </div>
+          <div class="conn-row">
+            <div class="conn-left">
+              <div class="conn-ico">🍎</div>
+              <div>
+                <div class="conn-name">Apple</div>
+                <div class="conn-status" id="appleStatus">Not connected</div>
+              </div>
+            </div>
+            <button class="btn-conn connect" id="appleBtn" onclick="connectSocial('apple')">Connect</button>
+          </div>
+          <div class="conn-row">
+            <div class="conn-left">
+              <div class="conn-ico" style="font-size:16px;color:#FC3F1D;font-weight:700">Y</div>
+              <div>
+                <div class="conn-name">Yandex</div>
+                <div class="conn-status" id="yandexStatus">Not connected</div>
+              </div>
+            </div>
+            <button class="btn-conn connect" id="yandexBtn" onclick="connectSocial('yandex')">Connect</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ▸ VERIFICATION (operators only) ────────────────────── -->
+    <div class="settings-panel" id="panel-verification">
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Operator verification</div>
+          <div class="settings-card-desc">Verify your identity to publish tours on Waybound</div>
+        </div>
+        <div class="settings-card-body">
+          <div id="verifyStatusCard" style="padding:16px;border-radius:10px;border:1.5px solid var(--ln);margin-bottom:18px;background:var(--tr-bg)">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <span id="verifyIco" style="font-size:22px">⏳</span>
+              <div>
+                <div id="verifyTitle" style="font-size:14px;font-weight:700;color:var(--ink);font-family:var(--bf)">Not yet submitted</div>
+                <div id="verifyDesc" style="font-size:12.5px;color:var(--mu);font-family:var(--bf)">Upload an ID document to get verified</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="verifyUploadSection">
+            <div class="field-row">
+              <label class="field-label">Upload ID document</label>
+              <div class="field-hint" style="margin-bottom:8px">Passport, driver's licence, or national ID. Clear photo of the document, JPG/PNG, max 5 MB.</div>
+              <input type="file" id="verifyDocInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadVerifyDoc(this)">
+              <div style="display:flex;gap:10px;align-items:center">
+                <button class="btn-save" onclick="document.getElementById('verifyDocInput').click()" id="verifyUploadBtn">Choose file & submit</button>
+                <span id="verifyUploadMsg" style="font-size:12px;color:var(--mu);font-family:var(--bf);display:none"></span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px;padding:14px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);line-height:1.6">
+            <strong style="display:block;margin-bottom:4px">Why verification?</strong>
+            Verified operators can publish tours and accept bookings. Our team reviews documents within 48 hours. Your document is stored securely and only used for identity verification.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ▸ APPEARANCE ──────────────────────────────────────── -->
+    <div class="settings-panel" id="panel-appearance">
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Theme</div>
+          <div class="settings-card-desc">Choose a colour palette for the Waybound interface</div>
+        </div>
+        <div class="settings-card-body">
+          <div class="theme-grid-inline" id="inlineThemeGrid"></div>
+          <div class="theme-apply-row">
+            <button class="btn-save" onclick="applyInlineTheme()">Apply theme</button>
+            <span class="live-preview-note">Preview updates live as you select</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ▸ NOTIFICATIONS ───────────────────────────────────── -->
+    <div class="settings-panel" id="panel-notifications">
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Email notifications</div>
+          <div class="settings-card-desc">Control which emails you receive from Waybound</div>
+        </div>
+        <div class="settings-card-body">
+          <div class="toggle-row" style="opacity:.55;pointer-events:none">
+            <div class="toggle-row-info">
+              <div class="toggle-row-label">Booking & trip emails</div>
+              <div class="toggle-row-desc">Booking confirmations, reminders, review requests, and guide messages</div>
+            </div>
+            <div class="toggle-sw on"></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--mu);font-family:var(--bf);margin:8px 0 14px;padding-left:2px">These are essential transactional emails and cannot be turned off.</div>
+          <div class="toggle-row">
+            <div class="toggle-row-info">
+              <div class="toggle-row-label">Marketing & promotions</div>
+              <div class="toggle-row-desc">Special offers, new tours, seasonal discounts, and newsletter</div>
+            </div>
+            <div class="toggle-sw" id="toggleMarketing" onclick="toggleMarketingEmails()"></div>
+          </div>
+          <span class="save-feedback" id="notifFeedback" style="margin-top:8px">✓ Saved</span>
+        </div>
+      </div>
+
+      <!-- Telegram (operators only) -->
+      <div class="settings-card" id="telegramCard" style="display:none;margin-top:16px">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Telegram notifications</div>
+          <div class="settings-card-desc">Get instant booking and waitlist alerts via Telegram</div>
+        </div>
+        <div class="settings-card-body">
+          <div style="font-size:13px;color:var(--ink);font-family:var(--bf);line-height:1.6;margin-bottom:14px">
+            Connect your Telegram account to receive real-time notifications for new bookings, cancellations, balance payments, and waitlist sign-ups.<br><br>
+            <strong>How to connect:</strong>
+            <ol style="margin:6px 0 0 18px;padding:0;font-size:13px;line-height:1.8">
+              <li>Open Telegram and message <a href="https://t.me/waybound_bot" target="_blank" style="color:var(--ac)">@waybound_bot</a></li>
+              <li>Send <code style="background:var(--su);padding:1px 5px;border-radius:3px">/start</code></li>
+              <li>Copy your Chat ID from the bot reply and paste it below</li>
+            </ol>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Your Telegram Chat ID</label>
+            <input class="field-input" id="telegramChatId" type="text" placeholder="e.g. 123456789" style="max-width:260px">
+          </div>
+          <div class="save-row" style="margin-top:12px">
+            <button class="btn-save" onclick="saveTelegramChatId()">Save Telegram ID</button>
+            <span class="save-feedback" id="telegramFeedback">✓ Saved</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- ▸ DANGER ZONE ─────────────────────────────────────── -->
+    <div class="settings-panel" id="panel-danger">
+      <div class="settings-card danger-zone-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title" style="color:#c0392b">Delete account</div>
+          <div class="settings-card-desc">This action is permanent and cannot be undone</div>
+        </div>
+        <div class="settings-card-body">
+          <p style="font-size:13px;color:var(--ink);line-height:1.6;font-family:var(--bf);margin-bottom:18px;">
+            Deleting your account will permanently remove your profile, all booking history, saved tours and reviews. Any upcoming tours will be automatically cancelled.
+          </p>
+          <div class="field-row">
+            <label class="field-label">Type <strong>DELETE</strong> to confirm</label>
+            <input class="field-input" id="deleteConfirm" type="text" placeholder="DELETE">
+          </div>
+          <button class="btn-danger" onclick="confirmDelete()" style="margin-top:4px">Delete my account permanently</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /settings-panels -->
+</div><!-- /settings-wrap -->
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <span>© 2026 Waybound. All rights reserved.</span>
+  <div style="display:flex;gap:18px">
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="help.html">Help</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</footer>
+
+<script>
+// ── Theme system ──────────────────────────────────────────────────────────────
+const THEMES={ocean:{name:'Deep Ocean',desc:'Cool blue, refined',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Light & Warm',desc:'White base, bright energy',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Ivory & Earthy',desc:'Warm parchment, handcrafted',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Parchment & Gold',desc:'Warm gold, sophisticated',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Forest & Sage',desc:'Muted green, natural feel',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Terracotta',desc:'Earthy red, bold warmth',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
+let current=localStorage.getItem('waybound-theme')||'ocean', pending=current;
+document.body.className=current;
+
+function renderGrid(){document.getElementById('themeGrid').innerHTML=Object.entries(THEMES).map(([k,d])=>`<div class="th-opt${k===current?' sel':''}" data-k="${k}" onclick="previewTheme('${k}')"><div class="th-check">✓</div><div class="th-swatches">${d.sw.map(s=>`<div class="th-sw" style="background:${s}"></div>`).join('')}</div><div class="th-name">${d.name}</div><div class="th-desc">${d.desc}</div>${d.def?`<span class="th-default-tag">★ Default</span>`:''}</div>`).join('');}
+function openSettings(){pending=current;renderGrid();document.getElementById('overlay').classList.add('open');}
+function closeSettings(){document.body.className=current;document.getElementById('overlay').classList.remove('open');}
+function overlayClick(e){if(e.target===document.getElementById('overlay'))closeSettings();}
+function previewTheme(k){pending=k;document.querySelectorAll('.th-opt').forEach(el=>el.classList.toggle('sel',el.dataset.k===k));document.body.className=k;}
+function applyPending(){current=pending;localStorage.setItem('waybound-theme',current);document.getElementById('overlay').classList.remove('open');}
+
+// Inline theme grid on Appearance panel
+function renderInlineGrid() {
+  var grid = document.getElementById('inlineThemeGrid');
+  if (!grid) return;
+  grid.innerHTML = Object.entries(THEMES).map(([k,d]) =>
+    `<div class="th-opt${k===current?' sel':''}" data-k="${k}" onclick="previewInline('${k}')">
+      <div class="th-check">✓</div>
+      <div class="th-swatches">${d.sw.map(s=>`<div class="th-sw" style="background:${s}"></div>`).join('')}</div>
+      <div class="th-name">${d.name}</div>
+      <div class="th-desc">${d.desc}</div>
+      ${d.def?`<span class="th-default-tag">★ Default</span>`:''}
+    </div>`
+  ).join('');
+}
+function previewInline(k) {
+  pending = k;
+  document.body.className = k;
+  document.querySelectorAll('#inlineThemeGrid .th-opt').forEach(el => el.classList.toggle('sel', el.dataset.k === k));
+}
+function applyInlineTheme() {
+  current = pending;
+  localStorage.setItem('waybound-theme', current);
+  showFeedback('appearanceFeedback');
+}
+
+// ── Panel switcher ────────────────────────────────────────────────────────────
+function showPanel(name, btn) {
+  document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.settings-nav-item').forEach(b => b.classList.remove('active'));
+  var panel = document.getElementById('panel-' + name);
+  if (panel) panel.classList.add('active');
+  if (btn)  btn.classList.add('active');
+  if (name === 'appearance') renderInlineGrid();
+}
+
+// ── Load user data into form ──────────────────────────────────────────────────
+(function loadUserData() {
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch(e){}
+  if (!user) return;
+
+  // Profile form
+  var set = function(id, val) { var el = document.getElementById(id); if (el && val) el.value = val; };
+  set('firstName',   user.first_name);
+  set('lastName',    user.last_name);
+  set('emailField',  user.email);
+  set('phoneField',  user.phone);
+  set('bioField',    user.bio);
+
+  // Avatar
+  var av = document.getElementById('profileAvatar');
+  if (av && user) {
+    var name = user.first_name || user.email || 'U';
+    var initials = name.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+    if (user.photo_url) {
+      av.innerHTML = '<img src="' + user.photo_url + '" alt="' + initials + '">';
+      var removeBtn = document.getElementById('removePhotoBtn');
+      if (removeBtn) removeBtn.style.display = '';
+    } else {
+      av.textContent = initials;
+    }
+  }
+
+  // Show verification nav for operators
+  if (user.role === 'operator') {
+    var verNav = document.getElementById('navVerification');
+    if (verNav) verNav.style.display = '';
+    if (user.verification_status) {
+      updateVerifyStatus(user.verification_status);
+    } else if (user.is_verified) {
+      updateVerifyStatus('approved');
+    }
+    // Show Telegram card for operators
+    var tgCard = document.getElementById('telegramCard');
+    if (tgCard) tgCard.style.display = '';
+    set('telegramChatId', user.telegram_chat_id);
+  }
+
+  // Marketing emails toggle
+  if (user.marketing_emails) {
+    var mt = document.getElementById('toggleMarketing');
+    if (mt) mt.classList.add('on');
+  }
+})();
+
+// ── Fetch fresh user data + social connections ───────────────────────────────
+(function fetchFreshUser() {
+  var token = localStorage.getItem('waybound_access');
+  if (!token) return;
+  fetch(window.API_V1 + '/auth/me/', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  })
+  .then(function(r) { return r.ok ? r.json() : null; })
+  .then(function(data) {
+    if (!data) return;
+    localStorage.setItem('waybound_user', JSON.stringify(data));
+    // Update verification status if operator
+    if (data.role === 'operator') {
+      var verNav = document.getElementById('navVerification');
+      if (verNav) verNav.style.display = '';
+      updateVerifyStatus(data.verification_status || (data.is_verified ? 'approved' : null));
+      var tgCard = document.getElementById('telegramCard');
+      if (tgCard) tgCard.style.display = '';
+      var tgEl = document.getElementById('telegramChatId');
+      if (tgEl && data.telegram_chat_id) tgEl.value = data.telegram_chat_id;
+    }
+    // Sync marketing toggle
+    var mt = document.getElementById('toggleMarketing');
+    if (mt) mt.classList.toggle('on', !!data.marketing_emails);
+  })
+  .catch(function(){});
+  // Load social connections
+  loadSocialConnections();
+})();
+
+// ── Avatar upload ─────────────────────────────────────────────────────────────
+async function handleAvatarUpload(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    var msgEl = document.getElementById('avatarUploadMsg');
+    if (msgEl) { msgEl.textContent = 'File too large. Max 2 MB.'; msgEl.style.color = '#c0392b'; msgEl.style.display = 'block'; }
+    return;
+  }
+  var token = localStorage.getItem('waybound_access');
+  if (!token) { showToast('Please sign in to upload a photo.', 'error'); return; }
+  var msgEl = document.getElementById('avatarUploadMsg');
+  if (msgEl) { msgEl.textContent = 'Uploading…'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
+  var fd = new FormData();
+  fd.append('avatar', file);
+  try {
+    var res = await fetch(window.API_V1 + '/auth/me/', {
+      method: 'PATCH',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: fd
+    });
+    if (!res.ok) throw new Error(res.status);
+    var data = await res.json();
+    // Backend returns photo_url (absolute) and avatar (relative) — prefer photo_url
+    var avatarUrl = data.photo_url || data.avatar;
+    // Update preview
+    var av = document.getElementById('profileAvatar');
+    if (av && avatarUrl) {
+      av.innerHTML = '<img src="' + avatarUrl + '" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    }
+    // Update localStorage — always store photo_url for nav avatar use
+    var user = null;
+    try { user = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ user = {}; }
+    if (avatarUrl) user.photo_url = avatarUrl;
+    localStorage.setItem('waybound_user', JSON.stringify(user));
+    // Show remove button
+    var removeBtn = document.getElementById('removePhotoBtn');
+    if (removeBtn) removeBtn.style.display = '';
+    // Refresh nav avatar
+    refreshNavAvatar();
+    if (msgEl) { msgEl.textContent = 'Photo updated!'; msgEl.style.color = 'var(--hb-tx)'; }
+    setTimeout(function(){ if (msgEl) msgEl.style.display = 'none'; }, 3000);
+  } catch(e) {
+    if (msgEl) { msgEl.textContent = 'Upload failed. Please try again.'; msgEl.style.color = '#c0392b'; }
+  }
+  input.value = '';
+}
+
+// ── Remove avatar ─────────────────────────────────────────────────────────────
+async function removeAvatar() {
+  var token = localStorage.getItem('waybound_access');
+  if (!token) { showToast('Please sign in to remove your photo.', 'error'); return; }
+  var msgEl = document.getElementById('avatarUploadMsg');
+  if (msgEl) { msgEl.textContent = 'Removing…'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
+  try {
+    var res = await fetch(window.API_V1 + '/auth/me/', {
+      method: 'PATCH',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ avatar: null })
+    });
+    if (!res.ok) throw new Error(res.status);
+    // Clear photo_url from localStorage
+    var user = null;
+    try { user = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ user = {}; }
+    delete user.photo_url;
+    localStorage.setItem('waybound_user', JSON.stringify(user));
+    // Revert avatar preview to initials
+    var av = document.getElementById('profileAvatar');
+    if (av) {
+      var name = user.first_name || user.email || 'U';
+      var initials = name.split(' ').filter(Boolean).map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+      av.textContent = initials;
+    }
+    // Hide remove button
+    var removeBtn = document.getElementById('removePhotoBtn');
+    if (removeBtn) removeBtn.style.display = 'none';
+    // Refresh nav avatar
+    refreshNavAvatar();
+    if (msgEl) { msgEl.textContent = 'Photo removed.'; msgEl.style.color = 'var(--mu)'; }
+    setTimeout(function(){ if (msgEl) msgEl.style.display = 'none'; }, 3000);
+  } catch(e) {
+    if (msgEl) { msgEl.textContent = 'Failed to remove photo. Please try again.'; msgEl.style.color = '#c0392b'; }
+  }
+}
+
+// ── Refresh nav avatar after photo changes ────────────────────────────────────
+function refreshNavAvatar() {
+  var avatar = document.getElementById('navAvatar');
+  if (!avatar) return;
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch(e){}
+  if (!user) return;
+  var name     = (user.first_name ? user.first_name + ' ' + (user.last_name||'') : user.email || 'U').trim();
+  var initials = name.split(' ').filter(Boolean).map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+  if (user.photo_url) {
+    avatar.innerHTML = '<img src="' + user.photo_url + '" alt="' + initials + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  } else {
+    avatar.textContent = initials;
+  }
+}
+
+// ── Save handlers ─────────────────────────────────────────────────────────────
+async function saveProfile() {
+  var token = localStorage.getItem('waybound_access');
+  var payload = {
+    first_name: document.getElementById('firstName').value,
+    last_name:  document.getElementById('lastName').value,
+    phone:      document.getElementById('phoneField').value,
+    bio:        document.getElementById('bioField').value,
+  };
+  // Optimistic local update
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ user = {}; }
+  Object.assign(user, payload);
+  localStorage.setItem('waybound_user', JSON.stringify(user));
+  showFeedback('profileFeedback');
+  if (token) {
+    try {
+      await fetch(window.API_V1 + '/auth/me/', {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch(e) {}
+  }
+}
+
+
+function showPwError(msg) {
+  var el = document.getElementById('pwErrorBanner');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function clearPwError() {
+  var el = document.getElementById('pwErrorBanner');
+  if (el) { el.textContent = ''; el.classList.remove('show'); }
+}
+
+async function changePassword() {
+  clearPwError();
+  var cur = document.getElementById('currentPw').value;
+  var nw  = document.getElementById('newPw').value;
+  var cf  = document.getElementById('confirmPw').value;
+  if (!cur) { showPwError('Please enter your current password.'); return; }
+  if (!nw)  { showPwError('Please enter a new password.'); return; }
+  if (nw.length < 8) { showPwError('New password must be at least 8 characters.'); return; }
+  if (nw !== cf) { showPwError('Passwords do not match — please re-enter the new password in both fields.'); return; }
+  var token = localStorage.getItem('waybound_access');
+  if (!token) { showToast('Please sign in first.', 'error'); return; }
+  try {
+    var res = await fetch(window.API_V1 + '/auth/change-password/', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ current_password: cur, new_password: nw, new_password2: nw })
+    });
+    if (!res.ok) {
+      var data = await res.json();
+      function _pick(val) { return Array.isArray(val) ? val[0] : val; }
+      var msg = data.current_password ? _pick(data.current_password)
+              : data.new_password     ? _pick(data.new_password)
+              : data.detail           ? data.detail
+              : 'Failed to update password. Please try again.';
+      showPwError(msg);
+      return;
+    }
+    showFeedback('pwFeedback');
+    document.getElementById('currentPw').value = '';
+    document.getElementById('newPw').value = '';
+    document.getElementById('confirmPw').value = '';
+    document.getElementById('pwBar').style.width = '0';
+    document.getElementById('pwHint').textContent = 'Enter a new password';
+  } catch(e) {
+    showToast('Cannot connect to server.', 'error');
+  }
+}
+
+function updatePwStrength(pw) {
+  var bar  = document.getElementById('pwBar');
+  var hint = document.getElementById('pwHint');
+  if (!bar) return;
+  var score = 0;
+  if (pw.length >= 8)  score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  var pct  = Math.min(score * 20, 100);
+  var clr  = score <= 2 ? '#e74c3c' : score <= 3 ? '#f39c12' : '#27ae60';
+  var label= score <= 2 ? 'Weak' : score <= 3 ? 'Moderate' : 'Strong';
+  bar.style.width = pct + '%';
+  bar.style.background = clr;
+  if (hint) hint.textContent = pw ? label + ' password' : 'Enter a new password';
+}
+
+function connectSocial(provider) {
+  var base = window.API_V1.replace('/api/v1', '');
+  window.location.href = base + '/accounts/' + provider + '/login/?process=connect&next=' + encodeURIComponent(window.location.pathname + '#connected');
+}
+
+// ── Verification document upload ─────────────────────────────────────────────
+async function uploadVerifyDoc(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('File too large. Max 5 MB.', 'error'); input.value = ''; return;
+  }
+  var token = localStorage.getItem('waybound_access');
+  if (!token) { showToast('Please sign in first.', 'error'); return; }
+  var msgEl = document.getElementById('verifyUploadMsg');
+  if (msgEl) { msgEl.textContent = 'Uploading...'; msgEl.style.display = 'inline'; msgEl.style.color = 'var(--mu)'; }
+  var fd = new FormData();
+  fd.append('document', file);
+  try {
+    var res = await fetch(window.API_V1 + '/auth/verify/', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: fd
+    });
+    if (!res.ok) {
+      var data = await res.json();
+      showToast(data.detail || 'Upload failed.', 'error');
+      if (msgEl) msgEl.style.display = 'none';
+      input.value = ''; return;
+    }
+    if (msgEl) { msgEl.textContent = 'Submitted! Under review.'; msgEl.style.color = 'var(--hb-tx)'; }
+    updateVerifyStatus('pending');
+  } catch(e) {
+    showToast('Cannot connect to server.', 'error');
+    if (msgEl) msgEl.style.display = 'none';
+  }
+  input.value = '';
+}
+
+function updateVerifyStatus(st) {
+  var ico   = document.getElementById('verifyIco');
+  var title = document.getElementById('verifyTitle');
+  var desc  = document.getElementById('verifyDesc');
+  var card  = document.getElementById('verifyStatusCard');
+  var upload = document.getElementById('verifyUploadSection');
+  if (!ico) return;
+  if (st === 'approved') {
+    ico.textContent = '✅';
+    title.textContent = 'Verified';
+    desc.textContent = 'Your identity has been verified. You can publish tours.';
+    card.style.borderColor = 'var(--hb-bd)';
+    card.style.background = 'var(--hb-bg)';
+    if (upload) upload.style.display = 'none';
+  } else if (st === 'pending') {
+    ico.textContent = '⏳';
+    title.textContent = 'Under review';
+    desc.textContent = 'Your document is being reviewed. This usually takes up to 48 hours.';
+    card.style.borderColor = 'var(--ha-bd)';
+    card.style.background = 'var(--ha-bg)';
+    if (upload) upload.style.display = 'none';
+  } else if (st === 'rejected') {
+    ico.textContent = '❌';
+    title.textContent = 'Rejected';
+    desc.textContent = 'Your document was not accepted. Please resubmit a clearer photo.';
+    card.style.borderColor = '#e0a0a0';
+    card.style.background = '#fef0ee';
+    if (upload) upload.style.display = '';
+  } else {
+    ico.textContent = '📋';
+    title.textContent = 'Not yet submitted';
+    desc.textContent = 'Upload an ID document to get verified and start publishing tours.';
+    if (upload) upload.style.display = '';
+  }
+}
+
+async function confirmDelete() {
+  var val = document.getElementById('deleteConfirm').value;
+  if (val !== 'DELETE') { showToast('Please type DELETE to confirm.', 'error'); return; }
+  var token = localStorage.getItem('waybound_access');
+  if (token) {
+    try {
+      await fetch(window.API_V1 + '/auth/me/', {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+    } catch(e) {}
+  }
+  localStorage.removeItem('waybound_access');
+  localStorage.removeItem('waybound_refresh');
+  localStorage.removeItem('waybound_user');
+  showToast('Account deactivated. Redirecting...', 'info');
+  setTimeout(function() { window.location.href = 'waybound.html'; }, 1500);
+}
+
+// ── Telegram Chat ID save ─────────────────────────────────────────────────────
+async function saveTelegramChatId() {
+  var token = localStorage.getItem('waybound_access');
+  if (!token) { showToast('Please sign in first.', 'error'); return; }
+  var chatId = (document.getElementById('telegramChatId').value || '').trim();
+  try {
+    var res = await fetch(window.API_V1 + '/auth/me/', {
+      method: 'PATCH',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ telegram_chat_id: chatId })
+    });
+    if (res.ok) {
+      var user = null;
+      try { user = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e) { user = {}; }
+      user.telegram_chat_id = chatId;
+      localStorage.setItem('waybound_user', JSON.stringify(user));
+      showFeedback('telegramFeedback');
+    } else {
+      showToast('Failed to save. Please try again.', 'error');
+    }
+  } catch(e) {
+    showToast('Network error. Please try again.', 'error');
+  }
+}
+
+// ── Marketing emails toggle ──────────────────────────────────────────────────
+async function toggleMarketingEmails() {
+  var tog = document.getElementById('toggleMarketing');
+  if (!tog) return;
+  tog.classList.toggle('on');
+  var isOn = tog.classList.contains('on');
+  var token = localStorage.getItem('waybound_access');
+  if (token) {
+    try {
+      await fetch(window.API_V1 + '/auth/me/', {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ marketing_emails: isOn })
+      });
+    } catch(e) {}
+  }
+  // Update local cache
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ user = {}; }
+  user.marketing_emails = isOn;
+  localStorage.setItem('waybound_user', JSON.stringify(user));
+  showFeedback('notifFeedback');
+}
+
+// ── Load social connections status ───────────────────────────────────────────
+async function loadSocialConnections() {
+  var token = localStorage.getItem('waybound_access');
+  if (!token) return;
+  try {
+    var res = await fetch(window.API_V1 + '/auth/social/connections/', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) return;
+    var accounts = await res.json();
+    var providers = {};
+    accounts.forEach(function(a) { providers[a.provider] = a; });
+    ['google', 'apple', 'yandex'].forEach(function(p) {
+      var btn = document.getElementById(p + 'Btn');
+      var st  = document.getElementById(p + 'Status');
+      if (!btn) return;
+      if (providers[p]) {
+        btn.textContent = 'Disconnect';
+        btn.className = 'btn-conn disconnect';
+        btn.onclick = function() { disconnectSocial(p); };
+        if (st) {
+          st.textContent = 'Connected' + (providers[p].email ? ' · ' + providers[p].email : '');
+          st.className = 'conn-status connected';
+        }
+      } else {
+        btn.textContent = 'Connect';
+        btn.className = 'btn-conn connect';
+        btn.onclick = function() { connectSocial(p); };
+        if (st) { st.textContent = 'Not connected'; st.className = 'conn-status'; }
+      }
+    });
+  } catch(e) {}
+}
+
+async function disconnectSocial(provider) {
+  var token = localStorage.getItem('waybound_access');
+  if (!token) return;
+  if (!confirm('Disconnect ' + provider.charAt(0).toUpperCase() + provider.slice(1) + '?')) return;
+  try {
+    var res = await fetch(window.API_V1 + '/auth/social/connections/' + provider + '/', {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) {
+      var data = await res.json();
+      showToast(data.detail || 'Cannot disconnect.', 'error');
+      return;
+    }
+    loadSocialConnections();
+    showToast(provider.charAt(0).toUpperCase() + provider.slice(1) + ' disconnected.', 'success');
+  } catch(e) {
+    showToast('Cannot connect to server.', 'error');
+  }
+}
+
+function showFeedback(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('show');
+  setTimeout(function(){ el.classList.remove('show'); }, 2500);
+}
+
+// ── Deep-link to panel via URL hash ──────────────────────────────────────────
+(function() {
+  var hash = window.location.hash.replace('#','');
+  if (hash) {
+    var btn = document.querySelector('[onclick*="showPanel(\'' + hash + '\'"]');
+    showPanel(hash, btn);
+  }
+  // Pre-render inline theme grid if on appearance panel
+  if (hash === 'appearance') renderInlineGrid();
+})();
+
+// Nav: handled by nav.js
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

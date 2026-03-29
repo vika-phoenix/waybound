@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Create account · Waybound</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Space+Grotesk:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{transition:background .35s,color .35s;--ink:#0d1f2d;--paper:#f0f5f9;--white:#ffffff;--ac:#4fa8d4;--ad:#2080ae;--mu:#607a8a;--ln:#c0d4e0;--ha-bg:#e8f4fb;--ha-bd:#94c8e4;--ha-tx:#0e5070;--hb-bg:#e6f4f0;--hb-bd:#88c4b4;--hb-tx:#0e4840;--tr-bg:#f4f9fc;--df:'Fraunces',serif;--bf:'Space Grotesk',sans-serif;}
+body.warm{--ink:#1C140C;--paper:#FFFFFF;--white:#FFFFFF;--ac:#C05430;--ad:#9A3A20;--mu:#8C7A68;--ln:#EFE6D8;--ha-bg:#FBF0EB;--ha-bd:#EECCB8;--ha-tx:#8C3010;--hb-bg:#EEF5EC;--hb-bd:#B0D0A8;--hb-tx:#2A5030;--tr-bg:#FBF8F4;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+body.ivory{--ink:#1A1208;--paper:#FAF6EE;--white:#FAF6EE;--ac:#B84D2A;--ad:#96381A;--mu:#8A7862;--ln:#DDD0BC;--ha-bg:#F8EFE6;--ha-bd:#E0C8A8;--ha-tx:#7A3010;--hb-bg:#EAF0E4;--hb-bd:#A8C8A0;--hb-tx:#285030;--tr-bg:#F2EAD8;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+body.gold{--ink:#1a1a2e;--paper:#f7f4ef;--white:#ffffff;--ac:#c8a96e;--ad:#a8893e;--mu:#8a8070;--ln:#ddd8d0;--ha-bg:#fdf8ed;--ha-bd:#e8d9a0;--ha-tx:#7a6020;--hb-bg:#edf5ef;--hb-bd:#a0c8a8;--hb-tx:#2d5a38;--tr-bg:#faf8f5;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+body.forest{--ink:#1e2a22;--paper:#f2f7f3;--white:#ffffff;--ac:#6aab7a;--ad:#3d7a50;--mu:#6a8070;--ln:#c4d8c8;--ha-bg:#edf7ee;--ha-bd:#aad4b0;--ha-tx:#245530;--hb-bg:#e8f5ec;--hb-bd:#96c8a0;--hb-tx:#1a4828;--tr-bg:#f4faf5;--df:'Libre Baskerville',serif;--bf:'Outfit',sans-serif;}
+body.ocean{--ink:#0d1f2d;--paper:#f0f5f9;--white:#ffffff;--ac:#4fa8d4;--ad:#2080ae;--mu:#607a8a;--ln:#c0d4e0;--ha-bg:#e8f4fb;--ha-bd:#94c8e4;--ha-tx:#0e5070;--hb-bg:#e6f4f0;--hb-bd:#88c4b4;--hb-tx:#0e4840;--tr-bg:#f4f9fc;--df:'Fraunces',serif;--bf:'Space Grotesk',sans-serif;}
+body.terra{--ink:#2a1f1a;--paper:#faf6f2;--white:#ffffff;--ac:#d4735e;--ad:#b05040;--mu:#907060;--ln:#e0cec4;--ha-bg:#fdf0ec;--ha-bd:#e0a898;--ha-tx:#7a2818;--hb-bg:#edf5ec;--hb-bd:#98c898;--hb-tx:#285030;--tr-bg:#faf4f0;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:100vh;display:flex;flex-direction:column;transition:background .35s,color .35s}
+
+/* ══ NAV ══ */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--ink);height:62px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;gap:12px;
+  transition:background .35s;
+}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--df);font-size:19px;font-weight:400;color:var(--ac);letter-spacing:.03em;flex-shrink:0;text-decoration:none;transition:color .35s,font-family .35s}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .35s}
+.logo-mark svg{width:16px;height:16px}
+.nav-search{flex:1;max-width:190px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:7px 14px;font-size:12px;color:rgba(255,255,255,.38);cursor:pointer;font-family:var(--bf);transition:border-color .2s}
+.nav-search:hover{border-color:rgba(255,255,255,.28)}
+.nav-links{display:flex}
+.nav-link{font-size:12px;font-weight:500;color:rgba(255,255,255,.4);padding:6px 9px;cursor:pointer;font-family:var(--bf);transition:color .15s}
+.nav-link.on,.nav-link:hover{color:var(--ac)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-ghost-sm{font-size:12px;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.16);border-radius:5px;padding:6px 12px;background:none;cursor:pointer;font-family:var(--bf);font-weight:500}
+.btn-ac-sm{font-size:12px;font-weight:600;color:var(--ink);background:var(--ac);border:none;border-radius:5px;padding:7px 14px;cursor:pointer;font-family:var(--bf);transition:background .35s,color .35s}
+
+/* ── Gear button ── */
+.gear{
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:rgba(255,255,255,.5);font-size:15px;
+  transition:background .15s,color .15s;flex-shrink:0;
+}
+.gear:hover{background:rgba(255,255,255,.16);color:rgba(255,255,255,.8)}
+.gear.open{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.3)}
+
+.nav{position:sticky;top:0;z-index:100;background:var(--ink);height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;gap:12px;transition:background .35s;}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--df);font-size:19px;font-weight:400;color:var(--ac);letter-spacing:.03em;flex-shrink:0;text-decoration:none;transition:color .35s,font-family .35s}
+.nav-search{flex:1;max-width:190px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:7px 14px;font-size:12px;color:rgba(255,255,255,.38);cursor:pointer;font-family:var(--bf)}
+.nav-links{display:flex}
+.nav-link{font-size:12px;font-weight:500;color:rgba(255,255,255,.4);padding:6px 9px;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s}
+.nav-link.on,.nav-link:hover{color:var(--ac)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.footer{background:var(--ink);padding:32px 26px 24px;transition:background .35s;}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:20px;margin-bottom:22px;}
+.foot-logo{font-family:var(--df);font-size:18px;color:var(--ac);display:flex;align-items:center;gap:8px;margin-bottom:9px;transition:color .35s,font-family .35s;}
+.foot-desc{font-size:11.5px;color:rgba(255,255,255,.24);line-height:1.65;font-family:var(--bf);}
+.foot-col-h{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:11px;font-family:var(--bf);}
+.footer a{text-decoration:none;}
+.foot-link{display:block;font-size:12px;color:rgba(255,255,255,.42);padding:3.5px 0;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s;}
+.foot-link:hover{color:rgba(255,255,255,.8);}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:15px;display:flex;justify-content:space-between;align-items:center;}
+.foot-copy{font-size:11px;color:rgba(255,255,255,.18);font-family:var(--bf);}
+.foot-soc{display:flex;gap:7px;}
+.soc-btn{width:27px;height:27px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:rgba(255,255,255,.3);}
+.th-opt{border:2px solid var(--ln);border-radius:10px;padding:11px 11px 10px;cursor:pointer;background:var(--white);transition:border-color .2s;position:relative;}
+.th-opt:hover{border-color:var(--ac)}
+.th-opt.sel{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}
+.th-opt.sel .th-check{opacity:1;transform:scale(1)}
+.th-check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ink);font-weight:700;opacity:0;transform:scale(.7);transition:opacity .15s,transform .15s;}
+.th-swatches{display:flex;gap:4px;margin-bottom:8px}
+.th-sw{width:18px;height:18px;border-radius:5px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.th-name{font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:2px;}
+.th-desc{font-size:10.5px;color:var(--mu);font-family:var(--bf);line-height:1.4;}
+.th-default-tag{display:inline-flex;font-size:9px;font-weight:600;color:var(--ha-tx);background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:100px;padding:2px 7px;margin-top:5px;}
+.drawer-apply{width:100%;padding:13px;background:var(--ac);color:var(--ink);border:none;border-radius:7px;font-size:14px;font-weight:700;font-family:var(--bf);cursor:pointer;margin-bottom:4px;}
+.drawer-apply:hover{filter:brightness(1.08)}
+.drawer-divider{height:1px;background:var(--ln);margin:20px 0;}
+.drawer-note{font-size:11.5px;color:var(--mu);font-family:var(--bf);line-height:1.65;}
+
+/* ══ ABOUT HERO ══ */
+.about-hero{
+  background:var(--ink);padding:70px 26px 60px;
+  position:relative;overflow:hidden;transition:background .35s;
+  text-align:center;
+}
+.about-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--ac) 16%,transparent),transparent 60%);pointer-events:none;}
+.ah-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:100px;padding:5px 15px;font-size:11px;font-weight:500;color:rgba(255,255,255,.6);margin-bottom:20px;font-family:var(--bf);}
+.ah-title{font-family:var(--df);font-size:46px;font-weight:400;color:#fff;line-height:1.05;margin-bottom:16px;letter-spacing:-.02em;max-width:680px;margin-left:auto;margin-right:auto;}
+.ah-title em{font-style:italic;color:var(--ac);}
+.ah-sub{font-size:15px;color:rgba(255,255,255,.55);line-height:1.65;max-width:520px;margin:0 auto 32px;font-family:var(--bf);}
+.ah-cta{display:inline-flex;gap:12px;align-items:center;}
+.btn-white{font-size:13.5px;font-weight:600;color:var(--ink);background:#fff;border:none;border-radius:6px;padding:13px 26px;cursor:pointer;font-family:var(--bf);}
+.btn-ghost-white{font-size:13.5px;font-weight:500;color:#fff;background:transparent;border:1.5px solid rgba(255,255,255,.3);border-radius:6px;padding:12px 24px;cursor:pointer;font-family:var(--bf);}
+
+/* ══ STATS BAND ══ */
+.stats-band{display:grid;grid-template-columns:repeat(4,1fr);background:var(--white);border-bottom:1px solid var(--ln);transition:background .35s,border-color .35s;}
+.stat{padding:22px 16px;text-align:center;border-right:1px solid var(--ln);}
+.stat:last-child{border-right:none}
+.stat-n{font-family:var(--df);font-size:32px;font-weight:400;color:var(--ad);line-height:1;margin-bottom:4px;transition:color .35s,font-family .35s;}
+.stat-l{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;font-family:var(--bf);}
+
+/* ══ CONTENT MAX-WIDTH ══ */
+.page-wrap{max-width:880px;margin:0 auto;padding:0 26px;}
+
+/* ══ STORY SECTION ══ */
+.story{padding:64px 26px;max-width:880px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;}
+.story-img{border-radius:14px;overflow:hidden;height:340px;position:relative;display:flex;align-items:center;justify-content:center;font-size:80px;}
+.warm .story-img,.ivory .story-img{background:linear-gradient(145deg,#5C2010,#A03828)}
+.gold .story-img{background:linear-gradient(145deg,#2c1e0e,#6b4c25)}
+.forest .story-img{background:linear-gradient(145deg,#0e2a16,#1a5832)}
+.ocean .story-img{background:linear-gradient(145deg,#0a182a,#0a4078)}
+.terra .story-img{background:linear-gradient(145deg,#3a1808,#8a3818)}
+.story-img-badge{position:absolute;bottom:14px;left:14px;background:rgba(255,255,255,.92);border-radius:8px;padding:8px 12px;font-size:11px;font-weight:600;color:var(--ink);font-family:var(--bf);}
+.story-eyebrow{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ad);font-family:var(--bf);margin-bottom:10px;}
+.story-title{font-family:var(--df);font-size:30px;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:16px;}
+.story-title em{font-style:italic;color:var(--ad);}
+.story-body{font-size:14px;color:var(--mu);line-height:1.75;font-family:var(--bf);margin-bottom:14px;}
+.story-sig{font-family:var(--df);font-size:17px;font-style:italic;color:var(--ad);margin-top:20px;}
+
+/* ══ BELIEFS ══ */
+.beliefs{background:var(--paper);padding:56px 26px;transition:background .35s;}
+.beliefs-inner{max-width:880px;margin:0 auto;}
+.section-eyebrow{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ad);font-family:var(--bf);margin-bottom:10px;text-align:center;}
+.section-title{font-family:var(--df);font-size:30px;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:36px;text-align:center;}
+.section-title em{font-style:italic;color:var(--ad);}
+.beliefs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.belief-card{background:var(--white);border:1px solid var(--ln);border-radius:10px;padding:22px;transition:background .35s,border-color .35s;}
+.belief-icon{width:40px;height:40px;border-radius:10px;background:var(--ha-bg);border:1px solid var(--ha-bd);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px;transition:all .35s;}
+.belief-h{font-family:var(--df);font-size:17px;font-weight:400;color:var(--ink);margin-bottom:8px;transition:font-family .35s,color .35s;}
+.belief-p{font-size:13px;color:var(--mu);line-height:1.65;font-family:var(--bf);}
+
+/* ══ TEAM ══ */
+.team{padding:56px 26px;max-width:880px;margin:0 auto;}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:0;}
+.team-card{text-align:center;}
+.team-photo{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px;border:3px solid var(--white);box-shadow:0 2px 12px rgba(0,0,0,.1);}
+.warm .team-photo,.ivory .team-photo{background:linear-gradient(135deg,#4a1808,#8a3020)}
+.gold .team-photo{background:linear-gradient(135deg,#2a1808,#5a3818)}
+.forest .team-photo{background:linear-gradient(135deg,#0e2018,#1a4828)}
+.ocean .team-photo{background:linear-gradient(135deg,#0a1828,#0a3868)}
+.terra .team-photo{background:linear-gradient(135deg,#2a1008,#6a2818)}
+.team-name{font-family:var(--df);font-size:14px;font-weight:400;color:var(--ink);margin-bottom:2px;transition:font-family .35s;}
+.team-role{font-size:11px;color:var(--mu);font-family:var(--bf);}
+.team-country{font-size:11px;color:var(--ac);font-family:var(--bf);margin-top:2px;transition:color .35s;}
+
+/* ══ PHOTO GALLERY ══ */
+.gallery{background:var(--ink);padding:48px 26px;transition:background .35s;}
+.gallery-inner{max-width:880px;margin:0 auto;}
+.gallery-title{font-family:var(--df);font-size:26px;font-weight:400;color:#fff;margin-bottom:22px;transition:font-family .35s;}
+.gallery-title em{font-style:italic;color:var(--ac);}
+.gallery-grid{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;height:320px;}
+.gp{border-radius:8px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;font-size:48px;cursor:pointer;}
+.gp:first-child{grid-row:1/3;}
+.warm .gp:nth-child(1),.ivory .gp:nth-child(1){background:linear-gradient(145deg,#5C2010,#A03828)}
+.warm .gp:nth-child(2),.ivory .gp:nth-child(2){background:linear-gradient(145deg,#0A2840,#183870)}
+.warm .gp:nth-child(3),.ivory .gp:nth-child(3){background:linear-gradient(145deg,#0A2A20,#185040)}
+.warm .gp:nth-child(4),.ivory .gp:nth-child(4){background:linear-gradient(145deg,#2A1008,#604020)}
+.warm .gp:nth-child(5),.ivory .gp:nth-child(5){background:linear-gradient(145deg,#1A1840,#303878)}
+.gold .gp:nth-child(1){background:linear-gradient(145deg,#2c1e0e,#6b4c25)}
+.gold .gp:nth-child(2){background:linear-gradient(145deg,#151525,#262660)}
+.gold .gp:nth-child(3){background:linear-gradient(145deg,#142414,#2a5530)}
+.gold .gp:nth-child(4){background:linear-gradient(145deg,#221808,#5a4018)}
+.gold .gp:nth-child(5){background:linear-gradient(145deg,#101828,#202860)}
+.forest .gp:nth-child(1){background:linear-gradient(145deg,#0e2a16,#1a5832)}
+.forest .gp:nth-child(2){background:linear-gradient(145deg,#0e1e28,#1a3a52)}
+.forest .gp:nth-child(3){background:linear-gradient(145deg,#141e0e,#2a4e20)}
+.forest .gp:nth-child(4){background:linear-gradient(145deg,#182618,#264038)}
+.forest .gp:nth-child(5){background:linear-gradient(145deg,#0e1820,#183040)}
+.ocean .gp:nth-child(1){background:linear-gradient(145deg,#0a182a,#0a4078)}
+.ocean .gp:nth-child(2){background:linear-gradient(145deg,#081820,#0a4858)}
+.ocean .gp:nth-child(3){background:linear-gradient(145deg,#0a1a18,#0a5040)}
+.ocean .gp:nth-child(4){background:linear-gradient(145deg,#160a28,#3a1870)}
+.ocean .gp:nth-child(5){background:linear-gradient(145deg,#0a1828,#183870)}
+.terra .gp:nth-child(1){background:linear-gradient(145deg,#3a1808,#8a3818)}
+.terra .gp:nth-child(2){background:linear-gradient(145deg,#181826,#2a2858)}
+.terra .gp:nth-child(3){background:linear-gradient(145deg,#1a2816,#2a5828)}
+.terra .gp:nth-child(4){background:linear-gradient(145deg,#281008,#704020)}
+.terra .gp:nth-child(5){background:linear-gradient(145deg,#2a1820,#503040)}
+.gp-overlay{position:absolute;inset:0;background:rgba(0,0,0,.3);opacity:0;transition:opacity .2s;display:flex;align-items:center;justify-content:center;}
+.gp:hover .gp-overlay{opacity:1}
+.gp-overlay span{color:#fff;font-size:18px;}
+
+/* ══ PRESS ══ */
+.press{padding:44px 26px;max-width:880px;margin:0 auto;text-align:center;}
+.press-title{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);font-family:var(--bf);margin-bottom:22px;}
+.press-logos{display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;}
+.press-logo{font-family:var(--df);font-size:18px;font-weight:700;color:var(--ln);letter-spacing:.04em;transition:color .2s,font-family .35s;cursor:pointer;}
+.press-logo:hover{color:var(--mu)}
+
+/* ══ JOIN CTA ══ */
+.join-cta{background:var(--hb-bg);border-top:1px solid var(--hb-bd);padding:56px 26px;text-align:center;transition:background .35s,border-color .35s;}
+.jc-title{font-family:var(--df);font-size:32px;font-weight:400;color:var(--ink);margin-bottom:12px;transition:font-family .35s,color .35s;}
+.jc-title em{font-style:italic;color:var(--ad);}
+.jc-sub{font-size:14px;color:var(--mu);font-family:var(--bf);margin-bottom:26px;line-height:1.65;max-width:480px;margin-left:auto;margin-right:auto;}
+.jc-btns{display:flex;gap:12px;justify-content:center;}
+.btn-primary{font-size:13.5px;font-weight:600;color:var(--white);background:var(--ink);border:none;border-radius:6px;padding:13px 25px;cursor:pointer;font-family:var(--bf);transition:background .35s,color .35s;}
+.btn-outline{font-size:13.5px;font-weight:500;color:var(--ink);background:transparent;border:1.5px solid var(--ln);border-radius:6px;padding:12px 22px;cursor:pointer;font-family:var(--bf);}
+
+/* FOOTER */
+.footer{background:var(--ink);padding:32px 26px 24px;transition:background .35s;}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:20px;margin-bottom:22px;}
+.foot-logo{font-family:var(--df);font-size:18px;color:var(--ac);display:flex;align-items:center;gap:8px;margin-bottom:9px;transition:color .35s,font-family .35s;}
+.foot-desc{font-size:11.5px;color:rgba(255,255,255,.24);line-height:1.65;font-family:var(--bf);}
+.foot-col-h{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:11px;font-family:var(--bf);}
+.footer a{text-decoration:none;}
+.foot-link{display:block;font-size:12px;color:rgba(255,255,255,.42);padding:3.5px 0;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s;}
+.foot-link:hover{color:rgba(255,255,255,.8);}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:15px;display:flex;justify-content:space-between;align-items:center;}
+.foot-copy{font-size:11px;color:rgba(255,255,255,.18);font-family:var(--bf);}
+.foot-soc{display:flex;gap:7px;}
+.soc-btn{width:27px;height:27px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:rgba(255,255,255,.3);}
+
+
+/* AUTH LAYOUT */
+.auth-wrap{flex:1;display:flex;align-items:stretch;min-height:calc(100vh - 56px)}
+.auth-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 24px}
+.auth-visual{flex:1;background:var(--ink);position:relative;overflow:hidden;min-height:420px;transition:background .35s}
+@media(max-width:820px){.auth-visual{display:none}.auth-wrap{min-height:unset}}
+.auth-vis-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:40px}
+.auth-vis-quote{font-family:var(--df);font-size:22px;font-weight:400;color:#fff;line-height:1.45;margin-bottom:14px;max-width:360px;transition:font-family .35s}
+.auth-vis-quote em{font-style:italic;color:var(--ac)}
+.auth-vis-attr{font-size:12px;color:rgba(255,255,255,.4);font-family:var(--bf)}
+.auth-vis-bg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(79,168,212,.08) 0%,rgba(13,31,45,.6) 100%)}
+.auth-vis-pattern{position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,var(--ac) 1px,transparent 1px);background-size:28px 28px}
+
+/* AUTH CARD */
+.auth-card{width:100%;max-width:420px}
+.auth-logo{display:flex;align-items:center;gap:9px;text-decoration:none;margin-bottom:32px}
+.auth-logo-mark{width:30px;height:30px;border-radius:8px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.auth-logo-text{font-family:var(--df);font-size:20px;color:var(--ink);transition:font-family .35s,color .35s}
+.auth-logo-text em{font-style:italic;color:var(--mu)}
+.auth-title{font-family:var(--df);font-size:26px;font-weight:400;color:var(--ink);margin-bottom:6px;transition:font-family .35s,color .35s}
+.auth-title em{font-style:italic;color:var(--ac)}
+.auth-sub{font-size:13.5px;color:var(--mu);font-family:var(--bf);margin-bottom:28px;line-height:1.5}
+
+/* SOCIAL BUTTONS */
+.auth-social{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.social-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 16px;background:var(--white);border:1.5px solid var(--ln);border-radius:8px;font-size:13.5px;font-weight:500;color:var(--ink);cursor:pointer;font-family:var(--bf);transition:border-color .15s,background .35s,color .35s;text-decoration:none}
+.social-btn:hover{border-color:var(--ac)}
+.social-btn svg{width:18px;height:18px;flex-shrink:0}
+.auth-divider{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.auth-divider-line{flex:1;height:1px;background:var(--ln)}
+.auth-divider-text{font-size:11.5px;color:var(--mu);font-family:var(--bf);white-space:nowrap}
+
+/* FORM */
+.auth-form{display:flex;flex-direction:column;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);transition:color .35s}
+.form-input{padding:11px 14px;background:var(--white);border:1.5px solid var(--ln);border-radius:8px;font-size:14px;color:var(--ink);font-family:var(--bf);outline:none;transition:border-color .15s,background .35s,color .35s}
+.form-input:focus{border-color:var(--ac)}
+.form-input::placeholder{color:var(--mu);opacity:.7}
+.form-input-wrap{position:relative}
+.form-input-wrap .form-input{width:100%;padding-right:44px}
+.form-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mu);font-size:16px;padding:4px}
+.form-hint{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-select{padding:11px 14px;background:var(--white);border:1.5px solid var(--ln);border-radius:8px;font-size:14px;color:var(--ink);font-family:var(--bf);outline:none;transition:border-color .15s,background .35s,color .35s;-webkit-appearance:none;appearance:none;cursor:pointer}
+.form-select:focus{border-color:var(--ac)}
+
+/* PHONE OTP */
+.phone-wrap{display:flex;gap:8px}
+.phone-code{width:90px;flex-shrink:0}
+.otp-row{display:flex;gap:10px;margin-top:10px}
+.otp-input{flex:1;padding:14px 10px;background:var(--white);border:1.5px solid var(--ln);border-radius:8px;font-size:20px;text-align:center;font-family:var(--bf);color:var(--ink);outline:none;transition:border-color .15s,background .35s,color .35s;font-weight:600}
+.otp-input:focus{border-color:var(--ac)}
+.otp-hint{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:8px;text-align:center}
+.send-otp-btn{padding:11px 16px;background:var(--ha-bg);border:1.5px solid var(--ha-bd);border-radius:8px;font-size:13px;font-weight:600;color:var(--ha-tx);cursor:pointer;font-family:var(--bf);white-space:nowrap;transition:background .15s,border-color .35s,color .35s}
+.send-otp-btn:hover{background:var(--ac);color:var(--ink);border-color:var(--ac)}
+.send-otp-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* METHOD TABS */
+.method-tabs{display:flex;gap:0;border:1.5px solid var(--ln);border-radius:8px;overflow:hidden;margin-bottom:20px;transition:border-color .35s}
+.method-tab{flex:1;padding:9px 12px;background:var(--white);border:none;font-size:12.5px;font-weight:500;color:var(--mu);cursor:pointer;font-family:var(--bf);transition:background .15s,color .15s}
+.method-tab.on{background:var(--ink);color:var(--white)}
+.method-panel{display:none}.method-panel.on{display:block}
+
+/* CONSENT */
+.consent-wrap{display:flex;flex-direction:column;gap:10px;margin:4px 0}
+.consent-row{display:flex;gap:10px;align-items:flex-start}
+.consent-check{width:16px;height:16px;border:1.5px solid var(--ln);border-radius:4px;cursor:pointer;margin-top:1px;flex-shrink:0;accent-color:var(--ac)}
+.consent-text{font-size:12px;color:var(--mu);font-family:var(--bf);line-height:1.55}
+.consent-text a{color:var(--ac);text-decoration:none}
+.consent-text a:hover{text-decoration:underline}
+.consent-passive{font-size:11.5px;color:var(--mu);font-family:var(--bf);line-height:1.55;margin-top:2px}
+.consent-passive a{color:var(--ac);text-decoration:none}
+
+/* SUBMIT */
+.auth-submit{width:100%;padding:14px;background:var(--ink);color:var(--white);border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--bf);transition:background .35s,opacity .15s;margin-top:4px}
+.auth-submit:hover{opacity:.88}
+.auth-footer-link{font-size:13px;color:var(--mu);font-family:var(--bf);text-align:center;margin-top:20px}
+.auth-footer-link a{color:var(--ac);text-decoration:none;font-weight:600}
+
+/* STEP INDICATOR */
+.step-bar{display:flex;align-items:center;gap:0;margin-bottom:28px}
+.step-dot{width:28px;height:28px;border-radius:50%;background:var(--ln);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--mu);font-family:var(--bf);transition:background .2s,color .2s,border-color .35s;flex-shrink:0;border:1.5px solid var(--ln)}
+.step-dot.done{background:var(--ac);color:var(--ink);border-color:var(--ac)}
+.step-dot.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.step-line{flex:1;height:2px;background:var(--ln);transition:background .2s}
+.step-line.done{background:var(--ac)}
+.step-labels{display:flex;justify-content:space-between;margin-top:6px;margin-bottom:22px}
+.step-label{font-size:10px;font-weight:500;color:var(--mu);font-family:var(--bf);text-align:center;flex:1}
+.step-label.active{color:var(--ink);font-weight:700}
+
+/* SECTION DIVIDER */
+.form-section-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);font-family:var(--bf);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--ln)}
+
+/* TEXTAREA */
+.form-textarea{padding:11px 14px;background:var(--white);border:1.5px solid var(--ln);border-radius:8px;font-size:13.5px;color:var(--ink);font-family:var(--bf);outline:none;transition:border-color .15s,background .35s,color .35s;resize:vertical;min-height:90px}
+.form-textarea:focus{border-color:var(--ac)}
+
+/* SUCCESS STATE */
+.auth-success{text-align:center;padding:20px 0}
+.auth-success-ico{font-size:52px;margin-bottom:16px}
+.auth-success-title{font-family:var(--df);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:8px;transition:font-family .35s,color .35s}
+.auth-success-sub{font-size:13.5px;color:var(--mu);font-family:var(--bf);line-height:1.65;max-width:340px;margin:0 auto 24px}
+.auth-success-btn{display:inline-block;padding:13px 28px;background:var(--ink);color:var(--white);border-radius:7px;font-size:13.5px;font-weight:700;text-decoration:none;font-family:var(--bf);transition:background .35s}
+
+/* OPERATOR BADGE */
+.op-badge{display:inline-flex;align-items:center;gap:6px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--ha-tx);font-family:var(--bf);margin-bottom:18px;transition:background .35s,border-color .35s,color .35s}
+
+/* TERMS BOX */
+.terms-box{background:var(--tr-bg);border:1.5px solid var(--ln);border-radius:8px;padding:16px;max-height:140px;overflow-y:auto;font-size:11.5px;color:var(--mu);font-family:var(--bf);line-height:1.65;transition:background .35s,border-color .35s}
+.terms-box strong{color:var(--ink);font-weight:600;display:block;margin-bottom:4px;transition:color .35s}
+
+.overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(5px);
+  animation:fadein .2s ease;
+}
+.overlay.open{display:block}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:330px;
+  background:var(--white);
+  border-left:1px solid var(--ln);
+  display:flex;flex-direction:column;
+  transform:translateX(330px);
+  transition:transform .3s cubic-bezier(.4,0,.2,1),background .35s,border-color .35s;
+  z-index:501;
+}
+.overlay.open .drawer{transform:translateX(0)}
+.drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;height:60px;
+  background:var(--ink);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  flex-shrink:0;
+  transition:background .35s;
+}
+.drawer-title{font-family:var(--df);font-size:17px;font-weight:400;color:var(--ac);transition:font-family .35s,color .35s}
+.drawer-close{
+  width:30px;height:30px;border-radius:7px;
+  background:rgba(255,255,255,.1);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.6);font-size:16px;
+}
+.drawer-close:hover{background:rgba(255,255,255,.2);color:#fff}
+
+.drawer-body{flex:1;overflow-y:auto;padding:22px}
+.drawer-body::-webkit-scrollbar{width:4px}
+.drawer-body::-webkit-scrollbar-track{background:transparent}
+.drawer-body::-webkit-scrollbar-thumb{background:var(--ln);border-radius:2px}
+
+.d-section-label{
+  font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--mu);
+  margin-bottom:14px;font-family:var(--bf);
+  transition:color .35s;
+}
+
+/* theme grid in drawer */
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px}
+.th-opt{
+  border:2px solid var(--ln);border-radius:10px;
+  padding:11px 11px 10px;cursor:pointer;
+  background:var(--white);
+  transition:border-color .2s,box-shadow .2s,background .35s;
+  position:relative;
+}
+.th-opt:hover{border-color:var(--ac)}
+.th-opt.sel{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}
+.th-opt.sel .th-check{opacity:1;transform:scale(1)}
+.th-check{
+  position:absolute;top:8px;right:8px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--ac);display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--ink);font-weight:700;
+  opacity:0;transform:scale(.7);transition:opacity .15s,transform .15s,background .35s,color .35s;
+}
+.th-swatches{display:flex;gap:4px;margin-bottom:8px}
+.th-sw{width:18px;height:18px;border-radius:5px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.th-name{font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:2px;transition:color .35s}
+.th-desc{font-size:10.5px;color:var(--mu);font-family:var(--bf);line-height:1.4;transition:color .35s}
+.th-default-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:600;color:var(--ha-tx);
+  background:var(--ha-bg);border:1px solid var(--ha-bd);
+  border-radius:100px;padding:2px 7px;margin-top:5px;
+  transition:all .35s;
+}
+
+/* ── Signup method tabs ── */
+.su-tabs{display:flex;gap:0;background:var(--ha-bg);border:1.5px solid var(--ln);border-radius:10px;padding:3px;margin-bottom:22px}
+.su-tab{flex:1;padding:9px 12px;border:none;background:none;border-radius:7px;font-size:13px;font-weight:500;color:var(--mu);cursor:pointer;font-family:var(--bf);transition:all .2s}
+.su-tab.on{background:var(--white);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.su-tab:hover:not(.on){color:var(--ink)}
+/* phone panel */
+.su-phone-panel{display:none}
+.su-phone-panel.visible{display:block}
+.su-email-panel.hidden{display:none}
+.otp-sent-wrap{margin-top:14px;display:none}
+.otp-sent-wrap.visible{display:block}
+.su-otp-grid{display:flex;gap:8px;margin-bottom:6px}
+.su-otp-cell{width:44px;height:50px;border:1.5px solid var(--ln);border-radius:8px;text-align:center;font-size:20px;font-weight:600;background:var(--white);color:var(--ink);font-family:var(--bf);outline:none;transition:border-color .15s}
+.su-otp-cell:focus{border-color:var(--ac)}
+.su-resend{font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:6px}
+.su-resend a{color:var(--ac);cursor:pointer;text-decoration:none}
+
+/* field error highlight */
+.form-input.field-err, .form-select.field-err {
+  border-color: #e53e3e;
+  background: #fff5f5;
+}
+.field-err-msg {
+  font-size: 11.5px;
+  color: #e53e3e;
+  font-family: var(--bf);
+  margin-top: 3px;
+}
+.consent-check.field-err + .consent-text {
+  color: #e53e3e;
+}
+
+/* ── Hamburger button (logged-out) ── */
+.nav-hamburger{
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4.5px;cursor:pointer;transition:background .15s,border-color .15s;
+  flex-shrink:0;
+}
+.nav-hamburger:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
+.nav-hamburger span{
+  display:block;width:16px;height:1.8px;border-radius:2px;
+  background:rgba(255,255,255,.65);transition:background .15s;
+}
+.nav-hamburger:hover span{background:rgba(255,255,255,.9)}
+.nav-hamburger.open{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.32)}
+
+/* ── User avatar button (logged-in) ── */
+.nav-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--ac);border:2px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;flex-shrink:0;overflow:hidden;
+  transition:border-color .15s,box-shadow .15s;
+  position:relative;
+}
+.nav-avatar:hover{border-color:rgba(255,255,255,.6);box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+
+/* ── Dropdown menu ── */
+.nav-dropdown{
+  position:absolute;top:calc(100% + 10px);right:0;
+  width:220px;
+  background:var(--white);border:1px solid var(--ln);border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.14);
+  padding:6px 0;
+  display:none;z-index:2000;
+  animation:dropIn .18s ease;
+}
+.nav-dropdown.open{display:block;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.nav-dropdown-head{
+  padding:12px 16px 10px;
+  border-bottom:1px solid var(--ln);
+  margin-bottom:4px;
+}
+.nav-dropdown-name{font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);}
+.nav-dropdown-email{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px;}
+.nav-dd-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 16px;
+  font-size:13px;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;transition:background .12s;
+  text-decoration:none;
+}
+.nav-dd-item:hover{background:var(--paper)}
+.nav-dd-item .dd-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-dd-item.dd-danger{color:#c0392b;}
+.nav-dd-item.dd-danger:hover{background:#fef0ee;}
+.nav-dd-sep{height:1px;background:var(--ln);margin:4px 0;}
+/* position wrapper */
+.nav-r-wrap{position:relative;display:flex;align-items:center;gap:8px;}
+</style>
+<script src="config.js"></script>
+</head>
+<body class="ocean">
+
+<nav class="nav">
+  <a class="logo" href="waybound.html"><div class="logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound</a>
+  <div class="nav-search">🔍 Where to go?</div>
+  <div class="nav-links"><a class="nav-link" href="adventures.html">Adventures</a><a class="nav-link" href="how-it-works.html">How it works</a><a class="nav-link" href="about.html">About</a><a class="nav-link" href="help.html">Help</a><a class="nav-link" href="contact.html">Contact</a></div>
+      <div class="nav-r nav-r-wrap">
+    <button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin.html'">Sign in / Sign up</button>
+    <a class="btn-ac-sm" href="operator.html" style="text-decoration:none" id="navListTourBtn">List a tour</a>
+    <div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" title="My account" style="display:none"></div>
+    <div class="nav-dropdown" id="navDropdown"></div>
+  </div>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-panel">
+    <div class="auth-card" style="max-width:460px">
+      <a class="auth-logo" href="waybound.html">
+  <div class="auth-logo-mark"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>
+  <div class="auth-logo-text">trip<em>sider</em></div>
+</a>
+
+      <!-- STEP 1: ACCOUNT CREATION -->
+      <div id="step1">
+        <h1 class="auth-title">Create your <em>account</em></h1>
+        <p class="auth-sub">Join 300,000+ travelers exploring the world with local experts.</p>
+
+        
+<div class="auth-social">
+  <button class="social-btn" onclick="socialLogin('google')">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+    Continue with Google
+  </button>
+  <button class="social-btn" onclick="socialLogin('apple')">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+    Continue with Apple
+  </button>
+  <button class="social-btn" onclick="socialLogin('yandex')">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#FC3F1D"/><path d="M13.63 18.71h-1.96V12.1l-2.42-6.39h2.1l1.58 4.5 1.5-4.5h2.03l-2.83 6.5z" fill="#fff"/></svg>
+    Continue with Yandex
+  </button>
+</div>
+
+        <div class="auth-divider">
+          <div class="auth-divider-line"></div>
+          <div class="auth-divider-text">or sign up with email</div>
+          <div class="auth-divider-line"></div>
+        </div>
+
+        <div>
+        <div class="auth-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First name *</label>
+              <input class="form-input" type="text" placeholder="Alex" id="s1-fname">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last name *</label>
+              <input class="form-input" type="text" placeholder="Moreau" id="s1-lname">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email address *</label>
+            <input class="form-input" type="email" placeholder="you@example.com" id="s1-email">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <div class="form-input-wrap">
+              <input class="form-input" type="password" id="s1-pw" placeholder="Minimum 8 characters">
+              <button class="form-eye" onclick="toggleField('s1-pw')" type="button">👁</button>
+            </div>
+            <span class="form-hint">Use at least 8 characters with a mix of letters and numbers</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone number *</label>
+            <input class="form-input" type="tel" id="s1-phone" placeholder="+7 900 000 0000">
+            <span class="form-hint">Required for booking confirmations and trip updates</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Country of residence</label>
+            <select class="form-select" id="s1-country">
+              <option value="">Select your country (optional)</option>
+              <option value="RU">🇷🇺 Russia</option>
+              <option value="US">🇺🇸 United States</option>
+              <option value="GB">🇬🇧 United Kingdom</option>
+              <option value="DE">🇩🇪 Germany</option>
+              <option value="FR">🇫🇷 France</option>
+              <option value="IN">🇮🇳 India</option>
+              <option value="CN">🇨🇳 China</option>
+              <option value="JP">🇯🇵 Japan</option>
+              <option value="UA">🇺🇦 Ukraine</option>
+              <option value="KZ">🇰🇿 Kazakhstan</option>
+              <option value="BY">🇧🇾 Belarus</option>
+              <option value="TR">🇹🇷 Turkey</option>
+              <option value="AE">🇦🇪 UAE</option>
+              <option value="OTHER">🌍 Other</option>
+            </select>
+            <span class="form-hint">Helps us show relevant tours and currency — you can add it later in profile settings</span>
+          </div>
+
+          <div class="consent-wrap">
+            <div class="consent-row">
+              <input type="checkbox" class="consent-check" id="c-data" required>
+              <label class="consent-text" for="c-data">
+                I consent to the processing of my personal data in accordance with the <a href="privacy.html">Privacy Policy</a> (required under 152-FZ)
+              </label>
+            </div>
+          </div>
+          <p class="consent-passive">By creating an account you agree to our <a href="terms.html">Terms of Use</a> and <a href="privacy.html">Privacy Policy</a>.</p>
+
+          <button class="auth-submit" onclick="submitSignup()">Create account</button>
+        </div>
+
+        </div>
+
+        <div class="auth-footer-link">Already have an account? <a href="signin.html">Sign in</a></div>
+        <div class="auth-footer-link" style="margin-top:8px">Want to list tours? <a href="signup-operator.html">Apply as a guide</a></div>
+      </div>
+
+      <!-- STEP 2: SUCCESS -->
+      <div id="step2" style="display:none">
+        <div class="auth-success">
+          <div class="auth-success-ico">🎉</div>
+          <div class="auth-success-title">Welcome to <em style="font-style:italic;color:var(--ac)">Waybound!</em></div>
+          <p class="auth-success-sub">Your account has been created. Check your email to verify your address, then start exploring 320+ adventures worldwide.</p>
+          <a href="adventures.html" class="auth-success-btn">Browse adventures</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  
+<div class="auth-visual">
+  <div class="auth-vis-bg"></div>
+  <div class="auth-vis-pattern"></div>
+  <div class="auth-vis-content">
+    <div style="font-size:52px;margin-bottom:24px">🌍</div>
+    <div class="auth-vis-quote">"The world is a book. Those who do not travel read <em>only one page.</em>"</div>
+    <div class="auth-vis-attr">— Saint Augustine</div>
+  </div>
+</div>
+</div>
+
+<footer class="footer">
+  <div class="foot-grid">
+    <div>
+      <div class="foot-logo">
+        <div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound
+      </div>
+      <div class="foot-desc">Connecting bold travelers with local experts. Central Asia &amp; Caucasus specialists, small groups always.</div>
+    </div>
+    <div>
+      <div class="foot-col-h">Explore</div>
+      <a class="foot-link" href="adventures.html">All adventures</a>
+      <a class="foot-link" href="how-it-works.html">How it works</a>
+      <a class="foot-link" href="small-group-benefits.html">Small group benefits</a>
+      <a class="foot-link" href="reviews.html">Traveler reviews</a>
+    </div>
+    <div>
+      <div class="foot-col-h">Company</div>
+      <a class="foot-link" href="about.html">About us</a>
+      <a class="foot-link" href="help.html">Help center</a>
+      <a class="foot-link" href="contact.html">Contact us</a>
+      <a class="foot-link" href="operator.html">List a tour</a>
+    </div>
+    <div>
+      <div class="foot-col-h">Legal</div>
+      <a class="foot-link" href="trust-safety.html">Trust &amp; Safety</a>
+      <a class="foot-link" href="terms.html">Terms of use</a>
+      <a class="foot-link" href="terms-experts.html">Terms for guides</a>
+      <a class="foot-link" href="privacy.html">Privacy policy</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div class="foot-copy">© 2026 Waybound.com</div>
+    <div class="foot-soc">
+      <div class="soc-btn">𝕏</div><div class="soc-btn">◎</div><div class="soc-btn">𝔽</div>
+    </div>
+  </div>
+</footer>
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="drawer">
+    <div class="drawer-head"><div class="drawer-title">Appearance</div><button class="drawer-close" onclick="closeSettings()">✕</button></div>
+    <div class="drawer-body"><div class="d-section-label">Choose your theme</div><div class="theme-grid" id="themeGrid"></div><button class="drawer-apply" onclick="applyPending()">Apply theme</button><div class="drawer-divider"></div><p class="drawer-note">Your choice is saved locally and remembered on your next visit.</p></div>
+  </div>
+</div>
+<script>
+
+const THEMES={ocean:{name:'Deep Ocean',desc:'Cool blue, refined',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Light & Warm',desc:'White base, bright energy',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Ivory & Earthy',desc:'Warm parchment, handcrafted',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Parchment & Gold',desc:'Warm gold, sophisticated',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Forest & Sage',desc:'Muted green, natural feel',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Terracotta',desc:'Earthy red, bold warmth',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
+let current=localStorage.getItem('waybound-theme')||'ocean', pending=current;
+document.body.className=current;
+function renderGrid(){document.getElementById('themeGrid').innerHTML=Object.entries(THEMES).map(([k,d])=>`<div class="th-opt${k===current?' sel':''}" data-k="${k}" onclick="previewTheme('${k}')"><div class="th-check">✓</div><div class="th-swatches">${d.sw.map(s=>`<div class="th-sw" style="background:${s}"></div>`).join('')}</div><div class="th-name">${d.name}</div><div class="th-desc">${d.desc}</div>${d.def?`<span class="th-default-tag">★ Default</span>`:''}</div>`).join('');}
+function openSettings(){var dd=document.getElementById('navDropdown');if(dd)dd.classList.remove('open');pending=current;renderGrid();document.getElementById('overlay').classList.add('open');}
+function closeSettings(){document.body.className=current;document.getElementById('overlay').classList.remove('open');}
+function overlayClick(e){if(e.target===document.getElementById('overlay'))closeSettings();}
+function previewTheme(k){pending=k;document.querySelectorAll('.th-opt').forEach(el=>el.classList.toggle('sel',el.dataset.k===k));document.body.className=k;}
+function applyPending(){current=pending;localStorage.setItem('waybound-theme',current);document.getElementById('overlay').classList.remove('open');}
+
+
+function toggleField(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+var API = window.API_V1 + '/auth';
+
+function socialLogin(provider) {
+  var base = window.API_V1.replace('/api/v1', '');
+  window.location.href = base + '/accounts/' + provider + '/login/?process=login&next=' + encodeURIComponent(window.location.pathname + '?login=confirmed');
+}
+
+// ── Social OAuth callback ────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('login') === 'confirmed') {
+    fetch(window.API_V1 + '/auth/social/token/', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+    .then(function(res) {
+      if (res.ok) {
+        localStorage.setItem('waybound_access',  res.data.access);
+        localStorage.setItem('waybound_refresh', res.data.refresh);
+        localStorage.setItem('waybound_user',    JSON.stringify(res.data.user));
+        var form = document.getElementById('step1');
+        var success = document.getElementById('step2');
+        if (form) form.style.display = 'none';
+        if (success) success.style.display = 'block';
+        setTimeout(function() { window.location.href = 'waybound.html'; }, 1800);
+      } else {
+        showSignupError(res.data.error || 'Social login failed. Please try again.');
+      }
+    })
+    .catch(function() {
+      showSignupError('Cannot connect to server. Make sure the backend is running.');
+    });
+  }
+});
+
+
+
+function showSignupError(msg) {
+  var el = document.getElementById('signup-error');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'signup-error';
+    el.style.cssText = 'background:#fee;border:1px solid #f99;color:#c00;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;font-family:var(--bf)';
+    var form = document.getElementById('signupForm');
+    if (form) form.prepend(el);
+  }
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function hideSignupError() {
+  var el = document.getElementById('signup-error');
+  if (el) el.style.display = 'none';
+}
+
+function fieldErr(id, msg) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('field-err');
+  // Remove any existing error msg
+  var next = el.nextElementSibling;
+  if (next && next.classList.contains('field-err-msg')) next.remove();
+  var span = document.createElement('span');
+  span.className = 'field-err-msg';
+  span.textContent = msg;
+  el.parentNode.insertBefore(span, el.nextSibling);
+}
+
+function clearFieldErrs() {
+  document.querySelectorAll('.field-err').forEach(function(el) {
+    el.classList.remove('field-err');
+  });
+  document.querySelectorAll('.field-err-msg').forEach(function(el) {
+    el.remove();
+  });
+  hideSignupError();
+}
+
+async function submitSignup() {
+  clearFieldErrs();
+
+  var firstName = (document.getElementById('s1-fname') || {}).value || '';
+  var lastName  = (document.getElementById('s1-lname') || {}).value || '';
+  var email     = (document.getElementById('s1-email') || {}).value || '';
+  var phone     = (document.getElementById('s1-phone') || {}).value || '';
+  var password  = (document.getElementById('s1-pw')    || {}).value || '';
+  var consent   = (document.getElementById('c-data')   || {}).checked;
+
+  firstName = firstName.trim();
+  lastName  = lastName.trim();
+  email     = email.trim();
+  phone     = phone.trim();
+  password  = password.trim();
+
+  // Validate + highlight each field individually
+  var hasErr = false;
+
+  if (!firstName) {
+    fieldErr('s1-fname', 'First name is required.');
+    hasErr = true;
+  }
+  if (!lastName) {
+    fieldErr('s1-lname', 'Last name is required.');
+    hasErr = true;
+  }
+  if (!email) {
+    fieldErr('s1-email', 'Email address is required.');
+    hasErr = true;
+  } else if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+    fieldErr('s1-email', 'Please enter a valid email address.');
+    hasErr = true;
+  }
+  if (!phone) {
+    fieldErr('s1-phone', 'Phone number is required.');
+    hasErr = true;
+  }
+  if (!password) {
+    fieldErr('s1-pw', 'Password is required.');
+    hasErr = true;
+  } else if (password.length < 8) {
+    fieldErr('s1-pw', 'Password must be at least 8 characters.');
+    hasErr = true;
+  }
+  if (!consent) {
+    var consentEl = document.getElementById('c-data');
+    if (consentEl) consentEl.classList.add('field-err');
+    showSignupError('Please tick the data consent checkbox to continue.');
+    hasErr = true;
+  }
+
+  if (hasErr) return;
+
+  var btn = document.querySelector('[onclick="submitSignup()"]');
+  if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
+
+  try {
+    var res = await fetch(API + '/register/tourist/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email:      email,
+        password:   password,
+        password2:  password,
+        first_name: firstName,
+        last_name:  lastName,
+        phone:      phone
+      })
+    });
+
+    var data = await res.json();
+
+    if (!res.ok) {
+      // Show field-specific errors with highlights
+      if (data.email) {
+        var emailMsg = data.email[0];
+        if (emailMsg.indexOf('already exists') >= 0) {
+          fieldErr('s1-email', 'An account with this email already exists. Try signing in instead.');
+        } else {
+          fieldErr('s1-email', emailMsg);
+        }
+      }
+      if (data.password) {
+        var pwMsg = data.password[0];
+        // Make Django's vague messages friendlier
+        if (pwMsg.indexOf('too common') >= 0) {
+          pwMsg = 'This password is too common. Try adding numbers or symbols (e.g. MyTrip2024!).';
+        } else if (pwMsg.indexOf('too short') >= 0 || pwMsg.indexOf('at least') >= 0) {
+          pwMsg = 'Password must be at least 8 characters.';
+        } else if (pwMsg.indexOf('entirely numeric') >= 0) {
+          pwMsg = 'Password cannot be all numbers. Add some letters.';
+        }
+        fieldErr('s1-pw', pwMsg);
+      }
+      if (data.non_field_errors) {
+        showSignupError(data.non_field_errors[0]);
+      }
+      if (!data.email && !data.password && !data.non_field_errors) {
+        showSignupError('Registration failed. Please check your details and try again.');
+      }
+      if (btn) { btn.disabled = false; btn.textContent = 'Create account'; }
+      return;
+    }
+
+    // Success — save JWT tokens
+    localStorage.setItem('waybound_access',  data.access);
+    localStorage.setItem('waybound_refresh', data.refresh);
+    localStorage.setItem('waybound_user',    JSON.stringify(data.user));
+
+    // Show success state then redirect
+    var form = document.getElementById('step1');
+    var success = document.getElementById('step2');
+    if (form) form.style.display = 'none';
+    if (success) success.style.display = 'block';
+    setTimeout(function() { window.location.href = 'waybound.html'; }, 1800);
+
+  } catch(e) {
+    showSignupError('Cannot connect to server. Make sure the backend is running.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Create account'; }
+  }
+}
+
+
+// Nav: handled by nav.js
+
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

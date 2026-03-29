@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apply as a guide · Waybound</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Space+Grotesk:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{transition:background .35s,color .35s;--ink:#0d1f2d;--paper:#f0f5f9;--white:#ffffff;--ac:#4fa8d4;--ad:#2080ae;--mu:#607a8a;--ln:#c0d4e0;--ha-bg:#e8f4fb;--ha-bd:#94c8e4;--ha-tx:#0e5070;--hb-bg:#e6f4f0;--hb-bd:#88c4b4;--hb-tx:#0e4840;--tr-bg:#f4f9fc;--df:'Fraunces',serif;--bf:'Space Grotesk',sans-serif;}
+body.warm{--ink:#1C140C;--paper:#FFFFFF;--white:#FFFFFF;--ac:#C05430;--ad:#9A3A20;--mu:#8C7A68;--ln:#EFE6D8;--ha-bg:#FBF0EB;--ha-bd:#EECCB8;--ha-tx:#8C3010;--hb-bg:#EEF5EC;--hb-bd:#B0D0A8;--hb-tx:#2A5030;--tr-bg:#FBF8F4;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+body.ivory{--ink:#1A1208;--paper:#FAF6EE;--white:#FAF6EE;--ac:#B84D2A;--ad:#96381A;--mu:#8A7862;--ln:#DDD0BC;--ha-bg:#F8EFE6;--ha-bd:#E0C8A8;--ha-tx:#7A3010;--hb-bg:#EAF0E4;--hb-bd:#A8C8A0;--hb-tx:#285030;--tr-bg:#F2EAD8;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+body.gold{--ink:#1a1a2e;--paper:#f7f4ef;--white:#ffffff;--ac:#c8a96e;--ad:#a8893e;--mu:#8a8070;--ln:#ddd8d0;--ha-bg:#fdf8ed;--ha-bd:#e8d9a0;--ha-tx:#7a6020;--hb-bg:#edf5ef;--hb-bd:#a0c8a8;--hb-tx:#2d5a38;--tr-bg:#faf8f5;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+body.forest{--ink:#1e2a22;--paper:#f2f7f3;--white:#ffffff;--ac:#6aab7a;--ad:#3d7a50;--mu:#6a8070;--ln:#c4d8c8;--ha-bg:#edf7ee;--ha-bd:#aad4b0;--ha-tx:#245530;--hb-bg:#e8f5ec;--hb-bd:#96c8a0;--hb-tx:#1a4828;--tr-bg:#f4faf5;--df:'Libre Baskerville',serif;--bf:'Outfit',sans-serif;}
+body.ocean{--ink:#0d1f2d;--paper:#f0f5f9;--white:#ffffff;--ac:#4fa8d4;--ad:#2080ae;--mu:#607a8a;--ln:#c0d4e0;--ha-bg:#e8f4fb;--ha-bd:#94c8e4;--ha-tx:#0e5070;--hb-bg:#e6f4f0;--hb-bd:#88c4b4;--hb-tx:#0e4840;--tr-bg:#f4f9fc;--df:'Fraunces',serif;--bf:'Space Grotesk',sans-serif;}
+body.terra{--ink:#2a1f1a;--paper:#faf6f2;--white:#ffffff;--ac:#d4735e;--ad:#b05040;--mu:#907060;--ln:#e0cec4;--ha-bg:#fdf0ec;--ha-bd:#e0a898;--ha-tx:#7a2818;--hb-bg:#edf5ec;--hb-bd:#98c898;--hb-tx:#285030;--tr-bg:#faf4f0;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:100vh;display:flex;flex-direction:column;transition:background .35s,color .35s}
+
+/* ══ NAV ══ */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--ink);height:62px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;gap:12px;
+  transition:background .35s;
+}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--df);font-size:19px;font-weight:400;color:var(--ac);letter-spacing:.03em;flex-shrink:0;text-decoration:none;transition:color .35s,font-family .35s}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .35s}
+.logo-mark svg{width:16px;height:16px}
+.nav-search{flex:1;max-width:190px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:7px 14px;font-size:12px;color:rgba(255,255,255,.38);cursor:pointer;font-family:var(--bf);transition:border-color .2s}
+.nav-search:hover{border-color:rgba(255,255,255,.28)}
+.nav-links{display:flex}
+.nav-link{font-size:12px;font-weight:500;color:rgba(255,255,255,.4);padding:6px 9px;cursor:pointer;font-family:var(--bf);transition:color .15s}
+.nav-link.on,.nav-link:hover{color:var(--ac)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-ghost-sm{font-size:12px;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.16);border-radius:5px;padding:6px 12px;background:none;cursor:pointer;font-family:var(--bf);font-weight:500}
+.btn-ac-sm{font-size:12px;font-weight:600;color:var(--ink);background:var(--ac);border:none;border-radius:5px;padding:7px 14px;cursor:pointer;font-family:var(--bf);transition:background .35s,color .35s}
+
+/* ── Gear button ── */
+.gear{
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:rgba(255,255,255,.5);font-size:15px;
+  transition:background .15s,color .15s;flex-shrink:0;
+}
+.gear:hover{background:rgba(255,255,255,.16);color:rgba(255,255,255,.8)}
+.gear.open{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.3)}
+
+.nav{position:sticky;top:0;z-index:100;background:var(--ink);height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;gap:12px;transition:background .35s;}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--df);font-size:19px;font-weight:400;color:var(--ac);letter-spacing:.03em;flex-shrink:0;text-decoration:none;transition:color .35s,font-family .35s}
+.nav-search{flex:1;max-width:190px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:7px 14px;font-size:12px;color:rgba(255,255,255,.38);cursor:pointer;font-family:var(--bf)}
+.nav-links{display:flex}
+.nav-link{font-size:12px;font-weight:500;color:rgba(255,255,255,.4);padding:6px 9px;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s}
+.nav-link.on,.nav-link:hover{color:var(--ac)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.footer{background:var(--ink);padding:32px 26px 24px;transition:background .35s;}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:20px;margin-bottom:22px;}
+.foot-logo{font-family:var(--df);font-size:18px;color:var(--ac);display:flex;align-items:center;gap:8px;margin-bottom:9px;transition:color .35s,font-family .35s;}
+.foot-desc{font-size:11.5px;color:rgba(255,255,255,.24);line-height:1.65;font-family:var(--bf);}
+.foot-col-h{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:11px;font-family:var(--bf);}
+.footer a{text-decoration:none;}
+.foot-link{display:block;font-size:12px;color:rgba(255,255,255,.42);padding:3.5px 0;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s;}
+.foot-link:hover{color:rgba(255,255,255,.8);}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:15px;display:flex;justify-content:space-between;align-items:center;}
+.foot-copy{font-size:11px;color:rgba(255,255,255,.18);font-family:var(--bf);}
+.foot-soc{display:flex;gap:7px;}
+.soc-btn{width:27px;height:27px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:rgba(255,255,255,.3);}
+.th-opt{border:2px solid var(--ln);border-radius:10px;padding:11px 11px 10px;cursor:pointer;background:var(--white);transition:border-color .2s;position:relative;}
+.th-opt:hover{border-color:var(--ac)}
+.th-opt.sel{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}
+.th-opt.sel .th-check{opacity:1;transform:scale(1)}
+.th-check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ink);font-weight:700;opacity:0;transform:scale(.7);transition:opacity .15s,transform .15s;}
+.th-swatches{display:flex;gap:4px;margin-bottom:8px}
+.th-sw{width:18px;height:18px;border-radius:5px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.th-name{font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:2px;}
+.th-desc{font-size:10.5px;color:var(--mu);font-family:var(--bf);line-height:1.4;}
+.th-default-tag{display:inline-flex;font-size:9px;font-weight:600;color:var(--ha-tx);background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:100px;padding:2px 7px;margin-top:5px;}
+.drawer-apply{width:100%;padding:13px;background:var(--ac);color:var(--ink);border:none;border-radius:7px;font-size:14px;font-weight:700;font-family:var(--bf);cursor:pointer;margin-bottom:4px;}
+.drawer-apply:hover{filter:brightness(1.08)}
+.drawer-divider{height:1px;background:var(--ln);margin:20px 0;}
+.drawer-note{font-size:11.5px;color:var(--mu);font-family:var(--bf);line-height:1.65;}
+
+/* ══ ABOUT HERO ══ */
+.about-hero{
+  background:var(--ink);padding:70px 26px 60px;
+  position:relative;overflow:hidden;transition:background .35s;
+  text-align:center;
+}
+.about-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--ac) 16%,transparent),transparent 60%);pointer-events:none;}
+.ah-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:100px;padding:5px 15px;font-size:11px;font-weight:500;color:rgba(255,255,255,.6);margin-bottom:20px;font-family:var(--bf);}
+.ah-title{font-family:var(--df);font-size:46px;font-weight:400;color:#fff;line-height:1.05;margin-bottom:16px;letter-spacing:-.02em;max-width:680px;margin-left:auto;margin-right:auto;}
+.ah-title em{font-style:italic;color:var(--ac);}
+.ah-sub{font-size:15px;color:rgba(255,255,255,.55);line-height:1.65;max-width:520px;margin:0 auto 32px;font-family:var(--bf);}
+.ah-cta{display:inline-flex;gap:12px;align-items:center;}
+.btn-white{font-size:13.5px;font-weight:600;color:var(--ink);background:#fff;border:none;border-radius:6px;padding:13px 26px;cursor:pointer;font-family:var(--bf);}
+.btn-ghost-white{font-size:13.5px;font-weight:500;color:#fff;background:transparent;border:1.5px solid rgba(255,255,255,.3);border-radius:6px;padding:12px 24px;cursor:pointer;font-family:var(--bf);}
+
+/* ══ STATS BAND ══ */
+.stats-band{display:grid;grid-template-columns:repeat(4,1fr);background:var(--white);border-bottom:1px solid var(--ln);transition:background .35s,border-color .35s;}
+.stat{padding:22px 16px;text-align:center;border-right:1px solid var(--ln);}
+.stat:last-child{border-right:none}
+.stat-n{font-family:var(--df);font-size:32px;font-weight:400;color:var(--ad);line-height:1;margin-bottom:4px;transition:color .35s,font-family .35s;}
+.stat-l{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;font-family:var(--bf);}
+
+/* ══ CONTENT MAX-WIDTH ══ */
+.page-wrap{max-width:880px;margin:0 auto;padding:0 26px;}
+
+/* ══ STORY SECTION ══ */
+.story{padding:64px 26px;max-width:880px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;}
+.story-img{border-radius:14px;overflow:hidden;height:340px;position:relative;display:flex;align-items:center;justify-content:center;font-size:80px;}
+.warm .story-img,.ivory .story-img{background:linear-gradient(145deg,#5C2010,#A03828)}
+.gold .story-img{background:linear-gradient(145deg,#2c1e0e,#6b4c25)}
+.forest .story-img{background:linear-gradient(145deg,#0e2a16,#1a5832)}
+.ocean .story-img{background:linear-gradient(145deg,#0a182a,#0a4078)}
+.terra .story-img{background:linear-gradient(145deg,#3a1808,#8a3818)}
+.story-img-badge{position:absolute;bottom:14px;left:14px;background:rgba(255,255,255,.92);border-radius:8px;padding:8px 12px;font-size:11px;font-weight:600;color:var(--ink);font-family:var(--bf);}
+.story-eyebrow{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ad);font-family:var(--bf);margin-bottom:10px;}
+.story-title{font-family:var(--df);font-size:30px;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:16px;}
+.story-title em{font-style:italic;color:var(--ad);}
+.story-body{font-size:14px;color:var(--mu);line-height:1.75;font-family:var(--bf);margin-bottom:14px;}
+.story-sig{font-family:var(--df);font-size:17px;font-style:italic;color:var(--ad);margin-top:20px;}
+
+/* ══ BELIEFS ══ */
+.beliefs{background:var(--paper);padding:56px 26px;transition:background .35s;}
+.beliefs-inner{max-width:880px;margin:0 auto;}
+.section-eyebrow{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ad);font-family:var(--bf);margin-bottom:10px;text-align:center;}
+.section-title{font-family:var(--df);font-size:30px;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:36px;text-align:center;}
+.section-title em{font-style:italic;color:var(--ad);}
+.beliefs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.belief-card{background:var(--white);border:1px solid var(--ln);border-radius:10px;padding:22px;transition:background .35s,border-color .35s;}
+.belief-icon{width:40px;height:40px;border-radius:10px;background:var(--ha-bg);border:1px solid var(--ha-bd);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px;transition:all .35s;}
+.belief-h{font-family:var(--df);font-size:17px;font-weight:400;color:var(--ink);margin-bottom:8px;transition:font-family .35s,color .35s;}
+.belief-p{font-size:13px;color:var(--mu);line-height:1.65;font-family:var(--bf);}
+
+/* ══ TEAM ══ */
+.team{padding:56px 26px;max-width:880px;margin:0 auto;}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:0;}
+.team-card{text-align:center;}
+.team-photo{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px;border:3px solid var(--white);box-shadow:0 2px 12px rgba(0,0,0,.1);}
+.warm .team-photo,.ivory .team-photo{background:linear-gradient(135deg,#4a1808,#8a3020)}
+.gold .team-photo{background:linear-gradient(135deg,#2a1808,#5a3818)}
+.forest .team-photo{background:linear-gradient(135deg,#0e2018,#1a4828)}
+.ocean .team-photo{background:linear-gradient(135deg,#0a1828,#0a3868)}
+.terra .team-photo{background:linear-gradient(135deg,#2a1008,#6a2818)}
+.team-name{font-family:var(--df);font-size:14px;font-weight:400;color:var(--ink);margin-bottom:2px;transition:font-family .35s;}
+.team-role{font-size:11px;color:var(--mu);font-family:var(--bf);}
+.team-country{font-size:11px;color:var(--ac);font-family:var(--bf);margin-top:2px;transition:color .35s;}
+
+/* ══ PHOTO GALLERY ══ */
+.gallery{background:var(--ink);padding:48px 26px;transition:background .35s;}
+.gallery-inner{max-width:880px;margin:0 auto;}
+.gallery-title{font-family:var(--df);font-size:26px;font-weight:400;color:#fff;margin-bottom:22px;transition:font-family .35s;}
+.gallery-title em{font-style:italic;color:var(--ac);}
+.gallery-grid{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;height:320px;}
+.gp{border-radius:8px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;font-size:48px;cursor:pointer;}
+.gp:first-child{grid-row:1/3;}
+.warm .gp:nth-child(1),.ivory .gp:nth-child(1){background:linear-gradient(145deg,#5C2010,#A03828)}
+.warm .gp:nth-child(2),.ivory .gp:nth-child(2){background:linear-gradient(145deg,#0A2840,#183870)}
+.warm .gp:nth-child(3),.ivory .gp:nth-child(3){background:linear-gradient(145deg,#0A2A20,#185040)}
+.warm .gp:nth-child(4),.ivory .gp:nth-child(4){background:linear-gradient(145deg,#2A1008,#604020)}
+.warm .gp:nth-child(5),.ivory .gp:nth-child(5){background:linear-gradient(145deg,#1A1840,#303878)}
+.gold .gp:nth-child(1){background:linear-gradient(145deg,#2c1e0e,#6b4c25)}
+.gold .gp:nth-child(2){background:linear-gradient(145deg,#151525,#262660)}
+.gold .gp:nth-child(3){background:linear-gradient(145deg,#142414,#2a5530)}
+.gold .gp:nth-child(4){background:linear-gradient(145deg,#221808,#5a4018)}
+.gold .gp:nth-child(5){background:linear-gradient(145deg,#101828,#202860)}
+.forest .gp:nth-child(1){background:linear-gradient(145deg,#0e2a16,#1a5832)}
+.forest .gp:nth-child(2){background:linear-gradient(145deg,#0e1e28,#1a3a52)}
+.forest .gp:nth-child(3){background:linear-gradient(145deg,#141e0e,#2a4e20)}
+.forest .gp:nth-child(4){background:linear-gradient(145deg,#182618,#264038)}
+.forest .gp:nth-child(5){background:linear-gradient(145deg,#0e1820,#183040)}
+.ocean .gp:nth-child(1){background:linear-gradient(145deg,#0a182a,#0a4078)}
+.ocean .gp:nth-child(2){background:linear-gradient(145deg,#081820,#0a4858)}
+.ocean .gp:nth-child(3){background:linear-gradient(145deg,#0a1a18,#0a5040)}
+.ocean .gp:nth-child(4){background:linear-gradient(145deg,#160a28,#3a1870)}
+.ocean .gp:nth-child(5){background:linear-gradient(145deg,#0a1828,#183870)}
+.terra .gp:nth-child(1){background:linear-gradient(145deg,#3a1808,#8a3818)}
+.terra .gp:nth-child(2){background:linear-gradient(145deg,#181826,#2a2858)}
+.terra .gp:nth-child(3){background:linear-gradient(145deg,#1a2816,#2a5828)}
+.terra .gp:nth-child(4){background:linear-gradient(145deg,#281008,#704020)}
+.terra .gp:nth-child(5){background:linear-gradient(145deg,#2a1820,#503040)}
+.gp-overlay{position:absolute;inset:0;background:rgba(0,0,0,.3);opacity:0;transition:opacity .2s;display:flex;align-items:center;justify-content:center;}
+.gp:hover .gp-overlay{opacity:1}
+.gp-overlay span{color:#fff;font-size:18px;}
+
+/* ══ PRESS ══ */
+.press{padding:44px 26px;max-width:880px;margin:0 auto;text-align:center;}
+.press-title{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);font-family:var(--bf);margin-bottom:22px;}
+.press-logos{display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;}
+.press-logo{font-family:var(--df);font-size:18px;font-weight:700;color:var(--ln);letter-spacing:.04em;transition:color .2s,font-family .35s;cursor:pointer;}
+.press-logo:hover{color:var(--mu)}
+
+/* ══ JOIN CTA ══ */
+.join-cta{background:var(--hb-bg);border-top:1px solid var(--hb-bd);padding:56px 26px;text-align:center;transition:background .35s,border-color .35s;}
+.jc-title{font-family:var(--df);font-size:32px;font-weight:400;color:var(--ink);margin-bottom:12px;transition:font-family .35s,color .35s;}
+.jc-title em{font-style:italic;color:var(--ad);}
+.jc-sub{font-size:14px;color:var(--mu);font-family:var(--bf);margin-bottom:26px;line-height:1.65;max-width:480px;margin-left:auto;margin-right:auto;}
+.jc-btns{display:flex;gap:12px;justify-content:center;}
+.btn-primary{font-size:13.5px;font-weight:600;color:var(--white);background:var(--ink);border:none;border-radius:6px;padding:13px 25px;cursor:pointer;font-family:var(--bf);transition:background .35s,color .35s;}
+.btn-outline{font-size:13.5px;font-weight:500;color:var(--ink);background:transparent;border:1.5px solid var(--ln);border-radius:6px;padding:12px 22px;cursor:pointer;font-family:var(--bf);}
+
+/* FOOTER */
+.footer{background:var(--ink);padding:32px 26px 24px;transition:background .35s;}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:20px;margin-bottom:22px;}
+.foot-logo{font-family:var(--df);font-size:18px;color:var(--ac);display:flex;align-items:center;gap:8px;margin-bottom:9px;transition:color .35s,font-family .35s;}
+.foot-desc{font-size:11.5px;color:rgba(255,255,255,.24);line-height:1.65;font-family:var(--bf);}
+.foot-col-h{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:11px;font-family:var(--bf);}
+.footer a{text-decoration:none;}
+.foot-link{display:block;font-size:12px;color:rgba(255,255,255,.42);padding:3.5px 0;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s;}
+.foot-link:hover{color:rgba(255,255,255,.8);}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:15px;display:flex;justify-content:space-between;align-items:center;}
+.foot-copy{font-size:11px;color:rgba(255,255,255,.18);font-family:var(--bf);}
+.foot-soc{display:flex;gap:7px;}
+.soc-btn{width:27px;height:27px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:rgba(255,255,255,.3);}
+
+
+/* AUTH LAYOUT */
+.auth-wrap{flex:1;display:flex;align-items:stretch;min-height:calc(100vh - 56px)}
+.auth-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 24px}
+.auth-visual{flex:1;background:var(--ink);position:relative;overflow:hidden;min-height:420px;transition:background .35s}
+@media(max-width:820px){.auth-visual{display:none}.auth-wrap{min-height:unset}}
+.auth-vis-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:40px}
+.auth-vis-quote{font-family:var(--df);font-size:22px;font-weight:400;color:#fff;line-height:1.45;margin-bottom:14px;max-width:360px;transition:font-family .35s}
+.auth-vis-quote em{font-style:italic;color:var(--ac)}
+.auth-vis-attr{font-size:12px;color:rgba(255,255,255,.4);font-family:var(--bf)}
+.auth-vis-bg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(79,168,212,.08) 0%,rgba(13,31,45,.6) 100%)}
+.auth-vis-pattern{position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,var(--ac) 1px,transparent 1px);background-size:28px 28px}
+
+/* AUTH CARD */
+.auth-card{width:100%;max-width:420px}
+.auth-logo{display:flex;align-items:center;gap:9px;text-decoration:none;margin-bottom:32px}
+.auth-logo-mark{width:30px;height:30px;border-radius:8px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.auth-logo-text{font-family:var(--df);font-size:20px;color:var(--ink);transition:font-family .35s,color .35s}
+.auth-logo-text em{font-style:italic;color:var(--mu)}
+.auth-title{font-family:var(--df);font-size:26px;font-weight:400;color:var(--ink);margin-bottom:6px;transition:font-family .35s,color .35s}
+.auth-title em{font-style:italic;color:var(--ac)}
+.auth-sub{font-size:13.5px;color:var(--mu);font-family:var(--bf);margin-bottom:28px;line-height:1.5}
+
+/* SOCIAL BUTTONS */
+.auth-social{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.social-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 16px;background:var(--white);border:1.5px solid var(--ln);border-radius:8px;font-size:13.5px;font-weight:500;color:var(--ink);cursor:pointer;font-family:var(--bf);transition:border-color .15s,background .35s,color .35s;text-decoration:none}
+.social-btn:hover{border-color:var(--ac)}
+.social-btn svg{width:18px;height:18px;flex-shrink:0}
+.auth-divider{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.auth-divider-line{flex:1;height:1px;background:var(--ln)}
+.auth-divider-text{font-size:11.5px;color:var(--mu);font-family:var(--bf);white-space:nowrap}
+
+/* FORM */
+.auth-form{display:flex;flex-direction:column;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);transition:color .35s}
+.form-input{padding:11px 14px;background:var(--white);border:1.5px solid var(--ln);border-radius:8px;font-size:14px;color:var(--ink);font-family:var(--bf);outline:none;transition:border-color .15s,background .35s,color .35s}
+.form-input:focus{border-color:var(--ac)}
+.form-input::placeholder{color:var(--mu);opacity:.7}
+.form-input-wrap{position:relative}
+.form-input-wrap .form-input{width:100%;padding-right:44px}
+.form-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mu);font-size:16px;padding:4px}
+.form-hint{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-select{padding:11px 14px;background:var(--white);border:1.5px solid var(--ln);border-radius:8px;font-size:14px;color:var(--ink);font-family:var(--bf);outline:none;transition:border-color .15s,background .35s,color .35s;-webkit-appearance:none;appearance:none;cursor:pointer}
+.form-select:focus{border-color:var(--ac)}
+
+/* PHONE OTP */
+.phone-wrap{display:flex;gap:8px}
+.phone-code{width:90px;flex-shrink:0}
+.otp-row{display:flex;gap:10px;margin-top:10px}
+.otp-input{flex:1;padding:14px 10px;background:var(--white);border:1.5px solid var(--ln);border-radius:8px;font-size:20px;text-align:center;font-family:var(--bf);color:var(--ink);outline:none;transition:border-color .15s,background .35s,color .35s;font-weight:600}
+.otp-input:focus{border-color:var(--ac)}
+.otp-hint{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:8px;text-align:center}
+.send-otp-btn{padding:11px 16px;background:var(--ha-bg);border:1.5px solid var(--ha-bd);border-radius:8px;font-size:13px;font-weight:600;color:var(--ha-tx);cursor:pointer;font-family:var(--bf);white-space:nowrap;transition:background .15s,border-color .35s,color .35s}
+.send-otp-btn:hover{background:var(--ac);color:var(--ink);border-color:var(--ac)}
+.send-otp-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* METHOD TABS */
+.method-tabs{display:flex;gap:0;border:1.5px solid var(--ln);border-radius:8px;overflow:hidden;margin-bottom:20px;transition:border-color .35s}
+.method-tab{flex:1;padding:9px 12px;background:var(--white);border:none;font-size:12.5px;font-weight:500;color:var(--mu);cursor:pointer;font-family:var(--bf);transition:background .15s,color .15s}
+.method-tab.on{background:var(--ink);color:var(--white)}
+.method-panel{display:none}.method-panel.on{display:block}
+
+/* CONSENT */
+.consent-wrap{display:flex;flex-direction:column;gap:10px;margin:4px 0}
+.consent-row{display:flex;gap:10px;align-items:flex-start}
+.consent-check{width:16px;height:16px;border:1.5px solid var(--ln);border-radius:4px;cursor:pointer;margin-top:1px;flex-shrink:0;accent-color:var(--ac)}
+.consent-text{font-size:12px;color:var(--mu);font-family:var(--bf);line-height:1.55}
+.consent-text a{color:var(--ac);text-decoration:none}
+.consent-text a:hover{text-decoration:underline}
+.consent-passive{font-size:11.5px;color:var(--mu);font-family:var(--bf);line-height:1.55;margin-top:2px}
+.consent-passive a{color:var(--ac);text-decoration:none}
+
+/* SUBMIT */
+.auth-submit{width:100%;padding:14px;background:var(--ink);color:var(--white);border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--bf);transition:background .35s,opacity .15s;margin-top:4px}
+.auth-submit:hover{opacity:.88}
+.auth-footer-link{font-size:13px;color:var(--mu);font-family:var(--bf);text-align:center;margin-top:20px}
+.auth-footer-link a{color:var(--ac);text-decoration:none;font-weight:600}
+
+/* STEP INDICATOR */
+.step-bar{display:flex;align-items:center;gap:0;margin-bottom:28px}
+.step-dot{width:28px;height:28px;border-radius:50%;background:var(--ln);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--mu);font-family:var(--bf);transition:background .2s,color .2s,border-color .35s;flex-shrink:0;border:1.5px solid var(--ln)}
+.step-dot.done{background:var(--ac);color:var(--ink);border-color:var(--ac)}
+.step-dot.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.step-line{flex:1;height:2px;background:var(--ln);transition:background .2s}
+.step-line.done{background:var(--ac)}
+.step-labels{display:flex;justify-content:space-between;margin-top:6px;margin-bottom:22px}
+.step-label{font-size:10px;font-weight:500;color:var(--mu);font-family:var(--bf);text-align:center;flex:1}
+.step-label.active{color:var(--ink);font-weight:700}
+
+/* STEP INDICATOR (new flex row) */
+.step-indicator{display:flex;gap:0;margin-bottom:10px;align-items:center}
+.si-item{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0}
+.si-num{width:28px;height:28px;border-radius:50%;background:var(--ln);border:1.5px solid var(--ln);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--mu);font-family:var(--bf);flex-shrink:0;transition:background .2s,color .2s,border-color .35s}
+.si-num.done{background:var(--ac);color:var(--ink);border-color:var(--ac)}
+.si-num.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.si-label{font-size:11px;font-weight:500;color:var(--mu);font-family:var(--bf);white-space:nowrap;transition:color .2s}
+.si-label.active{color:var(--ink);font-weight:700}
+.si-connector{flex:1;height:2px;background:var(--ln);transition:background .2s;margin:0 8px}
+.si-connector.done{background:var(--ac)}
+.si-counter{font-size:11px;color:var(--mu);font-family:var(--bf);margin-bottom:22px;font-weight:500}
+
+/* FIELD ERRORS */
+.field-err{color:#c0392b;font-size:12px;margin-top:4px;display:none;font-family:var(--bf)}
+.form-input.err{border-color:#c0392b}
+.form-input.err:focus{border-color:#c0392b}
+
+/* SECTION DIVIDER */
+.form-section-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);font-family:var(--bf);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--ln)}
+
+/* TEXTAREA */
+.form-textarea{padding:11px 14px;background:var(--white);border:1.5px solid var(--ln);border-radius:8px;font-size:13.5px;color:var(--ink);font-family:var(--bf);outline:none;transition:border-color .15s,background .35s,color .35s;resize:vertical;min-height:90px}
+.form-textarea:focus{border-color:var(--ac)}
+
+/* SUCCESS STATE */
+.auth-success{text-align:center;padding:20px 0}
+.auth-success-ico{font-size:52px;margin-bottom:16px}
+.auth-success-title{font-family:var(--df);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:8px;transition:font-family .35s,color .35s}
+.auth-success-sub{font-size:13.5px;color:var(--mu);font-family:var(--bf);line-height:1.65;max-width:340px;margin:0 auto 24px}
+.auth-success-btn{display:inline-block;padding:13px 28px;background:var(--ink);color:var(--white);border-radius:7px;font-size:13.5px;font-weight:700;text-decoration:none;font-family:var(--bf);transition:background .35s}
+
+/* OPERATOR BADGE */
+.op-badge{display:inline-flex;align-items:center;gap:6px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--ha-tx);font-family:var(--bf);margin-bottom:18px;transition:background .35s,border-color .35s,color .35s}
+
+/* TERMS BOX */
+.terms-box{background:var(--tr-bg);border:1.5px solid var(--ln);border-radius:8px;padding:16px;max-height:140px;overflow-y:auto;font-size:11.5px;color:var(--mu);font-family:var(--bf);line-height:1.65;transition:background .35s,border-color .35s}
+.terms-box strong{color:var(--ink);font-weight:600;display:block;margin-bottom:4px;transition:color .35s}
+
+
+/* OPERATOR-SPECIFIC */
+.op-hero-strip{background:var(--ink);padding:26px 24px;text-align:center;transition:background .35s}
+.op-hero-title{font-family:var(--df);font-size:clamp(18px,3vw,24px);font-weight:400;color:#fff;transition:font-family .35s}
+.op-hero-title em{font-style:italic;color:var(--ac)}
+.op-hero-sub{font-size:12.5px;color:rgba(255,255,255,.45);font-family:var(--bf);margin-top:6px}
+.op-step-wrap{max-width:760px;margin:0 auto;padding:48px 24px 60px}
+
+.promise-strip{display:flex;gap:16px;background:var(--ha-bg);border:1.5px solid var(--ha-bd);border-radius:12px;padding:18px 20px;margin-bottom:32px;flex-wrap:wrap;transition:background .35s,border-color .35s}
+.promise-item{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);font-weight:600;transition:color .35s}
+
+.op-two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.op-full{grid-column:1/-1}
+
+.review-item{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--ln)}
+.review-item:last-child{border-bottom:none}
+.review-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.review-label{font-size:12px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:2px;transition:color .35s}
+.review-val{font-size:13px;color:var(--mu);font-family:var(--bf)}
+
+.nav-btns{display:flex;gap:12px;margin-top:28px}
+.btn-back{flex:0;padding:13px 22px;background:transparent;border:1.5px solid var(--ln);border-radius:8px;font-size:13.5px;font-weight:600;color:var(--mu);cursor:pointer;font-family:var(--bf);transition:border-color .2s,color .35s}
+.btn-back:hover{border-color:var(--ac);color:var(--ac)}
+.btn-next{flex:1;padding:13px;background:var(--ink);color:var(--white);border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--bf);transition:background .35s,opacity .15s}
+.btn-next:hover{opacity:.88}
+
+.checklist{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.checklist-item{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mu);font-family:var(--bf)}
+.checklist-item::before{content:"✓";color:var(--ac);font-weight:700;font-size:14px;flex-shrink:0}
+
+@media(max-width:600px){.op-two-col{grid-template-columns:1fr}.promise-strip{flex-direction:column}.op-full{grid-column:unset}}
+
+.overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(5px);
+  animation:fadein .2s ease;
+}
+.overlay.open{display:block}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:330px;
+  background:var(--white);
+  border-left:1px solid var(--ln);
+  display:flex;flex-direction:column;
+  transform:translateX(330px);
+  transition:transform .3s cubic-bezier(.4,0,.2,1),background .35s,border-color .35s;
+  z-index:501;
+}
+.overlay.open .drawer{transform:translateX(0)}
+.drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;height:60px;
+  background:var(--ink);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  flex-shrink:0;
+  transition:background .35s;
+}
+.drawer-title{font-family:var(--df);font-size:17px;font-weight:400;color:var(--ac);transition:font-family .35s,color .35s}
+.drawer-close{
+  width:30px;height:30px;border-radius:7px;
+  background:rgba(255,255,255,.1);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.6);font-size:16px;
+}
+.drawer-close:hover{background:rgba(255,255,255,.2);color:#fff}
+
+.drawer-body{flex:1;overflow-y:auto;padding:22px}
+.drawer-body::-webkit-scrollbar{width:4px}
+.drawer-body::-webkit-scrollbar-track{background:transparent}
+.drawer-body::-webkit-scrollbar-thumb{background:var(--ln);border-radius:2px}
+
+.d-section-label{
+  font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--mu);
+  margin-bottom:14px;font-family:var(--bf);
+  transition:color .35s;
+}
+
+/* theme grid in drawer */
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px}
+.th-opt{
+  border:2px solid var(--ln);border-radius:10px;
+  padding:11px 11px 10px;cursor:pointer;
+  background:var(--white);
+  transition:border-color .2s,box-shadow .2s,background .35s;
+  position:relative;
+}
+.th-opt:hover{border-color:var(--ac)}
+.th-opt.sel{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}
+.th-opt.sel .th-check{opacity:1;transform:scale(1)}
+.th-check{
+  position:absolute;top:8px;right:8px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--ac);display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--ink);font-weight:700;
+  opacity:0;transform:scale(.7);transition:opacity .15s,transform .15s,background .35s,color .35s;
+}
+.th-swatches{display:flex;gap:4px;margin-bottom:8px}
+.th-sw{width:18px;height:18px;border-radius:5px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.th-name{font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:2px;transition:color .35s}
+.th-desc{font-size:10.5px;color:var(--mu);font-family:var(--bf);line-height:1.4;transition:color .35s}
+.th-default-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:600;color:var(--ha-tx);
+  background:var(--ha-bg);border:1px solid var(--ha-bd);
+  border-radius:100px;padding:2px 7px;margin-top:5px;
+  transition:all .35s;
+}
+
+/* ── Hamburger button (logged-out) ── */
+.nav-hamburger{
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4.5px;cursor:pointer;transition:background .15s,border-color .15s;
+  flex-shrink:0;
+}
+.nav-hamburger:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
+.nav-hamburger span{
+  display:block;width:16px;height:1.8px;border-radius:2px;
+  background:rgba(255,255,255,.65);transition:background .15s;
+}
+.nav-hamburger:hover span{background:rgba(255,255,255,.9)}
+.nav-hamburger.open{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.32)}
+
+/* ── User avatar button (logged-in) ── */
+.nav-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--ac);border:2px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;flex-shrink:0;overflow:hidden;
+  transition:border-color .15s,box-shadow .15s;
+  position:relative;
+}
+.nav-avatar:hover{border-color:rgba(255,255,255,.6);box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+
+/* ── Dropdown menu ── */
+.nav-dropdown{
+  position:absolute;top:calc(100% + 10px);right:0;
+  width:220px;
+  background:var(--white);border:1px solid var(--ln);border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.14);
+  padding:6px 0;
+  display:none;z-index:2000;
+  animation:dropIn .18s ease;
+}
+.nav-dropdown.open{display:block;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.nav-dropdown-head{
+  padding:12px 16px 10px;
+  border-bottom:1px solid var(--ln);
+  margin-bottom:4px;
+}
+.nav-dropdown-name{font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);}
+.nav-dropdown-email{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px;}
+.nav-dd-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 16px;
+  font-size:13px;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;transition:background .12s;
+  text-decoration:none;
+}
+.nav-dd-item:hover{background:var(--paper)}
+.nav-dd-item .dd-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-dd-item.dd-danger{color:#c0392b;}
+.nav-dd-item.dd-danger:hover{background:#fef0ee;}
+.nav-dd-sep{height:1px;background:var(--ln);margin:4px 0;}
+/* position wrapper */
+.nav-r-wrap{position:relative;display:flex;align-items:center;gap:8px;}
+</style>
+<script src="config.js"></script>
+</head>
+<body class="ocean">
+
+<nav class="nav">
+  <a class="logo" href="waybound.html"><div class="logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound</a>
+  <div class="nav-search">🔍 Where to go?</div>
+  <div class="nav-links"><a class="nav-link" href="adventures.html">Adventures</a><a class="nav-link" href="how-it-works.html">How it works</a><a class="nav-link" href="about.html">About</a><a class="nav-link" href="help.html">Help</a><a class="nav-link" href="contact.html">Contact</a></div>
+      <div class="nav-r nav-r-wrap">
+    <button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin.html'">Sign in / Sign up</button>
+    <a class="btn-ac-sm" href="operator.html" style="text-decoration:none" id="navListTourBtn">List a tour</a>
+    <div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" title="My account" style="display:none"></div>
+    <div class="nav-dropdown" id="navDropdown"></div>
+  </div>
+</nav>
+
+<!-- HERO STRIP -->
+<div class="op-hero-strip">
+  <div class="op-hero-title">Apply to become a <em>Waybound guide</em></div>
+  <div class="op-hero-sub">Join our verified local experts · Applications reviewed within 48 hours</div>
+</div>
+
+<div class="op-step-wrap">
+
+  <!-- PROMISE STRIP -->
+  <div class="promise-strip">
+    <div class="promise-item">⏱ 48h review</div>
+    <div class="promise-item">💰 Keep 85% of earnings</div>
+    <div class="promise-item">📅 You set dates &amp; prices</div>
+    <div class="promise-item">🌍 Russia, Georgia, Turkey &amp; Kazakhstan</div>
+    <div class="promise-item">💬 24/7 partner support</div>
+  </div>
+
+  <!-- STEP INDICATOR -->
+  <div class="step-indicator" id="stepIndicator">
+    <div class="si-item" onclick="siClick(1)">
+      <div class="si-num active" id="siNum1">1</div>
+      <div class="si-label active" id="siLbl1">Your details</div>
+    </div>
+    <div class="si-connector" id="siConn1"></div>
+    <div class="si-item" onclick="siClick(2)">
+      <div class="si-num" id="siNum2">2</div>
+      <div class="si-label" id="siLbl2">Tour operations</div>
+    </div>
+    <div class="si-connector" id="siConn2"></div>
+    <div class="si-item" onclick="siClick(3)">
+      <div class="si-num" id="siNum3">3</div>
+      <div class="si-label" id="siLbl3">Agreement</div>
+    </div>
+  </div>
+  <div class="si-counter" id="siCounter">Step 1 of 3</div>
+
+  <!-- ══ STEP 1: BASIC INFO ══════════════════════════════════════════════════ -->
+  <div id="step1">
+    <div class="op-badge">Step 1 of 3 · Your details</div>
+    <h2 class="auth-title" style="margin-bottom:6px">Tell us about <em>yourself</em></h2>
+    <p class="auth-sub">Basic contact and account information.</p>
+
+    <div class="op-two-col" style="margin-top:20px">
+      <div class="form-group">
+        <label class="form-label">First name *</label>
+        <input class="form-input" type="text" id="op-fname" placeholder="Sandro">
+        <div class="field-err" id="errFname"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last name *</label>
+        <input class="form-input" type="text" id="op-lname" placeholder="Beridze">
+        <div class="field-err" id="errLname"></div>
+      </div>
+      <div class="form-group op-full">
+        <label class="form-label">Email address *</label>
+        <input class="form-input" type="text" id="op-email" placeholder="sandro@example.com">
+        <div class="field-err" id="errEmail"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone number *</label>
+        <input class="form-input" type="tel" id="op-phone" placeholder="+7 900 000 0000">
+        <div class="field-err" id="errPhone"></div>
+        <span class="form-hint">Required for trip coordination and guest communication</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Country of operation *</label>
+        <select class="form-select" id="op-country">
+          <option value="">Select country</option>
+          <option value="GE">🇬🇪 Georgia</option>
+          <option value="RU">🇷🇺 Russia</option>
+          <option value="NP">🇳🇵 Nepal</option>
+          <option value="KE">🇰🇪 Kenya</option>
+          <option value="MA">🇲🇦 Morocco</option>
+          <option value="JP">🇯🇵 Japan</option>
+          <option value="PT">🇵🇹 Portugal</option>
+          <option value="HR">🇭🇷 Croatia</option>
+          <option value="GR">🇬🇷 Greece</option>
+          <option value="ID">🇮🇩 Indonesia</option>
+          <option value="SC">🏝️ Seychelles</option>
+          <option value="TZ">🇹🇿 Tanzania</option>
+          <option value="OTHER">🌍 Other</option>
+        </select>
+        <div class="field-err" id="errCountry"></div>
+      </div>
+      <div class="form-group op-full">
+        <label class="form-label">Password *</label>
+        <div class="form-input-wrap">
+          <input class="form-input" type="password" id="op-pw" placeholder="Minimum 8 characters">
+          <button class="form-eye" onclick="toggleField('op-pw')" type="button">👁</button>
+        </div>
+        <div class="field-err" id="errPw"></div>
+        <span class="form-hint">At least 8 characters with letters and numbers</span>
+      </div>
+      <div class="form-group op-full">
+        <label class="form-label">How did you hear about Waybound?</label>
+        <select class="form-select" id="op-source">
+          <option value="">Select (optional)</option>
+          <option>Social media</option>
+          <option>Search engine</option>
+          <option>Word of mouth from another guide</option>
+          <option>Traveler recommendation</option>
+          <option>News article or blog</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-next" onclick="nextStep()">Continue to Tour Operations →</button>
+    </div>
+    <div class="auth-footer-link" style="margin-top:16px">Already have an account? <a href="signin.html">Sign in</a></div>
+  </div>
+
+  <!-- ══ STEP 2: TOUR OPERATIONS ════════════════════════════════════════════ -->
+  <div id="step2" style="display:none">
+    <div class="op-badge">Step 2 of 3 · Tour operations</div>
+    <h2 class="auth-title" style="margin-bottom:6px">Your <em>tour operations</em></h2>
+    <p class="auth-sub">Help us understand your experience and what you offer. This is reviewed by our team — be specific.</p>
+
+    <div class="op-two-col" style="margin-top:20px">
+      <div class="form-group">
+        <label class="form-label">Business / trading name</label>
+        <input class="form-input" type="text" id="op-biz" placeholder="Sandro Tours Georgia">
+        <span class="form-hint">Leave blank if operating as an individual</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Years as a guide</label>
+        <select class="form-select" id="op-years">
+          <option value="">Select</option>
+          <option>Less than 1 year</option>
+          <option>1–3 years</option>
+          <option>3–5 years</option>
+          <option>5–10 years</option>
+          <option>10+ years</option>
+        </select>
+      </div>
+      <div class="form-group op-full">
+        <label class="form-label">Tour types you offer *</label>
+        <div id="tourTypeGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer"><input type="checkbox" class="tour-type-cb" style="accent-color:var(--ac)"> 🏔️ Mountain / Trekking</label>
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer"><input type="checkbox" class="tour-type-cb" style="accent-color:var(--ac)"> 🦁 Safari / Wildlife</label>
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer"><input type="checkbox" class="tour-type-cb" style="accent-color:var(--ac)"> 🏛️ Cultural / Sightseeing</label>
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer"><input type="checkbox" class="tour-type-cb" style="accent-color:var(--ac)"> ⛵ Sailing / Water</label>
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer"><input type="checkbox" class="tour-type-cb" style="accent-color:var(--ac)"> 📷 Photography</label>
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer"><input type="checkbox" class="tour-type-cb" style="accent-color:var(--ac)"> 🧘 Wellness / Yoga</label>
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer"><input type="checkbox" class="tour-type-cb" style="accent-color:var(--ac)"> 🍷 Food &amp; Wine</label>
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer"><input type="checkbox" class="tour-type-cb" style="accent-color:var(--ac)"> 🏕️ Camping</label>
+        </div>
+        <div class="field-err" id="errTourTypes"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Typical group size</label>
+        <select class="form-select" id="op-groupsize">
+          <option value="">Select</option>
+          <option>1–4 (private &amp; very small)</option>
+          <option>5–8 (small group)</option>
+          <option>9–12 (medium group)</option>
+          <option>13–15 (maximum allowed)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Languages you guide in</label>
+        <input class="form-input" type="text" id="op-langs" placeholder="e.g. English, Russian, Georgian">
+      </div>
+      <div class="form-group op-full">
+        <label class="form-label">Certifications &amp; licences</label>
+        <input class="form-input" type="text" id="op-certs" placeholder="e.g. First Aid, UIAA Mountain Guide, PADI Divemaster">
+        <span class="form-hint">Adventure guides must hold a valid first aid certificate</span>
+      </div>
+      <div class="form-group op-full">
+        <label class="form-label">Describe your tours &amp; experience *</label>
+        <textarea class="form-textarea" id="op-bio" placeholder="Tell us what makes your tours special. Include your background, the destinations you cover, and what a typical tour looks like."></textarea>
+        <span class="form-hint">Our review team reads every application carefully. The more detail the better.</span>
+        <div class="field-err" id="errBio"></div>
+      </div>
+      <div class="form-group op-full">
+        <label class="form-label">Link to existing reviews or profile <span style="font-weight:400;color:var(--mu)">(optional)</span></label>
+        <input class="form-input" type="url" id="op-link" placeholder="https://www.tripadvisor.com/your-profile">
+        <span class="form-hint">TripAdvisor, Google Reviews, Airbnb Experiences, personal website, etc.</span>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevStep()">← Back</button>
+      <button class="btn-next" onclick="nextStep()">Continue to Agreement →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3: AGREEMENT ══════════════════════════════════════════════════ -->
+  <div id="step3" style="display:none">
+    <div class="op-badge">Step 3 of 3 · Agreement &amp; submit</div>
+    <h2 class="auth-title" style="margin-bottom:6px">Review &amp; <em>agree</em></h2>
+    <p class="auth-sub">Please read and confirm the following before submitting your application.</p>
+
+    <!-- REVIEW SUMMARY -->
+    <div style="background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:20px;margin:20px 0;transition:background .35s,border-color .35s">
+      <div class="form-section-title">Your application summary</div>
+      <div id="reviewSummary"></div>
+    </div>
+
+    <!-- GUIDE TERMS SUMMARY -->
+    <div class="form-section-title" style="margin-top:24px">Key commitments as a Waybound guide</div>
+    <div class="checklist">
+      <div class="checklist-item">Maximum group size of 15 travelers on all tours</div>
+      <div class="checklist-item">Respond to booking inquiries within 24 hours</div>
+      <div class="checklist-item">Maintain a minimum rating of 4.5 over 10+ reviews</div>
+      <div class="checklist-item">Provide accurate, honest tour descriptions at all times</div>
+      <div class="checklist-item">Hold valid first aid certification for adventure tours</div>
+      <div class="checklist-item">Never request off-platform payments from travelers</div>
+      <div class="checklist-item">Cancel with minimum 48 hours' notice where possible</div>
+      <div class="checklist-item">Comply with local laws and guiding regulations</div>
+    </div>
+
+    <!-- TERMS BOX -->
+    <div style="margin:20px 0">
+      <label class="form-label" style="margin-bottom:8px">Terms for Travel Experts <span style="font-weight:400;color:var(--mu)">(scroll to read)</span></label>
+      <div class="terms-box">
+        <strong>1. Introduction</strong>
+        These Terms for Travel Experts govern your relationship with Waybound as a registered guide and tour operator on our platform. By submitting this application and operating on Waybound, you agree to these terms in full.
+        <strong style="margin-top:12px">2. Eligibility</strong>
+        You must be at least 18 years old, legally authorised to operate tours in your jurisdiction, and hold any required local licences or certifications. Waybound reserves the right to request documentation at any time.
+        <strong style="margin-top:12px">3. Tour listings</strong>
+        You are responsible for the accuracy of all information in your tour listings. Listings must truthfully represent the experience, difficulty, inclusions, and exclusions. Misleading listings will result in immediate suspension.
+        <strong style="margin-top:12px">4. Group sizes</strong>
+        All tours listed on Waybound must be capped at a maximum of 15 travelers. This is a hard limit and cannot be overridden for any reason.
+        <strong style="margin-top:12px">5. Payments</strong>
+        Waybound acts as a payment agent on your behalf. A service fee of 15% is deducted from each booking. Payouts are made within 5 business days of the tour start date. You may not request direct payments from travelers outside the platform.
+        <strong style="margin-top:12px">6. Cancellations</strong>
+        If you cancel a tour with less than 48 hours' notice, travelers are entitled to a full refund. Repeated cancellations may result in account suspension.
+        <strong style="margin-top:12px">7. Reviews</strong>
+        Reviews from travelers are published automatically following our content moderation process. You may respond to reviews but may not request their removal without a verified factual inaccuracy.
+        <strong style="margin-top:12px">8. Termination</strong>
+        Waybound may suspend or terminate your account for breach of these terms, sustained low ratings, fraud, or any conduct that harms the platform or its users.
+        For the full Terms for Travel Experts, visit waybound.com/terms-experts.
+      </div>
+    </div>
+
+    <!-- CONSENT CHECKBOXES -->
+    <div class="consent-wrap" style="margin:20px 0" id="consentWrap">
+      <div class="consent-row">
+        <input type="checkbox" class="consent-check" id="op-c1">
+        <label class="consent-text" for="op-c1">
+          I have read and agree to the <a href="terms-experts.html">Terms for Travel Experts</a> and understand my obligations as a Waybound guide
+        </label>
+      </div>
+      <div class="consent-row">
+        <input type="checkbox" class="consent-check" id="op-c2">
+        <label class="consent-text" for="op-c2">
+          I consent to the processing of my personal data in accordance with the <a href="privacy.html">Privacy Policy</a> (required under 152-FZ)
+        </label>
+      </div>
+      <div class="consent-row">
+        <input type="checkbox" class="consent-check" id="op-c3">
+        <label class="consent-text" for="op-c3">
+          I agree to the <a href="terms.html">General Terms of Use</a> and <a href="privacy.html">Privacy Policy</a>
+        </label>
+      </div>
+      <div class="field-err" id="consent-err" style="margin-top:8px"></div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevStep()">← Back</button>
+      <button class="btn-next" id="btnSubmit" onclick="submitOperator()" style="background:var(--ac);color:var(--ink)">Submit application ✓</button>
+    </div>
+  </div>
+
+  <!-- ══ CONFIRMATION ══════════════════════════════════════════════ -->
+  <div id="opStep4" style="display:none">
+    <div class="auth-success">
+      <div class="auth-success-ico">🎉</div>
+      <div class="auth-success-title">Application <em style="font-style:italic;color:var(--ac)">submitted!</em></div>
+      <p class="auth-success-sub">Thank you for applying to Waybound. Our team will review your application within 48 hours and send a decision to your email. In the meantime, feel free to explore how other guides structure their tours.</p>
+      <a href="adventures.html" class="auth-success-btn">Browse tours for inspiration</a>
+      <div class="auth-footer-link" style="margin-top:18px">Questions? <a href="contact.html">Contact our guide team</a></div>
+    </div>
+  </div>
+
+</div><!-- /op-step-wrap -->
+
+<footer class="footer">
+  <div class="foot-grid">
+    <div>
+      <div class="foot-logo">
+        <div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound
+      </div>
+      <div class="foot-desc">Connecting bold travelers with local experts. Central Asia &amp; Caucasus specialists, small groups always.</div>
+    </div>
+    <div>
+      <div class="foot-col-h">Explore</div>
+      <a class="foot-link" href="adventures.html">All adventures</a>
+      <a class="foot-link" href="how-it-works.html">How it works</a>
+      <a class="foot-link" href="small-group-benefits.html">Small group benefits</a>
+      <a class="foot-link" href="reviews.html">Traveler reviews</a>
+    </div>
+    <div>
+      <div class="foot-col-h">Company</div>
+      <a class="foot-link" href="about.html">About us</a>
+      <a class="foot-link" href="help.html">Help center</a>
+      <a class="foot-link" href="contact.html">Contact us</a>
+      <a class="foot-link" href="operator.html">List a tour</a>
+    </div>
+    <div>
+      <div class="foot-col-h">Legal</div>
+      <a class="foot-link" href="trust-safety.html">Trust &amp; Safety</a>
+      <a class="foot-link" href="terms.html">Terms of use</a>
+      <a class="foot-link" href="terms-experts.html">Terms for guides</a>
+      <a class="foot-link" href="privacy.html">Privacy policy</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div class="foot-copy">© 2026 Waybound.com</div>
+    <div class="foot-soc">
+      <div class="soc-btn">𝕏</div><div class="soc-btn">◎</div><div class="soc-btn">𝔽</div>
+    </div>
+  </div>
+</footer>
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="drawer">
+    <div class="drawer-head"><div class="drawer-title">Appearance</div><button class="drawer-close" onclick="closeSettings()">✕</button></div>
+    <div class="drawer-body"><div class="d-section-label">Choose your theme</div><div class="theme-grid" id="themeGrid"></div><button class="drawer-apply" onclick="applyPending()">Apply theme</button><div class="drawer-divider"></div><p class="drawer-note">Your choice is saved locally and remembered on your next visit.</p></div>
+  </div>
+</div>
+<script>
+// ── Read prefill params from operator.html quick form ───────────────────
+(function prefillFromParams() {
+  var p = new URLSearchParams(window.location.search);
+  var nameVal    = p.get('name')    || '';
+  var emailVal   = p.get('email')   || '';
+  var countryVal = p.get('country') || '';
+  if (!nameVal && !emailVal) return;
+  // Wait for DOM — fields are in step 1
+  document.addEventListener('DOMContentLoaded', function() {
+    // Try common field IDs used in signup-operator.html
+    var nameFields    = ['op-fname','op-name','fname'];
+    var emailFields   = ['op-email','op-e','email'];
+    var countryFields = ['op-country','op-location','country'];
+    nameFields.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && nameVal) el.value = nameVal;
+    });
+    emailFields.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && emailVal) el.value = emailVal;
+    });
+    countryFields.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && countryVal) el.value = countryVal;
+    });
+  });
+})();
+
+
+
+const THEMES={ocean:{name:'Deep Ocean',desc:'Cool blue, refined',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Light & Warm',desc:'White base, bright energy',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Ivory & Earthy',desc:'Warm parchment, handcrafted',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Parchment & Gold',desc:'Warm gold, sophisticated',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Forest & Sage',desc:'Muted green, natural feel',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Terracotta',desc:'Earthy red, bold warmth',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
+let current=localStorage.getItem('waybound-theme')||'ocean', pending=current;
+document.body.className=current;
+function renderGrid(){document.getElementById('themeGrid').innerHTML=Object.entries(THEMES).map(([k,d])=>`<div class="th-opt${k===current?' sel':''}" data-k="${k}" onclick="previewTheme('${k}')"><div class="th-check">✓</div><div class="th-swatches">${d.sw.map(s=>`<div class="th-sw" style="background:${s}"></div>`).join('')}</div><div class="th-name">${d.name}</div><div class="th-desc">${d.desc}</div>${d.def?`<span class="th-default-tag">★ Default</span>`:''}</div>`).join('');}
+function openSettings(){var dd=document.getElementById('navDropdown');if(dd)dd.classList.remove('open');pending=current;renderGrid();document.getElementById('overlay').classList.add('open');}
+function closeSettings(){document.body.className=current;document.getElementById('overlay').classList.remove('open');}
+function overlayClick(e){if(e.target===document.getElementById('overlay'))closeSettings();}
+function previewTheme(k){pending=k;document.querySelectorAll('.th-opt').forEach(el=>el.classList.toggle('sel',el.dataset.k===k));document.body.className=k;}
+function applyPending(){current=pending;localStorage.setItem('waybound-theme',current);document.getElementById('overlay').classList.remove('open');}
+
+
+// ── STEP FLOW ────────────────────────────────────────────────────────────────
+var opStep = 1;
+var maxReached = 1; // tracks how far the user has validly progressed
+
+function toggleField(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+// Show/hide a field-err div and toggle .err class on its associated input
+function showErr(errId, fieldId, msg) {
+  var errEl = document.getElementById(errId);
+  var fieldEl = fieldId ? document.getElementById(fieldId) : null;
+  if (errEl) {
+    errEl.textContent = msg || '';
+    errEl.style.display = msg ? 'block' : 'none';
+  }
+  if (fieldEl) {
+    if (msg) {
+      fieldEl.classList.add('err');
+    } else {
+      fieldEl.classList.remove('err');
+    }
+  }
+}
+
+function clearStep1Errs() {
+  showErr('errFname',   'op-fname',   '');
+  showErr('errLname',   'op-lname',   '');
+  showErr('errEmail',   'op-email',   '');
+  showErr('errPhone',   'op-phone',   '');
+  showErr('errCountry', 'op-country', '');
+  showErr('errPw',      'op-pw',      '');
+}
+
+function clearStep2Errs() {
+  showErr('errTourTypes', null,     '');
+  showErr('errBio',       'op-bio', '');
+}
+
+function validateStep1() {
+  clearStep1Errs();
+  var fname = (document.getElementById('op-fname') || {}).value || '';
+  var lname = (document.getElementById('op-lname') || {}).value || '';
+  var email = (document.getElementById('op-email') || {}).value || '';
+  var phone = (document.getElementById('op-phone') || {}).value || '';
+  var pw    = (document.getElementById('op-pw')    || {}).value || '';
+  var ok = true;
+  if (!fname.trim()) { showErr('errFname', 'op-fname', 'First name is required.'); ok = false; }
+  if (!lname.trim()) { showErr('errLname', 'op-lname', 'Last name is required.'); ok = false; }
+  if (!email.trim()) {
+    showErr('errEmail', 'op-email', 'Email address is required.'); ok = false;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    showErr('errEmail', 'op-email', 'Please enter a valid email address.'); ok = false;
+  }
+  if (!phone.trim()) {
+    showErr('errPhone', 'op-phone', 'Phone number is required.'); ok = false;
+  }
+  var country = (document.getElementById('op-country') || {}).value || '';
+  if (!country) { showErr('errCountry', 'op-country', 'Please select your country of operation.'); ok = false; }
+  if (!pw) {
+    showErr('errPw', 'op-pw', 'Password is required.'); ok = false;
+  } else if (pw.length < 8) {
+    showErr('errPw', 'op-pw', 'Password must be at least 8 characters.'); ok = false;
+  }
+  return ok;
+}
+
+function validateStep2() {
+  clearStep2Errs();
+  var ok = true;
+  var checked = document.querySelectorAll('#tourTypeGrid .tour-type-cb:checked');
+  if (checked.length === 0) {
+    showErr('errTourTypes', null, 'Please select at least one tour type.');
+    ok = false;
+  }
+  var bio = ((document.getElementById('op-bio') || {}).value || '').trim();
+  if (!bio) {
+    showErr('errBio', 'op-bio', 'Please describe your tours and experience — this is reviewed by our team.');
+    ok = false;
+  }
+  return ok;
+}
+
+function showStep(n) {
+  // Hide all three step divs
+  for (var i = 1; i <= 3; i++) {
+    var el = document.getElementById('step' + i);
+    if (el) el.style.display = (i === n) ? 'block' : 'none';
+  }
+
+  // Update indicator numbers, labels, connectors
+  for (var j = 1; j <= 3; j++) {
+    var numEl = document.getElementById('siNum' + j);
+    var lblEl = document.getElementById('siLbl' + j);
+    if (!numEl) continue;
+    numEl.className = 'si-num';
+    if (lblEl) lblEl.className = 'si-label';
+    if (j < n) {
+      numEl.classList.add('done');
+      numEl.textContent = '✓';
+    } else if (j === n) {
+      numEl.classList.add('active');
+      numEl.textContent = j;
+      if (lblEl) lblEl.classList.add('active');
+    } else {
+      numEl.textContent = j;
+    }
+  }
+  for (var k = 1; k <= 2; k++) {
+    var conn = document.getElementById('siConn' + k);
+    if (conn) conn.className = 'si-connector' + (n > k ? ' done' : '');
+  }
+
+  // Update counter text
+  var counter = document.getElementById('siCounter');
+  if (counter) counter.textContent = 'Step ' + n + ' of 3';
+
+  opStep = n;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+
+  // Populate review summary when reaching step 3
+  if (n === 3) {
+    var fname   = (document.getElementById('op-fname')   || {}).value || '';
+    var lname   = (document.getElementById('op-lname')   || {}).value || '';
+    var email   = (document.getElementById('op-email')   || {}).value || '';
+    var country = (document.getElementById('op-country') || {}).value || '';
+    var biz     = (document.getElementById('op-biz')     || {}).value || '';
+    var bio     = (document.getElementById('op-bio')     || {}).value || '';
+    var summary = document.getElementById('reviewSummary');
+    if (summary) {
+      summary.innerHTML = [
+        biz     ? '<div style="margin:6px 0;font-size:13px"><strong>Business:</strong> ' + biz + '</div>' : '',
+        fname   ? '<div style="margin:6px 0;font-size:13px"><strong>Name:</strong> ' + fname + ' ' + lname + '</div>' : '',
+        email   ? '<div style="margin:6px 0;font-size:13px"><strong>Email:</strong> ' + email + '</div>' : '',
+        country ? '<div style="margin:6px 0;font-size:13px"><strong>Country:</strong> ' + country + '</div>' : '',
+        bio     ? '<div style="margin:6px 0;font-size:13px"><strong>About you:</strong> ' + bio.slice(0,120) + (bio.length>120?'…':'') + '</div>' : '',
+      ].filter(Boolean).join('');
+    }
+  }
+}
+
+function nextStep() {
+  if (opStep === 1) {
+    if (!validateStep1()) return;
+    maxReached = Math.max(maxReached, 2);
+    showStep(2);
+  } else if (opStep === 2) {
+    if (!validateStep2()) return;
+    maxReached = Math.max(maxReached, 3);
+    showStep(3);
+  }
+}
+
+function prevStep() {
+  if (opStep > 1) {
+    showStep(opStep - 1);
+  }
+}
+
+// Clicking a step indicator item — only allowed if that step has been reached
+function siClick(n) {
+  if (n > maxReached) return; // can't jump ahead past validated steps
+  if (n === opStep) return;
+  // Going forward: validate current step first
+  if (n > opStep) {
+    if (opStep === 1 && !validateStep1()) return;
+    if (opStep === 2 && !validateStep2()) return;
+    maxReached = Math.max(maxReached, n);
+  }
+  showStep(n);
+}
+
+var AUTH_API = window.API_V1;
+
+async function submitOperator() {
+  // ── Check all consents are ticked ─────────────────────────
+  var consents = document.querySelectorAll('#consentWrap .consent-check');
+  var allChecked = Array.from(consents).every(function(c){ return c.checked; });
+  var consentErr = document.getElementById('consent-err');
+  if (!allChecked) {
+    if (consentErr) {
+      consentErr.textContent = 'Please accept all required terms before submitting.';
+      consentErr.style.display = 'block';
+    }
+    return;
+  }
+  if (consentErr) {
+    consentErr.textContent = '';
+    consentErr.style.display = 'none';
+  }
+
+  // ── Collect all form data ──────────────────────────────────
+  var fname   = (document.getElementById('op-fname')     || {}).value || '';
+  var lname   = (document.getElementById('op-lname')     || {}).value || '';
+  var email   = (document.getElementById('op-email')     || {}).value || '';
+  var phone   = (document.getElementById('op-phone')     || {}).value || '';
+  var country = (document.getElementById('op-country')   || {}).value || '';
+  var pw      = (document.getElementById('op-pw')        || {}).value || '';
+  var biz     = (document.getElementById('op-biz')       || {}).value || '';
+  var bio     = (document.getElementById('op-bio')       || {}).value || '';
+
+  if (!email || !pw) {
+    showStep(1);
+    validateStep1();
+    return;
+  }
+
+  // ── Disable submit button ──────────────────────────────────
+  var btn = document.getElementById('btnSubmit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+
+  try {
+    // ── Register operator account via API ──────────────────
+    var res = await fetch(AUTH_API + '/auth/register/operator/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name:   fname.trim(),
+        last_name:    lname.trim(),
+        email:        email.trim(),
+        phone:        phone.trim(),
+        country:      country.trim(),
+        password:     pw,
+        password2:    pw,
+        company_name: biz.trim()
+      })
+    });
+
+    var data = await res.json();
+
+    if (!res.ok) {
+      // Show field errors from API
+      var errMsg = '';
+      if (data.email)     errMsg += 'Email: '    + data.email[0]    + '\n';
+      if (data.password)  errMsg += 'Password: ' + data.password[0] + '\n';
+      if (data.detail)    errMsg += data.detail;
+      if (!errMsg)        errMsg = JSON.stringify(data);
+      alert('Registration error:\n' + errMsg);
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit application ✓'; }
+      return;
+    }
+
+    // ── Save JWT tokens and user profile locally ───────────
+    if (data.access) {
+      localStorage.setItem('waybound_access',  data.access);
+      localStorage.setItem('waybound_refresh', data.refresh || '');
+    }
+    if (data.user) {
+      localStorage.setItem('waybound_user', JSON.stringify(data.user));
+    }
+
+    // ── Show success screen (opStep4) ──────────────────────
+    for (var s = 1; s <= 3; s++) {
+      var sp = document.getElementById('step' + s);
+      if (sp) sp.style.display = 'none';
+    }
+    var stepInd = document.getElementById('stepIndicator');
+    if (stepInd) stepInd.style.display = 'none';
+    var stepCtr = document.getElementById('siCounter');
+    if (stepCtr) stepCtr.style.display = 'none';
+    var step4 = document.getElementById('opStep4');
+    if (step4) step4.style.display = 'block';
+
+    // Redirect to dashboard after 3 seconds
+    setTimeout(function() {
+      window.location.href = 'operator-dashboard.html';
+    }, 3000);
+
+  } catch(e) {
+    console.error('Registration error:', e);
+    alert('Could not reach the server. Please check your connection and try again.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Submit application ✓'; }
+  }
+}
+
+
+// Nav: handled by nav.js
+
+</script>
+<script src="nav.js"></script>
+</body>
+</html>
