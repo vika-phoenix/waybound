@@ -111,14 +111,6 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 .topic-link{display:block;font-size:12.5px;color:var(--mu);font-family:var(--bf);padding:4px 0;border-bottom:1px solid transparent;transition:color .15s,border-color .15s;}
 .topic-link:hover{color:var(--ad);border-bottom-color:var(--ln)}
 
-/* CATEGORY BAR */
-.cat-bar{background:var(--white);border-bottom:1px solid var(--ln);position:sticky;top:62px;z-index:90;transition:background .35s,border-color .35s;}
-.cat-bar-inner{max-width:960px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none;}
-.cat-bar-inner::-webkit-scrollbar{display:none}
-.cat-btn{flex-shrink:0;padding:13px 18px;font-size:12px;font-weight:500;font-family:var(--bf);color:var(--mu);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:color .15s,border-color .15s;white-space:nowrap;}
-.cat-btn:hover{color:var(--ad)}
-.cat-btn.active{color:var(--ad);border-bottom-color:var(--ac);}
-
 /* FAQ BODY */
 .faq-body{max-width:960px;margin:0 auto;padding:44px 26px 60px;display:grid;grid-template-columns:200px 1fr;gap:36px;align-items:start;}
 @media(max-width:700px){.faq-body{grid-template-columns:1fr;}.faq-sidebar{display:none}}
@@ -225,22 +217,22 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
   <div class="sec-ey">Most helpful right now</div>
   <h2 class="sec-h2">Featured <em>articles</em></h2>
   <div class="featured-grid">
-    <a class="fa-card" onclick="jumpTo('bookings')">
+    <a class="fa-card" onclick="jumpToFaq('bookings',0)">
       <div class="fa-icon">📋</div><div class="fa-tag">Bookings</div>
       <div class="fa-title">How to book a tour on Waybound</div>
       <div class="fa-arrow">Read →</div>
     </a>
-    <a class="fa-card" onclick="jumpTo('cancellations')">
+    <a class="fa-card" onclick="jumpToFaq('cancellations',0)">
       <div class="fa-icon">↩️</div><div class="fa-tag">Cancellations</div>
       <div class="fa-title">Cooling-off window &amp; refund rules</div>
       <div class="fa-arrow">Read →</div>
     </a>
-    <a class="fa-card" onclick="jumpTo('payments')">
+    <a class="fa-card" onclick="jumpToFaq('payments',2)">
       <div class="fa-icon">💳</div><div class="fa-tag">Payments</div>
       <div class="fa-title">Deposit, balance &amp; payment methods</div>
       <div class="fa-arrow">Read →</div>
     </a>
-    <a class="fa-card" onclick="jumpTo('safety')">
+    <a class="fa-card" onclick="jumpToFaq('tours',1)">
       <div class="fa-icon">🛡️</div><div class="fa-tag">Trust &amp; Safety</div>
       <div class="fa-title">How guides are verified</div>
       <div class="fa-arrow">Read →</div>
@@ -255,62 +247,49 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
   <div class="topics-grid">
     <div class="topic-card" onclick="jumpTo('bookings')">
       <div class="topic-head"><div class="topic-icon">📋</div><div class="topic-name">Bookings &amp; reservations</div></div>
-      <span class="topic-link">How to make a booking</span>
-      <span class="topic-link">Which countries are covered</span>
-      <span class="topic-link">Operator confirmation window</span>
-      <span class="topic-link">Group &amp; solo bookings</span>
-      <span class="topic-link">Children's pricing</span>
+      <span class="topic-link" onclick="jumpToFaq('bookings',0);event.stopPropagation()">How to make a booking</span>
+      <span class="topic-link" onclick="jumpToFaq('bookings',1);event.stopPropagation()">Which countries are covered</span>
+      <span class="topic-link" onclick="jumpToFaq('bookings',2);event.stopPropagation()">Operator confirmation window</span>
+      <span class="topic-link" onclick="jumpToFaq('bookings',3);event.stopPropagation()">Group &amp; solo bookings</span>
+      <span class="topic-link" onclick="jumpToFaq('bookings',4);event.stopPropagation()">Children's pricing</span>
     </div>
     <div class="topic-card" onclick="jumpTo('payments')">
       <div class="topic-head"><div class="topic-icon">💳</div><div class="topic-name">Payments &amp; pricing</div></div>
-      <span class="topic-link">Accepted payment methods</span>
-      <span class="topic-link">Deposit vs balance model</span>
-      <span class="topic-link">When is my card charged?</span>
-      <span class="topic-link">Currencies &amp; conversion</span>
+      <span class="topic-link" onclick="jumpToFaq('payments',1);event.stopPropagation()">Accepted payment methods</span>
+      <span class="topic-link" onclick="jumpToFaq('payments',2);event.stopPropagation()">Deposit vs balance model</span>
+      <span class="topic-link" onclick="jumpToFaq('payments',3);event.stopPropagation()">When is my card charged?</span>
+      <span class="topic-link" onclick="jumpToFaq('payments',0);event.stopPropagation()">Is my payment secure?</span>
     </div>
     <div class="topic-card" onclick="jumpTo('cancellations')">
       <div class="topic-head"><div class="topic-icon">↩️</div><div class="topic-name">Cancellations &amp; refunds</div></div>
-      <span class="topic-link">Cooling-off window (platform rule)</span>
-      <span class="topic-link">Standard cancellation tiers</span>
-      <span class="topic-link">If the operator cancels</span>
-      <span class="topic-link">Force majeure &amp; refund timeline</span>
+      <span class="topic-link" onclick="jumpToFaq('cancellations',0);event.stopPropagation()">Cooling-off window (platform rule)</span>
+      <span class="topic-link" onclick="jumpToFaq('cancellations',1);event.stopPropagation()">Standard cancellation tiers</span>
+      <span class="topic-link" onclick="jumpToFaq('cancellations',2);event.stopPropagation()">If the operator cancels</span>
+      <span class="topic-link" onclick="jumpToFaq('cancellations',4);event.stopPropagation()">Force majeure &amp; refund timeline</span>
     </div>
     <div class="topic-card" onclick="jumpTo('tours')">
       <div class="topic-head"><div class="topic-icon">🧭</div><div class="topic-name">Tours &amp; guides</div></div>
-      <span class="topic-link">Who are Travel Experts?</span>
-      <span class="topic-link">Guide verification process</span>
-      <span class="topic-link">Difficulty levels</span>
-      <span class="topic-link">Travel insurance guidance</span>
+      <span class="topic-link" onclick="jumpToFaq('tours',0);event.stopPropagation()">Who are Travel Experts?</span>
+      <span class="topic-link" onclick="jumpToFaq('tours',1);event.stopPropagation()">Guide verification process</span>
+      <span class="topic-link" onclick="jumpToFaq('tours',2);event.stopPropagation()">Difficulty levels</span>
+      <span class="topic-link" onclick="jumpToFaq('tours',3);event.stopPropagation()">Travel insurance guidance</span>
     </div>
     <div class="topic-card" onclick="jumpTo('groups')">
       <div class="topic-head"><div class="topic-icon">👥</div><div class="topic-name">Group size</div></div>
-      <span class="topic-link">Maximum 15 per group (platform rule)</span>
-      <span class="topic-link">Why small groups?</span>
-      <span class="topic-link">Private tour options</span>
+      <span class="topic-link" onclick="jumpToFaq('groups',0);event.stopPropagation()">Maximum 15 per group (platform rule)</span>
+      <span class="topic-link" onclick="jumpToFaq('groups',1);event.stopPropagation()">Why small groups?</span>
+      <span class="topic-link" onclick="jumpToFaq('groups',2);event.stopPropagation()">Private tour options</span>
     </div>
     <div class="topic-card" onclick="jumpTo('operators')">
       <div class="topic-head"><div class="topic-icon">🗺️</div><div class="topic-name">For Travel Experts</div></div>
-      <span class="topic-link">How to list a tour</span>
-      <span class="topic-link">Commission &amp; fees</span>
-      <span class="topic-link">Setting cancellation policies</span>
-      <span class="topic-link">Operator cancellation obligations</span>
+      <span class="topic-link" onclick="jumpToFaq('operators',0);event.stopPropagation()">How to list a tour</span>
+      <span class="topic-link" onclick="jumpToFaq('operators',1);event.stopPropagation()">Commission &amp; fees</span>
+      <span class="topic-link" onclick="jumpToFaq('operators',2);event.stopPropagation()">Setting cancellation policies</span>
+      <span class="topic-link" onclick="jumpToFaq('operators',3);event.stopPropagation()">Operator cancellation obligations</span>
     </div>
   </div>
 </div>
 
-<!-- STICKY CATEGORY BAR -->
-<div class="cat-bar">
-  <div class="cat-bar-inner">
-    <button class="cat-btn active" onclick="jumpTo('bookings')">📋 Bookings</button>
-    <button class="cat-btn" onclick="jumpTo('payments')">💳 Payments</button>
-    <button class="cat-btn" onclick="jumpTo('cancellations')">↩️ Cancellations</button>
-    <button class="cat-btn" onclick="jumpTo('tours')">🧭 Tours &amp; Guides</button>
-    <button class="cat-btn" onclick="jumpTo('groups')">👥 Group Size</button>
-    <button class="cat-btn" onclick="jumpTo('safety')">🛡️ Safety &amp; Trust</button>
-    <button class="cat-btn" onclick="jumpTo('operators')">🗺️ Travel Experts</button>
-    <button class="cat-btn" onclick="jumpTo('account')">👤 Account</button>
-  </div>
-</div>
 
 <!-- FAQ BODY -->
 <div class="faq-body">
@@ -375,7 +354,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
       </div>
       <div class="faq-item" onclick="toggleFaq(this)">
         <div class="faq-q"><span class="faq-q-text">What payment methods are accepted?</span><div class="faq-toggle">+</div></div>
-        <div class="faq-a"><ul><li><strong>Bank card</strong> (Visa, Mastercard, Mir) via YooKassa</li><li><strong>SBP</strong> (Система быстрых платежей) — instant transfer via QR</li><li><strong>Bank transfer</strong> — spot held for 24 hours while the transfer processes</li></ul>All charges are in Roubles. If a tour is priced in another currency, the Rouble equivalent is shown before you confirm.</div>
+        <div class="faq-a"><ul><li><strong>Bank card</strong> (Visa, Mastercard, Mir) — processed securely via YooKassa</li><li><strong>SBP</strong> (Система быстрых платежей) — instant transfer via QR code</li></ul>All charges are in Roubles. If a tour is priced in another currency, the Rouble equivalent is shown before you confirm.</div>
       </div>
       <div class="faq-item" onclick="toggleFaq(this)">
         <div class="faq-q"><span class="faq-q-text">How does the deposit and balance system work?</span><div class="faq-toggle">+</div></div>
@@ -611,17 +590,29 @@ var _sids = ['bookings','payments','cancellations','tours','groups','safety','op
 function jumpTo(id) {
   var el = document.getElementById(id);
   if (!el) return;
-  var top = el.getBoundingClientRect().top + window.pageYOffset - 62 - 44 - 10;
+  var top = el.getBoundingClientRect().top + window.pageYOffset - 62 - 16;
   window.scrollTo({ top: top, behavior: 'smooth' });
   _setActive(id);
 }
+function jumpToFaq(sectionId, itemIdx) {
+  jumpTo(sectionId);
+  setTimeout(function() {
+    var sec = document.getElementById(sectionId);
+    if (!sec) return;
+    var items = sec.querySelectorAll('.faq-item');
+    if (!items[itemIdx]) return;
+    sec.querySelectorAll('.faq-item.open').forEach(function(i){ i.classList.remove('open'); });
+    items[itemIdx].classList.add('open');
+    var top = items[itemIdx].getBoundingClientRect().top + window.pageYOffset - 90;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }, 380);
+}
 function _setActive(id) {
   var idx = _sids.indexOf(id);
-  document.querySelectorAll('.cat-btn').forEach(function(b,i){ b.classList.toggle('active', i===idx); });
   document.querySelectorAll('.sb-link').forEach(function(b,i){ b.classList.toggle('active', i===idx); });
 }
 window.addEventListener('scroll', function() {
-  var off = 62 + 44 + 30, cur = _sids[0];
+  var off = 62 + 30, cur = _sids[0];
   _sids.forEach(function(id){ var el=document.getElementById(id); if(el && el.getBoundingClientRect().top<=off) cur=id; });
   _setActive(cur);
 }, {passive:true});

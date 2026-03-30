@@ -15,6 +15,8 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None,           {'fields': ('email', 'password')}),
         ('Personal',     {'fields': ('first_name', 'last_name', 'phone', 'avatar', 'bio', 'country')}),
+        ('Payout',       {'fields': ('payout_name', 'payout_bank', 'payout_account', 'payout_bik', 'payout_corr_account'),
+                          'classes': ('collapse',)}),
         ('Role & flags', {'fields': ('role', 'is_active', 'is_staff', 'is_superuser',
                                      'email_verified', 'phone_verified', 'marketing_emails')}),
         ('Permissions',  {'fields': ('groups', 'user_permissions')}),
@@ -31,9 +33,9 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(VerificationDocument)
 class VerificationDocumentAdmin(admin.ModelAdmin):
-    list_display  = ('operator_email', 'status', 'submitted_at', 'reviewed_at', 'document_link')
-    list_filter   = ('status',)
-    search_fields = ('operator__email',)
+    list_display  = ('operator_email', 'doc_type', 'original_name', 'status', 'submitted_at', 'reviewed_at', 'document_link')
+    list_filter   = ('status', 'doc_type')
+    search_fields = ('operator__email', 'original_name')
     readonly_fields = ('submitted_at', 'reviewed_at', 'document_link')
     actions = ['approve_verification', 'reject_verification']
 

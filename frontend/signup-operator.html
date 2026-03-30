@@ -777,6 +777,12 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
     <!-- CONSENT CHECKBOXES -->
     <div class="consent-wrap" style="margin:20px 0" id="consentWrap">
       <div class="consent-row">
+        <input type="checkbox" class="consent-check" id="op-c0">
+        <label class="consent-text" for="op-c0">
+          I confirm that I have prior experience running tours or guiding groups and that the information provided is accurate
+        </label>
+      </div>
+      <div class="consent-row">
         <input type="checkbox" class="consent-check" id="op-c1">
         <label class="consent-text" for="op-c1">
           I have read and agree to the <a href="terms-experts.html">Terms for Travel Experts</a> and understand my obligations as a Waybound guide
@@ -1127,7 +1133,8 @@ async function submitOperator() {
         country:      country.trim(),
         password:     pw,
         password2:    pw,
-        company_name: biz.trim()
+        company_name: biz.trim(),
+        bio:          bio.trim()
       })
     });
 

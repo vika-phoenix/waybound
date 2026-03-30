@@ -108,7 +108,7 @@ class TourListSerializer(serializers.ModelSerializer):
             'days', 'price', 'currency', 'timezone', 'max_group', 'rating', 'review_count',
             'tags', 'guide_display', 'operator_photo_url', 'hero_photo_url',
             'next_departure', 'spots_left', 'tour_type',
-            'saved_count', 'is_saved', 'is_guaranteed',
+            'saved_count', 'is_saved', 'is_guaranteed', 'is_private',
         ]
 
     def get_guide_display(self, obj):

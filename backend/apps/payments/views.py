@@ -89,11 +89,15 @@ def initiate_payment(request):
     POST /api/v1/payments/initiate/
     Body: { booking_id, payment_method, payment_type }
       payment_type: 'deposit' (default) | 'balance'
-      payment_method: 'yookassa' (default) | 'sbp' | 'bank'
+      payment_method: 'yookassa' (default) | 'sbp'
     """
     booking_id    = request.data.get('booking_id')
     payment_method = request.data.get('payment_method', 'yookassa')
     payment_type   = request.data.get('payment_type', 'deposit')
+
+    if payment_method not in ('yookassa', 'sbp'):
+        return Response({'detail': 'Invalid payment method. Use yookassa or sbp.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     if not booking_id:
         return Response({'detail': 'booking_id required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -116,16 +120,6 @@ def initiate_payment(request):
         balance_amount = round(float(booking.total_price) - float(booking.deposit_paid), 2)
         if balance_amount <= 0:
             return Response({'detail': 'No balance due.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if payment_method == 'bank':
-            booking.payment_method = 'bank'
-            booking.save(update_fields=['payment_method'])
-            return Response({
-                'status':    'pending_transfer',
-                'reference': booking.reference,
-                'amount':    balance_amount,
-                'currency':  currency,
-            })
 
         try:
             rub_balance, balance_rate = convert_to_rub(balance_amount, currency)
@@ -185,18 +179,6 @@ def initiate_payment(request):
         balance_due_date = max(calculated, _date.today())
     else:
         balance_due_date = None
-
-    if payment_method == 'bank':
-        booking.payment_method   = 'bank'
-        booking.balance_due_date = balance_due_date
-        booking.save(update_fields=['payment_method', 'balance_due_date'])
-        return Response({
-            'status':      'pending_transfer',
-            'reference':   booking.reference,
-            'amount':      deposit_amount,
-            'deposit_pct': deposit_pct,
-            'currency':    currency,
-        })
 
     try:
         rub_deposit, deposit_rate = convert_to_rub(deposit_amount, currency)

@@ -53,6 +53,8 @@ def auto_cancel_expired_bookings():
             logger.error('Email error for ghost cancel %s: %s', bk.reference, exc)
 
     # Rule 2: deposit paid but operator never confirmed, > 48 h old
+    from .views import _compute_refund, _issue_yookassa_refund
+
     confirm_cutoff = now - timedelta(hours=48)
     unconfirmed = Booking.objects.filter(
         status=Booking.Status.PENDING,
@@ -61,10 +63,22 @@ def auto_cancel_expired_bookings():
         created_at__lte=confirm_cutoff,
     )
     for bk in unconfirmed:
-        bk.status       = Booking.Status.CANCELLED
-        bk.cancelled_at = now
-        bk.save(update_fields=['status', 'cancelled_at'])
-        logger.info('Auto-cancelled unconfirmed booking %s (operator timeout 48 h)', bk.reference)
+        # Compute full refund (operator fault → 100%)
+        refund_amount, penalty_pct, tier_label = _compute_refund(bk, cancelled_by='system')
+        bk.status        = Booking.Status.CANCELLED
+        bk.cancelled_at  = now
+        bk.refund_amount = refund_amount
+
+        # Attempt automatic YooKassa refund
+        if refund_amount > 0:
+            success, msg = _issue_yookassa_refund(bk, refund_amount)
+            bk.refund_status = 'issued' if success else ('manual' if msg == 'bank' else 'pending')
+        else:
+            bk.refund_status = 'none'
+
+        bk.save(update_fields=['status', 'cancelled_at', 'refund_amount', 'refund_status'])
+        logger.info('Auto-cancelled unconfirmed booking %s (operator timeout 48 h, refund=%.2f %s)',
+                     bk.reference, refund_amount, bk.refund_status)
         try:
             send_booking_cancelled_emails(bk, cancelled_by='operator_timeout')
         except Exception as exc:
@@ -82,10 +96,17 @@ def auto_cancel_expired_bookings():
         cutoff_date = bk.departure_date + _dt.timedelta(days=tour_days + 1)
         if today < cutoff_date:
             continue
-        bk.status           = Booking.Status.CANCELLED
-        bk.cancelled_at     = now
-        bk.refund_amount    = float(bk.deposit_paid)   # full deposit back — tour never confirmed
-        bk.refund_status    = 'pending'                 # flag for manual processing
+        refund_amount, _, _ = _compute_refund(bk, cancelled_by='system')
+        bk.status        = Booking.Status.CANCELLED
+        bk.cancelled_at  = now
+        bk.refund_amount = refund_amount
+
+        if refund_amount > 0:
+            success, msg = _issue_yookassa_refund(bk, refund_amount)
+            bk.refund_status = 'issued' if success else ('manual' if msg == 'bank' else 'pending')
+        else:
+            bk.refund_status = 'none'
+
         bk.save(update_fields=['status', 'cancelled_at', 'refund_amount', 'refund_status'])
         logger.info(
             'Auto-cancelled past-departure stranded booking %s (departure %s, tour %d days)',

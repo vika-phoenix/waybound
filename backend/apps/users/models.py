@@ -54,6 +54,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     telegram_chat_id    = models.CharField(max_length=32, blank=True, default='',
                                             help_text='Operator Telegram chat ID for instant notifications')
 
+    # ── Payout (operators only) ────────────────────────────
+    payout_name         = models.CharField(max_length=120, blank=True, default='')
+    payout_bank         = models.CharField(max_length=120, blank=True, default='')
+    payout_account      = models.CharField(max_length=30, blank=True, default='')
+    payout_bik          = models.CharField(max_length=12, blank=True, default='')
+    payout_corr_account = models.CharField(max_length=30, blank=True, default='')
+
     # ── Timestamps ─────────────────────────────────────────
     date_joined  = models.DateTimeField(default=timezone.now)
     last_login   = models.DateTimeField(null=True, blank=True)
@@ -82,15 +89,21 @@ class VerificationDocument(models.Model):
         APPROVED = 'approved', 'Approved'
         REJECTED = 'rejected', 'Rejected'
 
-    operator     = models.OneToOneField('User', on_delete=models.CASCADE, related_name='verification')
-    document     = models.ImageField(upload_to='verification/')
-    submitted_at = models.DateTimeField(auto_now_add=True)
-    reviewed_at  = models.DateTimeField(null=True, blank=True)
-    status       = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
-    admin_notes  = models.TextField(blank=True)
+    class DocType(models.TextChoices):
+        IDENTITY   = 'identity',   'Identity document'
+        CREDENTIAL = 'credential', 'Guide credential'
+
+    operator      = models.ForeignKey('User', on_delete=models.CASCADE, related_name='documents')
+    document      = models.FileField(upload_to='verification/')
+    doc_type      = models.CharField(max_length=12, choices=DocType.choices, default=DocType.IDENTITY)
+    original_name = models.CharField(max_length=255, blank=True, default='')
+    submitted_at  = models.DateTimeField(auto_now_add=True)
+    reviewed_at   = models.DateTimeField(null=True, blank=True)
+    status        = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    admin_notes   = models.TextField(blank=True)
 
     def __str__(self):
-        return f'{self.operator.email} — {self.status}'
+        return f'{self.operator.email} — {self.doc_type} — {self.status}'
 
 
 class OTPCode(models.Model):

@@ -1659,11 +1659,11 @@ function renderOverview() {
   var u = null;
   try { u = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch(e) {}
   var checks = [
-    { label:'Profile photo & bio', sub:'Travellers trust guides they can see', done: !!(u && u.avatar), action:'settings.html' },
-    { label:'Identity verification', sub:'Upload passport or national ID', done: false, action:'settings.html#identity', id:'identity' },
-    { label:'Guide credentials', sub:'Previous tour proof, certificates', done: false, action:'settings.html#credentials' },
-    { label:'Payout method', sub:'Bank account or payment details', done: false, action:'settings.html#payout' },
-    { label:'WhatsApp / contact number', sub:'For direct traveller messaging', done: !!(u && u.phone), action:'settings.html' }
+    { label:'Profile photo & bio', sub:'Travellers trust guides they can see', done: !!(u && u.avatar && u.bio), action:'settings.html' },
+    { label:'Identity verification', sub:'Upload passport or national ID', done: !!(u && u.is_verified), action:'settings.html#verification', id:'identity' },
+    { label:'Guide credentials', sub:'Certificates, past tour proof', done: !!(u && u.credentials_files && u.credentials_files.length), action:'settings.html#credentials' },
+    { label:'Payout method', sub:'Bank details for your earnings', done: !!(u && u.payout_account), action:'settings.html#payout' },
+    { label:'Phone number', sub:'For verification and urgent contact', done: !!(u && u.phone), action:'settings.html' }
   ];
   var done = checks.filter(function(c){ return c.done; }).length;
   var prog = document.getElementById('setupProgress');

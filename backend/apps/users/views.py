@@ -503,16 +503,70 @@ def verify_document(request):
     if not doc_file:
         return Response({'detail': 'No document file provided.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    vdoc, created = VerificationDocument.objects.get_or_create(operator=request.user)
-    vdoc.document = doc_file
-    vdoc.status   = VerificationDocument.Status.PENDING
-    vdoc.reviewed_at = None
-    vdoc.admin_notes = ''
-    vdoc.save()
+    # Replace existing identity doc (only one allowed)
+    VerificationDocument.objects.filter(operator=request.user, doc_type='identity').delete()
+    vdoc = VerificationDocument.objects.create(
+        operator=request.user,
+        document=doc_file,
+        doc_type='identity',
+        original_name=doc_file.name,
+    )
     return Response(
         {'status': 'pending', 'message': 'Document submitted. We will review within 48 hours.'},
-        status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+        status=status.HTTP_201_CREATED,
     )
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
+def user_documents(request):
+    """
+    GET  /api/v1/auth/me/documents/          — list operator's documents
+    GET  /api/v1/auth/me/documents/?doc_type=credential — filter by type
+    POST /api/v1/auth/me/documents/          — upload a new document
+    """
+    from .models import VerificationDocument
+    if request.user.role != 'operator':
+        return Response({'detail': 'Only operators can manage documents.'},
+                        status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'GET':
+        docs = VerificationDocument.objects.filter(operator=request.user)
+        doc_type = request.query_params.get('doc_type')
+        if doc_type:
+            docs = docs.filter(doc_type=doc_type)
+        result = []
+        for d in docs.order_by('-submitted_at'):
+            result.append({
+                'id': d.id,
+                'doc_type': d.doc_type,
+                'original_name': d.original_name,
+                'status': d.status,
+                'submitted_at': d.submitted_at.isoformat(),
+            })
+        return Response(result)
+
+    # POST — upload new document
+    doc_file = request.FILES.get('document')
+    if not doc_file:
+        return Response({'detail': 'No document file provided.'}, status=status.HTTP_400_BAD_REQUEST)
+    doc_type = request.data.get('doc_type', 'credential')
+    if doc_type not in ('identity', 'credential'):
+        return Response({'detail': 'Invalid doc_type.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    vdoc = VerificationDocument.objects.create(
+        operator=request.user,
+        document=doc_file,
+        doc_type=doc_type,
+        original_name=doc_file.name,
+    )
+    return Response({
+        'id': vdoc.id,
+        'doc_type': vdoc.doc_type,
+        'original_name': vdoc.original_name,
+        'status': vdoc.status,
+    }, status=status.HTTP_201_CREATED)
 
 
 # ── Social account connections ─────────────────────────────────────────────

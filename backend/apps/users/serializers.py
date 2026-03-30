@@ -44,7 +44,7 @@ class OperatorRegisterSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'password', 'password2',
             'first_name', 'last_name', 'phone',
-            'company_name', 'country',
+            'company_name', 'country', 'bio',
         )
 
     def validate(self, data):
@@ -56,8 +56,13 @@ class OperatorRegisterSerializer(serializers.ModelSerializer):
         validated_data.pop('password2')
         company_name = validated_data.pop('company_name', '')
         password = validated_data.pop('password')
-        # company_name lives in bio until OperatorProfile model is built in Task 18
-        user = User(role=User.Role.OPERATOR, bio=company_name, **validated_data)
+        bio = validated_data.pop('bio', '')
+        # Combine company name and bio if both provided
+        if company_name and bio:
+            full_bio = f'{company_name}\n\n{bio}'
+        else:
+            full_bio = bio or company_name
+        user = User(role=User.Role.OPERATOR, bio=full_bio, **validated_data)
         user.set_password(password)
         user.save()
         return user
@@ -95,12 +100,11 @@ class UserMeSerializer(serializers.ModelSerializer):
     full_name           = serializers.ReadOnlyField()
     verification_status = serializers.SerializerMethodField()
     photo_url           = serializers.SerializerMethodField()
+    credentials_files   = serializers.SerializerMethodField()
 
     def get_verification_status(self, obj):
-        try:
-            return obj.verification.status
-        except Exception:
-            return None
+        doc = obj.documents.filter(doc_type='identity').order_by('-submitted_at').first()
+        return doc.status if doc else None
 
     def get_photo_url(self, obj):
         if not obj.avatar:
@@ -108,20 +112,26 @@ class UserMeSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         return request.build_absolute_uri(obj.avatar.url) if request else obj.avatar.url
 
+    def get_credentials_files(self, obj):
+        if obj.role != 'operator':
+            return []
+        return list(obj.documents.filter(doc_type='credential').values('id', 'original_name', 'status', 'submitted_at'))
+
     class Meta:
         model  = User
         fields = (
             'id', 'email', 'phone',
             'first_name', 'last_name', 'full_name',
             'avatar', 'photo_url', 'bio', 'country', 'role',
-            'is_verified', 'verification_status',
+            'is_verified', 'verification_status', 'credentials_files',
             'email_verified', 'phone_verified', 'marketing_emails',
             'telegram_chat_id',
+            'payout_name', 'payout_bank', 'payout_account', 'payout_bik', 'payout_corr_account',
             'date_joined',
         )
         read_only_fields = (
             'id', 'email', 'role', 'full_name',
-            'is_verified', 'verification_status',
+            'is_verified', 'verification_status', 'credentials_files',
             'email_verified', 'phone_verified', 'date_joined',
         )
 

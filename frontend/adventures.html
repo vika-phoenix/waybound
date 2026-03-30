@@ -145,8 +145,10 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 .sb-chk-lbl{font-size:13px;color:var(--ink);font-family:var(--bf);}
 .sb-chk-count{font-size:11px;color:var(--mu);font-family:var(--bf);margin-left:auto;}
 /* star rating filter */
-.star-row{display:flex;gap:6px;padding:4px 0;}
-.star-opt{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1.5px solid var(--ln);border-radius:100px;cursor:pointer;font-size:12px;font-family:var(--bf);color:var(--mu);transition:all .15s;}
+.star-row{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0;}
+.star-opt{display:inline-flex;align-items:center;gap:3px;padding:6px 11px;border:1.5px solid var(--ln);border-radius:100px;cursor:pointer;font-size:12px;font-family:var(--bf);color:var(--mu);transition:all .15s;white-space:nowrap;line-height:1;}
+.star-opt .so-star{font-size:11px;color:#c8b400;line-height:1;flex-shrink:0;}
+.star-opt.on .so-star{color:#e8a800;}
 .star-opt.on{border-color:var(--ac);background:var(--ha-bg);color:var(--ha-tx);}
 .star-opt:hover{border-color:var(--ac)}
 
@@ -266,7 +268,8 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 .tc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
 .tc-tag{font-size:10.5px;padding:3px 8px;border-radius:20px;background:var(--paper);color:var(--mu);border:1px solid var(--ln);font-family:var(--bf);transition:background .35s,color .35s}
 .tc-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.tc-rating{font-size:12.5px;font-family:var(--bf);color:var(--ink);transition:color .35s}
+.tc-rating{font-size:12.5px;font-family:var(--bf);color:var(--ink);transition:color .35s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
+.tc-star{color:#f5a623;font-size:13px;line-height:1;flex-shrink:0;}
 .tc-reviews{color:var(--mu)}
 .tc-spots{font-size:11.5px;font-family:var(--bf)}
 .tc-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--ln)}
@@ -507,28 +510,25 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
     <!-- Duration -->
     <div style="padding:16px 20px 18px;border-bottom:1px solid var(--ln)" data-filter="duration">
       <div class="sb-h" style="margin-bottom:10px">Duration</div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk on"></div><span class="sb-chk-lbl">1–3 days</span><span class="sb-chk-count">48</span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk on"></div><span class="sb-chk-lbl">4–7 days</span><span class="sb-chk-count">112</span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk on"></div><span class="sb-chk-lbl">8–14 days</span><span class="sb-chk-count">87</span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">15+ days</span><span class="sb-chk-count">23</span></div>
+      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">1–3 days</span><span class="sb-chk-count" id="cnt-dur-1-3"></span></div>
+      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">4–7 days</span><span class="sb-chk-count" id="cnt-dur-4-7"></span></div>
+      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">8–14 days</span><span class="sb-chk-count" id="cnt-dur-8-14"></span></div>
+      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">15+ days</span><span class="sb-chk-count" id="cnt-dur-15"></span></div>
     </div>
 
-    <!-- Style -->
-    <div style="padding:16px 20px 18px;border-bottom:1px solid var(--ln)" data-filter="style">
-      <div class="sb-h" style="margin-bottom:10px">Trip style</div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk on"></div><span class="sb-chk-lbl">Small group</span><span class="sb-chk-count">186</span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Private tour</span><span class="sb-chk-count">67</span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Self-guided</span><span class="sb-chk-count">28</span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Family-friendly</span><span class="sb-chk-count">44</span></div>
+    <!-- Tour type -->
+    <div style="padding:16px 20px 18px;border-bottom:1px solid var(--ln)">
+      <div class="sb-h" style="margin-bottom:12px">Tour type</div>
+      <div class="sb-toggle-row"><span class="sb-toggle-lbl">Private tours only</span><div class="toggle" id="togglePrivate" onclick="toggleFilter(this,'private')"><div class="toggle-knob"></div></div></div>
     </div>
 
     <!-- Difficulty -->
     <div style="padding:16px 20px 18px;border-bottom:1px solid var(--ln)" data-filter="difficulty">
       <div class="sb-h" style="margin-bottom:10px">Difficulty</div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk on"></div><span class="sb-chk-lbl">Easy</span><span class="sb-chk-count">92</span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk on"></div><span class="sb-chk-lbl">Moderate</span><span class="sb-chk-count">148</span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Challenging</span><span class="sb-chk-count">51</span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Expert</span><span class="sb-chk-count">14</span></div>
+      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Easy</span><span class="sb-chk-count" id="cnt-diff-Easy"></span></div>
+      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Moderate</span><span class="sb-chk-count" id="cnt-diff-Moderate"></span></div>
+      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Challenging</span><span class="sb-chk-count" id="cnt-diff-Challenging"></span></div>
+      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Expert</span><span class="sb-chk-count" id="cnt-diff-Expert"></span></div>
     </div>
 
     <!-- Rating -->
@@ -536,9 +536,9 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
       <div class="sb-h" style="margin-bottom:10px">Minimum rating</div>
       <div class="star-row">
         <div class="star-opt" onclick="selStar(this)">Any</div>
-        <div class="star-opt on" onclick="selStar(this)">★ 4+</div>
-        <div class="star-opt" onclick="selStar(this)">★ 4.5+</div>
-        <div class="star-opt" onclick="selStar(this)">★ 5.0</div>
+        <div class="star-opt on" onclick="selStar(this)"><span class="so-star">★</span>4+</div>
+        <div class="star-opt" onclick="selStar(this)"><span class="so-star">★</span>4.5+</div>
+        <div class="star-opt" onclick="selStar(this)"><span class="so-star">★</span>5.0</div>
       </div>
     </div>
   </div>
@@ -623,7 +623,7 @@ function previewTheme(k){pending=k;document.querySelectorAll('.th-opt').forEach(
 function applyPending(){current=pending;localStorage.setItem('waybound-theme',current);document.getElementById('overlay').classList.remove('open');}
 
 
-var filters = { dest:'', when:'', size:'', minPrice:0, maxPrice:200000, cats:[], diffs:[], rating:0, durs:[], guaranteed:false, next30:false, search:'' };
+var filters = { dest:'', when:'', size:'', minPrice:0, maxPrice:200000, cats:[], diffs:[], rating:0, durs:[], guaranteed:false, next30:false, private:false, search:'' };
 var currentFiltered = [];
 var PAGE_SIZE = 6;
 var currentPage = 1;
@@ -723,7 +723,7 @@ function runSearch() {
   applyFilters();
 }
 function clearFilters() {
-  filters = { dest:'', when:'', size:'', minPrice:0, maxPrice:200000, cats:[], diffs:[], rating:0, durs:[], search:'' };
+  filters = { dest:'', when:'', size:'', minPrice:0, maxPrice:200000, cats:[], diffs:[], rating:0, durs:[], guaranteed:false, next30:false, private:false, search:'' };
   pendingDest = ''; pendingWhen = ''; pendingSize = '';
   currentPage = 1;
   document.querySelectorAll('.sb-chk').forEach(function(ch){ ch.classList.remove('on'); });
@@ -747,11 +747,13 @@ function clearFilters() {
   // Reset difficulty checkboxes
   document.querySelectorAll('[data-filter="difficulty"] .sb-chk').forEach(function(ch){ ch.classList.remove('on'); });
   // Reset toggle filters
-  filters.guaranteed = false; filters.next30 = false;
+  filters.guaranteed = false; filters.next30 = false; filters.private = false;
   var tg = document.getElementById('toggleGuaranteed');
   if (tg) tg.classList.remove('on');
   var tn = document.getElementById('toggleNext30');
   if (tn) tn.classList.remove('on');
+  var tp = document.getElementById('togglePrivate');
+  if (tp) tp.classList.remove('on');
   currentPage = 1;
   applyFilters();
 }
@@ -796,6 +798,8 @@ function applyFilters() {
     if (filters.rating && t.rating < filters.rating) return false;
     // Hide tours with no future departures
     if (!t.departure) return false;
+    // Private tours only
+    if (filters.private && !t.isPrivate) return false;
     // Guaranteed departures (toggle OFF = hide non-guaranteed, toggle ON = show all)
     if (filters.guaranteed && !t.guaranteed) return false;
     // Next 30 days departure (sidebar toggle)
@@ -856,6 +860,24 @@ function goToTour(slug) {
 }
 
 
+function updateFilterCounts() {
+  var all = TOURS;
+  // Duration counts
+  var durMap = {'cnt-dur-1-3': function(t){ return t.days >= 1 && t.days <= 3; },
+                'cnt-dur-4-7': function(t){ return t.days >= 4 && t.days <= 7; },
+                'cnt-dur-8-14': function(t){ return t.days >= 8 && t.days <= 14; },
+                'cnt-dur-15': function(t){ return t.days >= 15; }};
+  Object.keys(durMap).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = all.filter(durMap[id]).length || '';
+  });
+  // Difficulty counts
+  ['Easy','Moderate','Challenging','Expert'].forEach(function(d) {
+    var el = document.getElementById('cnt-diff-' + d);
+    if (el) el.textContent = all.filter(function(t){ return t.difficulty === d; }).length || '';
+  });
+}
+
 // Load tours from Django API
 function renderSkeletons(grid, count) {
   var skels = '';
@@ -896,6 +918,7 @@ async function loadTours() {
         spots:       t.spots_left,
         maxGroup:    t.max_group,
         guaranteed:  t.is_guaranteed || false,
+        isPrivate:   t.is_private || false,
         departure:   t.next_departure || null,
         guide:       t.guide_display,
         img:         t.emoji || '🌍',
@@ -946,6 +969,7 @@ async function loadTours() {
       var searchEl = document.getElementById('sbSearchInput') || document.getElementById('fSearch');
       if (searchEl) searchEl.value = paramQ;
     }
+    updateFilterCounts();
     applyFilters();
   } catch(e) {
     console.warn('Tours API unreachable:', e.message);
@@ -1000,10 +1024,11 @@ function toggleFilter(el, type) {
   el.classList.toggle('on');
   var isOn = el.classList.contains('on');
   if (type === 'guaranteed') {
-    // Toggle ON = only show tours with a guaranteed departure
     filters.guaranteed = isOn;
   } else if (type === 'next30') {
     filters.next30 = isOn;
+  } else if (type === 'private') {
+    filters.private = isOn;
   }
   applyFilters();
 }
@@ -1057,7 +1082,7 @@ function renderCards(list) {
     html += '<div class="tc-title">' + t.title + '</div>';
     html += '<div class="tc-tags"></div>';
     html += '<div class="tc-meta">';
-    html += '<div class="tc-rating">&#11088; ' + t.rating + ' <span class="tc-reviews">(' + t.reviews + ')</span></div>';
+    html += '<div class="tc-rating"><span class="tc-star">&#9733;</span><span>' + t.rating + '</span><span class="tc-reviews">(' + t.reviews + ')</span></div>';
     html += '<div class="tc-spots" style="' + spotsStyle + '">' + t.spots + ' spots left</div>';
     html += '</div>';
     html += '<div class="tc-footer">';

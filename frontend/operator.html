@@ -274,7 +274,11 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 </div>
 <nav class="nav">
   <a class="logo" href="waybound.html"><div class="logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound</a>
-      <div class="nav-r nav-r-wrap">
+  <div class="nav-search"><span style="padding:0 10px;font-size:13px;flex-shrink:0">🔍</span><input id="navSearchInput" type="text" placeholder="Where to go?" autocomplete="off" style="background:none;border:none;outline:none;width:100%;padding:7px 14px 7px 0;font-size:12px;color:rgba(255,255,255,.7);font-family:var(--bf);" onkeydown="if(event.key==='Enter'){var q=this.value.trim();if(q)window.location.href='adventures.html?q='+encodeURIComponent(q);}"></div>
+  <div class="nav-links"><a class="nav-link" href="adventures.html">Adventures</a><a class="nav-link" href="how-it-works.html">How it works</a><a class="nav-link" href="about.html">About</a><a class="nav-link" href="help.html">Help</a><a class="nav-link" href="contact.html">Contact</a></div>
+  <div class="nav-r nav-r-wrap">
+    <button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin.html'">Sign in / Sign up</button>
+    <a class="btn-ac-sm" href="operator.html" style="text-decoration:none" id="navListTourBtn">List a tour</a>
     <div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" title="My account" style="display:none"></div>
     <div class="nav-dropdown" id="navDropdown"></div>
   </div>
@@ -322,11 +326,11 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
   <p class="sec-sub">We handle the hard parts — payments, marketing, trust-building — so you can focus on delivering unforgettable experiences.</p>
   <div class="why-grid">
     <div class="why-card"><div class="why-icon">💰</div><h3 class="why-h">Fair, transparent fees</h3><p class="why-p">We take 15% — lower than any major platform. No hidden charges, no monthly fees. You keep the majority of every booking.</p><div class="why-chip">✓ 15% commission only</div></div>
-    <div class="why-card"><div class="why-icon">📣</div><h3 class="why-h">Built-in marketing</h3><p class="why-p">Your tours appear in our SEO-optimized search and are promoted to travelers actively looking for adventures in your region.</p><div class="why-chip">✓ Targeted traveler audience</div></div>
-    <div class="why-card"><div class="why-icon">🛡️</div><h3 class="why-h">Payment protection</h3><p class="why-p">Payments are held in secure escrow and released 48 hours after departure. No chasing invoices. No late payments. Ever.</p><div class="why-chip">✓ Guaranteed on-time pay</div></div>
-    <div class="why-card"><div class="why-icon">🌟</div><h3 class="why-h">Verified guide badge</h3><p class="why-p">Our verification process builds trust with travelers. Verified guides get 3x more bookings than unverified listings on comparable platforms.</p><div class="why-chip">✓ 3x booking rate</div></div>
-    <div class="why-card"><div class="why-icon">📊</div><h3 class="why-h">Real-time dashboard</h3><p class="why-p">Track bookings, manage departures, set pricing, and view earnings analytics — all from a clean, mobile-friendly dashboard.</p><div class="why-chip">✓ Full control</div></div>
-    <div class="why-card"><div class="why-icon">🤝</div><h3 class="why-h">Dedicated support</h3><p class="why-p">Every guide gets a dedicated onboarding specialist and ongoing support via chat. We want you to succeed, not just sign up.</p><div class="why-chip">✓ 1-on-1 onboarding</div></div>
+    <div class="why-card"><div class="why-icon">🛡️</div><h3 class="why-h">Payment protection</h3><p class="why-p">Secure online payments processed through YooKassa. Deposits and balances handled automatically — no chasing invoices.</p><div class="why-chip">✓ Automated payments</div></div>
+    <div class="why-card"><div class="why-icon">📊</div><h3 class="why-h">Real-time dashboard</h3><p class="why-p">Track bookings, manage departures, set pricing, and handle enquiries — all from a clean, mobile-friendly dashboard.</p><div class="why-chip">✓ Full control</div></div>
+    <div class="why-card"><div class="why-icon">🌟</div><h3 class="why-h">Verified guide badge</h3><p class="why-p">Our verification process builds trust with travellers. Upload your credentials and get a verified badge on your profile and tours.</p><div class="why-chip">✓ Build trust</div></div>
+    <div class="why-card"><div class="why-icon">📋</div><h3 class="why-h">Flexible cancellation</h3><p class="why-p">Set your own cancellation tiers per tour. Cooling-off periods protect travellers, penalty tiers protect your revenue.</p><div class="why-chip">✓ You set the rules</div></div>
+    <div class="why-card"><div class="why-icon">🤝</div><h3 class="why-h">Personal support</h3><p class="why-p">We're a small team and we care about every guide on the platform. Reach out anytime — we'll help you get set up and succeed.</p><div class="why-chip">✓ Direct support</div></div>
   </div>
 </div>
 
@@ -351,7 +355,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
     <div class="cl-eyebrow">What you need to join</div>
     <h2 class="cl-title">Simple requirements, <em>high standards</em></h2>
     <div class="cl-item"><div class="cl-check">✓</div><div class="cl-text">Local expertise <span>You should know your destination deeply — not from a guidebook, but from lived experience.</span></div></div>
-    <div class="cl-item"><div class="cl-check">✓</div><div class="cl-text">Tour experience <span>At least 6 months running tours or guiding groups. No formal certifications required in most regions.</span></div></div>
+    <div class="cl-item"><div class="cl-check">✓</div><div class="cl-text">Tour experience <span>Prior experience running tours or guiding groups. No formal certifications required — we review your background during verification.</span></div></div>
     <div class="cl-item"><div class="cl-check">✓</div><div class="cl-text">Verified identity <span>We verify all guides via government ID. Takes 10 minutes. Required for traveler trust.</span></div></div>
     <div class="cl-item"><div class="cl-check">✓</div><div class="cl-text">Clear itinerary <span>A well-written tour description with inclusions, meeting point, and what to bring.</span></div></div>
     <div class="cl-item"><div class="cl-check">✓</div><div class="cl-text">Responsive communication <span>Respond to traveler messages within 24 hours during business days.</span></div></div>
@@ -390,29 +394,6 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
         <div><div class="sf-earnings">Guide earns: <strong>$807 per traveler</strong></div><div class="sf-earn-note">After 15% Waybound fee · 8 traveler group = $6,456/trip</div></div>
         <div class="sf-views"><div class="sf-views-n">2,847</div><div class="sf-views-l">views this month</div></div>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- TESTIMONIALS -->
-<div class="testimonials">
-  <div class="sec-ey">From our guides</div>
-  <h2 class="sec-h2">Guides love <em>working with us</em></h2>
-  <div class="test-grid">
-    <div class="test-card">
-      <div class="test-stars">★★★★★</div>
-      <div class="test-body">"I was skeptical at first, but within 3 days of listing I had my first booking. Waybound actually sends travelers who care — they're prepared, excited, and appreciative. This is the best platform I've tried in 12 years of guiding."</div>
-      <div class="test-author"><div class="test-av">👨</div><div><div class="test-name">Sandro Beridze</div><div class="test-loc">🇬🇪 Georgia · 3 years on Waybound</div></div><div class="test-earnings">$94K earned</div></div>
-    </div>
-    <div class="test-card">
-      <div class="test-stars">★★★★★</div>
-      <div class="test-body">"The payment system is what sold me. I've been burned by platforms that hold money for weeks. Waybound paid me within 24 hours after every single departure. No exceptions. That kind of reliability is everything as an independent guide."</div>
-      <div class="test-author"><div class="test-av">👩</div><div><div class="test-name">Fatima Zahra</div><div class="test-loc">🇲🇦 Morocco · 2 years on Waybound</div></div><div class="test-earnings">$41K earned</div></div>
-    </div>
-    <div class="test-card">
-      <div class="test-stars">★★★★★</div>
-      <div class="test-body">"My bookings went from 40% capacity to over 90% within six months. Their marketing actually works — I get travelers from 20+ countries who found me through Waybound. My income has tripled and I now have a waiting list."</div>
-      <div class="test-author"><div class="test-av">🧑</div><div><div class="test-name">Hiroshi Tanaka</div><div class="test-loc">🇯🇵 Japan · 18 months on Waybound</div></div><div class="test-earnings">$67K earned</div></div>
     </div>
   </div>
 </div>

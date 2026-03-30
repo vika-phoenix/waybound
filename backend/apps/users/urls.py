@@ -28,8 +28,9 @@ urlpatterns = [
     path('otp/request/', views.otp_request, name='otp-request'),
     path('otp/verify/',  views.otp_verify,  name='otp-verify'),
 
-    # Operator verification
+    # Operator verification & documents
     path('verify/', views.verify_document, name='verify-document'),
+    path('me/documents/', views.user_documents, name='user-documents'),
 
     # Social account connections
     path('social/connections/',            views.social_connections,  name='social-connections'),

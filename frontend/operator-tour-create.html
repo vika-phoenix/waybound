@@ -804,6 +804,11 @@ input[type=file].photo-input{display:none}
       <div id="draftReviewNote" style="display:none;padding:9px 11px;background:#fffbea;border:1.5px solid #e8d060;border-radius:8px;margin-bottom:8px;font-size:11.5px;color:#7a5c00;font-family:var(--bf);line-height:1.55">
         &#x270F;&#xFE0F; <strong>This tour is in draft.</strong> Press <em>Submit for review</em> below when ready — our team reviews within 48 hours.
       </div>
+      <div id="profileBanner" style="display:none;padding:10px 12px;background:#fef0ee;border:1.5px solid #e0a0a0;border-radius:8px;margin-bottom:8px;font-size:12px;color:#7a2818;font-family:var(--bf);line-height:1.6">
+        <strong>Complete your profile first</strong>
+        <div id="profileBannerItems" style="margin:5px 0 6px 2px"></div>
+        <a href="settings.html" style="color:var(--ad);text-decoration:underline;font-size:11.5px">Go to Settings to complete &rarr;</a>
+      </div>
       <button class="btn-save" style="width:100%;font-size:12.5px" onclick="submitForReview()">Submit for review &#x2192;</button>
       <div id="previewLinkSidebar" style="display:none;margin-top:9px">
         <a id="previewLinkAnchorSidebar" href="#" style="font-size:11.5px;color:var(--ad);text-decoration:none;font-family:var(--bf)">&#x1F441;&#xFE0F; Preview &#x2192;</a>
@@ -1572,7 +1577,8 @@ var _editSlug    = new URLSearchParams(window.location.search).get('slug');
         } else {
           addDepartureRow();  // one blank row if draft has no departures
         }
-        // Photos
+        // Photos — clear first to prevent duplication on re-entry
+        _photos = [];
         if (t.photos && t.photos.length) {
           _photos = t.photos.map(function(p) {
             return { dataUrl: p.url, file: null, caption: p.caption || '', apiId: p.id };
@@ -2540,14 +2546,14 @@ function showSaveIndicator(msg, savedOk, isWarning) {
   if (el) {
     el.textContent = text;
     el.style.color = isWarning ? '#b06000' : '';
-    if (!savedOk && !isWarning) setTimeout(function(){ el.textContent = ''; el.style.color = ''; }, 2500);
+    if (!isWarning) setTimeout(function(){ el.textContent = ''; el.style.color = ''; }, 4000);
   }
   if (sb) {
     sb.style.cssText = isWarning
       ? 'font-size:11.5px;font-family:var(--bf);color:#7a4500;background:#fff8e6;border:1px solid #f0d060;border-radius:7px;padding:7px 10px;margin-bottom:8px;line-height:1.5'
       : 'font-size:11px;color:var(--mu);font-family:var(--bf);min-height:14px;margin-bottom:8px';
     sb.textContent = text;
-    if (!savedOk && !isWarning) setTimeout(function(){ sb.textContent = ''; sb.style.cssText = ''; }, 2500);
+    if (!isWarning) setTimeout(function(){ sb.textContent = ''; sb.style.cssText = ''; }, 4000);
   }
   if (savedOk) {
     var lnk = document.getElementById('myToursLink');
@@ -2985,6 +2991,24 @@ async function submitForReview() {
     return;
   }
 
+  // Check profile completeness — bio, credentials, payout required
+  if (user) {
+    var missing = [];
+    if (!user.bio || !user.bio.trim()) missing.push('About you (bio)');
+    if (!user.credentials_files || !user.credentials_files.length) missing.push('Guide credentials');
+    if (!user.payout_account) missing.push('Payout method');
+    if (missing.length) {
+      var banner = document.getElementById('profileBanner');
+      var items = document.getElementById('profileBannerItems');
+      items.innerHTML = missing.map(function(m) { return '<span style="display:block;margin-left:6px">&bull; ' + m + '</span>'; }).join('');
+      banner.style.display = 'block';
+      banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (banner._timer) clearTimeout(banner._timer);
+      banner._timer = setTimeout(function() { banner.style.display = 'none'; }, 8000);
+      return;
+    }
+  }
+
   // Block submit if any departure dates are in the past (hard error, not warning)
   var _pastCount = _countPastDepartures();
   if (_pastCount > 0) {
@@ -3381,11 +3405,17 @@ async function uploadPhotos(slug, token) {
       fd.append('file', photo.file);
       fd.append('order', i);
       fd.append('caption', photo.caption || '');
-      await fetch(TOUR_API + '/tours/' + slug + '/photos/', {
+      var res = await fetch(TOUR_API + '/tours/' + slug + '/photos/', {
         method: 'POST',
         headers: { 'Authorization': 'Bearer ' + token },
         body: fd
       });
+      if (res.ok) {
+        var data = await res.json().catch(function(){ return {}; });
+        // Mark as uploaded so it won't be re-uploaded on next save
+        photo.file = null;
+        if (data.id) photo.apiId = data.id;
+      }
     } catch(e) { console.warn('Photo ' + i + ' upload failed:', e); }
   }
 }

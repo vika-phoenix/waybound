@@ -228,7 +228,7 @@ def send_booking_cancelled_emails(booking, cancelled_by='tourist', reason=''):
             pass
         return
 
-    # Operator timed out — send tourist a refund notice
+    # Operator timed out — notify tourist (refund) + operator (missed booking)
     if cancelled_by == 'operator_timeout':
         body = (
             f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">Hi {name},</p>'
@@ -246,6 +246,26 @@ def send_booking_cancelled_emails(booking, cancelled_by='tourist', reason=''):
                 from_email=from_em,
                 html_message=_html_email('Booking not confirmed', body, 'Browse tours', f'{site}/adventures.html'),
                 recipient_list=[booking.email],
+                fail_silently=True,
+            )
+        except Exception:
+            pass
+        # Notify operator they missed the confirmation window
+        op_body = (
+            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
+            f'A booking for <strong>{title}</strong> by <strong>{name}</strong> was automatically '
+            f'cancelled because it was not confirmed within 48 hours.</p>{rows}'
+            f'<p style="margin:12px 0 0;font-size:13px;color:#607080">'
+            f'Please confirm bookings promptly to avoid losing customers.</p>'
+        )
+        try:
+            send_mail(
+                subject=f'Booking auto-cancelled (not confirmed in time): {title}',
+                message=f'Booking for "{title}" by {name} was auto-cancelled because it was not confirmed within 48 hours.\nRef: {booking.reference}',
+                from_email=from_em,
+                html_message=_html_email('Missed booking', op_body,
+                                          'View bookings', f'{site}/operator-dashboard.html#bookings'),
+                recipient_list=[booking.tour.operator.email],
                 fail_silently=True,
             )
         except Exception:

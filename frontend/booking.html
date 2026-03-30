@@ -755,23 +755,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
         </div>
       </div>
 
-      <!-- Bank transfer -->
-      <div class="pay-method" id="pm-bank" onclick="selPay('bank')">
-        <div class="pm-head">
-          <div class="pm-radio"><div class="pm-dot"></div></div>
-          <div class="pm-ico">🏦</div>
-          <div><div class="pm-name">Bank transfer</div><div class="pm-desc">Manual · confirmed within 1–2 business days</div></div>
-        </div>
-        <div class="pm-body">
-          <div class="bank-box">
-            <div class="bank-row"><span class="bank-key">Bank</span><span class="bank-v">Tinkoff Bank</span></div>
-            <div class="bank-row"><span class="bank-key">Account</span><span class="bank-v">[Add when live]</span></div>
-            <div class="bank-row"><span class="bank-key">BIK</span><span class="bank-v">[Add when live]</span></div>
-            <div class="bank-row"><span class="bank-key">Reference</span><span class="bank-v" id="bankRef">TRP-XXXXXX</span></div>
-          </div>
-          <div class="bank-note">Include the booking reference in the transfer description. Spot held for 24 hours pending payment.</div>
-        </div>
-      </div>
+      <!-- Bank transfer removed — all payments go through YooKassa (card or SBP) -->
 
     </div>
 

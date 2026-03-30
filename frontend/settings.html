@@ -274,6 +274,12 @@ footer a:hover{color:rgba(255,255,255,.75)}
       <button class="settings-nav-item" onclick="showPanel('verification',this)" id="navVerification" style="display:none">
         <span class="sn-ico">✅</span>Verification
       </button>
+      <button class="settings-nav-item" onclick="showPanel('credentials',this)" id="navCredentials" style="display:none">
+        <span class="sn-ico">📋</span>Guide credentials
+      </button>
+      <button class="settings-nav-item" onclick="showPanel('payout',this)" id="navPayout" style="display:none">
+        <span class="sn-ico">💳</span>Payout method
+      </button>
     </div>
     <div class="settings-nav-section">
       <div class="settings-nav-label">Preferences</div>
@@ -283,6 +289,15 @@ footer a:hover{color:rgba(255,255,255,.75)}
       <button class="settings-nav-item" onclick="showPanel('notifications',this)">
         <span class="sn-ico">🔔</span>Notifications
       </button>
+    </div>
+    <div class="settings-nav-section" id="navOperatorLinks" style="display:none">
+      <div class="settings-nav-label">Operator</div>
+      <a class="settings-nav-item" href="operator-dashboard.html" style="text-decoration:none">
+        <span class="sn-ico">🏠</span>My dashboard
+      </a>
+      <a class="settings-nav-item" href="operator-tour-create.html" style="text-decoration:none">
+        <span class="sn-ico">➕</span>Create new tour
+      </a>
     </div>
     <div class="settings-nav-section">
       <div class="settings-nav-label">Danger zone</div>
@@ -335,8 +350,9 @@ footer a:hover{color:rgba(255,255,255,.75)}
             <input class="field-input" id="phoneField" type="tel" placeholder="+7 (999) 000-00-00">
           </div>
           <div class="field-row">
-            <label class="field-label">About you</label>
+            <label class="field-label" id="bioLabel">About you</label>
             <textarea class="field-input" id="bioField" rows="3" placeholder="Tell guides and fellow travellers a little about yourself…" style="resize:vertical;min-height:70px;"></textarea>
+            <div id="bioRequiredMsg" style="font-size:11.5px;color:#c03020;font-family:var(--bf);margin-top:4px;display:none">Required for operators — describe your tours and experience.</div>
           </div>
           <div class="save-row">
             <button class="btn-save" onclick="saveProfile()">Save changes</button>
@@ -443,9 +459,17 @@ footer a:hover{color:rgba(255,255,255,.75)}
             <div class="field-row">
               <label class="field-label">Upload ID document</label>
               <div class="field-hint" style="margin-bottom:8px">Passport, driver's licence, or national ID. Clear photo of the document, JPG/PNG, max 5 MB.</div>
-              <input type="file" id="verifyDocInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadVerifyDoc(this)">
+              <input type="file" id="verifyDocInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="previewVerifyDoc(this)">
               <div style="display:flex;gap:10px;align-items:center">
-                <button class="btn-save" onclick="document.getElementById('verifyDocInput').click()" id="verifyUploadBtn">Choose file & submit</button>
+                <button class="btn-outline-sm" onclick="document.getElementById('verifyDocInput').click()" id="verifyChooseBtn">Choose file</button>
+                <span id="verifyFileName" style="font-size:12px;color:var(--mu);font-family:var(--bf);display:none"></span>
+                <button class="btn-outline-sm" id="verifyCancelBtn" onclick="cancelVerifyDoc()" style="display:none;color:#c03020;border-color:#c03020">✕ Remove</button>
+              </div>
+              <div id="verifyPreview" style="margin-top:10px;display:none">
+                <img id="verifyPreviewImg" style="max-width:200px;max-height:150px;border-radius:8px;border:1px solid var(--ln)" alt="Preview">
+              </div>
+              <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
+                <button class="btn-save" id="verifySubmitBtn" onclick="submitVerifyDoc()" style="display:none">Submit for review</button>
                 <span id="verifyUploadMsg" style="font-size:12px;color:var(--mu);font-family:var(--bf);display:none"></span>
               </div>
             </div>
@@ -454,6 +478,90 @@ footer a:hover{color:rgba(255,255,255,.75)}
           <div style="margin-top:18px;padding:14px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);line-height:1.6">
             <strong style="display:block;margin-bottom:4px">Why verification?</strong>
             Verified operators can publish tours and accept bookings. Our team reviews documents within 48 hours. Your document is stored securely and only used for identity verification.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ▸ GUIDE CREDENTIALS (operators only) ────────────────── -->
+    <div class="settings-panel" id="panel-credentials">
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Guide credentials</div>
+          <div class="settings-card-desc">Upload proof of your guiding experience for review by our team</div>
+        </div>
+        <div class="settings-card-body">
+          <div id="credStatusCard" style="padding:16px;border-radius:10px;border:1.5px solid var(--ln);margin-bottom:18px;background:var(--tr-bg)">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span id="credIco" style="font-size:22px">📋</span>
+              <div>
+                <div id="credTitle" style="font-size:14px;font-weight:700;color:var(--ink);font-family:var(--bf)">No credentials uploaded</div>
+                <div id="credDesc" style="font-size:12.5px;color:var(--mu);font-family:var(--bf)">Upload documents to strengthen your profile</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">Upload credentials</label>
+            <div class="field-hint" style="margin-bottom:8px">Certificates, licences, photos of past tours, links to reviews on other platforms. JPG, PNG, or PDF, max 5 MB each. You can upload multiple files.</div>
+            <input type="file" id="credFileInput" accept="image/jpeg,image/png,image/webp,application/pdf" multiple style="display:none" onchange="previewCredFiles(this)">
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="btn-outline-sm" onclick="document.getElementById('credFileInput').click()">Choose files</button>
+              <span id="credUploadMsg" style="font-size:12px;color:var(--mu);font-family:var(--bf);display:none"></span>
+            </div>
+            <div id="credPendingList" style="margin-top:10px"></div>
+            <div style="margin-top:10px">
+              <button class="btn-save" id="credSubmitBtn" onclick="submitCredentials()" style="display:none">Submit for review</button>
+            </div>
+          </div>
+
+          <div id="credFilesList" style="margin-top:14px"></div>
+
+          <div style="margin-top:18px;padding:14px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);line-height:1.6">
+            <strong style="display:block;margin-bottom:4px">What counts as credentials?</strong>
+            Tour guide certifications, first aid certificates, photos from tours you've led, screenshots of reviews from other platforms, business registration documents, or any proof of guiding experience.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ▸ PAYOUT METHOD (operators only) ──────────────────── -->
+    <div class="settings-panel" id="panel-payout">
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Payout method</div>
+          <div class="settings-card-desc">Where we send your earnings after each tour</div>
+        </div>
+        <div class="settings-card-body">
+          <div style="padding:14px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);line-height:1.6;margin-bottom:18px">
+            <strong style="display:block;margin-bottom:4px">How payouts work</strong>
+            After a tour is completed, your earnings (tour price minus 15% Waybound commission) are transferred to the bank account below. Payouts are processed within 5 business days after tour completion.
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">Account holder name *</label>
+            <input class="field-input" id="payoutName" placeholder="Full name as on bank account">
+          </div>
+          <div class="field-row">
+            <label class="field-label">Bank name *</label>
+            <input class="field-input" id="payoutBank" placeholder="e.g. Sberbank, Tinkoff">
+          </div>
+          <div class="field-row">
+            <label class="field-label">Account number *</label>
+            <input class="field-input" id="payoutAccount" placeholder="20-digit account number">
+          </div>
+          <div class="field-row">
+            <label class="field-label">BIK (bank code) *</label>
+            <input class="field-input" id="payoutBik" placeholder="9-digit BIK">
+          </div>
+          <div class="field-row">
+            <label class="field-label">Correspondent account</label>
+            <input class="field-input" id="payoutCorrAccount" placeholder="Optional — 20-digit correspondent account">
+          </div>
+
+          <div style="margin-top:14px;display:flex;align-items:center;gap:12px">
+            <button class="btn-save" onclick="savePayout()">Save payout details</button>
+            <span class="save-feedback" id="payoutFeedback">✓ Saved</span>
           </div>
         </div>
       </div>
@@ -644,15 +752,33 @@ function showPanel(name, btn) {
     }
   }
 
-  // Show verification nav for operators
+  // Mark bio as required for operators
+  if (user.role === 'operator') {
+    var bioLabel = document.getElementById('bioLabel');
+    if (bioLabel) bioLabel.textContent = 'About you *';
+  }
+
+  // Show operator-only nav items
   if (user.role === 'operator') {
     var verNav = document.getElementById('navVerification');
     if (verNav) verNav.style.display = '';
+    var credNav = document.getElementById('navCredentials');
+    if (credNav) credNav.style.display = '';
+    var payNav = document.getElementById('navPayout');
+    if (payNav) payNav.style.display = '';
+    var opLinks = document.getElementById('navOperatorLinks');
+    if (opLinks) opLinks.style.display = '';
     if (user.verification_status) {
       updateVerifyStatus(user.verification_status);
     } else if (user.is_verified) {
       updateVerifyStatus('approved');
     }
+    // Load payout details from localStorage
+    if (user.payout_name) set('payoutName', user.payout_name);
+    if (user.payout_bank) set('payoutBank', user.payout_bank);
+    if (user.payout_account) set('payoutAccount', user.payout_account);
+    if (user.payout_bik) set('payoutBik', user.payout_bik);
+    if (user.payout_corr_account) set('payoutCorrAccount', user.payout_corr_account);
     // Show Telegram card for operators
     var tgCard = document.getElementById('telegramCard');
     if (tgCard) tgCard.style.display = '';
@@ -681,7 +807,21 @@ function showPanel(name, btn) {
     if (data.role === 'operator') {
       var verNav = document.getElementById('navVerification');
       if (verNav) verNav.style.display = '';
+      var credNav = document.getElementById('navCredentials');
+      if (credNav) credNav.style.display = '';
+      var payNav = document.getElementById('navPayout');
+      if (payNav) payNav.style.display = '';
+      var opLinks = document.getElementById('navOperatorLinks');
+      if (opLinks) opLinks.style.display = '';
       updateVerifyStatus(data.verification_status || (data.is_verified ? 'approved' : null));
+      // Load payout details
+      if (data.payout_name) document.getElementById('payoutName').value = data.payout_name;
+      if (data.payout_bank) document.getElementById('payoutBank').value = data.payout_bank;
+      if (data.payout_account) document.getElementById('payoutAccount').value = data.payout_account;
+      if (data.payout_bik) document.getElementById('payoutBik').value = data.payout_bik;
+      if (data.payout_corr_account) document.getElementById('payoutCorrAccount').value = data.payout_corr_account;
+      // Load credentials status
+      if (data.credentials_files && data.credentials_files.length) updateCredStatus(data.credentials_files);
       var tgCard = document.getElementById('telegramCard');
       if (tgCard) tgCard.style.display = '';
       var tgEl = document.getElementById('telegramChatId');
@@ -697,7 +837,10 @@ function showPanel(name, btn) {
 })();
 
 // ── Avatar upload ─────────────────────────────────────────────────────────────
-async function handleAvatarUpload(input) {
+// Pending avatar file — only uploaded when user clicks Save
+var _pendingAvatarFile = null;
+
+function handleAvatarUpload(input) {
   var file = input.files[0];
   if (!file) return;
   if (file.size > 2 * 1024 * 1024) {
@@ -705,43 +848,16 @@ async function handleAvatarUpload(input) {
     if (msgEl) { msgEl.textContent = 'File too large. Max 2 MB.'; msgEl.style.color = '#c0392b'; msgEl.style.display = 'block'; }
     return;
   }
-  var token = localStorage.getItem('waybound_access');
-  if (!token) { showToast('Please sign in to upload a photo.', 'error'); return; }
-  var msgEl = document.getElementById('avatarUploadMsg');
-  if (msgEl) { msgEl.textContent = 'Uploading…'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
-  var fd = new FormData();
-  fd.append('avatar', file);
-  try {
-    var res = await fetch(window.API_V1 + '/auth/me/', {
-      method: 'PATCH',
-      headers: { 'Authorization': 'Bearer ' + token },
-      body: fd
-    });
-    if (!res.ok) throw new Error(res.status);
-    var data = await res.json();
-    // Backend returns photo_url (absolute) and avatar (relative) — prefer photo_url
-    var avatarUrl = data.photo_url || data.avatar;
-    // Update preview
+  _pendingAvatarFile = file;
+  // Show local preview only — does NOT upload yet
+  var reader = new FileReader();
+  reader.onload = function(e) {
     var av = document.getElementById('profileAvatar');
-    if (av && avatarUrl) {
-      av.innerHTML = '<img src="' + avatarUrl + '" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
-    }
-    // Update localStorage — always store photo_url for nav avatar use
-    var user = null;
-    try { user = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ user = {}; }
-    if (avatarUrl) user.photo_url = avatarUrl;
-    localStorage.setItem('waybound_user', JSON.stringify(user));
-    // Show remove button
-    var removeBtn = document.getElementById('removePhotoBtn');
-    if (removeBtn) removeBtn.style.display = '';
-    // Refresh nav avatar
-    refreshNavAvatar();
-    if (msgEl) { msgEl.textContent = 'Photo updated!'; msgEl.style.color = 'var(--hb-tx)'; }
-    setTimeout(function(){ if (msgEl) msgEl.style.display = 'none'; }, 3000);
-  } catch(e) {
-    if (msgEl) { msgEl.textContent = 'Upload failed. Please try again.'; msgEl.style.color = '#c0392b'; }
-  }
-  input.value = '';
+    if (av) av.innerHTML = '<img src="' + e.target.result + '" alt="Preview" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  };
+  reader.readAsDataURL(file);
+  var msgEl = document.getElementById('avatarUploadMsg');
+  if (msgEl) { msgEl.textContent = 'Photo selected — click Save changes to apply.'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
 }
 
 // ── Remove avatar ─────────────────────────────────────────────────────────────
@@ -797,30 +913,211 @@ function refreshNavAvatar() {
   }
 }
 
+// ── Credentials upload ────────────────────────────────────────────────────────
+var _pendingCredFiles = [];
+
+function previewCredFiles(input) {
+  var files = input.files;
+  if (!files || !files.length) return;
+  for (var i = 0; i < files.length; i++) {
+    if (files[i].size > 5 * 1024 * 1024) {
+      showToast(files[i].name + ' is too large (max 5 MB).', 'error');
+      continue;
+    }
+    _pendingCredFiles.push(files[i]);
+  }
+  input.value = '';
+  renderPendingCreds();
+  document.getElementById('credSubmitBtn').style.display = _pendingCredFiles.length ? '' : 'none';
+}
+
+function removePendingCred(idx) {
+  _pendingCredFiles.splice(idx, 1);
+  renderPendingCreds();
+  document.getElementById('credSubmitBtn').style.display = _pendingCredFiles.length ? '' : 'none';
+}
+
+function renderPendingCreds() {
+  var list = document.getElementById('credPendingList');
+  if (!list) return;
+  list.innerHTML = _pendingCredFiles.map(function(f, i) {
+    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;font-family:var(--bf)">'
+      + '<span>📄</span><span style="color:var(--ink)">' + f.name + '</span>'
+      + '<button onclick="removePendingCred(' + i + ')" style="background:none;border:none;color:#c03020;cursor:pointer;font-size:14px;padding:0 4px" title="Remove">✕</button>'
+      + '</div>';
+  }).join('');
+}
+
+async function submitCredentials() {
+  if (!_pendingCredFiles.length) return;
+  var token = localStorage.getItem('waybound_access');
+  if (!token) { showToast('Please sign in first.', 'error'); return; }
+  var msgEl = document.getElementById('credUploadMsg');
+  if (msgEl) { msgEl.textContent = 'Submitting ' + _pendingCredFiles.length + ' file(s)…'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
+
+  var uploaded = 0;
+  for (var i = 0; i < _pendingCredFiles.length; i++) {
+    var fd = new FormData();
+    fd.append('document', _pendingCredFiles[i]);
+    fd.append('doc_type', 'credential');
+    try {
+      var res = await fetch(window.API_V1 + '/auth/me/documents/', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: fd
+      });
+      if (res.ok) uploaded++;
+    } catch(e) {}
+  }
+  _pendingCredFiles = [];
+  document.getElementById('credPendingList').innerHTML = '';
+  document.getElementById('credSubmitBtn').style.display = 'none';
+  if (uploaded > 0) {
+    if (msgEl) { msgEl.textContent = uploaded + ' file(s) submitted!'; msgEl.style.color = 'var(--hb-tx)'; }
+    document.getElementById('credIco').textContent = '✅';
+    document.getElementById('credTitle').textContent = 'Credentials submitted';
+    document.getElementById('credDesc').textContent = 'Our team will review your documents.';
+    fetchCredentialFiles();
+    showToast('Credentials submitted for review.', 'success');
+  } else {
+    if (msgEl) { msgEl.textContent = 'Upload failed. Please try again.'; msgEl.style.color = '#c0392b'; }
+  }
+  setTimeout(function(){ if (msgEl) msgEl.style.display = 'none'; }, 4000);
+}
+
+async function fetchCredentialFiles() {
+  var token = localStorage.getItem('waybound_access');
+  if (!token) return;
+  try {
+    var res = await fetch(window.API_V1 + '/auth/me/documents/?doc_type=credential', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) return;
+    var files = await res.json();
+    if (files && files.length) updateCredStatus(files);
+  } catch(e) {}
+}
+
+function updateCredStatus(files) {
+  if (!files || !files.length) return;
+  document.getElementById('credIco').textContent = '✅';
+  document.getElementById('credTitle').textContent = files.length + ' credential(s) uploaded';
+  document.getElementById('credDesc').textContent = 'Our team will review your documents.';
+  var list = document.getElementById('credFilesList');
+  if (list) {
+    list.innerHTML = files.map(function(f) {
+      var name = f.original_name || f.file_name || 'Document';
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--ln);font-size:13px;font-family:var(--bf)">'
+        + '<span>📄</span><span style="color:var(--ink)">' + name + '</span>'
+        + '</div>';
+    }).join('');
+  }
+}
+
+// ── Payout save ──────────────────────────────────────────────────────────────
+async function savePayout() {
+  var token = localStorage.getItem('waybound_access');
+  if (!token) { showToast('Please sign in first.', 'error'); return; }
+
+  var name = document.getElementById('payoutName').value.trim();
+  var bank = document.getElementById('payoutBank').value.trim();
+  var account = document.getElementById('payoutAccount').value.trim();
+  var bik = document.getElementById('payoutBik').value.trim();
+
+  if (!name || !bank || !account || !bik) {
+    showToast('Please fill in all required payout fields.', 'error');
+    return;
+  }
+
+  var payload = {
+    payout_name: name,
+    payout_bank: bank,
+    payout_account: account,
+    payout_bik: bik,
+    payout_corr_account: document.getElementById('payoutCorrAccount').value.trim()
+  };
+
+  try {
+    var res = await fetch(window.API_V1 + '/auth/me/', {
+      method: 'PATCH',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(res.status);
+    // Update localStorage
+    var user = null;
+    try { user = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ user = {}; }
+    Object.assign(user, payload);
+    localStorage.setItem('waybound_user', JSON.stringify(user));
+    showFeedback('payoutFeedback');
+  } catch(e) {
+    showToast('Failed to save payout details. Please try again.', 'error');
+  }
+}
+
 // ── Save handlers ─────────────────────────────────────────────────────────────
 async function saveProfile() {
   var token = localStorage.getItem('waybound_access');
+  if (!token) { showToast('Please sign in first.', 'error'); return; }
+
+  // If there's a pending avatar, upload it first via FormData
+  if (_pendingAvatarFile) {
+    var fd = new FormData();
+    fd.append('avatar', _pendingAvatarFile);
+    try {
+      var avatarRes = await fetch(window.API_V1 + '/auth/me/', {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: fd
+      });
+      if (avatarRes.ok) {
+        var avatarData = await avatarRes.json();
+        var avatarUrl = avatarData.photo_url || avatarData.avatar;
+        var user = null;
+        try { user = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ user = {}; }
+        if (avatarUrl) user.photo_url = avatarUrl;
+        localStorage.setItem('waybound_user', JSON.stringify(user));
+        var removeBtn = document.getElementById('removePhotoBtn');
+        if (removeBtn) removeBtn.style.display = '';
+        refreshNavAvatar();
+      }
+    } catch(e) {}
+    _pendingAvatarFile = null;
+    var msgEl = document.getElementById('avatarUploadMsg');
+    if (msgEl) msgEl.style.display = 'none';
+  }
+
+  // Validate bio for operators
+  var bioVal = document.getElementById('bioField').value.trim();
+  var userCheck = null;
+  try { userCheck = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ userCheck = {}; }
+  var bioMsg = document.getElementById('bioRequiredMsg');
+  if (userCheck.role === 'operator' && !bioVal) {
+    if (bioMsg) bioMsg.style.display = 'block';
+    document.getElementById('bioField').focus();
+    return;
+  }
+  if (bioMsg) bioMsg.style.display = 'none';
+
+  // Save text fields
   var payload = {
     first_name: document.getElementById('firstName').value,
     last_name:  document.getElementById('lastName').value,
     phone:      document.getElementById('phoneField').value,
-    bio:        document.getElementById('bioField').value,
+    bio:        bioVal,
   };
-  // Optimistic local update
   var user = null;
   try { user = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ user = {}; }
   Object.assign(user, payload);
   localStorage.setItem('waybound_user', JSON.stringify(user));
   showFeedback('profileFeedback');
-  if (token) {
-    try {
-      await fetch(window.API_V1 + '/auth/me/', {
-        method: 'PATCH',
-        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } catch(e) {}
-  }
+  try {
+    await fetch(window.API_V1 + '/auth/me/', {
+      method: 'PATCH',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {}
 }
 
 
@@ -898,18 +1195,46 @@ function connectSocial(provider) {
 }
 
 // ── Verification document upload ─────────────────────────────────────────────
-async function uploadVerifyDoc(input) {
+var _pendingVerifyFile = null;
+
+function previewVerifyDoc(input) {
   var file = input.files && input.files[0];
   if (!file) return;
   if (file.size > 5 * 1024 * 1024) {
     showToast('File too large. Max 5 MB.', 'error'); input.value = ''; return;
   }
+  _pendingVerifyFile = file;
+  // Show file name and preview
+  var nameEl = document.getElementById('verifyFileName');
+  if (nameEl) { nameEl.textContent = file.name; nameEl.style.display = 'inline'; }
+  document.getElementById('verifyCancelBtn').style.display = '';
+  document.getElementById('verifySubmitBtn').style.display = '';
+  // Image preview
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = document.getElementById('verifyPreviewImg');
+    if (img) { img.src = e.target.result; document.getElementById('verifyPreview').style.display = 'block'; }
+  };
+  reader.readAsDataURL(file);
+}
+
+function cancelVerifyDoc() {
+  _pendingVerifyFile = null;
+  document.getElementById('verifyDocInput').value = '';
+  document.getElementById('verifyFileName').style.display = 'none';
+  document.getElementById('verifyCancelBtn').style.display = 'none';
+  document.getElementById('verifySubmitBtn').style.display = 'none';
+  document.getElementById('verifyPreview').style.display = 'none';
+}
+
+async function submitVerifyDoc() {
+  if (!_pendingVerifyFile) return;
   var token = localStorage.getItem('waybound_access');
   if (!token) { showToast('Please sign in first.', 'error'); return; }
   var msgEl = document.getElementById('verifyUploadMsg');
-  if (msgEl) { msgEl.textContent = 'Uploading...'; msgEl.style.display = 'inline'; msgEl.style.color = 'var(--mu)'; }
+  if (msgEl) { msgEl.textContent = 'Submitting...'; msgEl.style.display = 'inline'; msgEl.style.color = 'var(--mu)'; }
   var fd = new FormData();
-  fd.append('document', file);
+  fd.append('document', _pendingVerifyFile);
   try {
     var res = await fetch(window.API_V1 + '/auth/verify/', {
       method: 'POST',
@@ -920,15 +1245,20 @@ async function uploadVerifyDoc(input) {
       var data = await res.json();
       showToast(data.detail || 'Upload failed.', 'error');
       if (msgEl) msgEl.style.display = 'none';
-      input.value = ''; return;
+      return;
     }
+    _pendingVerifyFile = null;
+    document.getElementById('verifyFileName').style.display = 'none';
+    document.getElementById('verifyCancelBtn').style.display = 'none';
+    document.getElementById('verifySubmitBtn').style.display = 'none';
+    document.getElementById('verifyPreview').style.display = 'none';
     if (msgEl) { msgEl.textContent = 'Submitted! Under review.'; msgEl.style.color = 'var(--hb-tx)'; }
     updateVerifyStatus('pending');
+    showToast('Document submitted for review. We will review within 48 hours.', 'success');
   } catch(e) {
     showToast('Cannot connect to server.', 'error');
     if (msgEl) msgEl.style.display = 'none';
   }
-  input.value = '';
 }
 
 function updateVerifyStatus(st) {
