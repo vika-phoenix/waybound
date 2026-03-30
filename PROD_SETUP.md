@@ -135,7 +135,7 @@ These are real issues encountered during deployment. **Read this before debuggin
 
 ### 1. Cloudflare R2 (Media Storage)
 
-Stores tour photos, avatars, verification documents, stay photos.
+Stores all user-generated files: tour photos, avatars, identity verification documents, guide credential files (PDFs, images), stay photos. Accepts any file type — not just images.
 
 **Setup:**
 1. Sign up at **cloudflare.com** (free)
@@ -197,7 +197,7 @@ DEFAULT_FROM_EMAIL = Waybound <noreply@yourdomain.com>
 
 ### 3. YooKassa (Payments)
 
-Russian payment gateway. Handles card payments (Visa, Mastercard, Mir), SBP (fast bank transfers).
+Russian payment gateway. Handles card payments (Visa, Mastercard, Mir) and SBP (Система быстрых платежей — instant QR transfer). **Bank transfer is not supported** (removed — no way to track deposit receipt, would cause auto-cancels).
 
 **Setup:**
 1. Register at **yookassa.ru** (requires Russian legal entity or IP/self-employed)
@@ -218,6 +218,8 @@ YOOKASSA_SECRET_KEY = (your secret key)
 - If tour is priced in another currency, backend converts using CBR daily exchange rate
 - Deposits: percentage of total (configurable per tour, 0-100%)
 - Balance: remaining amount, due N days before departure
+- SBP goes through YooKassa with `payment_method_data: {type: 'sbp'}` — same API, same credentials
+- If operator doesn't confirm within 48h, booking auto-cancels and refund is processed automatically via YooKassa
 
 ### 4. Google OAuth
 
@@ -303,10 +305,7 @@ TELEGRAM_BOT_TOKEN = (from BotFather)
 
 Your frontend gets a free `*.pages.dev` domain. You can add a custom domain later.
 
-**Important:** Update `config.js` in the frontend to point to your Railway backend URL:
-```javascript
-const API_BASE = 'https://your-backend.railway.app/api/v1';
-```
+**`config.js` auto-detects the environment** — no manual update needed. It uses `window.location.hostname` to switch between local (`http://127.0.0.1:8000`) and production (`https://waybound-production.up.railway.app`). If your Railway URL changes, update `config.js`.
 
 ---
 
@@ -353,16 +352,19 @@ const API_BASE = 'https://your-backend.railway.app/api/v1';
 - [ ] Django admin accessible at `/admin/`
 - [ ] Superuser created
 - [ ] Staff roles created (auto-runs on deploy via start command)
+- [ ] Migrations applied (run on deploy automatically, but verify)
 - [ ] Frontend deployed on Cloudflare Pages
-- [ ] `config.js` updated with backend URL
-- [ ] Brevo API key set -> test email sending (create a booking)
-- [ ] R2 bucket created -> test photo upload (create a tour with photos)
-- [ ] YooKassa credentials set -> test payment (create test booking)
-- [ ] CORS_ALLOWED_ORIGINS set to frontend domain
-- [ ] FRONTEND_URL set to frontend domain (for email links)
+- [ ] `config.js` has correct Railway URL (auto-detects local vs prod, just verify the prod URL)
+- [ ] Brevo API key set → test email sending (create a booking)
+- [ ] R2 bucket created → test photo upload (tour photo) and file upload (guide credential PDF)
+- [ ] YooKassa credentials set → test card payment and SBP payment
+- [ ] YooKassa webhook configured: `POST /api/v1/payments/webhook/` event `payment.succeeded`
+- [ ] CORS_ALLOWED_ORIGINS set to Cloudflare Pages domain
+- [ ] FRONTEND_URL set to Cloudflare Pages domain (for email links)
 - [ ] Custom domain configured (optional)
 - [ ] OAuth providers configured (optional, per-provider)
 - [ ] Sample tours loaded or first real tour created
+- [ ] Test operator onboarding: signup → fill bio + upload credentials + add payout → create tour → submit for review
 
 ---
 
@@ -394,8 +396,8 @@ These are design and UX improvements that don't affect core functionality. Do th
 
 ### Visual improvements
 - [ ] Responsive design audit - test all 29 pages on mobile/tablet
-- [ ] Dark mode toggle (CSS variables are already structured for this)
-- [ ] Loading skeletons instead of blank screens while API calls load
+- [x] Dark mode / theme toggle (6 themes, CSS variable-based, persisted in localStorage)
+- [x] Loading skeletons on adventures page while tours load
 - [ ] Image lazy loading on tour listing cards
 - [ ] Tour photo gallery with lightbox (currently just grid)
 - [ ] Animated transitions between pages (currently hard navigations)
@@ -415,6 +417,8 @@ These are design and UX improvements that don't affect core functionality. Do th
 - [ ] Guest count selector with +/- buttons (currently plain inputs)
 
 ### Operator dashboard
+- [x] Profile completeness checklist with working links (bio, identity, credentials, payout)
+- [x] Profile completeness gate on tour submission (blocks review without bio/credentials/payout)
 - [ ] Charts/graphs for booking trends (monthly, by tour)
 - [ ] Calendar view for departures
 - [ ] Drag-and-drop photo reordering
@@ -493,11 +497,29 @@ These are features that make sense only once you have real traffic and data. Bui
 
 ---
 
+## Operator Onboarding Requirements
+
+Before an operator can submit a tour for review, the platform enforces:
+
+| Requirement | Where to complete | Checked in |
+|-------------|------------------|-----------|
+| Identity verification (ID doc upload) | Settings → Verification | Admin approves → `is_verified = True` |
+| About you / bio | Settings → Profile | `user.bio` non-empty |
+| Guide credentials (certificates, docs) | Settings → Guide credentials | `user.documents` with `doc_type='credential'` |
+| Payout method (bank details) | Settings → Payout method | `user.payout_account` non-empty |
+
+- **Drafts can be saved at any time** — the gate only applies to "Submit for review"
+- If requirements are missing, a banner lists exactly what's incomplete with a link to Settings
+- Identity verification is approved manually via Django admin (`/admin/users/verificationdocument/`)
+- Guide credentials are uploaded as files (images or PDFs) — stored in R2
+
+---
+
 ## Known Limitations
 
 | Area | Limitation | Impact |
 |------|-----------|--------|
-| Payments | YooKassa only (Russian gateway) | International tourists may have issues with non-Russian cards |
+| Payments | YooKassa only — card + SBP (Russian gateway) | International tourists may have issues with non-Russian cards; bank transfer not supported |
 | Currency | All payments in RUB | Tourist sees tour price in original currency but pays in RUB at CBR rate |
 | Frontend | No build system | No minification, no tree-shaking, no TypeScript - acceptable for current scale |
 | Frontend | No framework | All vanilla JS - harder to maintain as complexity grows |
