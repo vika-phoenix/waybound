@@ -64,19 +64,24 @@ function navSwitchLang(lang) {
 }
 
 // Auto-redirect on page load if saved language doesn't match current page variant.
-// Deploy _ru.html files first — until then, keep waybound_lang unset (default English).
+// Only redirects when the URL contains .html — Cloudflare Pages can serve extensionless
+// URLs (/adventures instead of /adventures.html) and a replace() that changes nothing
+// would cause an infinite reload loop.
 (function () {
   var savedLang = localStorage.getItem('waybound_lang');
   if (!savedLang) return;
+  var path = window.location.pathname;
+  // Only act on explicit .html paths — skip extensionless, /, index.html, 404.html
+  if (!path.endsWith('.html')) return;
+  var base = path.split('/').pop();
+  if (!base || base === 'index.html' || base === '404.html') return;
   var isRu = _navIsRuPage();
   if (savedLang === 'ru' && !isRu) {
-    var path = window.location.pathname;
-    var base = path.split('/').pop();
-    if (base && base !== 'index.html' && base !== '404.html') {
-      window.location.replace(path.replace('.html', '_ru.html') + window.location.search);
-    }
+    var ruPath = path.replace('.html', '_ru.html');
+    if (ruPath !== path) window.location.replace(ruPath + window.location.search);
   } else if (savedLang === 'en' && isRu) {
-    window.location.replace(window.location.pathname.replace('_ru.html', '.html') + window.location.search);
+    var enPath = path.replace('_ru.html', '.html');
+    if (enPath !== path) window.location.replace(enPath + window.location.search);
   }
 })();
 
