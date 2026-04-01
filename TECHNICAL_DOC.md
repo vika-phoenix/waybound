@@ -273,64 +273,66 @@ Base URL: `/api/v1/`
 
 ## Frontend Pages
 
+Every page has an English version and a Russian (`_ru.html`) counterpart. The Russian pages are separate files — not server-rendered — with translated UI text and client-side translation maps for DB-sourced values.
+
 ### Public Pages
 
-| File | Purpose |
-|------|---------|
-| `waybound.html` | Landing page - hero, featured tours, trust badges, CTA |
-| `adventures.html` | Tour search + filter (destination, category, difficulty, price, duration, guaranteed, dates) |
-| `tour_detail_page.html` | Tour detail: itinerary, stays, photos, map, reviews, departure picker, booking form |
-| `about.html` | Company story |
-| `how-it-works.html` | Platform explainer (search -> book -> travel) |
-| `help.html` | FAQ & help center (8 sections, 35 questions, live search) |
-| `contact.html` | Contact form |
-| `reviews.html` | Browse all approved reviews |
-| `small-group-benefits.html` | Why small groups (max 15 people) |
-| `operator.html` | Operator onboarding landing page |
-| `rewards.html` | Rewards program info |
+| English | Russian | Purpose |
+|---------|---------|---------|
+| `waybound.html` | `waybound_ru.html` | Landing page - hero, featured tours, trust badges, CTA |
+| `adventures.html` | `adventures_ru.html` | Tour search + filter (destination, category, difficulty, price, duration, guaranteed, dates) |
+| `tour_detail_page.html` | `tour_detail_page_ru.html` | Tour detail: itinerary, stays, photos, map, reviews, departure picker, booking form |
+| `about.html` | `about_ru.html` | Company story + photo gallery (lightbox on click) |
+| `how-it-works.html` | `how-it-works_ru.html` | Platform explainer (search -> book -> travel) |
+| `help.html` | `help_ru.html` | FAQ & help center (8 sections, 35 questions, live search) |
+| `contact.html` | `contact_ru.html` | Contact form |
+| `reviews.html` | `reviews_ru.html` | Browse all approved reviews |
+| `small-group-benefits.html` | `small-group-benefits_ru.html` | Why small groups (max 15 people) |
+| `operator.html` | `operator_ru.html` | Operator onboarding landing page |
+| `rewards.html` | `rewards_ru.html` | Rewards program info |
 
 ### Auth Pages
 
-| File | Purpose |
-|------|---------|
-| `signin.html` | Login (email + Google/Apple/Yandex/VK OAuth) |
-| `signup.html` | Tourist registration |
-| `signup-operator.html` | Operator registration + ID upload |
-| `reset-password.html` | Password reset flow |
+| English | Russian | Purpose |
+|---------|---------|---------|
+| `signin.html` | `signin_ru.html` | Login (email + Google/Apple/Yandex/VK OAuth) |
+| `signup.html` | `signup_ru.html` | Tourist registration |
+| `signup-operator.html` | `signup-operator_ru.html` | Operator registration + ID upload |
+| `reset-password.html` | `reset-password_ru.html` | Password reset flow |
 
 ### Tourist Dashboard
 
-| File | Purpose |
-|------|---------|
-| `my-bookings.html` | View bookings, pay balance, cancel, leave review |
-| `my-reviews.html` | View submitted reviews |
-| `my-messages.html` | Enquiry conversations |
-| `saved-tours.html` | Wishlist |
-| `settings.html` | Profile, password, preferences |
-| `booking.html` | Checkout page (pre-payment) |
-| `booking-confirmation.html` | Post-booking confirmation |
+| English | Russian | Purpose |
+|---------|---------|---------|
+| `my-bookings.html` | `my-bookings_ru.html` | View bookings, pay balance, cancel, leave review |
+| `my-reviews.html` | `my-reviews_ru.html` | View submitted reviews |
+| `my-messages.html` | `my-messages_ru.html` | Enquiry conversations |
+| `saved-tours.html` | `saved-tours_ru.html` | Wishlist |
+| `settings.html` | `settings_ru.html` | Profile, password, preferences |
+| `booking.html` | `booking_ru.html` | Checkout page (pre-payment) |
+| `booking-confirmation.html` | `booking-confirmation_ru.html` | Post-booking confirmation |
 
 ### Operator Dashboard
 
-| File | Purpose |
-|------|---------|
-| `operator-dashboard.html` | Full portal: bookings, enquiries, tours, stats |
-| `operator-tour-create.html` | Create/edit tour: all fields, departures, itinerary, stays, photos, FAQs, cancel policy |
+| English | Russian | Purpose |
+|---------|---------|---------|
+| `operator-dashboard.html` | `operator-dashboard_ru.html` | Full portal: bookings, enquiries, tours, stats |
+| `operator-tour-create.html` | `operator-tour-create_ru.html` | Create/edit tour: all fields, departures, itinerary, stays, photos, FAQs, cancel policy |
 
 ### Legal
 
-| File | Purpose |
-|------|---------|
-| `terms.html` | Terms of service (tourists) |
-| `terms-experts.html` | Terms for operators/experts |
-| `privacy.html` | Privacy policy |
-| `trust-safety.html` | Trust & safety: guarantees, cooling-off, cancellation |
+| English | Russian | Purpose |
+|---------|---------|---------|
+| `terms.html` | `terms_ru.html` | Terms of service (tourists) |
+| `terms-experts.html` | `terms-experts_ru.html` | Terms for operators/experts |
+| `privacy.html` | `privacy_ru.html` | Privacy policy |
+| `trust-safety.html` | `trust-safety_ru.html` | Trust & safety: guarantees, cooling-off, cancellation |
 
 ### Configuration
 
 | File | Purpose |
 |------|---------|
-| `nav.js` | Shared navigation component (injected into all pages) |
+| `nav.js` | Shared navigation component (injected into all pages) — language-aware, detects `_ru.html` pages and renders Russian labels + correct `_ru.html` hrefs |
 | `config.js` | API base URL - change this when switching between local and prod |
 | `404.html` | Error page |
 
@@ -818,3 +820,132 @@ The `|| true` ensures the deploy continues even if the command fails (e.g., supe
 
 ### 12. Deploy logs vs Database logs
 In Railway, make sure you're looking at the **Django service** logs, not the **PostgreSQL service** logs. PostgreSQL logs show checkpoint and replication info, not your app errors.
+
+---
+
+## Russian Localisation
+
+### Architecture
+
+- Every page has a `_ru.html` counterpart (e.g. `adventures_ru.html`).
+- These are static files — not server-rendered. Russian text is hardcoded in HTML and JS.
+- DB-sourced values (difficulty, categories, languages, country) are always stored in **English** in the database. Russian pages translate them **client-side** at render time using JS translation maps.
+- When Russian pages submit form data to the backend, reverse maps convert Russian display values back to English before the API call.
+
+### nav.js language detection
+
+`nav.js` exports `_navIsRuPage()` which checks if the current page filename ends in `_ru.html`. The shared `buildDropdown()` function uses this to render menu labels (Дашборд / Dashboard, etc.) and route all hrefs to the correct `_ru.html` or `.html` file.
+
+### Client-side translation maps (Russian pages)
+
+These maps live inside the `_ru.html` files and **must not** be modified by a translation script:
+
+**`tour_detail_page_ru.html`**
+- `diffTranslate` — English difficulty → Russian display (`'Moderate' → 'Средне'`)
+- `catTranslate` — English category → Russian display
+- `langNameMap` — language code/name → Russian display
+- `_enToRuCountry` — English country name → Russian display
+
+**`operator-tour-create_ru.html`**
+- `ruToEn` (categories) — Russian display → English for backend submission
+- `ruToEn` (difficulty) — Russian display → English for backend submission
+- `_ruToEnC` (countries) — Russian display → English for backend submission
+- `COUNTRY_TIMEZONES` keys — must remain in Russian to match the Russian datalist options
+
+### Backend fix: tour pause/unpause (`backend/apps/tours/views.py`)
+
+`TourWriteSerializer` does not expose the `status` field, so a `PATCH {status: 'paused'}` was silently ignored. Fixed by intercepting status-only PATCH requests **before** the serializer runs:
+
+```python
+if set(request.data.keys()) == {'status'}:
+    # Only allows: live→paused and paused→live
+    OPERATOR_STATUS_TRANSITIONS = {
+        'paused': (Tour.Status.LIVE,   Tour.Status.PAUSED),
+        'live':   (Tour.Status.PAUSED, Tour.Status.LIVE),
+    }
+    ...
+    tour.status = target
+    tour.save(update_fields=['status'])
+    return Response(TourDetailSerializer(tour, context={'request': request}).data)
+```
+
+### Known translation script corruption patterns
+
+When running an automated translation script on `_ru.html` files, watch for these failure modes:
+
+| Pattern | What goes wrong | Safe value |
+|---------|----------------|------------|
+| `t.status === 'live'` | Script translates `'live'` → `'активный'` — breaks status comparisons | Must stay `'live'`, `'paused'`, `'draft'` etc. |
+| `'\u26A0'` | Script adds `;` → `'\u26A0;'` renders as literal text "⚠;" | No semicolon |
+| `'style-card ' + s.cls` | Script strips the space → CSS class names merge, layout breaks | Space before `+` is required |
+| `' id="checklist...'` | Script strips leading space and/or closing `"` from string variables | Space + closing quote required |
+| Values inside `ruToEn` / `_ruToEnC` maps | Right-hand English values get translated to Russian — then form submissions send Russian to the backend | Right-hand side of reverse maps must stay in English |
+| `COUNTRY_TIMEZONES['Russia']` | Key gets translated to `'Россия'` in English page, or left as `'Russia'` in Russian page where datalist uses Russian — must match the datalist | Keys must match the datalist options language |
+
+### Russian grammatical declension
+
+Plurals in Russian follow three forms (1 / 2-4 / 5+). Key patterns used across pages:
+
+| Concept | 1 | 2-4 | 5+ |
+|---------|---|-----|----|
+| Adult | взрослый | взрослых | взрослых |
+| Child | ребёнок | ребёнка | детей |
+| Day | день | дня | дней |
+| Minute | минуту | минуты | минут |
+| Hour | час | часа | часов |
+| Booking | бронирование | бронирования | бронирований |
+| Message | сообщение | сообщения | сообщений |
+| Unread | непрочитанное | непрочитанных | непрочитанных |
+
+### Summary of fixed bugs (by file)
+
+**`backend/apps/tours/views.py`**
+- Pause/unpause tour status-only PATCH now works via pre-serializer interception
+
+**`frontend/nav.js`**
+- `buildDropdown()` is language-aware — renders Russian labels and `_ru.html` hrefs on Russian pages
+- Bell notification click routes to `operator-dashboard_ru.html` on Russian pages
+
+**`frontend/waybound_ru.html`**
+- Fixed `'style-card' + s.cls` → `'style-card ' + s.cls` (missing space broke homepage layout)
+- Fixed style card clicks to route to `adventures_ru.html?cat=`
+
+**`frontend/operator-dashboard_ru.html`**
+- Fixed `'\u26A0;'` → `'\u26A0'` (warning icon was rendering as literal "⚠;")
+- Fixed `doneAttr`/`actionAttr`/`icoAttr` string variables (missing space + closing quote caused `id` attributes to merge with adjacent text)
+- Fixed checklist action links to point to `settings_ru.html#...`
+- Fixed status labels to Russian (published/draft/review/paused/archived)
+- Fixed `t.status === 'активный'` → `t.status === 'live'` (translation script had corrupted this)
+- Fixed price/day, time-ago, spots, booking count, guest count, pax strings to Russian with correct declensions
+- Fixed messages header to Russian with declensions
+
+**`frontend/operator-tour-create_ru.html`**
+- Fixed Requirements + organiser note placeholders to Russian
+- Fixed "X photos added" → "X фото добавлено"
+- Fixed country datalist to Russian names
+- Fixed `COUNTRY_TIMEZONES` key to match Russian datalist
+- Added `ruToEn` category + difficulty maps in restore-from-edit code (old tours had Russian category names stored in DB from before the fix — map corrects them on load)
+- Added `_ruToEnC` country map in `collectFormData` so backend always receives English country
+
+**`frontend/tour_detail_page.html`** and **`frontend/tour_detail_page_ru.html`**
+- Private request modal: date + message are now required fields with red border highlight on empty submission
+- Russian version has same validation plus Russian pax declensions in submit
+- Added client-side translation maps for difficulty, categories, languages, country (Russian page)
+
+**`frontend/adventures.html`** and **`frontend/adventures_ru.html`**
+- Removed "Private tours only" filter toggle (private tours are direct-link only, not browsable)
+
+**`frontend/booking.html`** and **`frontend/booking_ru.html`**
+- Name/email/phone now prefill from `waybound_user` localStorage on page load
+- Fixed "Change date / Изменить дату" link to route back to correct tour detail page
+- Russian page: `paxTxt` uses Russian declensions; back-to-tour link uses `tour_detail_page_ru.html`
+
+**`frontend/signup-operator_ru.html`**
+- Fixed placeholder text for company name, languages, certificates to Russian
+- Fixed "Wellness / Йога" label (was partially English)
+
+**`frontend/about.html`** and **`frontend/about_ru.html`**
+- Community photo gallery: clicking a photo now opens a lightbox modal (fade-in overlay, full image, close with ✕ or Escape or click backdrop)
+
+**`frontend/terms-experts_ru.html`**
+- Translated all remaining English sections: Bookings, Payment Agent, Service Fees, Booking Terms, Taxes, Conduct, Content, Disclaimers, Liability, Indemnification, Governing Law, Dispute Resolution, contact block, and footer

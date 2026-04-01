@@ -152,6 +152,25 @@ def tour_detail(request, slug):
         return Response({'detail': 'You do not own this tour.'}, status=status.HTTP_403_FORBIDDEN)
 
     if request.method == 'PATCH':
+        # Status-only PATCH: pause ↔ unpause (serializer doesn't expose status field)
+        if set(request.data.keys()) == {'status'}:
+            new_status = request.data['status']
+            OPERATOR_STATUS_TRANSITIONS = {
+                'paused': (Tour.Status.LIVE,   Tour.Status.PAUSED),
+                'live':   (Tour.Status.PAUSED, Tour.Status.LIVE),
+            }
+            if new_status not in OPERATOR_STATUS_TRANSITIONS:
+                return Response({'detail': 'Invalid status transition.'}, status=status.HTTP_400_BAD_REQUEST)
+            required_current, target = OPERATOR_STATUS_TRANSITIONS[new_status]
+            if tour.status != required_current:
+                return Response(
+                    {'detail': f'Tour must be {required_current} to change to {new_status}.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            tour.status = target
+            tour.save(update_fields=['status'])
+            return Response(TourDetailSerializer(tour, context={'request': request}).data)
+
         # If the tour is under review, editing resets it to draft so it goes
         # through the review process again.
         if tour.status == Tour.Status.REVIEW:

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Account Settings — Waybound</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300..700&family=Playfair+Display:ital,wght@0,400..900;1,400..700&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&amp;family=Space+Grotesk:wght@300..700&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..700&amp;family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&amp;display=swap" rel="stylesheet"/>
 <style>
 /* ══ THEMES ══════════════════════════════════════════════════════════ */
 body.ocean{ --ink:#0d1f2d; --paper:#f0f5f9; --white:#ffffff; --ac:#4fa8d4; --ad:#2080ae; --mu:#607a8a; --ln:#c0d4e0; --ha-bg:#e8f4fb; --ha-bd:#94c8e4; --ha-tx:#0e5070; --hb-bg:#e6f4f0; --hb-bd:#88c4b4; --hb-tx:#0e4840; --tr-bg:#f4f9fc; --df:'Fraunces',serif; --bf:'Space Grotesk',sans-serif; }
@@ -207,512 +208,480 @@ footer a:hover{color:rgba(255,255,255,.75)}
 <script src="config.js"></script>
 </head>
 <body class="ocean">
-
 <!-- ══ SETTINGS OVERLAY (for theme preview from this page too) ══ -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
-  <div class="drawer" id="drawer">
-    <div class="drawer-head">
-      <div class="drawer-title">Appearance</div>
-      <button class="drawer-close" onclick="closeSettings()">✕</button>
-    </div>
-    <div class="drawer-body">
-      <div class="d-section-label">Choose your theme</div>
-      <div class="theme-grid" id="themeGrid"></div>
-      <button class="drawer-apply" onclick="applyPending()">Apply theme</button>
-      <div class="drawer-divider"></div>
-      <p class="drawer-note">Your choice is saved locally and remembered on your next visit.</p>
-    </div>
-  </div>
+<div class="drawer" id="drawer">
+<div class="drawer-head">
+<div class="drawer-title">Внешний вид</div>
+<button class="drawer-close" onclick="closeSettings()">✕</button>
 </div>
-
+<div class="drawer-body">
+<div class="d-section-label">Выберите тему</div>
+<div class="theme-grid" id="themeGrid"></div>
+<button class="drawer-apply" onclick="applyPending()">Применить тему</button>
+<div class="drawer-divider"></div>
+<p class="drawer-note">Ваш выбор сохраняется локально и будет восстановлен при следующем визите.</p>
+</div>
+</div>
+</div>
 <!-- ══ NAV ══ -->
 <nav class="nav">
-  <a class="logo" href="waybound.html">
-    <div class="logo-mark" id="lm">
-      <svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg>
-    </div>
+<a class="logo" href="waybound_ru.html">
+<div class="logo-mark" id="lm">
+<svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg>
+</div>
     waybound
   </a>
-  <div class="nav-search">🔍 Where to go?</div>
-  <div class="nav-links">
-    <a class="nav-link" href="adventures.html">Adventures</a>
-    <a class="nav-link" href="how-it-works.html">How it works</a>
-    <a class="nav-link" href="about.html">About</a>
-    <a class="nav-link" href="help.html">Help</a>
-    <a class="nav-link" href="contact.html">Contact</a>
-  </div>
-    <div class="nav-r nav-r-wrap">
-    <button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin.html'">Sign in / Sign up</button>
-    <a class="btn-ac-sm" href="operator.html" style="text-decoration:none" id="navListTourBtn">List a tour</a>
-    <div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" title="My account" style="display:none"></div>
-    <div class="nav-dropdown" id="navDropdown"></div>
-  </div>
+<div class="nav-search">🔍 Куда отправиться?</div>
+<div class="nav-links">
+<a class="nav-link" href="adventures_ru.html">Приключения</a>
+<a class="nav-link" href="how-it-works_ru.html">Как это работает</a>
+<a class="nav-link" href="about_ru.html">О нас</a>
+<a class="nav-link" href="help_ru.html">Справка</a>
+<a class="nav-link" href="contact_ru.html">Контакты</a>
+</div>
+<div class="nav-r nav-r-wrap">
+<button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin_ru.html'">Вход / Регистрация</button>
+<a class="btn-ac-sm" href="operator_ru.html" id="navListTourBtn" style="text-decoration:none">Добавить тур</a>
+<div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" style="display:none" title="Мой аккаунт"></div>
+<div class="nav-dropdown" id="navDropdown"></div>
+</div>
 </nav>
-
 <!-- ══ PAGE HEAD ══ -->
 <div class="settings-page-head">
-  <div class="settings-page-title">Account settings</div>
-  <div class="settings-page-sub">Manage your profile, security, preferences and appearance</div>
+<div class="settings-page-title">Параметры аккаунта</div>
+<div class="settings-page-sub">Управляйте профилем, безопасностью, предпочтениями и внешним видом</div>
 </div>
-
 <!-- ══ SETTINGS LAYOUT ══ -->
 <div class="settings-wrap">
-
-  <!-- ── SIDEBAR ── -->
-  <nav class="settings-nav">
-    <div class="settings-nav-section">
-      <div class="settings-nav-label">Account</div>
-      <button class="settings-nav-item active" onclick="showPanel('profile',this)">
-        <span class="sn-ico">👤</span>Profile
+<!-- ── SIDEBAR ── -->
+<nav class="settings-nav">
+<div class="settings-nav-section">
+<div class="settings-nav-label">Аккаунт</div>
+<button class="settings-nav-item active" onclick="showPanel('profile',this)">
+<span class="sn-ico">👤</span>Профиль
       </button>
-      <button class="settings-nav-item" onclick="showPanel('security',this)">
-        <span class="sn-ico">🔒</span>Security
+<button class="settings-nav-item" onclick="showPanel('security',this)">
+<span class="sn-ico">🔒</span>Безопасность
       </button>
-      <button class="settings-nav-item" onclick="showPanel('connected',this)">
-        <span class="sn-ico">🔗</span>Connected accounts
+<button class="settings-nav-item" onclick="showPanel('connected',this)">
+<span class="sn-ico">🔗</span>Подключённые аккаунты
       </button>
-      <button class="settings-nav-item" onclick="showPanel('verification',this)" id="navVerification" style="display:none">
-        <span class="sn-ico">✅</span>Verification
+<button class="settings-nav-item" id="navVerification" onclick="showPanel('verification',this)" style="display:none">
+<span class="sn-ico">✅</span>Верификация
       </button>
-      <button class="settings-nav-item" onclick="showPanel('credentials',this)" id="navCredentials" style="display:none">
-        <span class="sn-ico">📋</span>Guide credentials
+<button class="settings-nav-item" id="navCredentials" onclick="showPanel('credentials',this)" style="display:none">
+<span class="sn-ico">📋</span>Квалификация гида
       </button>
-      <button class="settings-nav-item" onclick="showPanel('payout',this)" id="navPayout" style="display:none">
-        <span class="sn-ico">💳</span>Payout method
+<button class="settings-nav-item" id="navPayout" onclick="showPanel('payout',this)" style="display:none">
+<span class="sn-ico">💳</span>Способ выплаты
       </button>
-    </div>
-    <div class="settings-nav-section">
-      <div class="settings-nav-label">Preferences</div>
-      <button class="settings-nav-item" onclick="showPanel('appearance',this)" id="navAppearance">
-        <span class="sn-ico">🎨</span>Appearance
+</div>
+<div class="settings-nav-section">
+<div class="settings-nav-label">Предпочтения</div>
+<button class="settings-nav-item" id="navAppearance" onclick="showPanel('appearance',this)">
+<span class="sn-ico">🎨</span>Внешний вид
       </button>
-      <button class="settings-nav-item" onclick="showPanel('notifications',this)">
-        <span class="sn-ico">🔔</span>Notifications
+<button class="settings-nav-item" onclick="showPanel('notifications',this)">
+<span class="sn-ico">🔔</span>Уведомления
       </button>
-      <button class="settings-nav-item" onclick="showPanel('language',this)" id="navLanguage">
-        <span class="sn-ico">🌐</span>Language
+<button class="settings-nav-item" id="navLanguage" onclick="showPanel('language',this)">
+<span class="sn-ico">🌐</span>Язык
       </button>
-    </div>
-    <div class="settings-nav-section" id="navOperatorLinks" style="display:none">
-      <div class="settings-nav-label">Operator</div>
-      <a class="settings-nav-item" href="operator-dashboard.html" style="text-decoration:none">
-        <span class="sn-ico">🏠</span>My dashboard
+</div>
+<div class="settings-nav-section" id="navOperatorLinks" style="display:none">
+<div class="settings-nav-label">Оператор</div>
+<a class="settings-nav-item" href="operator-dashboard_ru.html" style="text-decoration:none">
+<span class="sn-ico">🏠</span>Мой панель управления
       </a>
-      <a class="settings-nav-item" href="operator-tour-create.html" style="text-decoration:none">
-        <span class="sn-ico">➕</span>Create new tour
+<a class="settings-nav-item" href="operator-tour-create_ru.html" style="text-decoration:none">
+<span class="sn-ico">➕</span>Создать новый тур
       </a>
-    </div>
-    <div class="settings-nav-section">
-      <div class="settings-nav-label">Danger zone</div>
-      <button class="settings-nav-item danger" onclick="showPanel('danger',this)">
-        <span class="sn-ico">⚠️</span>Delete account
+</div>
+<div class="settings-nav-section">
+<div class="settings-nav-label">Опасная зона</div>
+<button class="settings-nav-item danger" onclick="showPanel('danger',this)">
+<span class="sn-ico">⚠️</span>Удалить аккаунт
       </button>
-    </div>
-  </nav>
-
-  <!-- ── PANELS ── -->
-  <div class="settings-panels">
-
-    <!-- ▸ PROFILE ──────────────────────────────────────────── -->
-    <div class="settings-panel active" id="panel-profile">
-      <div class="settings-card">
-        <div class="settings-card-head">
-          <div class="settings-card-title">Public profile</div>
-          <div class="settings-card-desc">This is how other travellers and guides see you</div>
-        </div>
-        <div class="settings-card-body">
-          <div class="avatar-section">
-            <div class="avatar-preview" id="profileAvatar">?</div>
-            <div>
-              <input type="file" id="avatarFileInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleAvatarUpload(this)">
-              <div class="avatar-actions">
-                <button class="btn-outline-sm" onclick="document.getElementById('avatarFileInput').click()">Upload photo</button>
-                <button class="btn-outline-sm" id="removePhotoBtn" style="display:none" onclick="removeAvatar()">Remove photo</button>
-              </div>
-              <div class="avatar-hint" style="margin-top:6px">JPG or PNG, max 2 MB</div>
-              <div id="avatarUploadMsg" style="font-size:11.5px;font-family:var(--bf);margin-top:6px;display:none"></div>
-            </div>
+</div>
+</nav>
+<!-- ── PANELS ── -->
+<div class="settings-panels">
+<!-- ▸ PROFILE ──────────────────────────────────────────── -->
+<div class="settings-panel active" id="panel-profile">
+<div class="settings-card">
+<div class="settings-card-head">
+<div class="settings-card-title">Публичный профиль</div>
+<div class="settings-card-desc">Так вас видят другие путешественники и гиды</div>
+</div>
+<div class="settings-card-body">
+<div class="avatar-section">
+<div class="avatar-preview" id="profileAvatar">?</div>
+<div>
+<input accept="image/jpeg,image/png,image/webp" id="avatarFileInput" onchange="handleAvatarUpload(this)" style="display:none" type="file"/>
+<div class="avatar-actions">
+<button class="btn-outline-sm" onclick="document.getElementById('avatarFileInput').click()">Загрузить фото</button>
+<button class="btn-outline-sm" id="removePhotoBtn" onclick="removeAvatar()" style="display:none">Удалить фото</button>
+</div>
+<div class="avatar-hint" style="margin-top:6px">JPG или PNG, макс. 2 МБ</div>
+<div id="avatarUploadMsg" style="font-size:11.5px;font-family:var(--bf);margin-top:6px;display:none"></div>
+</div>
+</div>
+<div class="field-row-two">
+<div class="field-row">
+<label class="field-label">Имя</label>
+<input class="field-input" id="firstName" placeholder="Ваше имя" type="text"/>
+</div>
+<div class="field-row">
+<label class="field-label">Фамилия</label>
+<input class="field-input" id="lastName" placeholder="Ваша фамилия" type="text"/>
+</div>
+</div>
+<div class="field-row">
+<label class="field-label">Адрес электронной почты</label>
+<input class="field-input" disabled="" id="emailField" placeholder="your@email.com" type="email"/>
+<div class="field-hint">Свяжитесь с поддержкой для изменения адреса электронной почты</div>
+</div>
+<div class="field-row">
+<label class="field-label">Номер телефона</label>
+<input class="field-input" id="phoneField" placeholder="+7 (999) 000-00-00" type="tel"/>
+</div>
+<div class="field-row">
+<label class="field-label" id="bioLabel">О вас</label>
+<textarea class="field-input" id="bioField" placeholder="Расскажите гидам и другим путешественникам о себе…" rows="3" style="resize:vertical;min-height:70px;"></textarea>
+<div id="bioRequiredMsg" style="font-size:11.5px;color:#c03020;font-family:var(--bf);margin-top:4px;display:none">Обязательно для операторов — опишите ваши туры и опыт.</div>
+</div>
+<div class="save-row">
+<button class="btn-save" onclick="saveProfile()">Сохранить изменения</button>
+<span class="save-feedback" id="profileFeedback">✓ Сохранено</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ▸ SECURITY ────────────────────────────────────────── -->
+<div class="settings-panel" id="panel-security">
+<div class="settings-card">
+<div class="settings-card-head">
+<div class="settings-card-title">Изменить пароль</div>
+<div class="settings-card-desc">Используйте надёжный пароль, который вы не используете больше нигде</div>
+</div>
+<div class="settings-card-body">
+<div class="field-row">
+<label class="field-label">Текущий пароль</label>
+<input class="field-input" id="currentPw" oninput="clearPwError()" placeholder="Введите текущий пароль" type="password"/>
+</div>
+<div class="field-row">
+<label class="field-label">Новый пароль</label>
+<input class="field-input" id="newPw" oninput="updatePwStrength(this.value)" placeholder="Минимум 8 символов" type="password"/>
+<div class="pw-strength"><div class="pw-strength-bar" id="pwBar"></div></div>
+<div class="field-hint" id="pwHint">Введите новый пароль</div>
+</div>
+<div class="field-row">
+<label class="field-label">Подтвердите новый пароль</label>
+<input class="field-input" id="confirmPw" oninput="clearPwError()" placeholder="Повторите новый пароль" type="password"/>
+</div>
+<div class="pw-error-banner" id="pwErrorBanner"></div>
+<div class="save-row">
+<button class="btn-save" onclick="changePassword()">Обновить пароль</button>
+<span class="save-feedback" id="pwFeedback">✓ Пароль обновлён</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ▸ CONNECTED ACCOUNTS ──────────────────────────────── -->
+<div class="settings-panel" id="panel-connected">
+<div class="settings-card">
+<div class="settings-card-head">
+<div class="settings-card-title">Подключённые аккаунты</div>
+<div class="settings-card-desc">Входите быстрее, используя существующие аккаунты</div>
+</div>
+<div class="settings-card-body">
+<div class="conn-row">
+<div class="conn-left">
+<div class="conn-ico">🇬</div>
+<div>
+<div class="conn-name">Google</div>
+<div class="conn-status" id="googleStatus">Не подключено</div>
+</div>
+</div>
+<button class="btn-conn connect" id="googleBtn" onclick="connectSocial('google')">Подключить</button>
+</div>
+<div class="conn-row">
+<div class="conn-left">
+<div class="conn-ico">🍎</div>
+<div>
+<div class="conn-name">Apple</div>
+<div class="conn-status" id="appleStatus">Не подключено</div>
+</div>
+</div>
+<button class="btn-conn connect" id="appleBtn" onclick="connectSocial('apple')">Подключить</button>
+</div>
+<div class="conn-row">
+<div class="conn-left">
+<div class="conn-ico" style="font-size:16px;color:#FC3F1D;font-weight:700">Y</div>
+<div>
+<div class="conn-name">Yandex</div>
+<div class="conn-status" id="yandexStatus">Не подключено</div>
+</div>
+</div>
+<button class="btn-conn connect" id="yandexBtn" onclick="connectSocial('yandex')">Подключить</button>
+</div>
+</div>
+</div>
+</div>
+<!-- ▸ VERIFICATION (operators only) ────────────────────── -->
+<div class="settings-panel" id="panel-verification">
+<div class="settings-card">
+<div class="settings-card-head">
+<div class="settings-card-title">Верификация оператора</div>
+<div class="settings-card-desc">Пройдите верификацию личности, чтобы публиковать туры на Waybound</div>
+</div>
+<div class="settings-card-body">
+<div id="verifyStatusCard" style="padding:16px;border-radius:10px;border:1.5px solid var(--ln);margin-bottom:18px;background:var(--tr-bg)">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+<span id="verifyIco" style="font-size:22px">⏳</span>
+<div>
+<div id="verifyTitle" style="font-size:14px;font-weight:700;color:var(--ink);font-family:var(--bf)">Ещё не отправлено</div>
+<div id="verifyDesc" style="font-size:12.5px;color:var(--mu);font-family:var(--bf)">Загрузите документ удостоверения личности для верификации</div>
+</div>
+</div>
+</div>
+<div id="verifyUploadSection">
+<div class="field-row">
+<label class="field-label">Загрузить документ удостоверения</label>
+<div class="field-hint" style="margin-bottom:8px">Паспорт, водительское удостоверение или национальное удостоверение личности. Чёткое фото документа, JPG/PNG, макс. 5 МБ.</div>
+<input accept="image/jpeg,image/png,image/webp" id="verifyDocInput" onchange="previewVerifyDoc(this)" style="display:none" type="file"/>
+<div style="display:flex;gap:10px;align-items:center">
+<button class="btn-outline-sm" id="verifyChooseBtn" onclick="document.getElementById('verifyDocInput').click()">Выбрать файл</button>
+<span id="verifyFileName" style="font-size:12px;color:var(--mu);font-family:var(--bf);display:none"></span>
+<button class="btn-outline-sm" id="verifyCancelBtn" onclick="cancelVerifyDoc()" style="display:none;color:#c03020;border-color:#c03020">✕ Удалить</button>
+</div>
+<div id="verifyPreview" style="margin-top:10px;display:none">
+<img alt="Предпросмотр" id="verifyPreviewImg" style="max-width:200px;max-height:150px;border-radius:8px;border:1px solid var(--ln)"/>
+</div>
+<div style="margin-top:10px;display:flex;gap:10px;align-items:center">
+<button class="btn-save" id="verifySubmitBtn" onclick="submitVerifyDoc()" style="display:none">Отправить на проверку</button>
+<span id="verifyUploadMsg" style="font-size:12px;color:var(--mu);font-family:var(--bf);display:none"></span>
+</div>
+</div>
+</div>
+<div style="margin-top:18px;padding:14px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);line-height:1.6">
+<strong style="display:block;margin-bottom:4px">Зачем верификация?</strong>
+            Проверенные гиды могут публиковать туры и принимать бронирования. Наша команда проверяет документы в течение 48 часов. Ваш документ хранится в безопасности и используется только для проверки личности.
           </div>
-          <div class="field-row-two">
-            <div class="field-row">
-              <label class="field-label">First name</label>
-              <input class="field-input" id="firstName" type="text" placeholder="Your first name">
-            </div>
-            <div class="field-row">
-              <label class="field-label">Last name</label>
-              <input class="field-input" id="lastName" type="text" placeholder="Your last name">
-            </div>
+</div>
+</div>
+</div>
+<!-- ▸ GUIDE CREDENTIALS (operators only) ────────────────── -->
+<div class="settings-panel" id="panel-credentials">
+<div class="settings-card">
+<div class="settings-card-head">
+<div class="settings-card-title">Квалификация гида</div>
+<div class="settings-card-desc">Загрузите подтверждение вашего опыта работы гидом для проверки нашей командой</div>
+</div>
+<div class="settings-card-body">
+<div id="credStatusCard" style="padding:16px;border-radius:10px;border:1.5px solid var(--ln);margin-bottom:18px;background:var(--tr-bg)">
+<div style="display:flex;align-items:center;gap:10px">
+<span id="credIco" style="font-size:22px">📋</span>
+<div>
+<div id="credTitle" style="font-size:14px;font-weight:700;color:var(--ink);font-family:var(--bf)">Квалификация не загружена</div>
+<div id="credDesc" style="font-size:12.5px;color:var(--mu);font-family:var(--bf)">Загрузите документы, чтобы укрепить ваш профиль</div>
+</div>
+</div>
+</div>
+<div class="field-row">
+<label class="field-label">Загрузить квалификацию</label>
+<div class="field-hint" style="margin-bottom:8px">Сертификаты, лицензии, фото с прошлых туров, ссылки на отзывы на других платформах. JPG, PNG или PDF, максимум 5 МБ каждый. Вы можете загрузить несколько файлов.</div>
+<input accept="image/jpeg,image/png,image/webp,application/pdf" id="credFileInput" multiple="" onchange="previewCredFiles(this)" style="display:none" type="file"/>
+<div style="display:flex;gap:10px;align-items:center">
+<button class="btn-outline-sm" onclick="document.getElementById('credFileInput').click()">Выбрать файлы</button>
+<span id="credUploadMsg" style="font-size:12px;color:var(--mu);font-family:var(--bf);display:none"></span>
+</div>
+<div id="credPendingList" style="margin-top:10px"></div>
+<div style="margin-top:10px">
+<button class="btn-save" id="credSubmitBtn" onclick="submitCredentials()" style="display:none">Отправить на проверку</button>
+</div>
+</div>
+<div id="credFilesList" style="margin-top:14px"></div>
+<div style="margin-top:18px;padding:14px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);line-height:1.6">
+<strong style="display:block;margin-bottom:4px">Что считается квалификацией?</strong>
+            Сертификаты гида, сертификаты первой помощи, фото с проведённых вами туров, скриншоты отзывов с других платформ, документы о регистрации деятельности или любое подтверждение опыта работы гидом.
           </div>
-          <div class="field-row">
-            <label class="field-label">Email address</label>
-            <input class="field-input" id="emailField" type="email" placeholder="your@email.com" disabled>
-            <div class="field-hint">Contact support to change your email address</div>
+</div>
+</div>
+</div>
+<!-- ▸ PAYOUT METHOD (operators only) ──────────────────── -->
+<div class="settings-panel" id="panel-payout">
+<div class="settings-card">
+<div class="settings-card-head">
+<div class="settings-card-title">Способ выплаты</div>
+<div class="settings-card-desc">Куда мы переводим ваши доходы после каждого тура</div>
+</div>
+<div class="settings-card-body">
+<div style="padding:14px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);line-height:1.6;margin-bottom:18px">
+<strong style="display:block;margin-bottom:4px">Как работают выплаты</strong>
+            После завершения тура ваш доход (стоимость тура минус 15% комиссия Waybound) переводится на банковский счёт ниже. Выплаты обрабатываются в течение 5 рабочих дней после завершения тура.
           </div>
-          <div class="field-row">
-            <label class="field-label">Phone number</label>
-            <input class="field-input" id="phoneField" type="tel" placeholder="+7 (999) 000-00-00">
-          </div>
-          <div class="field-row">
-            <label class="field-label" id="bioLabel">About you</label>
-            <textarea class="field-input" id="bioField" rows="3" placeholder="Tell guides and fellow travellers a little about yourself…" style="resize:vertical;min-height:70px;"></textarea>
-            <div id="bioRequiredMsg" style="font-size:11.5px;color:#c03020;font-family:var(--bf);margin-top:4px;display:none">Required for operators — describe your tours and experience.</div>
-          </div>
-          <div class="save-row">
-            <button class="btn-save" onclick="saveProfile()">Save changes</button>
-            <span class="save-feedback" id="profileFeedback">✓ Saved</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ▸ SECURITY ────────────────────────────────────────── -->
-    <div class="settings-panel" id="panel-security">
-      <div class="settings-card">
-        <div class="settings-card-head">
-          <div class="settings-card-title">Change password</div>
-          <div class="settings-card-desc">Use a strong password you don't use anywhere else</div>
-        </div>
-        <div class="settings-card-body">
-          <div class="field-row">
-            <label class="field-label">Current password</label>
-            <input class="field-input" id="currentPw" type="password" placeholder="Enter current password" oninput="clearPwError()">
-          </div>
-          <div class="field-row">
-            <label class="field-label">New password</label>
-            <input class="field-input" id="newPw" type="password" placeholder="At least 8 characters" oninput="updatePwStrength(this.value)">
-            <div class="pw-strength"><div class="pw-strength-bar" id="pwBar"></div></div>
-            <div class="field-hint" id="pwHint">Enter a new password</div>
-          </div>
-          <div class="field-row">
-            <label class="field-label">Confirm new password</label>
-            <input class="field-input" id="confirmPw" type="password" placeholder="Repeat new password" oninput="clearPwError()">
-          </div>
-          <div class="pw-error-banner" id="pwErrorBanner"></div>
-          <div class="save-row">
-            <button class="btn-save" onclick="changePassword()">Update password</button>
-            <span class="save-feedback" id="pwFeedback">✓ Password updated</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ▸ CONNECTED ACCOUNTS ──────────────────────────────── -->
-    <div class="settings-panel" id="panel-connected">
-      <div class="settings-card">
-        <div class="settings-card-head">
-          <div class="settings-card-title">Connected accounts</div>
-          <div class="settings-card-desc">Sign in faster using your existing accounts</div>
-        </div>
-        <div class="settings-card-body">
-          <div class="conn-row">
-            <div class="conn-left">
-              <div class="conn-ico">🇬</div>
-              <div>
-                <div class="conn-name">Google</div>
-                <div class="conn-status" id="googleStatus">Not connected</div>
-              </div>
-            </div>
-            <button class="btn-conn connect" id="googleBtn" onclick="connectSocial('google')">Connect</button>
-          </div>
-          <div class="conn-row">
-            <div class="conn-left">
-              <div class="conn-ico">🍎</div>
-              <div>
-                <div class="conn-name">Apple</div>
-                <div class="conn-status" id="appleStatus">Not connected</div>
-              </div>
-            </div>
-            <button class="btn-conn connect" id="appleBtn" onclick="connectSocial('apple')">Connect</button>
-          </div>
-          <div class="conn-row">
-            <div class="conn-left">
-              <div class="conn-ico" style="font-size:16px;color:#FC3F1D;font-weight:700">Y</div>
-              <div>
-                <div class="conn-name">Yandex</div>
-                <div class="conn-status" id="yandexStatus">Not connected</div>
-              </div>
-            </div>
-            <button class="btn-conn connect" id="yandexBtn" onclick="connectSocial('yandex')">Connect</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ▸ VERIFICATION (operators only) ────────────────────── -->
-    <div class="settings-panel" id="panel-verification">
-      <div class="settings-card">
-        <div class="settings-card-head">
-          <div class="settings-card-title">Operator verification</div>
-          <div class="settings-card-desc">Verify your identity to publish tours on Waybound</div>
-        </div>
-        <div class="settings-card-body">
-          <div id="verifyStatusCard" style="padding:16px;border-radius:10px;border:1.5px solid var(--ln);margin-bottom:18px;background:var(--tr-bg)">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-              <span id="verifyIco" style="font-size:22px">⏳</span>
-              <div>
-                <div id="verifyTitle" style="font-size:14px;font-weight:700;color:var(--ink);font-family:var(--bf)">Not yet submitted</div>
-                <div id="verifyDesc" style="font-size:12.5px;color:var(--mu);font-family:var(--bf)">Upload an ID document to get verified</div>
-              </div>
-            </div>
-          </div>
-
-          <div id="verifyUploadSection">
-            <div class="field-row">
-              <label class="field-label">Upload ID document</label>
-              <div class="field-hint" style="margin-bottom:8px">Passport, driver's licence, or national ID. Clear photo of the document, JPG/PNG, max 5 MB.</div>
-              <input type="file" id="verifyDocInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="previewVerifyDoc(this)">
-              <div style="display:flex;gap:10px;align-items:center">
-                <button class="btn-outline-sm" onclick="document.getElementById('verifyDocInput').click()" id="verifyChooseBtn">Choose file</button>
-                <span id="verifyFileName" style="font-size:12px;color:var(--mu);font-family:var(--bf);display:none"></span>
-                <button class="btn-outline-sm" id="verifyCancelBtn" onclick="cancelVerifyDoc()" style="display:none;color:#c03020;border-color:#c03020">✕ Remove</button>
-              </div>
-              <div id="verifyPreview" style="margin-top:10px;display:none">
-                <img id="verifyPreviewImg" style="max-width:200px;max-height:150px;border-radius:8px;border:1px solid var(--ln)" alt="Preview">
-              </div>
-              <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
-                <button class="btn-save" id="verifySubmitBtn" onclick="submitVerifyDoc()" style="display:none">Submit for review</button>
-                <span id="verifyUploadMsg" style="font-size:12px;color:var(--mu);font-family:var(--bf);display:none"></span>
-              </div>
-            </div>
-          </div>
-
-          <div style="margin-top:18px;padding:14px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);line-height:1.6">
-            <strong style="display:block;margin-bottom:4px">Why verification?</strong>
-            Verified operators can publish tours and accept bookings. Our team reviews documents within 48 hours. Your document is stored securely and only used for identity verification.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ▸ GUIDE CREDENTIALS (operators only) ────────────────── -->
-    <div class="settings-panel" id="panel-credentials">
-      <div class="settings-card">
-        <div class="settings-card-head">
-          <div class="settings-card-title">Guide credentials</div>
-          <div class="settings-card-desc">Upload proof of your guiding experience for review by our team</div>
-        </div>
-        <div class="settings-card-body">
-          <div id="credStatusCard" style="padding:16px;border-radius:10px;border:1.5px solid var(--ln);margin-bottom:18px;background:var(--tr-bg)">
-            <div style="display:flex;align-items:center;gap:10px">
-              <span id="credIco" style="font-size:22px">📋</span>
-              <div>
-                <div id="credTitle" style="font-size:14px;font-weight:700;color:var(--ink);font-family:var(--bf)">No credentials uploaded</div>
-                <div id="credDesc" style="font-size:12.5px;color:var(--mu);font-family:var(--bf)">Upload documents to strengthen your profile</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="field-row">
-            <label class="field-label">Upload credentials</label>
-            <div class="field-hint" style="margin-bottom:8px">Certificates, licences, photos of past tours, links to reviews on other platforms. JPG, PNG, or PDF, max 5 MB each. You can upload multiple files.</div>
-            <input type="file" id="credFileInput" accept="image/jpeg,image/png,image/webp,application/pdf" multiple style="display:none" onchange="previewCredFiles(this)">
-            <div style="display:flex;gap:10px;align-items:center">
-              <button class="btn-outline-sm" onclick="document.getElementById('credFileInput').click()">Choose files</button>
-              <span id="credUploadMsg" style="font-size:12px;color:var(--mu);font-family:var(--bf);display:none"></span>
-            </div>
-            <div id="credPendingList" style="margin-top:10px"></div>
-            <div style="margin-top:10px">
-              <button class="btn-save" id="credSubmitBtn" onclick="submitCredentials()" style="display:none">Submit for review</button>
-            </div>
-          </div>
-
-          <div id="credFilesList" style="margin-top:14px"></div>
-
-          <div style="margin-top:18px;padding:14px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);line-height:1.6">
-            <strong style="display:block;margin-bottom:4px">What counts as credentials?</strong>
-            Tour guide certifications, first aid certificates, photos from tours you've led, screenshots of reviews from other platforms, business registration documents, or any proof of guiding experience.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ▸ PAYOUT METHOD (operators only) ──────────────────── -->
-    <div class="settings-panel" id="panel-payout">
-      <div class="settings-card">
-        <div class="settings-card-head">
-          <div class="settings-card-title">Payout method</div>
-          <div class="settings-card-desc">Where we send your earnings after each tour</div>
-        </div>
-        <div class="settings-card-body">
-          <div style="padding:14px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;font-size:12.5px;color:var(--ha-tx);font-family:var(--bf);line-height:1.6;margin-bottom:18px">
-            <strong style="display:block;margin-bottom:4px">How payouts work</strong>
-            After a tour is completed, your earnings (tour price minus 15% Waybound commission) are transferred to the bank account below. Payouts are processed within 5 business days after tour completion.
-          </div>
-
-          <div class="field-row">
-            <label class="field-label">Account holder name *</label>
-            <input class="field-input" id="payoutName" placeholder="Full name as on bank account">
-          </div>
-          <div class="field-row">
-            <label class="field-label">Bank name *</label>
-            <input class="field-input" id="payoutBank" placeholder="e.g. Sberbank, Tinkoff">
-          </div>
-          <div class="field-row">
-            <label class="field-label">Account number *</label>
-            <input class="field-input" id="payoutAccount" placeholder="20-digit account number">
-          </div>
-          <div class="field-row">
-            <label class="field-label">BIK (bank code) *</label>
-            <input class="field-input" id="payoutBik" placeholder="9-digit BIK">
-          </div>
-          <div class="field-row">
-            <label class="field-label">Correspondent account</label>
-            <input class="field-input" id="payoutCorrAccount" placeholder="Optional — 20-digit correspondent account">
-          </div>
-
-          <div style="margin-top:14px;display:flex;align-items:center;gap:12px">
-            <button class="btn-save" onclick="savePayout()">Save payout details</button>
-            <span class="save-feedback" id="payoutFeedback">✓ Saved</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ▸ APPEARANCE ──────────────────────────────────────── -->
-    <div class="settings-panel" id="panel-appearance">
-      <div class="settings-card">
-        <div class="settings-card-head">
-          <div class="settings-card-title">Theme</div>
-          <div class="settings-card-desc">Choose a colour palette for the Waybound interface</div>
-        </div>
-        <div class="settings-card-body">
-          <div class="theme-grid-inline" id="inlineThemeGrid"></div>
-          <div class="theme-apply-row">
-            <button class="btn-save" onclick="applyInlineTheme()">Apply theme</button>
-            <span class="live-preview-note">Preview updates live as you select</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ▸ NOTIFICATIONS ───────────────────────────────────── -->
-    <div class="settings-panel" id="panel-notifications">
-      <div class="settings-card">
-        <div class="settings-card-head">
-          <div class="settings-card-title">Email notifications</div>
-          <div class="settings-card-desc">Control which emails you receive from Waybound</div>
-        </div>
-        <div class="settings-card-body">
-          <div class="toggle-row" style="opacity:.55;pointer-events:none">
-            <div class="toggle-row-info">
-              <div class="toggle-row-label">Booking & trip emails</div>
-              <div class="toggle-row-desc">Booking confirmations, reminders, review requests, and guide messages</div>
-            </div>
-            <div class="toggle-sw on"></div>
-          </div>
-          <div style="font-size:11.5px;color:var(--mu);font-family:var(--bf);margin:8px 0 14px;padding-left:2px">These are essential transactional emails and cannot be turned off.</div>
-          <div class="toggle-row">
-            <div class="toggle-row-info">
-              <div class="toggle-row-label">Marketing & promotions</div>
-              <div class="toggle-row-desc">Special offers, new tours, seasonal discounts, and newsletter</div>
-            </div>
-            <div class="toggle-sw" id="toggleMarketing" onclick="toggleMarketingEmails()"></div>
-          </div>
-          <span class="save-feedback" id="notifFeedback" style="margin-top:8px">✓ Saved</span>
-        </div>
-      </div>
-
-      <!-- Telegram (operators only) -->
-      <div class="settings-card" id="telegramCard" style="display:none;margin-top:16px">
-        <div class="settings-card-head">
-          <div class="settings-card-title">Telegram notifications</div>
-          <div class="settings-card-desc">Get instant booking and waitlist alerts via Telegram</div>
-        </div>
-        <div class="settings-card-body">
-          <div style="font-size:13px;color:var(--ink);font-family:var(--bf);line-height:1.6;margin-bottom:14px">
-            Connect your Telegram account to receive real-time notifications for new bookings, cancellations, balance payments, and waitlist sign-ups.<br><br>
-            <strong>How to connect:</strong>
-            <ol style="margin:6px 0 0 18px;padding:0;font-size:13px;line-height:1.8">
-              <li>Open Telegram and message <a href="https://t.me/waybound_bot" target="_blank" style="color:var(--ac)">@waybound_bot</a></li>
-              <li>Send <code style="background:var(--su);padding:1px 5px;border-radius:3px">/start</code></li>
-              <li>Copy your Chat ID from the bot reply and paste it below</li>
-            </ol>
-          </div>
-          <div class="field-row">
-            <label class="field-label">Your Telegram Chat ID</label>
-            <input class="field-input" id="telegramChatId" type="text" placeholder="e.g. 123456789" style="max-width:260px">
-          </div>
-          <div class="save-row" style="margin-top:12px">
-            <button class="btn-save" onclick="saveTelegramChatId()">Save Telegram ID</button>
-            <span class="save-feedback" id="telegramFeedback">✓ Saved</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-
-    <!-- ▸ LANGUAGE ────────────────────────────────────────── -->
-    <div class="settings-panel" id="panel-language">
-      <div class="settings-card">
-        <div class="settings-card-head">
-          <div class="settings-card-title">Language / Язык</div>
-          <div class="settings-card-sub">Choose the display language for all pages.</div>
-        </div>
-        <div class="settings-card-body">
-          <div style="display:flex;flex-direction:column;gap:10px;max-width:340px">
-            <label style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--ln);border-radius:10px;cursor:pointer;transition:border-color .15s;background:var(--tr-bg)" id="langOptEn">
-              <input type="radio" name="waybound_lang" value="en" style="accent-color:var(--ac);width:16px;height:16px;cursor:pointer">
-              <div>
-                <div style="font-size:14px;font-weight:600;font-family:var(--bf);color:var(--ink)">English</div>
-                <div style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:2px">Default language</div>
-              </div>
-            </label>
-            <label style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--ln);border-radius:10px;cursor:pointer;transition:border-color .15s;background:var(--tr-bg)" id="langOptRu">
-              <input type="radio" name="waybound_lang" value="ru" style="accent-color:var(--ac);width:16px;height:16px;cursor:pointer">
-              <div>
-                <div style="font-size:14px;font-weight:600;font-family:var(--bf);color:var(--ink)">Русский</div>
-                <div style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:2px">Russian</div>
-              </div>
-            </label>
-          </div>
-          <p style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:16px;max-width:340px;line-height:1.6">
-            Changing the language reloads the page in the selected language. Your preference is saved automatically.
+<div class="field-row">
+<label class="field-label">Имя владельца счёта *</label>
+<input class="field-input" id="payoutName" placeholder="Полное имя, как в банковском счёте"/>
+</div>
+<div class="field-row">
+<label class="field-label">Название банка *</label>
+<input class="field-input" id="payoutBank" placeholder="например Сбербанк, Тинькофф"/>
+</div>
+<div class="field-row">
+<label class="field-label">Номер счёта *</label>
+<input class="field-input" id="payoutAccount" placeholder="20-значный номер счёта"/>
+</div>
+<div class="field-row">
+<label class="field-label">БИК (код банка) *</label>
+<input class="field-input" id="payoutBik" placeholder="9-значный БИК"/>
+</div>
+<div class="field-row">
+<label class="field-label">Корреспондентский счёт</label>
+<input class="field-input" id="payoutCorrAccount" placeholder="Необязательно — 20-значный корреспондентский счёт"/>
+</div>
+<div style="margin-top:14px;display:flex;align-items:center;gap:12px">
+<button class="btn-save" onclick="savePayout()">Сохранить реквизиты</button>
+<span class="save-feedback" id="payoutFeedback">✓ Сохранено</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ▸ APPEARANCE ──────────────────────────────────────── -->
+<div class="settings-panel" id="panel-appearance">
+<div class="settings-card">
+<div class="settings-card-head">
+<div class="settings-card-title">Тема оформления</div>
+<div class="settings-card-desc">Выберите цветовую палитру для интерфейса Waybound</div>
+</div>
+<div class="settings-card-body">
+<div class="theme-grid-inline" id="inlineThemeGrid"></div>
+<div class="theme-apply-row">
+<button class="btn-save" onclick="applyInlineTheme()">Применить тему</button>
+<span class="live-preview-note">Предпросмотр обновляется в реальном времени по мере выбора</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ▸ NOTIFICATIONS ───────────────────────────────────── -->
+<div class="settings-panel" id="panel-notifications">
+<div class="settings-card">
+<div class="settings-card-head">
+<div class="settings-card-title">Email-уведомления</div>
+<div class="settings-card-desc">Управляйте тем, какие письма вы получаете от Waybound</div>
+</div>
+<div class="settings-card-body">
+<div class="toggle-row" style="opacity:.55;pointer-events:none">
+<div class="toggle-row-info">
+<div class="toggle-row-label">Письма о бронировании и поездке</div>
+<div class="toggle-row-desc">Подтверждения бронирования, напоминания, запросы отзывов и сообщения от гостей</div>
+</div>
+<div class="toggle-sw on"></div>
+</div>
+<div style="font-size:11.5px;color:var(--mu);font-family:var(--bf);margin:8px 0 14px;padding-left:2px">Это важные транзакционные письма и их нельзя отключить.</div>
+<div class="toggle-row">
+<div class="toggle-row-info">
+<div class="toggle-row-label">Маркетинг и акции</div>
+<div class="toggle-row-desc">Специальные предложения, новые туры, сезонные скидки и рассылка</div>
+</div>
+<div class="toggle-sw" id="toggleMarketing" onclick="toggleMarketingEmails()"></div>
+</div>
+<span class="save-feedback" id="notifFeedback" style="margin-top:8px">✓ Сохранено</span>
+</div>
+</div>
+<!-- Telegram (operators only) -->
+<div class="settings-card" id="telegramCard" style="display:none;margin-top:16px">
+<div class="settings-card-head">
+<div class="settings-card-title">Уведомления Telegram</div>
+<div class="settings-card-desc">Получайте мгновенные оповещения о бронировании и листе ожидания в Telegram</div>
+</div>
+<div class="settings-card-body">
+<div style="font-size:13px;color:var(--ink);font-family:var(--bf);line-height:1.6;margin-bottom:14px">
+            Подключите свой аккаунт Telegram, чтобы получать уведомления в реальном времени о новых бронированиях, отменах, платежах баланса и регистрациях в списке ожидания.<br/><br/>
+<strong>Как подключить:</strong>
+<ol style="margin:6px 0 0 18px;padding:0;font-size:13px;line-height:1.8">
+<li>Откройте Telegram и напишите <a href="https://t.me/waybound_bot" style="color:var(--ac)" target="_blank">@waybound_bot</a></li>
+<li>Отправить <code style="background:var(--su);padding:1px 5px;border-radius:3px">/start</code></li>
+<li>Скопируйте ваш Chat ID из ответа бота и вставьте ниже</li>
+</ol>
+</div>
+<div class="field-row">
+<label class="field-label">Ваш Telegram Chat ID</label>
+<input class="field-input" id="telegramChatId" placeholder="например 123456789" style="max-width:260px" type="text"/>
+</div>
+<div class="save-row" style="margin-top:12px">
+<button class="btn-save" onclick="saveTelegramChatId()">Сохранить Telegram ID</button>
+<span class="save-feedback" id="telegramFeedback">✓ Сохранено</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ▸ LANGUAGE ────────────────────────────────────────── -->
+<div class="settings-panel" id="panel-language">
+<div class="settings-card">
+<div class="settings-card-head">
+<div class="settings-card-title">Language / Язык</div>
+<div class="settings-card-sub">Выберите язык отображения для всех страниц.</div>
+</div>
+<div class="settings-card-body">
+<div style="display:flex;flex-direction:column;gap:10px;max-width:340px">
+<label id="langOptEn" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--ln);border-radius:10px;cursor:pointer;transition:border-color .15s;background:var(--tr-bg)">
+<input name="waybound_lang" style="accent-color:var(--ac);width:16px;height:16px;cursor:pointer" type="radio" value="en"/>
+<div>
+<div style="font-size:14px;font-weight:600;font-family:var(--bf);color:var(--ink)">English</div>
+<div style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:2px">Язык по умолчанию</div>
+</div>
+</label>
+<label id="langOptRu" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--ln);border-radius:10px;cursor:pointer;transition:border-color .15s;background:var(--tr-bg)">
+<input name="waybound_lang" style="accent-color:var(--ac);width:16px;height:16px;cursor:pointer" type="radio" value="ru"/>
+<div>
+<div style="font-size:14px;font-weight:600;font-family:var(--bf);color:var(--ink)">Русский</div>
+<div style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:2px">Русский</div>
+</div>
+</label>
+</div>
+<p style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:16px;max-width:340px;line-height:1.6">
+            Изменение языка перезагружает страницу на выбранном языке. Ваше предпочтение сохраняется автоматически.
           </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ▸ DANGER ZONE ─────────────────────────────────────── -->
-    <div class="settings-panel" id="panel-danger">
-      <div class="settings-card danger-zone-card">
-        <div class="settings-card-head">
-          <div class="settings-card-title" style="color:#c0392b">Delete account</div>
-          <div class="settings-card-desc">This action is permanent and cannot be undone</div>
-        </div>
-        <div class="settings-card-body">
-          <p style="font-size:13px;color:var(--ink);line-height:1.6;font-family:var(--bf);margin-bottom:18px;">
-            Deleting your account will permanently remove your profile, all booking history, saved tours and reviews. Any upcoming tours will be automatically cancelled.
+</div>
+</div>
+</div>
+<!-- ▸ DANGER ZONE ─────────────────────────────────────── -->
+<div class="settings-panel" id="panel-danger">
+<div class="settings-card danger-zone-card">
+<div class="settings-card-head">
+<div class="settings-card-title" style="color:#c0392b">Удалить аккаунт</div>
+<div class="settings-card-desc">Это действие необратимо и не может быть отменено</div>
+</div>
+<div class="settings-card-body">
+<p style="font-size:13px;color:var(--ink);line-height:1.6;font-family:var(--bf);margin-bottom:18px;">
+            Удаление вашего аккаунта будет безвозвратно удалено ваш профиль, всю историю бронирований, сохранённые туры и отзывы. Все предстоящие туры будут автоматически отменены.
           </p>
-          <div class="field-row">
-            <label class="field-label">Type <strong>DELETE</strong> to confirm</label>
-            <input class="field-input" id="deleteConfirm" type="text" placeholder="DELETE">
-          </div>
-          <button class="btn-danger" onclick="confirmDelete()" style="margin-top:4px">Delete my account permanently</button>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /settings-panels -->
+<div class="field-row">
+<label class="field-label">Введите <strong>DELETE</strong> для подтверждения</label>
+<input class="field-input" id="deleteConfirm" placeholder="DELETE" type="text"/>
+</div>
+<button class="btn-danger" onclick="confirmDelete()" style="margin-top:4px">Удалить мой аккаунт навсегда</button>
+</div>
+</div>
+</div>
+</div><!-- /settings-panels -->
 </div><!-- /settings-wrap -->
-
 <!-- ══ FOOTER ══ -->
 <footer>
-  <span>© 2026 Waybound. All rights reserved.</span>
-  <div style="display:flex;gap:18px">
-    <a href="privacy.html">Privacy</a>
-    <a href="terms.html">Terms</a>
-    <a href="help.html">Help</a>
-    <a href="contact.html">Contact</a>
-  </div>
+<span>© 2026 Waybound. Все права защищены.</span>
+<div style="display:flex;gap:18px">
+<a href="privacy_ru.html">Конфиденциальность</a>
+<a href="terms_ru.html">Условия</a>
+<a href="help_ru.html">Справка</a>
+<a href="contact_ru.html">Контакты</a>
+</div>
 </footer>
-
 <script>
 // ── Theme system ──────────────────────────────────────────────────────────────
-const THEMES={ocean:{name:'Deep Ocean',desc:'Cool blue, refined',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Light & Warm',desc:'White base, bright energy',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Ivory & Earthy',desc:'Warm parchment, handcrafted',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Parchment & Gold',desc:'Warm gold, sophisticated',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Forest & Sage',desc:'Muted green, natural feel',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Terracotta',desc:'Earthy red, bold warmth',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
+const THEMES={ocean:{name:'Глубокий океан',desc:'Холодный синий, утонченный',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Светлый и теплый',desc:'Белая база, яркая энергия',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Слоновая кость и земляной',desc:'Теплый пергамент, ручной работы',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Пергамент и золото',desc:'Теплое золото, изысканный',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Лес и шалфей',desc:'Приглушенный зеленый, естественный вид',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Терракота',desc:'Земляной красный, смелое тепло',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
 let current=localStorage.getItem('waybound-theme')||'ocean', pending=current;
 document.body.className=current;
 
@@ -789,7 +758,7 @@ function showPanel(name, btn) {
   // Mark bio as required for operators
   if (user.role === 'operator') {
     var bioLabel = document.getElementById('bioLabel');
-    if (bioLabel) bioLabel.textContent = 'About you *';
+    if (bioLabel) bioLabel.textContent = 'О вас *';
   }
 
   // Show operator-only nav items
@@ -915,7 +884,7 @@ function handleAvatarUpload(input) {
   if (!file) return;
   if (file.size > 2 * 1024 * 1024) {
     var msgEl = document.getElementById('avatarUploadMsg');
-    if (msgEl) { msgEl.textContent = 'File too large. Max 2 MB.'; msgEl.style.color = '#c0392b'; msgEl.style.display = 'block'; }
+    if (msgEl) { msgEl.textContent = 'Файл слишком большой. Максимум 2 МБ.'; msgEl.style.color = '#c0392b'; msgEl.style.display = 'block'; }
     return;
   }
   _pendingAvatarFile = file;
@@ -927,15 +896,15 @@ function handleAvatarUpload(input) {
   };
   reader.readAsDataURL(file);
   var msgEl = document.getElementById('avatarUploadMsg');
-  if (msgEl) { msgEl.textContent = 'Photo selected — click Save changes to apply.'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
+  if (msgEl) { msgEl.textContent = 'Фото выбрано — нажмите Сохранить изменения для применения.'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
 }
 
 // ── Remove avatar ─────────────────────────────────────────────────────────────
 async function removeAvatar() {
   var token = localStorage.getItem('waybound_access');
-  if (!token) { showToast('Please sign in to remove your photo.', 'error'); return; }
+  if (!token) { showToast('Пожалуйста, войдите, чтобы удалить фото.', 'error'); return; }
   var msgEl = document.getElementById('avatarUploadMsg');
-  if (msgEl) { msgEl.textContent = 'Removing…'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
+  if (msgEl) { msgEl.textContent = 'Удаление…'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
   try {
     var res = await fetch(window.API_V1 + '/auth/me/', {
       method: 'PATCH',
@@ -960,10 +929,10 @@ async function removeAvatar() {
     if (removeBtn) removeBtn.style.display = 'none';
     // Refresh nav avatar
     refreshNavAvatar();
-    if (msgEl) { msgEl.textContent = 'Photo removed.'; msgEl.style.color = 'var(--mu)'; }
+    if (msgEl) { msgEl.textContent = 'Фото удалено.'; msgEl.style.color = 'var(--mu)'; }
     setTimeout(function(){ if (msgEl) msgEl.style.display = 'none'; }, 3000);
   } catch(e) {
-    if (msgEl) { msgEl.textContent = 'Failed to remove photo. Please try again.'; msgEl.style.color = '#c0392b'; }
+    if (msgEl) { msgEl.textContent = 'Не удалось удалить фото. Пожалуйста, попробуйте снова.'; msgEl.style.color = '#c0392b'; }
   }
 }
 
@@ -991,7 +960,7 @@ function previewCredFiles(input) {
   if (!files || !files.length) return;
   for (var i = 0; i < files.length; i++) {
     if (files[i].size > 5 * 1024 * 1024) {
-      showToast(files[i].name + ' is too large (max 5 MB).', 'error');
+      showToast(files[i].name + 'слишком большой (максимум 5 МБ).', 'error');
       continue;
     }
     _pendingCredFiles.push(files[i]);
@@ -1021,9 +990,9 @@ function renderPendingCreds() {
 async function submitCredentials() {
   if (!_pendingCredFiles.length) return;
   var token = localStorage.getItem('waybound_access');
-  if (!token) { showToast('Please sign in first.', 'error'); return; }
+  if (!token) { showToast('Пожалуйста, сначала войдите.', 'error'); return; }
   var msgEl = document.getElementById('credUploadMsg');
-  if (msgEl) { msgEl.textContent = 'Submitting ' + _pendingCredFiles.length + ' file(s)…'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
+  if (msgEl) { msgEl.textContent = 'Отправка' + _pendingCredFiles.length + 'файла(ов)…'; msgEl.style.color = 'var(--mu)'; msgEl.style.display = 'block'; }
 
   var uploaded = 0;
   for (var i = 0; i < _pendingCredFiles.length; i++) {
@@ -1043,14 +1012,14 @@ async function submitCredentials() {
   document.getElementById('credPendingList').innerHTML = '';
   document.getElementById('credSubmitBtn').style.display = 'none';
   if (uploaded > 0) {
-    if (msgEl) { msgEl.textContent = uploaded + ' file(s) submitted!'; msgEl.style.color = 'var(--hb-tx)'; }
+    if (msgEl) { msgEl.textContent = uploaded + 'файл(а) отправлено!'; msgEl.style.color = 'var(--hb-tx)'; }
     document.getElementById('credIco').textContent = '✅';
-    document.getElementById('credTitle').textContent = 'Credentials submitted';
-    document.getElementById('credDesc').textContent = 'Our team will review your documents.';
+    document.getElementById('credTitle').textContent = 'Документы отправлены';
+    document.getElementById('credDesc').textContent = 'Наша команда проверит ваши документы.';
     fetchCredentialFiles();
-    showToast('Credentials submitted for review.', 'success');
+    showToast('Документы отправлены на проверку.', 'success');
   } else {
-    if (msgEl) { msgEl.textContent = 'Upload failed. Please try again.'; msgEl.style.color = '#c0392b'; }
+    if (msgEl) { msgEl.textContent = 'Загрузка не удалась. Пожалуйста, попробуйте снова.'; msgEl.style.color = '#c0392b'; }
   }
   setTimeout(function(){ if (msgEl) msgEl.style.display = 'none'; }, 4000);
 }
@@ -1071,12 +1040,12 @@ async function fetchCredentialFiles() {
 function updateCredStatus(files) {
   if (!files || !files.length) return;
   document.getElementById('credIco').textContent = '✅';
-  document.getElementById('credTitle').textContent = files.length + ' credential(s) uploaded';
-  document.getElementById('credDesc').textContent = 'Our team will review your documents.';
+  document.getElementById('credTitle').textContent = files.length + 'документ(а) загружено';
+  document.getElementById('credDesc').textContent = 'Наша команда проверит ваши документы.';
   var list = document.getElementById('credFilesList');
   if (list) {
     list.innerHTML = files.map(function(f) {
-      var name = f.original_name || f.file_name || 'Document';
+      var name = f.original_name || f.file_name || 'Документ';
       return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--ln);font-size:13px;font-family:var(--bf)">'
         + '<span>📄</span><span style="color:var(--ink)">' + name + '</span>'
         + '</div>';
@@ -1087,7 +1056,7 @@ function updateCredStatus(files) {
 // ── Payout save ──────────────────────────────────────────────────────────────
 async function savePayout() {
   var token = localStorage.getItem('waybound_access');
-  if (!token) { showToast('Please sign in first.', 'error'); return; }
+  if (!token) { showToast('Пожалуйста, сначала войдите.', 'error'); return; }
 
   var name = document.getElementById('payoutName').value.trim();
   var bank = document.getElementById('payoutBank').value.trim();
@@ -1095,7 +1064,7 @@ async function savePayout() {
   var bik = document.getElementById('payoutBik').value.trim();
 
   if (!name || !bank || !account || !bik) {
-    showToast('Please fill in all required payout fields.', 'error');
+    showToast('Пожалуйста, заполните все обязательные поля для выплаты.', 'error');
     return;
   }
 
@@ -1121,14 +1090,14 @@ async function savePayout() {
     localStorage.setItem('waybound_user', JSON.stringify(user));
     showFeedback('payoutFeedback');
   } catch(e) {
-    showToast('Failed to save payout details. Please try again.', 'error');
+    showToast('Не удалось сохранить данные выплаты. Пожалуйста, попробуйте снова.', 'error');
   }
 }
 
 // ── Save handlers ─────────────────────────────────────────────────────────────
 async function saveProfile() {
   var token = localStorage.getItem('waybound_access');
-  if (!token) { showToast('Please sign in first.', 'error'); return; }
+  if (!token) { showToast('Пожалуйста, сначала войдите.', 'error'); return; }
 
   // If there's a pending avatar, upload it first via FormData
   if (_pendingAvatarFile) {
@@ -1208,12 +1177,12 @@ async function changePassword() {
   var cur = document.getElementById('currentPw').value;
   var nw  = document.getElementById('newPw').value;
   var cf  = document.getElementById('confirmPw').value;
-  if (!cur) { showPwError('Please enter your current password.'); return; }
-  if (!nw)  { showPwError('Please enter a new password.'); return; }
-  if (nw.length < 8) { showPwError('New password must be at least 8 characters.'); return; }
-  if (nw !== cf) { showPwError('Passwords do not match — please re-enter the new password in both fields.'); return; }
+  if (!cur) { showPwError('Пожалуйста, введите ваш текущий пароль.'); return; }
+  if (!nw)  { showPwError('Пожалуйста, введите новый пароль.'); return; }
+  if (nw.length < 8) { showPwError('Новый пароль должен содержать не менее 8 символов.'); return; }
+  if (nw !== cf) { showPwError('Пароли не совпадают — пожалуйста, повторно введите новый пароль в обоих полях.'); return; }
   var token = localStorage.getItem('waybound_access');
-  if (!token) { showToast('Please sign in first.', 'error'); return; }
+  if (!token) { showToast('Пожалуйста, сначала войдите.', 'error'); return; }
   try {
     var res = await fetch(window.API_V1 + '/auth/change-password/', {
       method: 'POST',
@@ -1226,7 +1195,7 @@ async function changePassword() {
       var msg = data.current_password ? _pick(data.current_password)
               : data.new_password     ? _pick(data.new_password)
               : data.detail           ? data.detail
-              : 'Failed to update password. Please try again.';
+              : 'Не удалось обновить пароль. Пожалуйста, попробуйте снова.';
       showPwError(msg);
       return;
     }
@@ -1235,9 +1204,9 @@ async function changePassword() {
     document.getElementById('newPw').value = '';
     document.getElementById('confirmPw').value = '';
     document.getElementById('pwBar').style.width = '0';
-    document.getElementById('pwHint').textContent = 'Enter a new password';
+    document.getElementById('pwHint').textContent = 'Введите новый пароль';
   } catch(e) {
-    showToast('Cannot connect to server.', 'error');
+    showToast('Не удается подключиться к серверу.', 'error');
   }
 }
 
@@ -1253,10 +1222,10 @@ function updatePwStrength(pw) {
   if (/[^A-Za-z0-9]/.test(pw)) score++;
   var pct  = Math.min(score * 20, 100);
   var clr  = score <= 2 ? '#e74c3c' : score <= 3 ? '#f39c12' : '#27ae60';
-  var label= score <= 2 ? 'Weak' : score <= 3 ? 'Moderate' : 'Strong';
+  var label= score <= 2 ? 'Слабый' : score <= 3 ? 'Средний' : 'Сильный';
   bar.style.width = pct + '%';
   bar.style.background = clr;
-  if (hint) hint.textContent = pw ? label + ' password' : 'Enter a new password';
+  if (hint) hint.textContent = pw ? label + ' password' : 'Введите новый пароль';
 }
 
 function connectSocial(provider) {
@@ -1271,7 +1240,7 @@ function previewVerifyDoc(input) {
   var file = input.files && input.files[0];
   if (!file) return;
   if (file.size > 5 * 1024 * 1024) {
-    showToast('File too large. Max 5 MB.', 'error'); input.value = ''; return;
+    showToast('Файл слишком большой. Максимум 5 МБ.', 'error'); input.value = ''; return;
   }
   _pendingVerifyFile = file;
   // Show file name and preview
@@ -1300,9 +1269,9 @@ function cancelVerifyDoc() {
 async function submitVerifyDoc() {
   if (!_pendingVerifyFile) return;
   var token = localStorage.getItem('waybound_access');
-  if (!token) { showToast('Please sign in first.', 'error'); return; }
+  if (!token) { showToast('Пожалуйста, сначала войдите.', 'error'); return; }
   var msgEl = document.getElementById('verifyUploadMsg');
-  if (msgEl) { msgEl.textContent = 'Submitting...'; msgEl.style.display = 'inline'; msgEl.style.color = 'var(--mu)'; }
+  if (msgEl) { msgEl.textContent = 'Отправка…'; msgEl.style.display = 'inline'; msgEl.style.color = 'var(--mu)'; }
   var fd = new FormData();
   fd.append('document', _pendingVerifyFile);
   try {
@@ -1313,7 +1282,7 @@ async function submitVerifyDoc() {
     });
     if (!res.ok) {
       var data = await res.json();
-      showToast(data.detail || 'Upload failed.', 'error');
+      showToast(data.detail || 'Загрузка не удалась.', 'error');
       if (msgEl) msgEl.style.display = 'none';
       return;
     }
@@ -1322,11 +1291,11 @@ async function submitVerifyDoc() {
     document.getElementById('verifyCancelBtn').style.display = 'none';
     document.getElementById('verifySubmitBtn').style.display = 'none';
     document.getElementById('verifyPreview').style.display = 'none';
-    if (msgEl) { msgEl.textContent = 'Submitted! Under review.'; msgEl.style.color = 'var(--hb-tx)'; }
+    if (msgEl) { msgEl.textContent = 'Отправлено! На рассмотрении.'; msgEl.style.color = 'var(--hb-tx)'; }
     updateVerifyStatus('pending');
-    showToast('Document submitted for review. We will review within 48 hours.', 'success');
+    showToast('Документ отправлен на проверку. Мы проверим его в течение 48 часов.', 'success');
   } catch(e) {
-    showToast('Cannot connect to server.', 'error');
+    showToast('Не удается подключиться к серверу.', 'error');
     if (msgEl) msgEl.style.display = 'none';
   }
 }
@@ -1340,36 +1309,36 @@ function updateVerifyStatus(st) {
   if (!ico) return;
   if (st === 'approved') {
     ico.textContent = '✅';
-    title.textContent = 'Verified';
-    desc.textContent = 'Your identity has been verified. You can publish tours.';
+    title.textContent = 'Проверено';
+    desc.textContent = 'Ваша личность подтверждена. Вы можете публиковать туры.';
     card.style.borderColor = 'var(--hb-bd)';
     card.style.background = 'var(--hb-bg)';
     if (upload) upload.style.display = 'none';
   } else if (st === 'pending') {
     ico.textContent = '⏳';
-    title.textContent = 'Under review';
-    desc.textContent = 'Your document is being reviewed. This usually takes up to 48 hours.';
+    title.textContent = 'На рассмотрении';
+    desc.textContent = 'Ваш документ проверяется. Обычно это занимает до 48 часов.';
     card.style.borderColor = 'var(--ha-bd)';
     card.style.background = 'var(--ha-bg)';
     if (upload) upload.style.display = 'none';
   } else if (st === 'rejected') {
     ico.textContent = '❌';
-    title.textContent = 'Rejected';
-    desc.textContent = 'Your document was not accepted. Please resubmit a clearer photo.';
+    title.textContent = 'Отклонено';
+    desc.textContent = 'Ваш документ не был принят. Пожалуйста, отправьте более четкое фото.';
     card.style.borderColor = '#e0a0a0';
     card.style.background = '#fef0ee';
     if (upload) upload.style.display = '';
   } else {
     ico.textContent = '📋';
-    title.textContent = 'Not yet submitted';
-    desc.textContent = 'Upload an ID document to get verified and start publishing tours.';
+    title.textContent = 'Еще не отправлено';
+    desc.textContent = 'Загрузите документ, удостоверяющий личность, чтобы пройти верификацию и начать публиковать туры.';
     if (upload) upload.style.display = '';
   }
 }
 
 async function confirmDelete() {
   var val = document.getElementById('deleteConfirm').value;
-  if (val !== 'DELETE') { showToast('Please type DELETE to confirm.', 'error'); return; }
+  if (val !== 'DELETE') { showToast('Пожалуйста, введите DELETE для подтверждения.', 'error'); return; }
   var token = localStorage.getItem('waybound_access');
   if (token) {
     try {
@@ -1382,14 +1351,14 @@ async function confirmDelete() {
   localStorage.removeItem('waybound_access');
   localStorage.removeItem('waybound_refresh');
   localStorage.removeItem('waybound_user');
-  showToast('Account deactivated. Redirecting...', 'info');
-  setTimeout(function() { window.location.href = 'waybound.html'; }, 1500);
+  showToast('Аккаунт деактивирован. Перенаправление...', 'info');
+  setTimeout(function() { window.location.href = 'waybound_ru.html'; }, 1500);
 }
 
 // ── Telegram Chat ID save ─────────────────────────────────────────────────────
 async function saveTelegramChatId() {
   var token = localStorage.getItem('waybound_access');
-  if (!token) { showToast('Please sign in first.', 'error'); return; }
+  if (!token) { showToast('Пожалуйста, сначала войдите в систему.', 'error'); return; }
   var chatId = (document.getElementById('telegramChatId').value || '').trim();
   try {
     var res = await fetch(window.API_V1 + '/auth/me/', {
@@ -1404,10 +1373,10 @@ async function saveTelegramChatId() {
       localStorage.setItem('waybound_user', JSON.stringify(user));
       showFeedback('telegramFeedback');
     } else {
-      showToast('Failed to save. Please try again.', 'error');
+      showToast('Ошибка сохранения. Пожалуйста, попробуйте еще раз.', 'error');
     }
   } catch(e) {
-    showToast('Network error. Please try again.', 'error');
+    showToast('Ошибка сети. Пожалуйста, попробуйте еще раз.', 'error');
   }
 }
 
@@ -1452,18 +1421,18 @@ async function loadSocialConnections() {
       var st  = document.getElementById(p + 'Status');
       if (!btn) return;
       if (providers[p]) {
-        btn.textContent = 'Disconnect';
+        btn.textContent = 'Отключить';
         btn.className = 'btn-conn disconnect';
         btn.onclick = function() { disconnectSocial(p); };
         if (st) {
-          st.textContent = 'Connected' + (providers[p].email ? ' · ' + providers[p].email : '');
+          st.textContent = 'Подключено' + (providers[p].email ? ' · ' + providers[p].email : '');
           st.className = 'conn-status connected';
         }
       } else {
-        btn.textContent = 'Connect';
+        btn.textContent = 'Подключить';
         btn.className = 'btn-conn connect';
         btn.onclick = function() { connectSocial(p); };
-        if (st) { st.textContent = 'Not connected'; st.className = 'conn-status'; }
+        if (st) { st.textContent = 'Не подключено'; st.className = 'conn-status'; }
       }
     });
   } catch(e) {}
@@ -1472,7 +1441,7 @@ async function loadSocialConnections() {
 async function disconnectSocial(provider) {
   var token = localStorage.getItem('waybound_access');
   if (!token) return;
-  if (!confirm('Disconnect ' + provider.charAt(0).toUpperCase() + provider.slice(1) + '?')) return;
+  if (!confirm('Отключить' + provider.charAt(0).toUpperCase() + provider.slice(1) + '?')) return;
   try {
     var res = await fetch(window.API_V1 + '/auth/social/connections/' + provider + '/', {
       method: 'DELETE',
@@ -1480,13 +1449,13 @@ async function disconnectSocial(provider) {
     });
     if (!res.ok) {
       var data = await res.json();
-      showToast(data.detail || 'Cannot disconnect.', 'error');
+      showToast(data.detail || 'Невозможно отключиться.', 'error');
       return;
     }
     loadSocialConnections();
-    showToast(provider.charAt(0).toUpperCase() + provider.slice(1) + ' disconnected.', 'success');
+    showToast(provider.charAt(0).toUpperCase() + provider.slice(1) + 'отключено.', 'success');
   } catch(e) {
-    showToast('Cannot connect to server.', 'error');
+    showToast('Невозможно подключиться к серверу.', 'error');
   }
 }
 

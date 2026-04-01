@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>About Us — Waybound</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&amp;family=DM+Sans:wght@300;400;500;600&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Outfit:wght@300;400;500;600&amp;family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&amp;family=Space+Grotesk:wght@400;500;600&amp;display=swap"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-font-smoothing:antialiased}
@@ -263,7 +264,6 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 </style>
 </head>
 <body class="ocean">
-
 <!-- PHOTO LIGHTBOX -->
 <div class="lb-backdrop" id="lbBackdrop" onclick="lbClose()">
   <span class="lb-close" onclick="lbClose()">✕</span>
@@ -272,47 +272,43 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 
 <!-- SETTINGS DRAWER -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
-  <div class="drawer">
-    <div class="drawer-head"><div class="drawer-title">Appearance</div><button class="drawer-close" onclick="closeSettings()">✕</button></div>
-    <div class="drawer-body"><div class="d-section-label">Choose your theme</div><div class="theme-grid" id="themeGrid"></div><button class="drawer-apply" onclick="applyPending()">Apply theme</button><div class="drawer-divider"></div><p class="drawer-note">Your choice is saved locally and remembered on your next visit.</p></div>
-  </div>
+<div class="drawer">
+<div class="drawer-head"><div class="drawer-title">Внешний вид</div><button class="drawer-close" onclick="closeSettings()">✕</button></div>
+<div class="drawer-body"><div class="d-section-label">Выберите тему</div><div class="theme-grid" id="themeGrid"></div><button class="drawer-apply" onclick="applyPending()">Применить тему</button><div class="drawer-divider"></div><p class="drawer-note">Ваш выбор сохранён локально и будет восстановлен при следующем посещении.</p></div>
 </div>
-
+</div>
 <!-- NAV -->
 <nav class="nav">
-  <a class="logo" href="waybound.html"><div class="logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound</a>
-  <div class="nav-search">🔍 Where to go?</div>
-  <div class="nav-links"><a class="nav-link" href="adventures.html">Adventures</a><a class="nav-link" href="how-it-works.html">How it works</a><a class="nav-link" href="about.html">About</a><a class="nav-link" href="help.html">Help</a><a class="nav-link" href="contact.html">Contact</a></div>
-      <div class="nav-r nav-r-wrap">
-    <button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin.html'">Sign in / Sign up</button>
-    <a class="btn-ac-sm" href="operator.html" style="text-decoration:none" id="navListTourBtn">List a tour</a>
-    <div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" title="My account" style="display:none"></div>
-    <div class="nav-dropdown" id="navDropdown"></div>
-  </div>
+<a class="logo" href="waybound_ru.html"><div class="logo-mark"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>Waybound</a>
+<div class="nav-search">🔍 Куда отправиться?</div>
+<div class="nav-links"><a class="nav-link" href="adventures_ru.html">Приключения</a><a class="nav-link" href="how-it-works_ru.html">Как это работает</a><a class="nav-link" href="about_ru.html">О нас</a><a class="nav-link" href="help_ru.html">Справка</a><a class="nav-link" href="contact_ru.html">Контакты</a></div>
+<div class="nav-r nav-r-wrap">
+<button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin_ru.html'">Вход / Регистрация</button>
+<a class="btn-ac-sm" href="operator_ru.html" id="navListTourBtn" style="text-decoration:none">Добавить тур</a>
+<div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" style="display:none" title="Мой аккаунт"></div>
+<div class="nav-dropdown" id="navDropdown"></div>
+</div>
 </nav>
-
 <!-- HERO -->
 <div class="about-hero">
-  <div class="ah-eyebrow">✦ Our story</div>
-  <h1 class="ah-title">We believe travel is better with <em>real people</em></h1>
-  <p class="ah-sub">Waybound was born from a simple idea: the best adventures happen when you travel with someone who truly knows the place. We connect curious travelers with expert local guides across Central Asia &amp; the Caucasus.</p>
-  <div class="ah-cta">
-    <button class="btn-white" onclick="window.location.href='adventures.html'">Browse adventures</button>
-    <button class="btn-ghost-white" onclick="document.querySelector('.team').scrollIntoView({behavior:'smooth'})">Meet the team ↓</button>
-  </div>
+<div class="ah-eyebrow">✦ Наша история</div>
+<h1 class="ah-title">Мы верим, что путешествия лучше с <em>настоящими людьми</em></h1>
+<p class="ah-sub">Waybound родился из простой идеи: лучшие приключения случаются, когда вы путешествуете с тем, кто действительно знает место. Мы соединяем любознательных путешественников с опытными местными гидами по Центральной Азии и Кавказу.</p>
+<div class="ah-cta">
+<button class="btn-white" onclick="window.location.href='adventures_ru.html'">Смотреть приключения</button>
+<button class="btn-ghost-white" onclick="document.querySelector('.team').scrollIntoView({behavior:'smooth'})">Познакомьтесь с командой ↓</button>
 </div>
-
+</div>
 <!-- STATS -->
 <div class="stats-band">
-  <div class="stat"><div class="stat-n">4</div><div class="stat-l">Countries</div></div>
-  <div class="stat"><div class="stat-n">100%</div><div class="stat-l">Local guides</div></div>
-  <div class="stat"><div class="stat-n">Max 15</div><div class="stat-l">Per group</div></div>
-  <div class="stat"><div class="stat-n">Secure</div><div class="stat-l">Booking</div></div>
+<div class="stat"><div class="stat-n">4</div><div class="stat-l">Страны</div></div>
+<div class="stat"><div class="stat-n">100%</div><div class="stat-l">Местные гиды</div></div>
+<div class="stat"><div class="stat-n">Максимум 15</div><div class="stat-l">На группу</div></div>
+<div class="stat"><div class="stat-n">Безопасное</div><div class="stat-l">бронирование</div></div>
 </div>
-
 <!-- STORY -->
 <div class="story">
-  <div class="story-img"><img src="img/about_tours/sea_of_clouds.jpg" alt="sea_of_clouds" style="width:200%;height:200%;object-fit:cover"><div class="story-img-badge">📍Gomismta, Georgia — where it started</div></div>
+<div class="story-img"><img src="img/about_tours/sea_of_clouds.jpg" alt="sea_of_clouds" style="width:200%;height:200%;object-fit:cover"><div class="story-img-badge">📍 Тбилиси, Грузия — где всё началось</div></div>
   <div>
     <div class="story-eyebrow">The founder's story</div>
     <h2 class="story-title">A trip that <em>changed everything</em></h2>
@@ -322,21 +318,19 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
     <div class="story-sig">— Lil Phoenix, Founder & CEO</div>
   </div>
 </div>
-
 <!-- BELIEFS -->
 <div class="beliefs">
-  <div class="beliefs-inner">
-    <div class="section-eyebrow">What we stand for</div>
-    <h2 class="section-title">Our <em>beliefs</em></h2>
-    <div class="beliefs-grid">
-      <div class="belief-card"><div class="belief-icon">🌱</div><h3 class="belief-h">Local first, always</h3><p class="belief-p">Every guide on Waybound is a local expert — someone who grew up in the place, speaks the language, and has relationships that no travel agency can replicate.</p></div>
-      <div class="belief-card"><div class="belief-icon">👥</div><h3 class="belief-h">Small groups, big experiences</h3><p class="belief-p">We cap every group at 15 people. Travel should feel intimate, not like herding cattle through a museum. Smaller groups mean better conversations, more flexibility, and real connection.</p></div>
-      <div class="belief-card"><div class="belief-icon">🤝</div><h3 class="belief-h">Fair pay for guides</h3><p class="belief-p">We take a transparent commission and pay guides promptly. We don't believe in squeezing the people who make the magic happen. When guides thrive, travelers get better experiences.</p></div>
-      <div class="belief-card"><div class="belief-icon">🌍</div><h3 class="belief-h">Travel that gives back</h3><p class="belief-p">1% of every booking goes into our local impact fund, supporting community projects in the destinations we serve. Travel should leave places better than we found them.</p></div>
-    </div>
-  </div>
+<div class="beliefs-inner">
+<div class="section-eyebrow">За что мы стоим</div>
+<h2 class="section-title">Наши <em>принципы</em></h2>
+<div class="beliefs-grid">
+<div class="belief-card"><div class="belief-icon">🌱</div><h3 class="belief-h">Местное всегда на первом месте</h3><p class="belief-p">Каждый гид на Waybound — местный эксперт, человек, выросший в этом месте, говорящий на местном языке и имеющий связи, которые не сможет скопировать ни одно туристическое агентство.</p></div>
+<div class="belief-card"><div class="belief-icon">👥</div><h3 class="belief-h">Маленькие группы, большие впечатления</h3><p class="belief-p">Мы ограничиваем каждую группу 15 людьми. Путешествие должно быть интимным, а не походить на прогон скота через музей. Маленькие группы означают лучшие беседы, большую гибкость и настоящую связь.</p></div>
+<div class="belief-card"><div class="belief-icon">🤝</div><h3 class="belief-h">Справедливая оплата для гидов</h3><p class="belief-p">Мы берём прозрачную комиссию и платим гидам вовремя. Мы не верим в выжимание людей, которые создают волшебство. Когда гиды процветают, путешественники получают лучший опыт.</p></div>
+<div class="belief-card"><div class="belief-icon">🌍</div><h3 class="belief-h">Путешествия, которые приносят пользу</h3><p class="belief-p">1% от каждого бронирования идёт в наш фонд локального воздействия, поддерживая общественные проекты в местах, где мы работаем. Путешествия должны оставлять места лучше, чем мы их нашли.</p></div>
 </div>
-
+</div>
+</div>
 <!-- TEAM -->
 <div class="team">
   <div class="section-eyebrow">The people behind Waybound</div>
@@ -353,11 +347,10 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
     <div class="team-card"><div class="team-photo" style="overflow:hidden;padding:0"><img src="img/team/Puppy Face.jpg" alt="Puppy Face" style="width:150%;height:150%;object-fit:cover"></div><div class="team-name"><b>Puppy Face</b><br><i>The Office Emotional Support Animal</i></div><div class="team-role"> He doesn't actually have a job description; he just walks around being "precious."</div><div class="team-country">Remote</div></div>
   </div>
 </div>
-
 <!-- GALLERY -->
 <div class="gallery">
-  <div class="gallery-inner">
-    <h2 class="gallery-title">Adventures from our <em>community</em></h2>
+<div class="gallery-inner">
+<h2 class="gallery-title">Приключения от нашего <em>сообщества</em></h2>
     <div class="gallery-grid">
       <div class="gp" onclick="lbOpen('img/about_tours/u1.jpg')"><img src="img/about_tours/u1.jpg" alt="u1" style="width:100%;height:100%;object-fit:cover"><div class="gp-overlay"><span>🔍</span></div></div>
       <div class="gp" onclick="lbOpen('img/about_tours/far_east.jpg')"><img src="img/about_tours/far_east.jpg" alt="far_east" style="width:100%;height:100%;object-fit:cover"><div class="gp-overlay"><span>🔍</span></div></div>
@@ -365,62 +358,58 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
       <div class="gp" onclick="lbOpen('img/about_tours/p1.jpg')"><img src="img/about_tours/p1.jpg" alt="p1" style="width:100%;height:100%;object-fit:cover"><div class="gp-overlay"><span>🔍</span></div></div>
       <div class="gp" onclick="lbOpen('img/about_tours/a2.jpg')"><img src="img/about_tours/a2.jpg" alt="a2" style="width:100%;height:100%;object-fit:cover"><div class="gp-overlay"><span>🔍</span></div></div>
     </div>
-  </div>
 </div>
-
-
+</div>
 <!-- JOIN CTA -->
 <div class="join-cta">
-  <h2 class="jc-title">Ready for your next <em>adventure?</em></h2>
-  <p class="jc-sub">Join 300,000+ travelers who have discovered the world through the eyes of a local.</p>
-  <div class="jc-btns">
-    <button class="btn-primary" onclick="window.location.href='adventures.html'">Browse all adventures</button>
-    <button class="btn-outline" onclick="window.location.href='operator.html'">Become a guide →</button>
-  </div>
+<h2 class="jc-title">Готовы к следующему <em>приключению?</em></h2>
+<p class="jc-sub">Присоединитесь к 300 000+ путешественникам, которые открыли мир глазами местного жителя.</p>
+<div class="jc-btns">
+<button class="btn-primary" onclick="window.location.href='adventures_ru.html'">Просмотреть все приключения</button>
+<button class="btn-outline" onclick="window.location.href='operator_ru.html'">Стать гидом &amp;rarr;</button>
 </div>
-
+</div>
 <!-- FOOTER -->
 <footer class="footer">
-  <div class="foot-grid">
-    <div>
-      <div class="foot-logo">
-        <div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound
+<div class="foot-grid">
+<div>
+<div class="foot-logo">
+<div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>waybound
       </div>
-      <div class="foot-desc">Connecting bold travelers with local experts. Central Asia &amp; Caucasus specialists, small groups always.</div>
-    </div>
-    <div>
-      <div class="foot-col-h">Explore</div>
-      <a class="foot-link" href="adventures.html">All adventures</a>
-      <a class="foot-link" href="how-it-works.html">How it works</a>
-      <a class="foot-link" href="small-group-benefits.html">Small group benefits</a>
-      <a class="foot-link" href="reviews.html">Traveler reviews</a>
-    </div>
-    <div>
-      <div class="foot-col-h">Company</div>
-      <a class="foot-link" href="about.html">About us</a>
-      <a class="foot-link" href="help.html">Help center</a>
-      <a class="foot-link" href="contact.html">Contact us</a>
-      <a class="foot-link" href="operator.html">List a tour</a>
-    </div>
-    <div>
-      <div class="foot-col-h">Legal</div>
-      <a class="foot-link" href="trust-safety.html">Trust &amp; Safety</a>
-      <a class="foot-link" href="terms.html">Terms of use</a>
-      <a class="foot-link" href="terms-experts.html">Terms for guides</a>
-      <a class="foot-link" href="privacy.html">Privacy policy</a>
-    </div>
-  </div>
-  <div class="foot-bottom">
-    <div class="foot-copy">© 2026 Waybound.com</div>
-    <div class="foot-soc">
-      <div class="soc-btn">𝕏</div><div class="soc-btn">◎</div><div class="soc-btn">𝔽</div>
-    </div>
-  </div>
+<div class="foot-desc">Соединяем смелых путешественников с местными экспертами. Специалисты по Центральной Азии и Кавказу, всегда небольшие группы.</div>
+</div>
+<div>
+<div class="foot-col-h">Исследовать</div>
+<a class="foot-link" href="adventures_ru.html">Все приключения</a>
+<a class="foot-link" href="how-it-works_ru.html">Как это работает</a>
+<a class="foot-link" href="small-group-benefits_ru.html">Преимущества небольших групп</a>
+<a class="foot-link" href="reviews_ru.html">Отзывы путешественников</a>
+</div>
+<div>
+<div class="foot-col-h">Компания</div>
+<a class="foot-link" href="about_ru.html">О нас</a>
+<a class="foot-link" href="help_ru.html">Справочный центр</a>
+<a class="foot-link" href="contact_ru.html">Свяжитесь с нами</a>
+<a class="foot-link" href="operator_ru.html">Добавить тур</a>
+</div>
+<div>
+<div class="foot-col-h">Правовая информация</div>
+<a class="foot-link" href="trust-safety_ru.html">Доверие и безопасность</a>
+<a class="foot-link" href="terms_ru.html">Условия использования</a>
+<a class="foot-link" href="terms-experts_ru.html">Условия для гидов</a>
+<a class="foot-link" href="privacy_ru.html">Политика конфиденциальности</a>
+</div>
+</div>
+<div class="foot-bottom">
+<div class="foot-copy">© 2026 Waybound.com</div>
+<div class="foot-soc">
+<div class="soc-btn">𝕏</div><div class="soc-btn">◎</div><div class="soc-btn">𝔽</div>
+</div>
+</div>
 </footer>
-
 <script>
 
-const THEMES={ocean:{name:'Deep Ocean',desc:'Cool blue, refined',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Light & Warm',desc:'White base, bright energy',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Ivory & Earthy',desc:'Warm parchment, handcrafted',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Parchment & Gold',desc:'Warm gold, sophisticated',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Forest & Sage',desc:'Muted green, natural feel',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Terracotta',desc:'Earthy red, bold warmth',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
+const THEMES={ocean:{name:'Глубокий океан',desc:'Холодный синий, утонченный',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Светлое и теплое',desc:'Белая основа, яркая энергия',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Слоновая кость и земля',desc:'Теплый пергамент, ручная работа',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Пергамент и золото',desc:'Теплое золото, изысканность',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Лес и шалфей',desc:'Приглушенный зеленый, естественный вид',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Терракота',desc:'Землистый красный, смелое тепло',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
 let current=localStorage.getItem('waybound-theme')||'ocean', pending=current;
 document.body.className=current;
 function renderGrid(){document.getElementById('themeGrid').innerHTML=Object.entries(THEMES).map(([k,d])=>`<div class="th-opt${k===current?' sel':''}" data-k="${k}" onclick="previewTheme('${k}')"><div class="th-check">✓</div><div class="th-swatches">${d.sw.map(s=>`<div class="th-sw" style="background:${s}"></div>`).join('')}</div><div class="th-name">${d.name}</div><div class="th-desc">${d.desc}</div>${d.def?`<span class="th-default-tag">★ Default</span>`:''}</div>`).join('');}

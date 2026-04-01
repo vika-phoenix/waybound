@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Operator Dashboard &mdash; Waybound</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300..700&family=Playfair+Display:ital,wght@0,400..900;1,400..700&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap" rel="stylesheet">
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Operator Dashboard — Waybound</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&amp;family=Space+Grotesk:wght@300..700&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..700&amp;family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&amp;display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
@@ -686,255 +687,227 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 <script src="config.js"></script>
 </head>
 <body class="ocean">
-
-<div class="overlay" id="overlay" onclick="overlayClick(event)"><div class="drawer"><div class="drawer-head"><div class="drawer-title">Appearance</div><button class="drawer-close" onclick="closeSettings()">&#x2715;</button></div><div class="drawer-body"><div class="d-section-label">Choose your theme</div><div class="theme-grid" id="themeGrid"></div><button class="drawer-apply" onclick="applyPending()">Apply theme</button><div class="drawer-divider"></div><p class="drawer-note">Your choice is saved locally.</p></div></div></div>
-
+<div class="overlay" id="overlay" onclick="overlayClick(event)"><div class="drawer"><div class="drawer-head"><div class="drawer-title">Внешний вид</div><button class="drawer-close" onclick="closeSettings()">✕</button></div><div class="drawer-body"><div class="d-section-label">Выберите тему</div><div class="theme-grid" id="themeGrid"></div><button class="drawer-apply" onclick="applyPending()">Применить тему</button><div class="drawer-divider"></div><p class="drawer-note">Ваш выбор сохранен локально.</p></div></div></div>
 <nav class="nav">
-  <a class="logo" href="waybound.html"><div class="logo-mark" id="lm"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound</a>
-  <div class="nav-search"><span style="padding:0 10px;font-size:13px;flex-shrink:0">🔍</span><input id="navSearchInput" type="text" placeholder="Where to go?" autocomplete="off" style="background:none;border:none;outline:none;width:100%;padding:7px 14px 7px 0;font-size:12px;color:rgba(255,255,255,.7);font-family:var(--bf);" onkeydown="if(event.key==='Enter'){var q=this.value.trim();if(q)window.location.href='adventures.html?q='+encodeURIComponent(q);}"></div>
-  <div class="nav-links"><a class="nav-link" href="adventures.html">Adventures</a><a class="nav-link" href="how-it-works.html">How it works</a><a class="nav-link" href="about.html">About</a><a class="nav-link" href="help.html">Help</a><a class="nav-link" href="contact.html">Contact</a></div>
-  <div class="nav-r nav-r-wrap"><button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin.html'">Sign in / Sign up</button><a class="btn-ac-sm" href="operator.html" style="text-decoration:none" id="navListTourBtn">List a tour</a><div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" title="My account" style="display:none"></div><div class="nav-dropdown" id="navDropdown"></div></div>
+<a class="logo" href="waybound_ru.html"><div class="logo-mark" id="lm"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>Waybound</a>
+<div class="nav-search"><span style="padding:0 10px;font-size:13px;flex-shrink:0">🔍</span><input autocomplete="off" id="navSearchInput" onkeydown="if(event.key==='Enter'){var q=this.value.trim();if(q)window.location.href='adventures.html?q='+encodeURIComponent(q);}" placeholder="Куда вы хотите отправиться?" style="background:none;border:none;outline:none;width:100%;padding:7px 14px 7px 0;font-size:12px;color:rgba(255,255,255,.7);font-family:var(--bf);" type="text"/></div>
+<div class="nav-links"><a class="nav-link" href="adventures_ru.html">Приключения</a><a class="nav-link" href="how-it-works_ru.html">Как это работает</a><a class="nav-link" href="about_ru.html">О сервисе</a><a class="nav-link" href="help_ru.html">Справка</a><a class="nav-link" href="contact_ru.html">Контакты</a></div>
+<div class="nav-r nav-r-wrap"><button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin_ru.html'">Вход / Регистрация</button><a class="btn-ac-sm" href="operator_ru.html" id="navListTourBtn" style="text-decoration:none">Разместить тур</a><div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" style="display:none" title="Мой аккаунт"></div><div class="nav-dropdown" id="navDropdown"></div></div>
 </nav>
-
-
 <div class="auth-wall" id="authWall" style="display:none">
-  <div class="auth-wall-ico">&#x1F512;</div>
-  <div class="auth-wall-title">Sign in to your operator account</div>
-  <div class="auth-wall-sub">Manage your tours, view bookings, track earnings and respond to reviews.</div>
-  <div class="auth-wall-btns">
-    <a class="btn-primary" href="signin.html">Sign in</a>
-    <a class="btn-outline" href="signup-operator.html">Create operator account</a>
-  </div>
+<div class="auth-wall-ico">🔒</div>
+<div class="auth-wall-title">Войдите в свой аккаунт оператора</div>
+<div class="auth-wall-sub">Управляйте турами, просматривайте бронирования, отслеживайте доход и отвечайте на отзывы.</div>
+<div class="auth-wall-btns">
+<a class="btn-primary" href="signin_ru.html">Вход</a>
+<a class="btn-outline" href="signup-operator_ru.html">Создать аккаунт оператора</a>
 </div>
-
+</div>
 <div class="role-wall" id="roleWall" style="display:none">
-  <div style="font-size:44px;margin-bottom:14px">&#x1F9ED;</div>
-  <div style="font-family:var(--df);font-size:22px;color:var(--ink);margin-bottom:8px">Operator accounts only</div>
-  <div style="font-size:13.5px;color:var(--mu);font-family:var(--bf);line-height:1.6;margin-bottom:22px">Your account is registered as a traveller. To list and manage tours you need a separate operator account.</div>
-  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a class="btn-primary" href="signup-operator.html">Create operator account</a>
-    <a class="btn-outline" href="waybound.html">Browse adventures</a>
-  </div>
+<div style="font-size:44px;margin-bottom:14px">🧭</div>
+<div style="font-family:var(--df);font-size:22px;color:var(--ink);margin-bottom:8px">Только для операторов</div>
+<div style="font-size:13.5px;color:var(--mu);font-family:var(--bf);line-height:1.6;margin-bottom:22px">Ваш аккаунт зарегистрирован как путешественника. Чтобы размещать и управлять турами, вам нужен отдельный аккаунт оператора.</div>
+<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+<a class="btn-primary" href="signup-operator_ru.html">Создать аккаунт оператора</a>
+<a class="btn-outline" href="waybound_ru.html">Просмотреть приключения</a>
 </div>
-
+</div>
 <div id="dashMain" style="display:none">
 <div class="dash-pg">
-
-  <!-- Verification upload modal -->
-  <div id="verifyModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
-    <div style="background:var(--white);border-radius:14px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)">
-      <div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:6px">Upload verification document</div>
-      <div style="font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:18px">Upload a clear photo of your passport or national ID.</div>
-      <input type="file" id="verifyDocInput" accept="image/*" style="width:100%;margin-bottom:14px;font-family:var(--bf);font-size:13px">
-      <div id="verifyMsg" style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-bottom:12px;display:none"></div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button onclick="closeVerifyModal()" style="background:none;border:1.5px solid var(--ln);border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:var(--bf)">Cancel</button>
-        <button onclick="submitVerifyDoc()" style="background:var(--ac);border:none;border-radius:6px;padding:8px 20px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:var(--bf)">Submit document</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Cancel booking modal -->
-  <div id="cancelBkModal" style="display:none;position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:16px">
-    <div style="background:var(--white);border-radius:16px;padding:28px 28px 22px;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2)">
-      <div style="font-size:28px;margin-bottom:10px;text-align:center">🚫</div>
-      <div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:6px;text-align:center">Cancel this booking?</div>
-      <div id="cancelBkMeta" style="font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:16px;text-align:center;line-height:1.55"></div>
-      <div style="margin-bottom:16px">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);font-family:var(--bf);margin-bottom:5px">Message to traveller <span style="font-weight:400;text-transform:none">(optional)</span></div>
-        <textarea id="cancelBkReason" style="width:100%;min-height:72px;padding:9px 12px;border:1.5px solid var(--ln);border-radius:7px;font-size:13px;font-family:var(--bf);color:var(--ink);background:var(--paper);resize:vertical;box-sizing:border-box;outline:none;transition:border-color .15s" placeholder="Let the traveller know why you're cancelling…" onfocus="this.style.borderColor='var(--ac)'" onblur="this.style.borderColor='var(--ln)'"></textarea>
-        <div style="font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:4px">This message will appear in their email and inbox.</div>
-      </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button onclick="cancelBkModalResolve(false)" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--bf);color:var(--ink);font-weight:500">Keep booking</button>
-        <button onclick="cancelBkModalResolve(true)" style="background:#c0392b;color:#fff;border:none;border-radius:7px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--bf)">Cancel booking</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Message traveller modal -->
-  <div id="msgTravModal" style="display:none;position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeMsgTravModal()">
-    <div style="background:var(--white);border-radius:16px;padding:28px 28px 22px;max-width:440px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2)">
-      <div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:4px">Message traveller</div>
-      <div id="msgTravSub" style="font-size:12.5px;color:var(--mu);font-family:var(--bf);margin-bottom:16px"></div>
-      <textarea id="msgTravBody" style="width:100%;min-height:90px;padding:10px 13px;border:1.5px solid var(--ln);border-radius:8px;font-size:13px;font-family:var(--bf);color:var(--ink);background:var(--paper);resize:vertical;box-sizing:border-box;outline:none;transition:border-color .15s" placeholder="Write your message to the traveller&#x2026;" onfocus="this.style.borderColor='var(--ac)'" onblur="this.style.borderColor='var(--ln)'"></textarea>
-      <div style="font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:5px;margin-bottom:14px">Sent via email and appears in their Waybound inbox.</div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button onclick="closeMsgTravModal()" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--bf);color:var(--ink);font-weight:500">Cancel</button>
-        <button id="msgTravSendBtn" onclick="sendMsgTraveller()" style="background:var(--ac);color:var(--ink);border:none;border-radius:7px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--bf)">Send message</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Custom confirm dialog (replaces browser confirm()) -->
-  <div id="confirmDialog" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
-    <div style="background:var(--white);border-radius:14px;padding:28px 28px 22px;max-width:380px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)">
-      <div id="confirmDialogIcon" style="font-size:28px;margin-bottom:12px;text-align:center"></div>
-      <div id="confirmDialogTitle" style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:8px;text-align:center"></div>
-      <div id="confirmDialogMsg" style="font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:22px;text-align:center;line-height:1.55"></div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button onclick="confirmDialogResolve(false)" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--bf);color:var(--ink)">Cancel</button>
-        <button id="confirmDialogOk" onclick="confirmDialogResolve(true)" style="border:none;border-radius:7px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--bf)">Confirm</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Copy tour modal -->
-  <div id="copyTourModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto">
-    <div style="background:var(--white);border-radius:16px;padding:24px;max-width:560px;width:92%;box-shadow:0 8px 40px rgba(0,0,0,.18);margin-bottom:40px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf)">Copy a tour</div>
-        <button onclick="closeCopyTourModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--mu);padding:0;line-height:1">&times;</button>
-      </div>
-      <input id="copyTourSearch" type="text" placeholder="Search your tours…" oninput="filterCopyTours()" style="width:100%;border:1.5px solid var(--ln);border-radius:8px;padding:9px 13px;font-size:13px;font-family:var(--bf);margin-bottom:14px;outline:none">
-      <div id="copyTourGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-height:380px;overflow-y:auto"></div>
-    </div>
-  </div>
-
-  <div class="dash-hero">
-    <div class="dash-hero-left">
-      <div class="dash-hero-av" id="dashAv"></div>
-      <div>
-        <div class="dash-hero-name" id="dashName">Operator dashboard</div>
-        <div class="dash-hero-role">&#x2B50; Tour operator &nbsp;&middot;&nbsp; <span id="dashEmail"></span></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button onclick="openCopyTourModal()" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:8px 14px;font-size:13px;font-family:var(--bf);color:var(--ink);cursor:pointer;font-weight:500">&#x2398; Copy a tour</button>
-      <a class="btn-ac" href="operator-tour-create.html">&#x2795; New tour</a>
-    </div>
-  </div>
-
-  <div class="dash-tabs">
-    <button class="dash-tab active" id="tab-overview" onclick="showTab('overview',this)">Overview</button>
-    <button class="dash-tab" id="tab-tours" onclick="showTab('tours',this)">My tours</button>
-    <button class="dash-tab" id="tab-bookings" onclick="showTab('bookings',this)">Bookings</button>
-    <button class="dash-tab" id="tab-messages" onclick="showTab('messages',this)">Messages<span id="msgBadge" style="display:none;background:#e03030;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:6px;font-family:var(--bf);vertical-align:middle"></span></button>
-    <button class="dash-tab" id="tab-reviews" onclick="showTab('reviews',this)">Reviews</button>
-    <button class="dash-tab" id="tab-earnings" onclick="showTab('earnings',this)">Earnings</button>
-  </div>
-
-  <!-- OVERVIEW -->
-  <div class="dash-panel active" id="panel-overview">
-
-    <!-- Verification banner — shown only on overview tab -->
-    <div id="verifyBanner" style="display:none;background:#fff8e1;border:1.5px solid #f9c040;border-radius:10px;padding:14px 18px;margin-bottom:18px;gap:14px;align-items:flex-start">
-      <span style="font-size:22px;flex-shrink:0">&#x1F4CB;</span>
-      <div style="flex:1">
-        <div id="verifyBannerTitle" style="font-size:14px;font-weight:700;color:#7a5800;font-family:var(--bf);margin-bottom:4px">Your account is not yet verified</div>
-        <div id="verifyBannerSub" style="font-size:13px;color:#7a5800;font-family:var(--bf);margin-bottom:10px">Upload your ID to start listing tours and accepting bookings.</div>
-        <button id="verifyBannerBtn" onclick="openVerifyModal()" style="background:#f9c040;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;color:#4a3500;cursor:pointer;font-family:var(--bf)">Upload verification document &#x2192;</button>
-      </div>
-      <button onclick="document.getElementById('verifyBanner').style.display='none'" style="background:none;border:none;cursor:pointer;color:#9a7800;font-size:18px;line-height:1;padding:0;flex-shrink:0" title="Dismiss">&times;</button>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-card-label">Active tours</div><div class="stat-card-num" id="sActiveTours">&#x2014;</div><div class="stat-card-sub">published &amp; live</div></div>
-      <div class="stat-card"><div class="stat-card-label">Total bookings</div><div class="stat-card-num" id="sTotalBk">&#x2014;</div><div class="stat-card-sub">all time</div></div>
-      <div class="stat-card"><div class="stat-card-label">Avg rating</div><div class="stat-card-num" id="sAvgRating">&#x2014;</div><div class="stat-card-sub">across all tours</div></div>
-      <div class="stat-card"><div class="stat-card-label">Total earned</div><div class="stat-card-num" id="sTotalEarned">&#x2014;</div><div class="stat-card-sub">completed bookings</div></div>
-    </div>
-
-    <!-- Verification checklist -->
-    <div style="background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:20px;margin-bottom:20px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div style="font-family:var(--df);font-size:16px;color:var(--ink)">Account setup</div>
-        <div style="font-size:12px;color:var(--mu);font-family:var(--bf)" id="setupProgress">0 / 5 complete</div>
-      </div>
-      <div id="checklistItems"></div>
-    </div>
-
-    <!-- Upcoming departures -->
-    <div class="panel-head"><div class="panel-title">Upcoming departures</div><div class="stat-card-sub" id="upcomingNote"></div></div>
-    <div id="upcomingList" style="margin-bottom:20px"></div>
-
-    <!-- Recent bookings -->
-    <div class="panel-head"><div class="panel-title">Recent bookings</div><button class="btn-sm" onclick="showTab('bookings',document.getElementById('tab-bookings'))">View all</button></div>
-    <div id="ovBkList"><div style="text-align:center;padding:24px"><div class="spinner"></div></div></div>
-  </div>
-
-  <div class="dash-panel" id="panel-tours">
-    <div class="panel-head">
-      <div class="panel-title">My tours</div>
-      <select id="tourFilter" onchange="filterTours()" style="font-size:12px;font-family:var(--bf);border:1.5px solid var(--ln);border-radius:6px;padding:6px 10px;background:var(--white);color:var(--ink);cursor:pointer">
-        <option value="">All statuses</option>
-        <option value="live">Live</option>
-        <option value="draft">Draft</option>
-        <option value="review">In review</option>
-        <option value="paused">Paused</option>
-        <option value="archived">Archived</option>
-      </select>
-    </div>
-    <div id="tourList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
-    <div id="emptyToursState" style="display:none;text-align:center;padding:60px 20px;color:var(--muted)">
-      <div style="font-size:48px;margin-bottom:16px">🗺️</div>
-      <div style="font-size:18px;font-weight:600;color:var(--ink);margin-bottom:8px">No tours yet</div>
-      <div style="font-size:14px;margin-bottom:24px">Create your first tour listing to start accepting bookings.</div>
-      <a href="operator-tour-create.html" style="background:var(--accent,#4fa8d4);color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px">Create your first tour →</a>
-    </div>
-  </div>
-
-  <!-- BOOKINGS -->
-  <div class="dash-panel" id="panel-bookings">
-    <div class="panel-head">
-      <div class="panel-title">Bookings</div>
-      <select id="bkFilter" onchange="filterBookings()" style="font-size:12px;font-family:var(--bf);border:1.5px solid var(--ln);border-radius:6px;padding:6px 10px;background:var(--white);color:var(--ink);cursor:pointer">
-        <option value="all">All statuses</option>
-        <option value="confirmed">Confirmed</option>
-        <option value="pending">Pending payment</option>
-        <option value="completed">Completed</option>
-        <option value="cancelled">Cancelled</option>
-      </select>
-    </div>
-    <div id="bkList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
-  </div>
-
-  <!-- MESSAGES -->
-  <div class="dash-panel" id="panel-messages">
-    <div class="panel-head">
-      <div class="panel-title">Messages</div>
-      <div id="msgNote" style="font-size:12px;color:var(--mu);font-family:var(--bf)"></div>
-    </div>
-    <div id="msgList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
-  </div>
-
-  <!-- REVIEWS -->
-  <div class="dash-panel" id="panel-reviews">
-    <div class="panel-head">
-      <div class="panel-title">Reviews</div>
-      <div class="stat-card-sub" id="rvSummary"></div>
-    </div>
-    <div id="rvList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
-  </div>
-
-  <!-- EARNINGS -->
-  <div class="dash-panel" id="panel-earnings">
-    <div class="panel-head"><div class="panel-title">Earnings</div></div>
-    <div class="earnings-grid">
-      <div class="earnings-card"><div class="earnings-card-label">Total earned (all time)</div><div class="earnings-card-val" id="earnTotal">&#x2014;</div><div class="earnings-card-note">from completed bookings</div></div>
-      <div class="earnings-card"><div class="earnings-card-label">This month</div><div class="earnings-card-val" id="earnMonth">&#x2014;</div><div class="earnings-card-note" id="earnNote">completed this month</div></div>
-    </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:11px;color:var(--mu);font-family:var(--bf)" id="earnSortLabel">Sorted by date (newest first)</div>
-      <div style="display:flex;gap:6px">
-        <button class="btn-ghost-sm" style="font-size:11px;padding:4px 10px" onclick="setEarnSort('date')">By date</button>
-        <button class="btn-ghost-sm" style="font-size:11px;padding:4px 10px" onclick="setEarnSort('tour')">By tour</button>
-      </div>
-    </div>
-    <div class="earnings-table">
-      <div class="et-head"><div>Tour</div><div>Bookings</div><div>Guests</div><div>Departure</div><div>Amount</div></div>
-      <div id="earnRows"><div style="text-align:center;padding:30px;color:var(--mu);font-family:var(--bf);font-size:13px">Loading&hellip;</div></div>
-    </div>
-  </div>
-
+<!-- Verification upload modal -->
+<div id="verifyModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
+<div style="background:var(--white);border-radius:14px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)">
+<div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:6px">Загрузить документ верификации</div>
+<div style="font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:18px">Загрузите четкую фотографию своего паспорта или национального удостоверения личности.</div>
+<input accept="image/*" id="verifyDocInput" style="width:100%;margin-bottom:14px;font-family:var(--bf);font-size:13px" type="file"/>
+<div id="verifyMsg" style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-bottom:12px;display:none"></div>
+<div style="display:flex;gap:10px;justify-content:flex-end">
+<button onclick="closeVerifyModal()" style="background:none;border:1.5px solid var(--ln);border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:var(--bf)">Отмена</button>
+<button onclick="submitVerifyDoc()" style="background:var(--ac);border:none;border-radius:6px;padding:8px 20px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:var(--bf)">Отправить документ</button>
 </div>
 </div>
-
-
-<footer class="footer"><div class="foot-grid"><div><a class="foot-logo" href="waybound.html"><div class="foot-logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound</a><p class="foot-tag">Small groups. Real guides. Genuine places.</p></div><div><div class="foot-col-title">Explore</div><a class="foot-link" href="adventures.html">All adventures</a><a class="foot-link" href="how-it-works.html">How it works</a></div><div><div class="foot-col-title">Company</div><a class="foot-link" href="about.html">About us</a><a class="foot-link" href="contact.html">Contact</a></div><div><div class="foot-col-title">Help</div><a class="foot-link" href="help.html">Help center</a><a class="foot-link" href="trust-safety.html">Trust &amp; Safety</a><a class="foot-link" href="terms.html">Terms</a></div></div><div class="foot-bottom"><span class="foot-copy">&copy; 2026 Waybound. All rights reserved.</span></div></footer>
-
+</div>
+<!-- Cancel booking modal -->
+<div id="cancelBkModal" style="display:none;position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:16px">
+<div style="background:var(--white);border-radius:16px;padding:28px 28px 22px;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2)">
+<div style="font-size:28px;margin-bottom:10px;text-align:center">🚫</div>
+<div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:6px;text-align:center">Отменить это бронирование?</div>
+<div id="cancelBkMeta" style="font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:16px;text-align:center;line-height:1.55"></div>
+<div style="margin-bottom:16px">
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);font-family:var(--bf);margin-bottom:5px">Сообщение путешественнику <span style="font-weight:400;text-transform:none">(опционально)</span></div>
+<textarea id="cancelBkReason" onblur="this.style.borderColor='var(--ln)'" onfocus="this.style.borderColor='var(--ac)'" placeholder="Дайте путешественнику знать, почему вы отменяете бронирование…" style="width:100%;min-height:72px;padding:9px 12px;border:1.5px solid var(--ln);border-radius:7px;font-size:13px;font-family:var(--bf);color:var(--ink);background:var(--paper);resize:vertical;box-sizing:border-box;outline:none;transition:border-color .15s"></textarea>
+<div style="font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:4px">Это сообщение появится в их электронной почте и входящих сообщениях.</div>
+</div>
+<div style="display:flex;gap:10px;justify-content:flex-end">
+<button onclick="cancelBkModalResolve(false)" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--bf);color:var(--ink);font-weight:500">Оставить бронирование</button>
+<button onclick="cancelBkModalResolve(true)" style="background:#c0392b;color:#fff;border:none;border-radius:7px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--bf)">Отменить бронирование</button>
+</div>
+</div>
+</div>
+<!-- Message traveller modal -->
+<div id="msgTravModal" onclick="if(event.target===this)closeMsgTravModal()" style="display:none;position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:16px">
+<div style="background:var(--white);border-radius:16px;padding:28px 28px 22px;max-width:440px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2)">
+<div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:4px">Отправить сообщение путешественнику</div>
+<div id="msgTravSub" style="font-size:12.5px;color:var(--mu);font-family:var(--bf);margin-bottom:16px"></div>
+<textarea id="msgTravBody" onblur="this.style.borderColor='var(--ln)'" onfocus="this.style.borderColor='var(--ac)'" placeholder="Напишите сообщение путешественнику…" style="width:100%;min-height:90px;padding:10px 13px;border:1.5px solid var(--ln);border-radius:8px;font-size:13px;font-family:var(--bf);color:var(--ink);background:var(--paper);resize:vertical;box-sizing:border-box;outline:none;transition:border-color .15s"></textarea>
+<div style="font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:5px;margin-bottom:14px">Отправляется по электронной почте и появляется в их входящих сообщениях Waybound.</div>
+<div style="display:flex;gap:10px;justify-content:flex-end">
+<button onclick="closeMsgTravModal()" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--bf);color:var(--ink);font-weight:500">Отмена</button>
+<button id="msgTravSendBtn" onclick="sendMsgTraveller()" style="background:var(--ac);color:var(--ink);border:none;border-radius:7px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--bf)">Отправить сообщение</button>
+</div>
+</div>
+</div>
+<!-- Custom confirm dialog (replaces browser confirm()) -->
+<div id="confirmDialog" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
+<div style="background:var(--white);border-radius:14px;padding:28px 28px 22px;max-width:380px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)">
+<div id="confirmDialogIcon" style="font-size:28px;margin-bottom:12px;text-align:center"></div>
+<div id="confirmDialogTitle" style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:8px;text-align:center"></div>
+<div id="confirmDialogMsg" style="font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:22px;text-align:center;line-height:1.55"></div>
+<div style="display:flex;gap:10px;justify-content:flex-end">
+<button onclick="confirmDialogResolve(false)" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--bf);color:var(--ink)">Отмена</button>
+<button id="confirmDialogOk" onclick="confirmDialogResolve(true)" style="border:none;border-radius:7px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--bf)">Подтвердить</button>
+</div>
+</div>
+</div>
+<!-- Copy tour modal -->
+<div id="copyTourModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto">
+<div style="background:var(--white);border-radius:16px;padding:24px;max-width:560px;width:92%;box-shadow:0 8px 40px rgba(0,0,0,.18);margin-bottom:40px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+<div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf)">Скопировать тур</div>
+<button onclick="closeCopyTourModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--mu);padding:0;line-height:1">×</button>
+</div>
+<input id="copyTourSearch" oninput="filterCopyTours()" placeholder="Поиск по вашим турам…" style="width:100%;border:1.5px solid var(--ln);border-radius:8px;padding:9px 13px;font-size:13px;font-family:var(--bf);margin-bottom:14px;outline:none" type="text"/>
+<div id="copyTourGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-height:380px;overflow-y:auto"></div>
+</div>
+</div>
+<div class="dash-hero">
+<div class="dash-hero-left">
+<div class="dash-hero-av" id="dashAv"></div>
+<div>
+<div class="dash-hero-name" id="dashName">Панель оператора</div>
+<div class="dash-hero-role">⭐ Оператор тура  ·  <span id="dashEmail"></span></div>
+</div>
+</div>
+<div style="display:flex;gap:8px;align-items:center">
+<button onclick="openCopyTourModal()" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:8px 14px;font-size:13px;font-family:var(--bf);color:var(--ink);cursor:pointer;font-weight:500">⎘ Скопировать тур</button>
+<a class="btn-ac" href="operator-tour-create_ru.html">➕ Новый тур</a>
+</div>
+</div>
+<div class="dash-tabs">
+<button class="dash-tab active" id="tab-overview" onclick="showTab('overview',this)">Обзор</button>
+<button class="dash-tab" id="tab-tours" onclick="showTab('tours',this)">Мои туры</button>
+<button class="dash-tab" id="tab-bookings" onclick="showTab('bookings',this)">Бронирования</button>
+<button class="dash-tab" id="tab-messages" onclick="showTab('messages',this)">Сообщения<span id="msgBadge" style="display:none;background:#e03030;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:6px;font-family:var(--bf);vertical-align:middle"></span></button>
+<button class="dash-tab" id="tab-reviews" onclick="showTab('reviews',this)">Отзывы</button>
+<button class="dash-tab" id="tab-earnings" onclick="showTab('earnings',this)">Доход</button>
+</div>
+<!-- OVERVIEW -->
+<div class="dash-panel active" id="panel-overview">
+<!-- Verification banner — shown only on overview tab -->
+<div id="verifyBanner" style="display:none;background:#fff8e1;border:1.5px solid #f9c040;border-radius:10px;padding:14px 18px;margin-bottom:18px;gap:14px;align-items:flex-start">
+<span style="font-size:22px;flex-shrink:0">📋</span>
+<div style="flex:1">
+<div id="verifyBannerTitle" style="font-size:14px;font-weight:700;color:#7a5800;font-family:var(--bf);margin-bottom:4px">Ваш аккаунт еще не верифицирован</div>
+<div id="verifyBannerSub" style="font-size:13px;color:#7a5800;font-family:var(--bf);margin-bottom:10px">Загрузите свой ID, чтобы начать размещение туров и принимать бронирования.</div>
+<button id="verifyBannerBtn" onclick="openVerifyModal()" style="background:#f9c040;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;color:#4a3500;cursor:pointer;font-family:var(--bf)">Загрузить документ верификации →</button>
+</div>
+<button onclick="document.getElementById('verifyBanner').style.display='none'" style="background:none;border:none;cursor:pointer;color:#9a7800;font-size:18px;line-height:1;padding:0;flex-shrink:0" title="Закрыть">×</button>
+</div>
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-card-label">Активные туры</div><div class="stat-card-num" id="sActiveTours">—</div><div class="stat-card-sub">опубликованы и активны</div></div>
+<div class="stat-card"><div class="stat-card-label">Всего бронирований</div><div class="stat-card-num" id="sTotalBk">—</div><div class="stat-card-sub">за все время</div></div>
+<div class="stat-card"><div class="stat-card-label">Средняя оценка</div><div class="stat-card-num" id="sAvgRating">—</div><div class="stat-card-sub">по всем турам</div></div>
+<div class="stat-card"><div class="stat-card-label">Всего заработано</div><div class="stat-card-num" id="sTotalEarned">—</div><div class="stat-card-sub">завершенные бронирования</div></div>
+</div>
+<!-- Verification checklist -->
+<div style="background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:20px;margin-bottom:20px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+<div style="font-family:var(--df);font-size:16px;color:var(--ink)">Настройка аккаунта</div>
+<div id="setupProgress" style="font-size:12px;color:var(--mu);font-family:var(--bf)">0 / 5 завершено</div>
+</div>
+<div id="checklistItems"></div>
+</div>
+<!-- Upcoming departures -->
+<div class="panel-head"><div class="panel-title">Предстоящие отправления</div><div class="stat-card-sub" id="upcomingNote"></div></div>
+<div id="upcomingList" style="margin-bottom:20px"></div>
+<!-- Recent bookings -->
+<div class="panel-head"><div class="panel-title">Последние бронирования</div><button class="btn-sm" onclick="showTab('bookings',document.getElementById('tab-bookings'))">Показать все</button></div>
+<div id="ovBkList"><div style="text-align:center;padding:24px"><div class="spinner"></div></div></div>
+</div>
+<div class="dash-panel" id="panel-tours">
+<div class="panel-head">
+<div class="panel-title">Мои туры</div>
+<select id="tourFilter" onchange="filterTours()" style="font-size:12px;font-family:var(--bf);border:1.5px solid var(--ln);border-radius:6px;padding:6px 10px;background:var(--white);color:var(--ink);cursor:pointer">
+<option value="">Все статусы</option>
+<option value="live">Активны</option>
+<option value="draft">Черновик</option>
+<option value="review">На рассмотрении</option>
+<option value="paused">Приостановлены</option>
+<option value="archived">Архив</option>
+</select>
+</div>
+<div id="tourList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
+<div id="emptyToursState" style="display:none;text-align:center;padding:60px 20px;color:var(--muted)">
+<div style="font-size:48px;margin-bottom:16px">🗺️</div>
+<div style="font-size:18px;font-weight:600;color:var(--ink);margin-bottom:8px">Туров еще нет</div>
+<div style="font-size:14px;margin-bottom:24px">Создайте свой первый тур, чтобы начать принимать бронирования.</div>
+<a href="operator-tour-create_ru.html" style="background:var(--accent,#4fa8d4);color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px">Создать первый тур →</a>
+</div>
+</div>
+<!-- BOOKINGS -->
+<div class="dash-panel" id="panel-bookings">
+<div class="panel-head">
+<div class="panel-title">Бронирования</div>
+<select id="bkFilter" onchange="filterBookings()" style="font-size:12px;font-family:var(--bf);border:1.5px solid var(--ln);border-radius:6px;padding:6px 10px;background:var(--white);color:var(--ink);cursor:pointer">
+<option value="all">Все статусы</option>
+<option value="confirmed">Подтверждено</option>
+<option value="pending">Ожидание платежа</option>
+<option value="completed">Завершено</option>
+<option value="cancelled">Отменено</option>
+</select>
+</div>
+<div id="bkList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
+</div>
+<!-- MESSAGES -->
+<div class="dash-panel" id="panel-messages">
+<div class="panel-head">
+<div class="panel-title">Сообщения</div>
+<div id="msgNote" style="font-size:12px;color:var(--mu);font-family:var(--bf)"></div>
+</div>
+<div id="msgList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
+</div>
+<!-- REVIEWS -->
+<div class="dash-panel" id="panel-reviews">
+<div class="panel-head">
+<div class="panel-title">Отзывы</div>
+<div class="stat-card-sub" id="rvSummary"></div>
+</div>
+<div id="rvList"><div style="text-align:center;padding:40px"><div class="spinner"></div></div></div>
+</div>
+<!-- EARNINGS -->
+<div class="dash-panel" id="panel-earnings">
+<div class="panel-head"><div class="panel-title">Доход</div></div>
+<div class="earnings-grid">
+<div class="earnings-card"><div class="earnings-card-label">Всего заработано (за все время)</div><div class="earnings-card-val" id="earnTotal">—</div><div class="earnings-card-note">из завершенных бронирований</div></div>
+<div class="earnings-card"><div class="earnings-card-label">В этом месяце</div><div class="earnings-card-val" id="earnMonth">—</div><div class="earnings-card-note" id="earnNote">завершено в этом месяце</div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+<div id="earnSortLabel" style="font-size:11px;color:var(--mu);font-family:var(--bf)">Сортировано по дате (новые первыми)</div>
+<div style="display:flex;gap:6px">
+<button class="btn-ghost-sm" onclick="setEarnSort('date')" style="font-size:11px;padding:4px 10px">По дате</button>
+<button class="btn-ghost-sm" onclick="setEarnSort('tour')" style="font-size:11px;padding:4px 10px">По туру</button>
+</div>
+</div>
+<div class="earnings-table">
+<div class="et-head"><div>Тур</div><div>Бронирования</div><div>Гости</div><div>Отправление</div><div>Сумма</div></div>
+<div id="earnRows"><div style="text-align:center;padding:30px;color:var(--mu);font-family:var(--bf);font-size:13px">Загрузка…</div></div>
+</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="foot-grid"><div><a class="foot-logo" href="waybound_ru.html"><div class="foot-logo-mark"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>Waybound</a><p class="foot-tag">Небольшие группы. Настоящие гиды. Подлинные места.</p></div><div><div class="foot-col-title">Исследовать</div><a class="foot-link" href="adventures_ru.html">Все приключения</a><a class="foot-link" href="how-it-works_ru.html">Как это работает</a></div><div><div class="foot-col-title">Компания</div><a class="foot-link" href="about_ru.html">О нас</a><a class="foot-link" href="contact_ru.html">Контакты</a></div><div><div class="foot-col-title">Справка</div><a class="foot-link" href="help_ru.html">Центр справки</a><a class="foot-link" href="trust-safety_ru.html">Доверие и безопасность</a><a class="foot-link" href="terms_ru.html">Условия</a></div></div><div class="foot-bottom"><span class="foot-copy">© 2026 Waybound. Все права защищены.</span></div></footer>
 <script>
-const THEMES={ocean:{name:'Deep Ocean',desc:'Cool blue, refined',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Light & Warm',desc:'White base, bright energy',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Ivory & Earthy',desc:'Warm parchment, handcrafted',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Parchment & Gold',desc:'Warm gold, sophisticated',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Forest & Sage',desc:'Muted green, natural feel',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Terracotta',desc:'Earthy red, bold warmth',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
+const THEMES={ocean:{name:'Глубокий океан',desc:'Холодный синий, утонченный',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Светлое и теплое',desc:'Белая основа, яркая энергия',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Слоновая кость и земляные тона',desc:'Теплый пергамент, ручная работа',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Пергамент и золото',desc:'Теплое золото, изысканное',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Лес и шалфей',desc:'Приглушенный зеленый, естественный вид',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Терракота',desc:'Земляной красный, смелое тепло',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
 let current=localStorage.getItem('waybound-theme')||'ocean', pending=current;
 document.body.className=current;
 function renderGrid(){document.getElementById('themeGrid').innerHTML=Object.entries(THEMES).map(([k,d])=>`<div class="th-opt${k===current?' sel':''}" data-k="${k}" onclick="previewTheme('${k}')"><div class="th-check">✓</div><div class="th-swatches">${d.sw.map(s=>`<div class="th-sw" style="background:${s}"></div>`).join('')}</div><div class="th-name">${d.name}</div><div class="th-desc">${d.desc}</div>${d.def?`<span class="th-default-tag">★ Default</span>`:''}</div>`).join('');}
@@ -948,17 +921,17 @@ function applyPending(){current=pending;localStorage.setItem('waybound-theme',cu
 // Hero destination tiles
 (function() {
   var tiles = [
-    {cls:'ti1', dest:'Georgia',   sub:'Kazbegi & Svaneti',    cnt:'8 tours',  emoji:'🏔️'},
-    {cls:'ti2', dest:'Kenya',     sub:'Masai Mara Safari',    cnt:'5 tours',  emoji:'🦁'},
-    {cls:'ti3', dest:'Japan',     sub:'Kyoto & Tokyo',        cnt:'12 tours', emoji:'⛩️'},
-    {cls:'ti1', dest:'Morocco',   sub:'Sahara Expedition',    cnt:'6 tours',  emoji:'🏜️'},
-    {cls:'ti2', dest:'Croatia',   sub:'Dalmatian Islands',    cnt:'9 tours',  emoji:'🌊'},
-    {cls:'ti3', dest:'Iceland',   sub:'Northern Lights',      cnt:'4 tours',  emoji:'🌌'},
+    {cls:'ti1', dest:'Грузия',   sub:'Казбеги и Сванети',    cnt:'8 туров',  emoji:'🏔️'},
+    {cls:'ti2', dest:'Кения',     sub:'Сафари Масаи Мара',    cnt:'5 туров',  emoji:'🦁'},
+    {cls:'ti3', dest:'Япония',     sub:'Киото и Токио',        cnt:'12 туров', emoji:'⛩️'},
+    {cls:'ti1', dest:'Марокко',   sub:'Сахарская экспедиция',    cnt:'6 туров',  emoji:'🏜️'},
+    {cls:'ti2', dest:'Хорватия',   sub:'Далматинские острова',    cnt:'9 туров',  emoji:'🌊'},
+    {cls:'ti3', dest:'Исландия',   sub:'Северное сияние',      cnt:'4 тура',  emoji:'🌌'},
   ];
   var grid = document.getElementById('heroTiles');
   if (!grid) return;
   grid.innerHTML = tiles.map(function(t) {
-    return '<div class="htile ' + t.cls + '" data-dest="' + t.dest + '" style="cursor:pointer">'
+    return '<div class="htile' + t.cls + '" data-dest="' + t.dest + '" style="cursor:pointer">'
       + '<div class="htile-bg">' + t.emoji + '</div>'
       + '<div class="htile-lbl">' + t.dest + '<br><span style="font-weight:400;opacity:.7">' + t.sub + '</span></div>'
       + '<div class="htile-cnt">' + t.cnt + '</div>'
@@ -975,19 +948,19 @@ function applyPending(){current=pending;localStorage.setItem('waybound-theme',cu
 // Explore by style cards
 (function() {
   var styles = [
-    {title:'Trekking',       sub:'Mountain & highland',  emoji:'🏔️', cls:'ti1'},
-    {title:'Safari',         sub:'Wildlife & wilderness',emoji:'🦁', cls:'ti2'},
-    {title:'Culture',        sub:'History & local life', emoji:'🏛️', cls:'ti3'},
-    {title:'Sailing',        sub:'Coast & island hops',  emoji:'⛵', cls:'ti1'},
-    {title:'Food & Wine',    sub:'Taste the destination',emoji:'🍷', cls:'ti2'},
-    {title:'Wellness',       sub:'Yoga, retreat & spa',  emoji:'🧘', cls:'ti3'},
-    {title:'Adventure',      sub:'Adrenaline & extremes',emoji:'🪂', cls:'ti1'},
-    {title:'Photography',    sub:'Capture the world',    emoji:'📷', cls:'ti2'},
+    {title:'Треккинг',       sub:'Горы и высокогорье',  emoji:'🏔️', cls:'ti1'},
+    {title:'Сафари',         sub:'Дикая природа и экотуризм',emoji:'🦁', cls:'ti2'},
+    {title:'Культура',        sub:'История и местная жизнь', emoji:'🏛️', cls:'ti3'},
+    {title:'Парусный спорт',        sub:'Побережье и островные путешествия',  emoji:'⛵', cls:'ti1'},
+    {title:'Гастрономия и вино',    sub:'Откройте вкус пункта назначения',emoji:'🍷', cls:'ti2'},
+    {title:'Оздоровление',       sub:'Йога, ретриты и спа',  emoji:'🧘', cls:'ti3'},
+    {title:'Приключения',      sub:'Адреналин и экстремальные виды спорта',emoji:'🪂', cls:'ti1'},
+    {title:'Фотография',    sub:'Запечатлейте мир',    emoji:'📷', cls:'ti2'},
   ];
   var scroll = document.getElementById('cardScroll');
   if (!scroll) return;
   scroll.innerHTML = styles.map(function(s) {
-    return '<div class="style-card ' + s.cls + '" data-cat="' + s.title + '" style="cursor:pointer">'
+    return '<div class="style-card' + s.cls + '" data-cat="' + s.title + '" style="cursor:pointer">'
       + '<div class="style-card-bg">' + s.emoji + '</div>'
       + '<div class="style-card-overlay"></div>'
       + '<div class="style-card-body">'
@@ -1027,20 +1000,20 @@ async function loadFeaturedTours() {
     var html = '';
     for (var i = 0; i < tours.length; i++) {
       var t = tours[i];
-      var dayLabel = t.days === 1 ? '1 day' : t.days + ' days';
+      var dayLabel = t.days === 1 ? '1 день' : t.days + 'дней';
       var price = '₽' + parseInt(t.price).toLocaleString('ru-RU');
       var spots = t.spots_left <= 3
-        ? '<div class="feat-spots-low">🔥 Only ' + t.spots_left + ' spots left</div>'
+        ? '<div class="feat-spots-low">🔥 Осталось всего' + t.spots_left + 'мест</div>'
         : '';
       html += '<div class="feat-card" data-slug="' + t.slug + '" onclick="goFeatured(this)">';
       html += '<div class="feat-card-img">' + (t.emoji || '🌍');
       html += '<div class="feat-card-badge">' + dayLabel + '</div></div>';
       html += '<div class="feat-card-body">';
-      html += '<div class="feat-card-dest">📍 ' + t.destination + '</div>';
+      html += '<div class="feat-card-dest">📍' + t.destination + '</div>';
       html += '<div class="feat-card-title">' + t.title + '</div>';
       html += '<div class="feat-card-foot">';
-      html += '<div class="feat-card-price">' + price + '<span style="font-size:11px;color:var(--mu);font-weight:400"> /person</span></div>';
-      html += '<div class="feat-card-rating">⭐ ' + parseFloat(t.rating).toFixed(2) + ' (' + t.review_count + ')</div>';
+      html += '<div class="feat-card-price">' + price + '<span style="font-size:11px;color:var(--mu);font-weight:400"> /человек</span></div>';
+      html += '<div class="feat-card-rating">⭐' + parseFloat(t.rating).toFixed(2) + ' (' + t.review_count + ')</div>';
       html += '</div>' + spots + '</div></div>';
     }
     row.innerHTML = html;
@@ -1067,7 +1040,7 @@ function fmtD(s) {
   if (!s) return '—';
   var d = new Date(s + (s.length === 10 ? 'T00:00:00' : ''));
   if (isNaN(d)) return s;
-  var mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var mos = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
   return d.getDate() + ' ' + mos[d.getMonth()] + ' ' + d.getFullYear();
 }
 function ah() {
@@ -1154,17 +1127,17 @@ function renderCopyTourGrid(query) {
     return t.status !== 'archived' && (!q || (t.title||'').toLowerCase().includes(q) || (t.destination||'').toLowerCase().includes(q));
   });
   if (!tours.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;font-size:13px;color:var(--mu);font-family:var(--bf)">' + (q ? 'No tours match your search.' : 'No tours to copy yet.') + '</div>';
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;font-size:13px;color:var(--mu);font-family:var(--bf)">' + (q ? 'Туры, соответствующие вашему поиску, не найдены.' : 'Нет туров для копирования.') + '</div>';
     return;
   }
   var statusColors = { live:'#1a7a40', draft:'#606070', review:'#7a5800', paused:'#7a5800', archived:'#606070' };
-  var statusLabels = { live:'Live', draft:'Draft', review:'In review', paused:'Paused', archived:'Archived' };
+  var statusLabels = { live:'Опубликовано', draft:'Черновик', review:'На рассмотрении', paused:'Приостановлено', archived:'Архивировано' };
   grid.innerHTML = tours.map(function(t) {
     var color = statusColors[t.status] || '#606070';
     var label = statusLabels[t.status] || t.status;
     return '<div onclick="selectCopyTour(\'' + t.slug + '\')" style="border:1.5px solid var(--ln);border-radius:10px;padding:12px 14px;cursor:pointer;transition:border-color .15s,box-shadow .15s;background:var(--white)" onmouseover="this.style.borderColor=\'var(--ac)\';this.style.boxShadow=\'0 2px 10px rgba(0,0,0,.08)\'" onmouseout="this.style.borderColor=\'var(--ln)\';this.style.boxShadow=\'none\'">'
       + '<div style="font-size:20px;margin-bottom:8px;text-align:center;background:var(--ha-bg);border-radius:6px;padding:8px">&#x1F5FA;&#xFE0F;</div>'
-      + '<div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (t.title||'Untitled tour') + '</div>'
+      + '<div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (t.title||'Тур без названия') + '</div>'
       + '<div style="font-size:11px;color:var(--mu);font-family:var(--bf);margin-bottom:6px">' + (t.destination||'—') + '</div>'
       + '<span style="font-size:10px;font-weight:600;color:' + color + ';background:' + color + '18;border-radius:4px;padding:2px 7px;font-family:var(--bf)">' + label + '</span>'
       + '</div>';
@@ -1182,10 +1155,10 @@ function showConfirm(opts) {
     _confirmResolve = resolve;
     var d = document.getElementById('confirmDialog');
     document.getElementById('confirmDialogIcon').textContent  = opts.icon  || '⚠️';
-    document.getElementById('confirmDialogTitle').textContent = opts.title || 'Are you sure?';
+    document.getElementById('confirmDialogTitle').textContent = opts.title || 'Вы уверены?';
     document.getElementById('confirmDialogMsg').textContent   = opts.msg   || '';
     var ok = document.getElementById('confirmDialogOk');
-    ok.textContent        = opts.ok    || 'Confirm';
+    ok.textContent        = opts.ok    || 'Подтвердить';
     ok.style.background   = opts.danger ? '#c0392b' : 'var(--ac)';
     ok.style.color        = opts.danger ? '#fff'    : 'var(--ink)';
     d.style.display = 'flex';
@@ -1251,7 +1224,7 @@ async function checkVerificationBanner() {
       if (idAction) idAction.style.display = 'none';
     } else if (vSt === 'pending') {
       if (idIco)    { idIco.className = 'checklist-ico'; idIco.style.cssText = 'background:#fff8e1;color:#c08000;border-color:#f0c040;font-size:13px'; idIco.textContent = '\u23F3'; }
-      if (idItem)   { idItem.style.display = 'inline'; idItem.style.color = '#c08000'; idItem.innerHTML = '\u23F3 Pending'; }
+      if (idItem)   { idItem.style.display = 'inline'; idItem.style.color = '#c08000'; idItem.innerHTML = '\u23F3 Ожидание'; }
       if (idAction) idAction.style.display = 'none';
     } else {
       if (idIco)    { idIco.className = 'checklist-ico required'; idIco.textContent = '\u26A0'; }
@@ -1268,18 +1241,18 @@ async function checkVerificationBanner() {
     var vStatus = u.verification_status || null;
     if (vStatus === 'pending') {
       // Already uploaded, waiting for review — show info message, no upload button
-      if (title) title.textContent = 'Verification under review';
-      if (sub)   sub.textContent   = 'Your ID document has been submitted. We\'ll notify you once reviewed.';
+      if (title) title.textContent = 'Верификация на рассмотрении';
+      if (sub)   sub.textContent   = 'Ваш документ удостоверения личности отправлен. Мы уведомим вас после проверки.';
       if (btn)   btn.style.display = 'none';
       banner.style.display = 'flex';
     } else if (vStatus !== 'approved') {
       // Not uploaded yet (or rejected)
       if (title) title.textContent = vStatus === 'rejected'
-        ? 'Verification rejected — please re-upload'
-        : 'Your account is not yet verified';
+        ? 'Верификация отклонена — пожалуйста, загрузите документ заново'
+        : 'Ваш аккаунт еще не верифицирован';
       if (sub) sub.textContent = vStatus === 'rejected'
-        ? 'Your document was not accepted. Please upload a clearer photo of your passport or national ID.'
-        : 'Upload your ID to start listing tours and accepting bookings.';
+        ? 'Ваш документ не был принят. Пожалуйста, загрузите более четкое фото вашего паспорта или удостоверения личности.'
+        : 'Загрузите удостоверение личности, чтобы начать размещать туры и принимать бронирования.';
       if (btn) btn.style.display = '';
       banner.style.display = 'flex';
     }
@@ -1297,7 +1270,7 @@ function closeVerifyModal() {
 async function submitVerifyDoc() {
   var input = document.getElementById('verifyDocInput');
   var msg   = document.getElementById('verifyMsg');
-  if (!input || !input.files[0]) { if(msg){msg.textContent='Please select a file.';msg.style.display='block';} return; }
+  if (!input || !input.files[0]) { if(msg){msg.textContent='Пожалуйста, выберите файл.';msg.style.display='block';} return; }
   var fd = new FormData();
   fd.append('document', input.files[0]);
   try {
@@ -1309,13 +1282,13 @@ async function submitVerifyDoc() {
     var data = await r.json().catch(()=>({}));
     if (r.ok) {
       closeVerifyModal();
-      showToast('Document submitted! We will review within 48 hours.', 'success');
+      showToast('Документ отправлен! Мы проверим его в течение 48 часов.', 'success');
       checkVerificationBanner(); // update icon and banner state immediately
     } else {
-      if(msg){msg.textContent=data.detail||'Upload failed. Please try again.';msg.style.display='block';}
+      if(msg){msg.textContent=data.detail||'Ошибка загрузки. Пожалуйста, попробуйте еще раз.';msg.style.display='block';}
     }
   } catch(e) {
-    if(msg){msg.textContent='Network error. Please try again.';msg.style.display='block';}
+    if(msg){msg.textContent='Ошибка сети. Пожалуйста, попробуйте еще раз.';msg.style.display='block';}
   }
 }
 
@@ -1331,11 +1304,11 @@ async function loadEnquiries() {
 
 function relTime(iso) {
   var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (diff < 60)      return 'just now';
-  if (diff < 3600)    return Math.floor(diff/60) + 'min ago';
-  if (diff < 86400)   return Math.floor(diff/3600) + 'h ago';
+  if (diff < 60)      return 'только что';
+  if (diff < 3600)    return Math.floor(diff/60) + 'мин назад';
+  if (diff < 86400)   return Math.floor(diff/3600) + 'ч назад';
   if (diff < 172800)  return 'yesterday';
-  if (diff < 2592000) return Math.floor(diff/86400) + 'd ago';
+  if (diff < 2592000) return Math.floor(diff/86400) + 'д назад';
   return fmtD(iso.slice(0,10));
 }
 
@@ -1346,7 +1319,7 @@ function renderMessages() {
   if (!el) return;
   var unreadCount = _enquiries.filter(function(e){ return !e.read_by_operator; }).length;
   var total = _enquiries.length;
-  if (note) note.textContent = total + ' message' + (total!==1?'s':'') + (unreadCount ? ' · ' + unreadCount + ' unread' : '');
+  if (note) note.textContent = total + ' ' + (total===1?'сообщение':total<5?'сообщения':'сообщений') + (unreadCount ? ' · ' + unreadCount + ' непрочитанных' : '');
 
   var badge = document.getElementById('msgBadge');
   if (badge) { if (unreadCount) { badge.textContent = unreadCount; badge.style.display = 'inline-block'; } else { badge.style.display = 'none'; } }
@@ -1354,7 +1327,7 @@ function renderMessages() {
   if (typeof navUpdateMsgBadge === 'function') navUpdateMsgBadge(unreadCount);
 
   if (!total) {
-    el.innerHTML = emptyState('&#x1F4AC;', 'No messages yet', 'Private tour requests and general enquiries from travellers will appear here.', '', '');
+    el.innerHTML = emptyState('&#x1F4AC;', 'Сообщений еще нет', 'Запросы на приватные туры и общие вопросы от путешественников будут отображаться здесь.', '', '');
     return;
   }
 
@@ -1362,26 +1335,26 @@ function renderMessages() {
     var isPriv    = !!(enq.preferred_from || enq.preferred_to);
     var isUnread  = !enq.read_by_operator;
     var hasReply  = !!(enq.operator_reply && enq.operator_reply.trim()) || (enq.replies && enq.replies.some(function(r){ return r.is_operator; }));
-    var tourTitle = enq.tour_title || (enq.tour && enq.tour.title) || 'Tour';
-    var senderName    = enq.name || 'Guest';
+    var tourTitle = enq.tour_title || (enq.tour && enq.tour.title) || 'Тур';
+    var senderName    = enq.name || 'Гость';
     var senderInitial = senderName.trim()[0].toUpperCase();
 
     var typeBadge = isPriv
-      ? '<span style="font-size:10px;font-weight:700;background:#fff3e0;color:#9a6000;border-radius:4px;padding:2px 7px;font-family:var(--bf)">&#x1F511; PRIVATE REQUEST</span>'
-      : '<span style="font-size:10px;font-weight:700;background:#e8f4ff;color:#1a60a0;border-radius:4px;padding:2px 7px;font-family:var(--bf)">&#x1F4AC; MESSAGE</span>';
+      ? '<span style="font-size:10px;font-weight:700;background:#fff3e0;color:#9a6000;border-radius:4px;padding:2px 7px;font-family:var(--bf)">&#x1F511; ЗАПРОС НА ПРИВАТНЫЙ ТУР</span>'
+      : '<span style="font-size:10px;font-weight:700;background:#e8f4ff;color:#1a60a0;border-radius:4px;padding:2px 7px;font-family:var(--bf)">&#x1F4AC; СООБЩЕНИЕ</span>';
     var bkRefBadge = enq.booking_ref
-      ? '<span style="font-size:10px;font-weight:700;background:#eef5ec;color:#1a5030;border:1px solid #b0d0a8;border-radius:4px;padding:2px 7px;font-family:var(--bf)">&#x1F4CB; ' + enq.booking_ref + '</span>'
+      ? '<span style="font-size:10px;font-weight:700;background:#eef5ec;color:#1a5030;border:1px solid #b0d0a8;border-radius:4px;padding:2px 7px;font-family:var(--bf)">&#x1F4CB;' + enq.booking_ref + '</span>'
       : '';
 
     var dateRange = '';
     if (isPriv && enq.preferred_from) {
       dateRange = fmtD(enq.preferred_from);
-      if (enq.preferred_to && enq.preferred_to !== enq.preferred_from) dateRange += ' \u2192 ' + fmtD(enq.preferred_to);
+      if (enq.preferred_to && enq.preferred_to !== enq.preferred_from) dateRange += '\u2192' + fmtD(enq.preferred_to);
     }
     var paxStr = '';
     if (isPriv) {
-      paxStr = (enq.adults||1) + ' adult' + ((enq.adults||1)!==1?'s':'');
-      if (enq.children) paxStr += ', ' + enq.children + ' child' + (enq.children!==1?'ren':'');
+      var a = (enq.adults||1); paxStr = a + ' ' + (a===1?'взрослый':a<5?'взрослых':'взрослых');
+      if (enq.children) { var ch=enq.children; paxStr += ', ' + ch + ' ' + (ch===1?'ребёнок':ch<5?'ребёнка':'детей'); }
     }
 
     // ── Last message preview ──────────────────────────────────────────────────
@@ -1395,17 +1368,17 @@ function renderMessages() {
     var lastIsFromTourist = false;
     if (lastMsg) {
       lastIsFromTourist = !lastMsg.isOp;
-      var rawPrev = (lastMsg.isOp ? 'You: ' : senderName + ': ') + (lastMsg.body || '');
-      lastPreview = rawPrev.length > 68 ? rawPrev.slice(0, 68) + '\u2026' : rawPrev;
+      var rawPrev = (lastMsg.isOp ? 'Вы' : senderName + ': ') + (lastMsg.body || '');
+      lastPreview = rawPrev.length > 68 ? rawPrev.slice(0, 68) + '…' : rawPrev;
     }
 
     // NEW badge: show when unread. If last msg is from tourist, highlight preview too.
     var newBadge = isUnread
-      ? '<span style="font-size:10px;font-weight:800;background:#e03030;color:#fff;border-radius:4px;padding:2px 8px;font-family:var(--bf);vertical-align:middle">NEW</span>'
+      ? '<span style="font-size:10px;font-weight:800;background:#e03030;color:#fff;border-radius:4px;padding:2px 8px;font-family:var(--bf);vertical-align:middle">НОВОЕ</span>'
       : '';
 
     return '<div class="msg-card" id="msg-card-' + enq.id + '" '
-      + 'style="border-left:3px solid ' + (isUnread ? '#e03030' : (hasReply ? '#2e9e5a' : 'var(--ln)')) + '" '
+      + 'style="border-left:3px solid' + (isUnread ? '#e03030' : (hasReply ? '#2e9e5a' : 'var(--ln)')) + '" '
       + 'onclick="toggleMsgCard(' + enq.id + ')">'
       // Header
       + '<div style="display:flex;align-items:center;gap:12px">'
@@ -1419,8 +1392,8 @@ function renderMessages() {
       + '</div>'
       + '<div style="font-size:12px;color:var(--mu);font-family:var(--bf);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
       + '<span style="color:var(--ink);opacity:.8">' + tourTitle + '</span>'
-      + (dateRange ? ' &nbsp;\u00b7&nbsp; &#x1F4C5; ' + dateRange : '')
-      + (paxStr    ? ' &nbsp;\u00b7&nbsp; &#x1F465; ' + paxStr    : '')
+      + (dateRange ? '&nbsp;\u00b7&nbsp; &#x1F4C5;' + dateRange : '')
+      + (paxStr    ? '&nbsp;\u00b7&nbsp; &#x1F465;' + paxStr    : '')
       + '</div>'
       + (lastPreview ? '<div style="font-size:11.5px;font-family:var(--bf);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;color:' + (lastIsFromTourist && isUnread ? 'var(--ink)' : 'var(--mu)') + ';font-weight:' + (lastIsFromTourist && isUnread ? '600' : '400') + '">' + lastPreview + '</div>' : '')
       + '</div>'
@@ -1428,9 +1401,9 @@ function renderMessages() {
       + '<div style="font-size:11px;color:var(--mu);font-family:var(--bf)">' + (enq.created_at ? relTime(enq.created_at) : '') + '</div>'
       + (hasReply
           ? '<div style="font-size:11px;color:' + (lastIsFromTourist && isUnread ? '#e03030' : '#1a7030') + ';font-weight:600;margin-top:2px">'
-            + (lastIsFromTourist && isUnread ? '&#x21A9; Reply needed' : '&#x2713; Replied')
+            + (lastIsFromTourist && isUnread ? '&#x21A9; Требуется ответ' : '&#x2713; Ответил')
             + '</div>'
-          : '<div style="font-size:11px;color:#9a6030;font-weight:600;margin-top:2px">&#x23F3; New request</div>')
+          : '<div style="font-size:11px;color:#9a6030;font-weight:600;margin-top:2px">&#x23F3; Новый запрос</div>')
       + '<div class="msg-card-chevron">&#x2304;</div>'
       + '</div>'
       + '</div>'
@@ -1442,31 +1415,31 @@ function renderMessages() {
           // Initial tourist message
           if (enq.message) {
             t += '<div style="margin-bottom:10px">'
-              + '<div style="font-size:11px;font-weight:600;color:var(--mu);font-family:var(--bf);margin-bottom:3px">' + senderName + ' &middot; ' + relTime(enq.created_at) + '</div>'
+              + '<div style="font-size:11px;font-weight:600;color:var(--mu);font-family:var(--bf);margin-bottom:3px">' + senderName + '&middot;' + relTime(enq.created_at) + '</div>'
               + '<div style="padding:10px 14px;background:var(--paper);border:1px solid var(--ln);border-radius:7px;font-size:13px;color:var(--ink);line-height:1.65;font-family:var(--bf)">' + (enq.message||'') + '</div>'
               + '</div>';
           }
           // Replies
           var replies = (enq.replies && enq.replies.length)
             ? enq.replies
-            : (enq.operator_reply ? [{ body: enq.operator_reply, is_operator: true, sender_name: 'You', created_at: enq.replied_at }] : []);
+            : (enq.operator_reply ? [{ body: enq.operator_reply, is_operator: true, sender_name: 'Вы', created_at: enq.replied_at }] : []);
           replies.forEach(function(r) {
             if (r.is_operator) {
               t += '<div style="margin-bottom:10px">'
-                + '<div style="font-size:11px;font-weight:600;color:var(--mu);font-family:var(--bf);margin-bottom:3px;text-align:right">You &middot; ' + (r.created_at ? relTime(r.created_at) : '') + '</div>'
+                + '<div style="font-size:11px;font-weight:600;color:var(--mu);font-family:var(--bf);margin-bottom:3px;text-align:right">Вы &middot;' + (r.created_at ? relTime(r.created_at) : '') + '</div>'
                 + '<div style="padding:10px 14px;background:var(--ha-bg);border-left:3px solid var(--ac);border-radius:0 8px 8px 0;font-size:13px;color:var(--ink);line-height:1.65;font-family:var(--bf)">' + (r.body||'') + '</div>'
                 + '</div>';
             } else {
               t += '<div style="margin-bottom:10px">'
-                + '<div style="font-size:11px;font-weight:600;color:var(--mu);font-family:var(--bf);margin-bottom:3px">' + (r.sender_name||senderName) + ' &middot; ' + (r.created_at ? relTime(r.created_at) : '') + '</div>'
+                + '<div style="font-size:11px;font-weight:600;color:var(--mu);font-family:var(--bf);margin-bottom:3px">' + (r.sender_name||senderName) + '&middot;' + (r.created_at ? relTime(r.created_at) : '') + '</div>'
                 + '<div style="padding:10px 14px;background:var(--paper);border:1px solid var(--ln);border-radius:7px;font-size:13px;color:var(--ink);line-height:1.65;font-family:var(--bf)">' + (r.body||'') + '</div>'
                 + '</div>';
             }
           });
           // Reply input
           t += '<div onclick="event.stopPropagation()" style="margin-top:10px">'
-            + '<textarea id="enq-rta-' + enq.id + '" style="width:100%;min-height:70px;padding:9px 12px;border:1.5px solid var(--ln);border-radius:7px;font-size:13px;font-family:var(--bf);resize:vertical;box-sizing:border-box;outline:none" placeholder="Write a reply\u2026"></textarea>'
-            + '<div style="margin-top:6px;text-align:right"><button class="btn-sm filled" onclick="event.stopPropagation();replyEnquiry(' + enq.id + ')">Send</button></div>'
+            + '<textarea id="enq-rta-' + enq.id + '" style="width:100%;min-height:70px;padding:9px 12px;border:1.5px solid var(--ln);border-radius:7px;font-size:13px;font-family:var(--bf);resize:vertical;box-sizing:border-box;outline:none" placeholder="Напишите ответ…"></textarea>'
+            + '<div style="margin-top:6px;text-align:right"><button class="btn-sm filled" onclick="event.stopPropagation();replyEnquiry(' + enq.id + ')">Отправить</button></div>'
             + '</div>';
           return t;
         })()
@@ -1586,7 +1559,7 @@ async function replyEnquiry(id) {
     if (r.ok) {
       _enquiries = _enquiries.map(function(e) {
         if (e.id === id) {
-          var newR = { body: reply, is_operator: true, sender_name: 'You', created_at: new Date().toISOString() };
+          var newR = { body: reply, is_operator: true, sender_name: 'Вы', created_at: new Date().toISOString() };
           return Object.assign({}, e, {
             operator_reply: reply, read_by_operator: true,
             replies: (e.replies || []).concat([newR])
@@ -1596,10 +1569,10 @@ async function replyEnquiry(id) {
       });
       renderMessages();
     } else {
-      showToast('Could not save reply. Try again.', 'error');
+      showToast('Не удалось сохранить ответ. Попробуйте снова.', 'error');
     }
   } catch(e) {
-    showToast('Could not reach server.', 'error');
+    showToast('Не удалось подключиться к серверу.', 'error');
   }
 }
 
@@ -1659,11 +1632,11 @@ function renderOverview() {
   var u = null;
   try { u = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch(e) {}
   var checks = [
-    { label:'Profile photo & bio', sub:'Travellers trust guides they can see', done: !!(u && u.avatar && u.bio), action:'settings.html' },
-    { label:'Identity verification', sub:'Upload passport or national ID', done: !!(u && u.is_verified), action:'settings.html#verification', id:'identity' },
-    { label:'Guide credentials', sub:'Certificates, past tour proof', done: !!(u && u.credentials_files && u.credentials_files.length), action:'settings.html#credentials' },
-    { label:'Payout method', sub:'Bank details for your earnings', done: !!(u && u.payout_account), action:'settings.html#payout' },
-    { label:'Phone number', sub:'For verification and urgent contact', done: !!(u && u.phone), action:'settings.html' }
+    { label:'Фото профиля и био', sub:'Путешественники доверяют гидам, которых они видят', done: !!(u && u.avatar && u.bio), action:'settings_ru.html' },
+    { label:'Проверка личности', sub:'Загрузите паспорт или национальное удостоверение личности', done: !!(u && u.is_verified), action:'settings_ru.html#verification', id:'identity' },
+    { label:'Квалификация гида', sub:'Сертификаты, подтверждение проведённых туров', done: !!(u && u.credentials_files && u.credentials_files.length), action:'settings_ru.html#credentials' },
+    { label:'Способ получения платежей', sub:'Реквизиты банка для ваших доходов', done: !!(u && u.payout_account), action:'settings_ru.html#payout' },
+    { label:'Номер телефона', sub:'Для проверки и срочного контакта', done: !!(u && u.phone), action:'settings_ru.html' }
   ];
   var done = checks.filter(function(c){ return c.done; }).length;
   var prog = document.getElementById('setupProgress');
@@ -1680,9 +1653,9 @@ function renderOverview() {
         + '<div' + icoAttr + ' class="checklist-ico ' + cls + '">' + ico + '</div>'
         + '<div style="flex:1"><div class="checklist-label">' + c.label + '</div>'
         + '<div class="checklist-sub">' + c.sub + '</div></div>'
-        + (c.done ? '<span' + doneAttr + ' style="font-size:12px;color:#2a8a40;font-family:var(--bf)">&#x2714; Done</span>'
-                  : '<span' + doneAttr + ' style="font-size:12px;color:#2a8a40;font-family:var(--bf);display:none">&#x2714; Done</span>'
-                    + '<a' + actionAttr + ' class="checklist-action" href="' + c.action + '">Set up</a>')
+        + (c.done ? '<span' + doneAttr + ' style="font-size:12px;color:#2a8a40;font-family:var(--bf)">&#x2714; Выполнено</span>'
+                  : '<span' + doneAttr + ' style="font-size:12px;color:#2a8a40;font-family:var(--bf);display:none">&#x2714; Выполнено</span>'
+                    + '<a' + actionAttr + ' class="checklist-action" href="' + c.action + '">Настроить</a>')
         + '</div>';
     }).join('');
   }
@@ -1697,17 +1670,17 @@ function renderOverview() {
   }).sort(function(a,b){ return new Date(a.departure_date) - new Date(b.departure_date); });
   var upEl   = document.getElementById('upcomingList');
   var upNote = document.getElementById('upcomingNote');
-  if (upNote) upNote.textContent = upcoming.length ? upcoming.length + ' departure' + (upcoming.length!==1?'s':'') + ' in the next 30 days' : '';
+  if (upNote) upNote.textContent = upcoming.length ? upcoming.length + ' departure' + (upcoming.length!==1?'s':'') + 'в течение 30 дней' : '';
   if (upEl) {
     if (!upcoming.length) {
-      upEl.innerHTML = '<div style="font-size:13px;color:var(--mu);font-family:var(--bf);padding:8px 0">No departures in the next 30 days.</div>';
+      upEl.innerHTML = '<div style="font-size:13px;color:var(--mu);font-family:var(--bf);padding:8px 0">Нет отправлений в течение 30 дней.</div>';
     } else {
       upEl.innerHTML = upcoming.map(function(b) {
         var t = b.tour_detail || {};
         return '<div class="upcoming-item">'
-          + '<div><div class="upcoming-tour">' + (t.title||'Tour') + '</div>'
-          + '<div class="upcoming-meta">&#x1F465; ' + ((b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0))) + ' guest' + (((b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0)))!==1?'s':'') + ' &nbsp;&middot;&nbsp; Ref: ' + (b.reference||('#'+b.id)) + '</div></div>'
-          + '<div class="upcoming-date">&#x1F4C5; ' + fmtD(b.departure_date) + '</div>'
+          + '<div><div class="upcoming-tour">' + (t.title||'Тур') + '</div>'
+          + (function(){ var g=(b.guests!==undefined?b.guests:(b.adults||1)+(b.children||0)+(b.infants||0)); return '<div class="upcoming-meta">&#x1F465;' + g + ' ' + (g===1?'гость':g<5?'гостя':'гостей') + '&nbsp;&middot;&nbsp; Ref:' + (b.reference||('#'+b.id)) + '</div></div>'; })()
+          + '<div class="upcoming-date">&#x1F4C5;' + fmtD(b.departure_date) + '</div>'
           + '</div>';
       }).join('');
     }
@@ -1715,7 +1688,7 @@ function renderOverview() {
 
   // Recent bookings (last 5)
   var obl = document.getElementById('ovBkList');
-  if (obl) obl.innerHTML = _bookings.length ? _bookings.slice(0,5).map(function(b){ return bkCard(b, true); }).join('') : '<div style="font-size:13px;color:var(--mu);font-family:var(--bf);padding:10px 0">No bookings yet.</div>';
+  if (obl) obl.innerHTML = _bookings.length ? _bookings.slice(0,5).map(function(b){ return bkCard(b, true); }).join('') : '<div style="font-size:13px;color:var(--mu);font-family:var(--bf);padding:10px 0">Бронирований ещё нет.</div>';
 }
 function renderTours() { filterTours(); }
 function filterTours() {
@@ -1740,7 +1713,7 @@ function filterTours() {
     if (emptyEl) emptyEl.style.display = 'block';
   } else {
     if (emptyEl) emptyEl.style.display = 'none';
-    document.getElementById('tourList').innerHTML = list.length ? list.map(tourCard).join('') : emptyState('&#x1F9ED;','No tours','No tours with this status.','+ New tour','operator-tour-create.html');
+    document.getElementById('tourList').innerHTML = list.length ? list.map(tourCard).join('') : emptyState('&#x1F9ED;','Нет туров','Нет туров с этим статусом.','+ Новый тур','operator-tour-create_ru.html');
   }
 }
 
@@ -1748,8 +1721,8 @@ function tourCard(t) {
   var isLive = t.status === 'live' || t.is_published === true;
   var st  = { live:'published', draft:'draft', review:'review',
               paused:'paused', archived:'archived' }[t.status] || (isLive ? 'published' : 'draft');
-  var stl = { published:'Live', draft:'Draft', review:'In review',
-              paused:'Paused', archived:'Archived' }[st] || st;
+  var stl = { published:'Опубликован', draft:'Черновик', review:'На рассмотрении',
+              paused:'Приостановлен', archived:'В архиве' }[st] || st;
   var slug = t.slug || '';
   // Thumbnail: fixed square crop — no stretching
   var heroHtml = '<div class="tc-thumb">'
@@ -1758,43 +1731,43 @@ function tourCard(t) {
       : '<div class="tc-thumb-empty">' + (t.title||'').split(' ').slice(0,2).join(' ') + '</div>')
     + '</div>';
   // Private tour lock badge and copy-link button
-  var lockBadge  = t.is_private ? ' <span style="font-size:13px" title="Private tour">&#x1F512;</span>' : '';
+  var lockBadge  = t.is_private ? '<span style="font-size:13px" title="Private tour">&#x1F512;</span>' : '';
   var copyLinkBtn = t.is_private
-    ? '<button class="btn-sm" id="copy-link-' + slug + '" onclick="copyTourLink(\'' + slug + '\')" style="border-color:var(--ac);color:var(--ac)">&#x1F517; Copy link</button>'
+    ? '<button class="btn-sm" id="copy-link-' + slug + '" onclick="copyTourLink(\'' + slug + '\')" style="border-color:var(--ac);color:var(--ac)">&#x1F517; Копировать ссылку</button>'
     : '';
   // 8.2 — dynamic subtitle parts
   var subParts = [];
-  subParts.push(t.destination ? t.destination : '<span style="color:var(--mu)">Destination not set</span>');
+  subParts.push(t.destination ? t.destination : '<span style="color:var(--mu)">Направление не указано</span>');
   var price = parseFloat(t.price_adult || t.price || 0);
-  var priceStr = price > 0 ? fmtP(price) + '/person' : '<span style="color:var(--mu)">Price not set</span>';
+  var priceStr = price > 0 ? fmtP(price) + '/чел.' : '<span style="color:var(--mu)">Цена не указана</span>';
   if (price > 0 && t.price_child) {
     var childP = parseInt(parseFloat(t.price_child));
-    priceStr += ' &middot; Child ' + fmtP(childP);
+    priceStr += '&middot; Дети ' + fmtP(childP);
   }
   subParts.push(priceStr);
-  if (t.days && parseInt(t.days) > 0) subParts.push(parseInt(t.days) + ' day' + (parseInt(t.days)!==1?'s':''));
-  var subtitle = subParts.join(' &middot; ');
+  if (t.days && parseInt(t.days) > 0) { var d = parseInt(t.days); subParts.push(d + ' ' + (d===1?'день':d<5?'дня':'дней')); }
+  var subtitle = subParts.join('&middot;');
   // Last edited relative time
   var lastEdited = '';
   if (t.updated_at) {
     var diff = Math.floor((Date.now() - new Date(t.updated_at).getTime()) / 1000);
-    if (diff < 60) lastEdited = 'just now';
-    else if (diff < 3600) lastEdited = Math.floor(diff/60) + ' minute' + (Math.floor(diff/60)!==1?'s':'') + ' ago';
-    else if (diff < 86400) lastEdited = Math.floor(diff/3600) + ' hour' + (Math.floor(diff/3600)!==1?'s':'') + ' ago';
-    else if (diff < 86400*2) lastEdited = 'yesterday';
-    else if (diff < 86400*30) lastEdited = Math.floor(diff/86400) + ' days ago';
-    else lastEdited = new Date(t.updated_at).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
-    lastEdited = 'Last edited ' + lastEdited;
+    if (diff < 60) lastEdited = 'только что';
+    else if (diff < 3600) { var m=Math.floor(diff/60); lastEdited = m + ' ' + (m===1?'минуту':m<5?'минуты':'минут') + ' назад'; }
+    else if (diff < 86400) { var h=Math.floor(diff/3600); lastEdited = h + ' ' + (h===1?'час':h<5?'часа':'часов') + ' назад'; }
+    else if (diff < 86400*2) lastEdited = 'вчера';
+    else if (diff < 86400*30) { var dd=Math.floor(diff/86400); lastEdited = dd + ' ' + (dd===1?'день':dd<5?'дня':'дней') + ' назад'; }
+    else lastEdited = new Date(t.updated_at).toLocaleDateString('ru-RU', {day:'numeric',month:'short',year:'numeric'});
+    lastEdited = 'Последнее редактирование ' + lastEdited;
   }
   // Next departure chip
   var nextDep = '';
   if (t.next_departure && t.next_departure.start) {
     var nd = new Date(t.next_departure.start + 'T00:00:00');
-    var mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var mos = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
     nextDep = '&#128197; ' + nd.getDate() + ' ' + mos[nd.getMonth()];
-    if (t.next_departure.spots_left != null) nextDep += ' &middot; ' + t.next_departure.spots_left + ' spots';
+    if (t.next_departure.spots_left != null) nextDep += '&middot;' + t.next_departure.spots_left + ' мест';
   }
-  var bookingCount = t.booking_count != null ? '&#128467; ' + t.booking_count + ' booking' + (t.booking_count !== 1 ? 's' : '') : '';
+  var bookingCount = t.booking_count != null ? '&#128467; ' + t.booking_count + ' ' + (t.booking_count === 1 ? 'бронирование' : t.booking_count < 5 ? 'бронирования' : 'бронирований') : '';
 
   return '<div class="tour-card">'
     + heroHtml
@@ -1803,7 +1776,7 @@ function tourCard(t) {
     // row 1: title + status badge
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">'
     + '<div class="tour-card-title" style="margin-bottom:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + t.title + lockBadge + '</div>'
-    + '<span class="tour-status ' + st + '" style="flex-shrink:0">' + stl + '</span>'
+    + '<span class="tour-status' + st + '" style="flex-shrink:0">' + stl + '</span>'
     + '</div>'
     // row 2: destination · price · days
     + '<div class="tour-card-meta" style="margin-bottom:4px">' + subtitle + '</div>'
@@ -1818,18 +1791,18 @@ function tourCard(t) {
     // actions column: Edit+Preview grouped, then status actions
     + '<div class="tour-card-actions" style="flex-direction:column;align-items:flex-end;gap:4px;border-left:1px solid var(--ln);padding-left:16px;margin-left:4px">'
     + '<div style="display:flex;gap:6px">'
-    + '<a class="btn-sm filled" href="operator-tour-create.html?slug=' + slug + '">Edit</a>'
-    + '<a class="btn-sm" href="tour_detail_page.html?slug=' + slug + '&from=operator">Preview</a>'
+    + '<a class="btn-sm filled" href="operator-tour-create.html?slug=' + slug + '">Редактировать</a>'
+    + '<a class="btn-sm" href="tour_detail_page.html?slug=' + slug + '&from=operator">Предпросмотр</a>'
     + copyLinkBtn
     + '</div>'
     + '<div style="border-top:1px solid var(--ln);margin:4px 0;width:100%"></div>'
     + '<div style="display:flex;gap:6px">'
-    + (t.status === 'draft' ? '<button class="btn-sm" style="border-color:var(--ac);color:var(--ac)" onclick="publishTour(\'' + slug + '\')">Submit for review</button>' : '')
-    + (t.status === 'review' ? '<button class="btn-sm" style="border-color:#9a9a9a;color:#9a9a9a;cursor:default;opacity:.6" disabled title="Already submitted — under admin review">In review…</button>' : '')
-    + (t.status === 'live' ? '<button class="btn-sm" style="border-color:#9a6000;color:#9a6000" onclick="pauseTour(\'' + slug + '\')">Pause</button>' : '')
-    + (t.status === 'paused' ? '<button class="btn-sm" style="border-color:var(--ac);color:var(--ac)" onclick="unpauseTour(\'' + slug + '\')">Unpause</button>' : '')
-    + (t.status === 'draft' || t.status === 'review' ? '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="deleteDraftTour(\'' + slug + '\')">Delete</button>' : '')
-    + (t.status === 'live' || t.status === 'paused' ? '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="deleteTour(\'' + slug + '\')">Archive</button>' : '')
+    + (t.status === 'draft' ? '<button class="btn-sm" style="border-color:var(--ac);color:var(--ac)" onclick="publishTour(\'' + slug + '\')">Отправить на проверку</button>' : '')
+    + (t.status === 'review' ? '<button class="btn-sm" style="border-color:#9a9a9a;color:#9a9a9a;cursor:default;opacity:.6" disabled title="Already submitted — under admin review">На проверке…</button>' : '')
+    + (t.status === 'live' ? '<button class="btn-sm" style="border-color:#9a6000;color:#9a6000" onclick="pauseTour(\'' + slug + '\')">Пауза</button>' : '')
+    + (t.status === 'paused' ? '<button class="btn-sm" style="border-color:var(--ac);color:var(--ac)" onclick="unpauseTour(\'' + slug + '\')">Возобновить</button>' : '')
+    + (t.status === 'draft' || t.status === 'review' ? '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="deleteDraftTour(\'' + slug + '\')">Удалить</button>' : '')
+    + (t.status === 'live' || t.status === 'paused' ? '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="deleteTour(\'' + slug + '\')">Архивировать</button>' : '')
     + '</div>'
     + '</div>'
     + '</div></div>';
@@ -1839,7 +1812,7 @@ function copyTourLink(slug) {
   var link = window.location.origin + '/tour_detail_page.html?slug=' + slug;
   var btn  = document.getElementById('copy-link-' + slug);
   navigator.clipboard.writeText(link).then(function() {
-    if (btn) { btn.textContent = 'Copied!'; setTimeout(function(){ btn.innerHTML = '&#x1F517; Copy link'; }, 2000); }
+    if (btn) { btn.textContent = 'Скопировано!'; setTimeout(function(){ btn.innerHTML = '&#x1F517; Скопировать ссылку'; }, 2000); }
   }).catch(function() {
     // Fallback for older browsers
     var ta = document.createElement('textarea');
@@ -1847,7 +1820,7 @@ function copyTourLink(slug) {
     document.body.appendChild(ta); ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
-    if (btn) { btn.textContent = 'Copied!'; setTimeout(function(){ btn.innerHTML = '&#x1F517; Copy link'; }, 2000); }
+    if (btn) { btn.textContent = 'Скопировано!'; setTimeout(function(){ btn.innerHTML = '&#x1F517; Скопировать ссылку'; }, 2000); }
   });
 }
 
@@ -1858,27 +1831,27 @@ async function publishTour(slug) {
     if (!tr.ok) throw new Error('fetch');
     var t = await tr.json();
     var missing = [];
-    if (!t.title || t.title.startsWith('Untitled tour')) missing.push('Tour name');
-    if (!t.categories || !t.categories.length) missing.push('Category (select at least one)');
-    if (!t.difficulty) missing.push('Difficulty');
-    if (!t.country) missing.push('Country');
-    if (!t.destination) missing.push('Destination / city');
-    if (!((t.price_adult || t.price) > 0)) missing.push('Price per person (must be > 0)');
-    if (!(t.max_group > 0)) missing.push('Max group size');
-    if (!(t.description || '').replace(/<[^>]*>/g, '').trim()) missing.push('Full tour description');
-    if (!t.departures || !t.departures.length) missing.push('At least 1 departure date');
-    if (!t.itinerary || !t.itinerary.some(function(d){ return d.title; })) missing.push('At least 1 itinerary day with a title');
-    if (!t.photos || t.photos.length < 3) missing.push('At least 3 photos (currently: ' + (t.photos ? t.photos.length : 0) + ')');
+    if (!t.title || t.title.startsWith('Без названия')) missing.push('Название тура');
+    if (!t.categories || !t.categories.length) missing.push('Категория (выберите хотя бы одну)');
+    if (!t.difficulty) missing.push('Уровень сложности');
+    if (!t.country) missing.push('Страна');
+    if (!t.destination) missing.push('Направление / город');
+    if (!((t.price_adult || t.price) > 0)) missing.push('Цена за человека (должна быть > 0)');
+    if (!(t.max_group > 0)) missing.push('Максимальный размер группы');
+    if (!(t.description || '').replace(/<[^>]*>/g, '').trim()) missing.push('Полное описание тура');
+    if (!t.departures || !t.departures.length) missing.push('Минимум 1 дата отправления');
+    if (!t.itinerary || !t.itinerary.some(function(d){ return d.title; })) missing.push('Минимум 1 день маршрута с названием');
+    if (!t.photos || t.photos.length < 3) missing.push('Минимум 3 фото (сейчас:' + (t.photos ? t.photos.length : 0) + ')');
     if (missing.length) {
       // Show blocking modal with missing fields list
       var d = document.getElementById('confirmDialog');
       document.getElementById('confirmDialogIcon').textContent = '⚠️';
-      document.getElementById('confirmDialogTitle').textContent = 'This tour cannot be submitted yet';
+      document.getElementById('confirmDialogTitle').textContent = 'Этот тур пока не может быть отправлен';
       document.getElementById('confirmDialogMsg').innerHTML =
-        'Please fill in the following before submitting:<br><br>'
+        'Пожалуйста, заполните следующее перед отправкой:<br><br>'
         + missing.map(function(m){ return '• ' + m; }).join('<br>');
       var okBtn = document.getElementById('confirmDialogOk');
-      okBtn.textContent = 'Edit tour →';
+      okBtn.textContent = 'Редактировать тур →';
       okBtn.style.background = 'var(--ac)';
       okBtn.style.color = 'var(--ink)';
       d.style.display = 'flex';
@@ -1892,24 +1865,24 @@ async function publishTour(slug) {
     }
   } catch(e) {
     console.warn('publishTour validation fetch failed:', e);
-    showToast('Could not load tour data for validation. Please try again.', 'error');
+    showToast('Не удалось загрузить данные тура для проверки. Пожалуйста, попробуйте снова.', 'error');
     return;
   }
 
-  var ok = await showConfirm({ icon:'📋', title:'Submit for review?', msg:'Your tour will be sent to admin for review. It will go live once approved.', ok:'Submit' });
+  var ok = await showConfirm({ icon:'📋', title:'Отправить на проверку?', msg:'Ваш тур будет отправлен администратору на проверку. Он будет доступен после одобрения.', ok:'Отправить' });
   if (!ok) return;
   try {
     var r = await fetchAuth(ACCT_API + '/tours/' + slug + '/publish/', { method:'PATCH', headers:ah() });
     var d = await r.json();
-    if (!r.ok) { showToast('Error: ' + (d.detail || r.status), 'error'); return; }
-    showToast('Tour submitted for review!', 'success');
+    if (!r.ok) { showToast('Ошибка:' + (d.detail || r.status), 'error'); return; }
+    showToast('Тур отправлен на проверку!', 'success');
     loadTours();
-  } catch(e) { showToast('Could not reach server.', 'error'); }
+  } catch(e) { showToast('Не удалось связаться с сервером.', 'error'); }
 }
 
 async function deleteTour(slug) {
   var t = _tours.find(function(x){ return x.slug === slug; });
-  var name = t ? (t.title || 'this tour') : 'this tour';
+  var name = t ? (t.title || 'этот тур') : 'этот тур';
   // Block if future confirmed bookings exist
   var futureBks = _bookings.filter(function(b){
     return (b.tour_slug === slug || (b.tour_detail && b.tour_detail.slug === slug))
@@ -1917,64 +1890,64 @@ async function deleteTour(slug) {
   });
   if (futureBks.length) {
     await showConfirm({
-      icon:'⚠️', title:'Cannot archive yet',
-      msg:'You have ' + futureBks.length + ' confirmed booking' + (futureBks.length!==1?'s':'') + ' with future departure dates. Please cancel those bookings first before archiving this tour.',
-      ok:'OK', danger:false
+      icon:'⚠️', title:'Архивирование невозможно',
+      msg:'У вас есть' + futureBks.length + 'подтверждённое бронирование' + (futureBks.length!==1?'s':'') + 'с будущими датами отправления. Пожалуйста, сначала отмените эти бронирования перед архивированием тура.',
+      ok:'ОК', danger:false
     });
     return;
   }
   var ok = await showConfirm({
-    icon:'📦', title:'Archive "' + name + '"?',
-    msg:'This tour will be hidden from travellers and no new bookings will be accepted. Existing confirmed bookings remain valid. You can view archived tours by selecting \'Archived\' in the filter. This action can be reversed by contacting support.',
-    ok:'Archive tour', danger:true
+    icon:'📦', title:'Архивировать "' + name + '"?',
+    msg:'Этот тур будет скрыт от путешественников, и новые бронирования приниматься не будут. Существующие подтверждённые бронирования остаются действительными. Вы можете просматривать архивированные туры, выбрав «Архивированные» в фильтре. Это действие можно отменить, обратившись в службу поддержки.',
+    ok:'Архивировать тур', danger:true
   });
   if (!ok) return;
   const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', { method:'DELETE', headers:ah() });
-  if (r.status === 204) { showToast('Tour archived.', 'success'); loadTours(); }
-  else if (r.status === 409) { const d = await r.json().catch(()=>({})); showToast(d.detail || 'Active bookings exist — cancel them first.', 'error'); }
-  else { showToast('Could not archive tour.', 'error'); }
+  if (r.status === 204) { showToast('Тур архивирован.', 'success'); loadTours(); }
+  else if (r.status === 409) { const d = await r.json().catch(()=>({})); showToast(d.detail || 'Существуют активные бронирования — сначала отмените их.', 'error'); }
+  else { showToast('Не удалось архивировать тур.', 'error'); }
 }
 async function deleteDraftTour(slug) {
   var t = _tours.find(function(x){ return x.slug === slug; });
-  var name = t ? (t.title || 'this draft') : 'this draft';
+  var name = t ? (t.title || 'этот черновик') : 'этот черновик';
   var ok = await showConfirm({
-    icon:'🗑️', title:'Delete "' + name + '"?',
-    msg:'This will permanently remove this tour. This cannot be undone.',
-    ok:'Delete permanently', danger:true
+    icon:'🗑️', title:'Удалить "' + name + '"?',
+    msg:'Это навсегда удалит этот тур. Это действие невозможно отменить.',
+    ok:'Удалить навсегда', danger:true
   });
   if (!ok) return;
   const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', { method:'DELETE', headers:ah() });
-  if (r.ok || r.status === 204) { showToast('Draft deleted.','success'); loadTours(); }
-  else showToast('Could not delete draft.','error');
+  if (r.ok || r.status === 204) { showToast('Черновик удалён.','success'); loadTours(); }
+  else showToast('Не удалось удалить черновик.','error');
 }
 async function pauseTour(slug) {
   var t = _tours.find(function(x){ return x.slug === slug; });
-  var name = t ? (t.title || 'this tour') : 'this tour';
-  var ok = await showConfirm({ icon:'⏸️', title:'Pause "' + name + '"?', msg:'It will be hidden from public listings. Existing bookings remain valid.', ok:'Pause tour' });
+  var name = t ? (t.title || 'этот тур') : 'этот тур';
+  var ok = await showConfirm({ icon:'⏸️', title:'Пауза "' + name + '"?', msg:'Он будет скрыт из публичного списка. Существующие бронирования остаются действительными.', ok:'Поставить тур на паузу' });
   if (!ok) return;
   const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', {
     method:'PATCH', headers:ah(), body:JSON.stringify({status:'paused'})
   });
-  if (r.ok) { showToast('Tour paused.','success'); loadTours(); }
-  else showToast('Could not pause tour.','error');
+  if (r.ok) { showToast('Тур поставлен на паузу.','success'); loadTours(); }
+  else showToast('Не удалось поставить тур на паузу.','error');
 }
 async function unpauseTour(slug) {
   var t = _tours.find(function(x){ return x.slug === slug; });
-  var name = t ? (t.title || 'this tour') : 'this tour';
-  var ok = await showConfirm({ icon:'▶️', title:'Unpause "' + name + '"?', msg:'The tour will go back to Live and be visible to travellers.', ok:'Unpause' });
+  var name = t ? (t.title || 'этот тур') : 'этот тур';
+  var ok = await showConfirm({ icon:'▶️', title:'Возобновить "' + name + '"?', msg:'Тур вернётся в статус «Активный» и будет виден путешественникам.', ok:'Возобновить' });
   if (!ok) return;
   const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', {
-    method:'PATCH', headers:ah(), body:JSON.stringify({status:'live'})
+    method:'PATCH', headers:ah(), body:JSON.stringify({status:'активный'})
   });
-  if (r.ok) { showToast('Tour is now live.','success'); loadTours(); }
-  else showToast('Could not unpause.','error');
+  if (r.ok) { showToast('Тур теперь активен.','success'); loadTours(); }
+  else showToast('Не удалось возобновить.','error');
 }
 
 function renderBookings() { filterBookings(); }
 function filterBookings() {
   var f = document.getElementById('bkFilter').value;
-  var list = f === 'all' ? _bookings : _bookings.filter(function(b){ return b.status===f; });
-  document.getElementById('bkList').innerHTML = list.length ? list.map(function(b){ return bkCard(b, false); }).join('') : emptyState('&#x1F4CB;','No bookings','Bookings from travellers will appear here.','','');
+  var list = f === 'все' ? _bookings : _bookings.filter(function(b){ return b.status===f; });
+  document.getElementById('bkList').innerHTML = list.length ? list.map(function(b){ return bkCard(b, false); }).join('') : emptyState('&#x1F4CB;','Нет бронирований','Бронирования от путешественников будут отображаться здесь.','','');
   // Restore previously open cards after re-render
   Object.keys(_bkExpanded).forEach(function(id) {
     if (_bkExpanded[id]) {
@@ -1982,7 +1955,7 @@ function filterBookings() {
       var btn  = document.getElementById('bkb-' + id);
       var card = document.getElementById('bk-' + id);
       if (el)   el.classList.add('open');
-      if (btn)  btn.textContent = 'Hide details \u25B4';
+      if (btn)  btn.textContent = 'Скрыть детали \u25B4';
       if (card) card.classList.add('expanded');
     }
   });
@@ -1996,13 +1969,13 @@ function toggleBkDetail(id) {
   if (!el) return;
   var open = el.classList.toggle('open');
   _bkExpanded[id] = open;
-  if (btn) btn.textContent = open ? 'Hide details \u25B4' : 'Details \u25BE';
+  if (btn) btn.textContent = open ? 'Скрыть детали \u25B4' : 'Детали \u25BE';
   if (card) card.classList.toggle('expanded', open);
 }
 
 function bkCard(b, compact) {
   var t  = b.tour_detail || {};
-  var tourTitle = b.tour_title || t.title || 'Unknown tour';
+  var tourTitle = b.tour_title || t.title || 'Неизвестный тур';
   var _opSymMap = { RUB:'₽', USD:'$', EUR:'€', GBP:'£', CNY:'¥', TRY:'₺', KZT:'₸' };
   var _curSym = _opSymMap[b.currency || 'RUB'] || (b.currency + ' ');
   var _fmtA = function(n) { return _curSym + parseFloat(n||0).toLocaleString('ru-RU',{minimumFractionDigits:0,maximumFractionDigits:0}); };
@@ -2011,32 +1984,32 @@ function bkCard(b, compact) {
 
   var statusLbl, statusCls;
   if (b.status === 'pending' && b.deposit_status !== 'paid') {
-    statusLbl = 'Awaiting deposit'; statusCls = 'pending';
+    statusLbl = 'Ожидание депозита'; statusCls = 'pending';
   } else if (b.status === 'pending' && b.deposit_status === 'paid') {
-    statusLbl = 'Deposit paid · ' + _fmtA(_depAmt); statusCls = 'pending deposit-paid';
+    statusLbl = 'Депозит оплачен ·' + _fmtA(_depAmt); statusCls = 'pending deposit-paid';
   } else if (b.status === 'confirmed' && b.balance_status === 'paid') {
-    statusLbl = 'Confirmed · Fully paid'; statusCls = 'confirmed';
+    statusLbl = 'Подтверждено · Полностью оплачено'; statusCls = 'confirmed';
   } else if (b.status === 'confirmed' && _balDue > 0) {
-    statusLbl = 'Confirmed · Balance due: ' + _fmtA(_balDue); statusCls = 'confirmed balance-due';
+    statusLbl = 'Подтверждено · К оплате:' + _fmtA(_balDue); statusCls = 'confirmed balance-due';
   } else if (b.status === 'cancelled') {
     var _rfAmt  = parseFloat(b.refund_amount || 0);
     var _rfPaid = parseFloat(b.deposit_paid || 0) + parseFloat(b.balance_paid || 0);
     var _kept   = Math.max(0, _rfPaid - _rfAmt);
     if (_rfPaid <= 0) {
-      statusLbl = 'Cancelled'; statusCls = 'cancelled';
+      statusLbl = 'Отменено'; statusCls = 'cancelled';
     } else if (_rfAmt <= 0) {
-      statusLbl = 'Cancelled \u00B7 No refund \u00B7 Kept: ' + _fmtA(_kept); statusCls = 'cancelled';
+      statusLbl = 'Отменено \u00B7 Возврат не предусмотрен \u00B7 Удержано:' + _fmtA(_kept); statusCls = 'cancelled';
     } else if (_kept > 0) {
-      statusLbl = 'Cancelled \u00B7 Refunded: ' + _fmtA(_rfAmt) + ' \u00B7 Kept: ' + _fmtA(_kept); statusCls = 'cancelled';
+      statusLbl = 'Отменено \u00B7 Возврачено:' + _fmtA(_rfAmt) + '\u00B7 Удержано:' + _fmtA(_kept); statusCls = 'cancelled';
     } else {
-      statusLbl = 'Cancelled \u00B7 Full refund: ' + _fmtA(_rfAmt); statusCls = 'cancelled';
+      statusLbl = 'Отменено \u00B7 Полный возврат:' + _fmtA(_rfAmt); statusCls = 'cancelled';
     }
   } else {
-    statusLbl = { confirmed:'Confirmed', completed:'Completed' }[b.status] || b.status;
+    statusLbl = { confirmed:'Подтверждено', completed:'Завершено' }[b.status] || b.status;
     statusCls = b.status;
   }
   var travName  = (b.first_name && b.last_name) ? b.first_name + ' ' + b.last_name
-                 : b.traveller_name || b.email || 'Traveller';
+                 : b.traveller_name || b.email || 'Путешественник';
   var travEmail = b.email || b.traveller_email || '';
   var travPhone = b.phone || b.traveller_phone || '';
   var requests  = b.notes || b.special_requests || '';
@@ -2047,38 +2020,38 @@ function bkCard(b, compact) {
   var balancePaid = b.balance_status === 'paid';
   var payStatus;
   if (balancePaid) {
-    payStatus = '\u2713 Fully paid';
+    payStatus = '\u2713 Полностью оплачено';
   } else if (depositPaid && b.payment_method === 'bank') {
-    payStatus = 'Deposit paid \u2014 bank transfer';
+    payStatus = 'Депозит оплачен \u2014 банковский перевод';
   } else if (depositPaid) {
-    payStatus = 'Deposit paid' + (yooId ? ' (YooKassa)' : '');
+    payStatus = 'Депозит оплачен' + (yooId ? '(YooKassa)' : '');
   } else if (b.payment_method === 'bank') {
-    payStatus = 'Awaiting bank transfer';
+    payStatus = 'Ожидание банковского перевода';
   } else if (b.status === 'cancelled') {
-    payStatus = 'Cancelled';
+    payStatus = 'Отменено';
   } else if (b.status === 'completed') {
-    payStatus = 'Completed';
+    payStatus = 'Завершено';
   } else {
-    payStatus = 'Awaiting deposit';
+    payStatus = 'Ожидание депозита';
   }
   // Contact details hidden until booking is confirmed (prevents off-platform contact)
   var contactRevealed = (b.status === 'confirmed' || b.status === 'completed');
-  var hidden = '<span style="color:var(--mu);font-style:italic;font-size:12px">Hidden until booking confirmed</span>';
+  var hidden = '<span style="color:var(--mu);font-style:italic;font-size:12px">Скрыто до подтверждения бронирования</span>';
 
   var mainRow = '<div class="bk-card" id="bk-' + b.id + '">'
     + '<div class="bk-card-left">'
     + '<div class="bk-card-tour">' + tourTitle
-    + (isPrivate ? ' <span style="font-size:10px;background:#fff4e0;color:#9a6000;padding:2px 8px;border-radius:10px;font-family:var(--bf);font-weight:700">Private</span>' : '')
+    + (isPrivate ? '<span style="font-size:10px;background:#fff4e0;color:#9a6000;padding:2px 8px;border-radius:10px;font-family:var(--bf);font-weight:700">Приватный</span>' : '')
     + '</div>'
     + '<div class="bk-card-meta">'
-    + '<span>&#x1F464; ' + travName + '</span>'
-    + '<span>&#x1F465; ' + ((b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0))) + ' guest' + (((b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0)))!==1?'s':'') + '</span>'
-    + '<span>&#x1F4C5; ' + fmtD(b.departure_date) + '</span>'
+    + '<span>&#x1F464;' + travName + '</span>'
+    + (function(){ var g=(b.guests!==undefined?b.guests:(b.adults||1)+(b.children||0)+(b.infants||0)); return '<span>&#x1F465;' + g + ' ' + (g===1?'гость':g<5?'гостя':'гостей') + '</span>'; })()
+    + '<span>&#x1F4C5;' + fmtD(b.departure_date) + '</span>'
     + '</div></div>'
     + '<div class="bk-card-right">'
-    + '<span class="bk-status ' + statusCls + '">' + statusLbl + '</span>'
+    + '<span class="bk-status' + statusCls + '">' + statusLbl + '</span>'
     + '<span class="bk-price">' + fmtP(b.total_price||0, b.currency) + '</span>'
-    + (!compact ? '<button class="bk-expand-btn" id="bkb-' + b.id + '" onclick="toggleBkDetail(' + b.id + ')">Details &#x25BE;</button>' : '')
+    + (!compact ? '<button class="bk-expand-btn" id="bkb-' + b.id + '" onclick="toggleBkDetail(' + b.id + ')">Детали &#x25BE;</button>' : '')
     + '</div></div>';
 
   if (compact) return mainRow;
@@ -2086,36 +2059,36 @@ function bkCard(b, compact) {
   // Action buttons — operator-specific
   var actions = '';
   if (b.status === 'pending') {
-    actions += '<button class="btn-sm filled" onclick="confirmBooking(' + b.id + ')">Confirm booking</button>';
+    actions += '<button class="btn-sm filled" onclick="confirmBooking(' + b.id + ')">Подтвердить бронирование</button>';
   }
   if ((b.status === 'confirmed' || b.status === 'pending') && contactRevealed) {
     var _tn = travName.replace(/'/g, "\\'");
     var _br = bookingRef.replace(/'/g, "\\'");
-    actions += '<button class="btn-sm" onclick="openMsgTraveller(' + b.id + ',\'' + _tn + '\',\'' + _br + '\')">&#x1F4AC; Message traveller</button>';
+    actions += '<button class="btn-sm" onclick="openMsgTraveller(' + b.id + ',\'' + _tn + '\',\'' + _br + '\')">&#x1F4AC; Написать путешественнику</button>';
   }
   if (b.status === 'confirmed' || b.status === 'pending') {
-    actions += '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="cancelBooking(' + b.id + ')">Cancel booking</button>';
+    actions += '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="cancelBooking(' + b.id + ')">Отменить бронирование</button>';
   }
 
-  var paxParts = [(b.adults||1) + ' adult' + ((b.adults||1)!==1?'s':'')];
-  if (b.children) paxParts.push(b.children + ' child' + (b.children!==1?'ren':''));
-  if (b.infants)  paxParts.push(b.infants  + ' infant' + (b.infants !==1?'s':''));
+  var a=b.adults||1; var paxParts = [a + ' ' + (a===1?'взрослый':a<5?'взрослых':'взрослых')];
+  if (b.children) { var ch=b.children; paxParts.push(ch + ' ' + (ch===1?'ребёнок':ch<5?'ребёнка':'детей')); }
+  if (b.infants)  { var inf=b.infants;  paxParts.push(inf  + ' ' + (inf===1?'младенец':inf<5?'младенца':'младенцев')); }
 
   var detailRows = [
-    { l:'Traveller',        v: travName },
-    { l:'Email',            v: contactRevealed ? (travEmail ? '<a href="mailto:' + travEmail + '" style="color:var(--ac)">' + travEmail + '</a>' : '\u2014') : hidden },
-    { l:'Phone',            v: contactRevealed ? (travPhone ? '<a href="tel:' + travPhone + '" style="color:var(--ac)">' + travPhone + '</a>' : '\u2014') : hidden },
-    { l:'Country',          v: b.country || '\u2014' },
-    { l:'Travellers',       v: paxParts.join(', ') },
-    { l:'Departure',        v: fmtD(b.departure_date) },
-    { l:'Room type',        v: b.room_preference || '\u2014' },
-    { l:'Add-ons',          v: b.selected_extras  || '\u2014' },
-    { l:'Special requests', v: requests || 'None' },
-    { l:'Emergency contact',v: contactRevealed ? (b.emergency_name ? b.emergency_name + (b.emergency_phone ? ' \u00b7 ' + b.emergency_phone : '') : '\u2014') : hidden },
-    { l:'Price per person', v: fmtP(b.price_per_person||0, b.currency) },
-    { l:'Total',            v: fmtP(b.total_price||0, b.currency) },
-    { l:'Payment status',   v: payStatus },
-    { l:'Booking ref',      v: bookingRef },
+    { l:'Путешественник',        v: travName },
+    { l:'Электронная почта',            v: contactRevealed ? (travEmail ? '<a href="mailto:' + travEmail + '" style="color:var(--ac)">' + travEmail + '</a>' : '—') : hidden },
+    { l:'Телефон',            v: contactRevealed ? (travPhone ? '<a href="tel:' + travPhone + '" style="color:var(--ac)">' + travPhone + '</a>' : '—') : hidden },
+    { l:'Страна',          v: b.country || '—' },
+    { l:'Путешественники',       v: paxParts.join(', ') },
+    { l:'Вылет',        v: fmtD(b.departure_date) },
+    { l:'Тип номера',        v: b.room_preference || '—' },
+    { l:'Дополнительные услуги',          v: b.selected_extras  || '—' },
+    { l:'Специальные пожелания', v: requests || 'Не указано' },
+    { l:'Аварийный контакт',v: contactRevealed ? (b.emergency_name ? b.emergency_name + (b.emergency_phone ? '·' + b.emergency_phone : '') : '—') : hidden },
+    { l:'Цена за человека', v: fmtP(b.price_per_person||0, b.currency) },
+    { l:'Итого',            v: fmtP(b.total_price||0, b.currency) },
+    { l:'Статус платежа',   v: payStatus },
+    { l:'Номер бронирования',      v: bookingRef },
   ];
   // Refund info for cancelled bookings
   if (b.status === 'cancelled') {
@@ -2124,14 +2097,14 @@ function bkCard(b, compact) {
     var _paidTotal = parseFloat(b.deposit_paid||0) + parseFloat(b.balance_paid||0);
     var _refunded  = parseFloat(b.refund_amount||0);
     var _kept      = Math.max(0, _paidTotal - _refunded);
-    var rfStatusLbl = b.refund_status === 'issued' ? 'Issued'
-                    : b.refund_status === 'manual' ? 'Pending manual transfer'
-                    : b.refund_status === 'pending'? 'Processing'
-                    : 'None';
+    var rfStatusLbl = b.refund_status === 'issued' ? 'Выдано'
+                    : b.refund_status === 'manual' ? 'Ожидание ручного перевода'
+                    : b.refund_status === 'pending'? 'Обработка'
+                    : 'Не указано';
     if (_paidTotal > 0) {
-      detailRows.push({ l:'Refund to traveller', v: _refunded > 0 ? _rfFmt(_refunded) + ' (' + rfStatusLbl + ')' : 'No refund' });
+      detailRows.push({ l:'Возврат путешественнику', v: _refunded > 0 ? _rfFmt(_refunded) + ' (' + rfStatusLbl + ')' : 'Возврат не предусмотрен' });
       if (_kept > 0) {
-        detailRows.push({ l:'Penalty kept', v: '<strong style="color:#1a7a40">' + _rfFmt(_kept) + '</strong>' });
+        detailRows.push({ l:'Штраф удержан', v: '<strong style="color:#1a7a40">' + _rfFmt(_kept) + '</strong>' });
       }
     }
   }
@@ -2145,14 +2118,14 @@ function bkCard(b, compact) {
     if (b.msg_unread) {
       msgBar = '<div style="display:flex;align-items:center;gap:8px;padding:8px 18px;'
         + 'background:#fff3f0;border-top:1px solid #f0d0c8;font-family:var(--bf);font-size:12.5px">'
-        + '<span style="color:#c03020;font-weight:700">&#x1F4AC; Unread message from traveller</span>'
-        + '<button onclick="viewBookingThread(' + b.enquiry_id + ')" style="margin-left:auto;background:none;border:1.5px solid #c03020;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;color:#c03020;cursor:pointer;font-family:var(--bf)">View conversation &#x2192;</button>'
+        + '<span style="color:#c03020;font-weight:700">&#x1F4AC; Непрочитанное сообщение от путешественника</span>'
+        + '<button onclick="viewBookingThread(' + b.enquiry_id + ')" style="margin-left:auto;background:none;border:1.5px solid #c03020;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;color:#c03020;cursor:pointer;font-family:var(--bf)">Посмотреть беседу &#x2192;</button>'
         + '</div>';
     } else {
       msgBar = '<div style="display:flex;align-items:center;gap:8px;padding:8px 18px;'
         + 'background:var(--tr-bg);border-top:1px solid var(--ln);font-family:var(--bf);font-size:12.5px">'
-        + '<span style="color:var(--mu)">&#x1F4AC; Active conversation with traveller</span>'
-        + '<button onclick="viewBookingThread(' + b.enquiry_id + ')" style="margin-left:auto;background:none;border:1.5px solid var(--ln);border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--mu);cursor:pointer;font-family:var(--bf)">View conversation &#x2192;</button>'
+        + '<span style="color:var(--mu)">&#x1F4AC; Активная беседа с путешественником</span>'
+        + '<button onclick="viewBookingThread(' + b.enquiry_id + ')" style="margin-left:auto;background:none;border:1.5px solid var(--ln);border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--mu);cursor:pointer;font-family:var(--bf)">Посмотреть беседу &#x2192;</button>'
         + '</div>';
     }
   }
@@ -2196,7 +2169,7 @@ function cancelBkModalResolve(val) {
 var _msgTravBookingId = null;
 function openMsgTraveller(bookingId, travName, bookingRef) {
   _msgTravBookingId = bookingId;
-  document.getElementById('msgTravSub').textContent = 'To: ' + travName + ' \u00b7 Booking ' + bookingRef;
+  document.getElementById('msgTravSub').textContent = 'Кому:' + travName + '· Бронирование' + bookingRef;
   document.getElementById('msgTravBody').value = '';
   document.getElementById('msgTravModal').style.display = 'flex';
   setTimeout(function(){ document.getElementById('msgTravBody').focus(); }, 50);
@@ -2209,7 +2182,7 @@ async function sendMsgTraveller() {
   var body = document.getElementById('msgTravBody').value.trim();
   var btn  = document.getElementById('msgTravSendBtn');
   if (!body || !_msgTravBookingId) return;
-  btn.disabled = true; btn.textContent = 'Sending\u2026';
+  btn.disabled = true; btn.textContent = 'Отправка…';
   try {
     var r = await fetchAuth(ACCT_API + '/bookings/' + _msgTravBookingId + '/message/', {
       method: 'POST',
@@ -2218,22 +2191,22 @@ async function sendMsgTraveller() {
     });
     if (r.ok) {
       closeMsgTravModal();
-      showToast('Message sent to traveller.', 'ok');
+      showToast('Сообщение отправлено путешественнику.', 'ok');
     } else {
       var d = await r.json().catch(function(){ return {}; });
-      showToast('Error: ' + (d.detail || 'Could not send.'), 'error');
+      showToast('Ошибка:' + (d.detail || 'Не удалось отправить.'), 'error');
     }
   } catch(e) {
-    showToast('Network error. Please try again.', 'error');
+    showToast('Ошибка сети. Пожалуйста, попробуйте снова.', 'error');
   }
-  btn.disabled = false; btn.textContent = 'Send message';
+  btn.disabled = false; btn.textContent = 'Отправить сообщение';
 }
 
 async function cancelBooking(id) {
   var b = _bookings.find(function(x){ return x.id === id; });
-  var tourName  = b ? esc(b.tour_title || 'Tour') : 'Tour';
-  var travName  = b ? esc(((b.first_name||'') + ' ' + (b.last_name||'')).trim() || 'Traveller') : 'Traveller';
-  var depStr    = b && b.departure_date ? ' &nbsp;&middot;&nbsp; Dep: ' + fmtD(b.departure_date) : '';
+  var tourName  = b ? esc(b.tour_title || 'Тур') : 'Тур';
+  var travName  = b ? esc(((b.first_name||'') + ' ' + (b.last_name||'')).trim() || 'Путешественник') : 'Путешественник';
+  var depStr    = b && b.departure_date ? '· Вылет:' + fmtD(b.departure_date) : '';
 
   // Fetch refund preview (operator cancel = always full refund)
   var refundHtml = '';
@@ -2247,11 +2220,11 @@ async function cancelBooking(id) {
       var refundShow = useRub ? pd.refund_rub : pd.refund_amount;
       if (parseFloat(pd.refund_amount || 0) > 0) {
         refundHtml = '<div style="background:#e8f5e9;border-radius:7px;padding:10px 13px;font-size:12px;font-family:var(--bf);margin-top:8px;margin-bottom:0;color:#1a7a40">'
-          + '&#x21A9; Full refund will be issued to traveller: <strong>' + fN(refundShow) + '</strong>'
-          + (pd.payment_method === 'bank' ? ' (manual bank transfer)' : ' (automatic, in RUB)')
+          + '&#x21A9; Полный возврат будет выдан путешественнику: <strong>' + fN(refundShow) + '</strong>'
+          + (pd.payment_method === 'банк' ? '(ручной банковский перевод)' : '(автоматически, в RUB)')
           + '</div>';
       } else if (parseFloat(pd.total_paid || 0) <= 0) {
-        refundHtml = '<div style="font-size:12px;font-family:var(--bf);color:var(--mu);margin-top:6px">No payment made — no refund needed.</div>';
+        refundHtml = '<div style="font-size:12px;font-family:var(--bf);color:var(--mu);margin-top:6px">Платёж не произведён — возврат не требуется.</div>';
       }
     }
   } catch(e) {}
@@ -2267,14 +2240,14 @@ async function cancelBooking(id) {
     });
     if (!r.ok) {
       var d = await r.json();
-      showToast('Error: ' + (d.detail || r.status), 'error');
+      showToast('Ошибка:' + (d.detail || r.status), 'error');
       return;
     }
     var updated = await r.json().catch(function(){ return { id: id, status: 'cancelled' }; });
     _bookings = _bookings.map(function(bk) { return bk.id === id ? updated : bk; });
-    showToast('Booking cancelled' + (result.reason ? ' — message sent to traveller' : ''), 'ok');
+    showToast('Бронирование отменено' + (result.reason ? '— сообщение отправлено путешественнику' : ''), 'ok');
   } catch(e) {
-    showToast('Network error — please try again.', 'error');
+    showToast('Ошибка сети — пожалуйста, попробуйте ещё раз.', 'error');
     return;
   }
   renderBookings(); renderOverview(); renderEarnings();
@@ -2282,14 +2255,14 @@ async function cancelBooking(id) {
 
 async function confirmBooking(id) {
   var b = _bookings.find(function(x){ return x.id === id; });
-  var tourName = b ? (b.tour_title || 'this tour') : 'this booking';
-  var travName = b ? (((b.first_name||'') + ' ' + (b.last_name||'')).trim() || 'the traveller') : 'the traveller';
+  var tourName = b ? (b.tour_title || 'этот тур') : 'это бронирование';
+  var travName = b ? (((b.first_name||'') + ' ' + (b.last_name||'')).trim() || 'путешественнику') : 'путешественнику';
   var depStr   = b && b.departure_date ? ' departing ' + fmtD(b.departure_date) + '.' : '.';
   var ok = await showConfirm({
     icon: '✅',
-    title: 'Confirm booking?',
-    msg: 'You are confirming ' + travName + '\'s spot on ' + tourName + depStr + ' A confirmation email will be sent to them right away.',
-    ok: 'Confirm booking',
+    title: 'Подтвердить бронирование?',
+    msg: 'Вы подтверждаете место' + travName + '\'s на' + tourName + depStr + 'На их адрес электронной почты будет немедленно отправлено письмо с подтверждением.',
+    ok: 'Подтвердить бронирование',
     danger: false
   });
   if (!ok) return;
@@ -2300,15 +2273,15 @@ async function confirmBooking(id) {
     });
     if (!r.ok) {
       var d = await r.json();
-      showToast('Error: ' + (d.detail || r.status), 'error');
+      showToast('Ошибка:' + (d.detail || r.status), 'error');
       return;
     }
     _bookings = _bookings.map(function(b) {
       return b.id === id ? Object.assign({}, b, { status: 'confirmed' }) : b;
     });
-    showToast('Booking confirmed — confirmation email sent to traveller.', 'ok');
+    showToast('Бронирование подтверждено — письмо с подтверждением отправлено путешественнику.', 'ok');
   } catch(e) {
-    showToast('Network error — please try again.', 'error');
+    showToast('Ошибка сети — пожалуйста, попробуйте ещё раз.', 'error');
     return;
   }
   renderBookings(); renderOverview(); renderEarnings();
@@ -2319,29 +2292,29 @@ function renderReviews() {
   var su = document.getElementById('rvSummary');
   if (_reviews.length && su) {
     var avg = (_reviews.reduce(function(s,r){ return s+(r.rating||0); },0)/_reviews.length).toFixed(1);
-    su.textContent = _reviews.length + ' review' + (_reviews.length!==1?'s':'') + ' \u00b7 avg \u2B50 ' + avg;
+    su.textContent = _reviews.length + ' review' + (_reviews.length!==1?'s':'') + '\u00b7 avg \u2B50' + avg;
   } else if (su) {
     su.textContent = '';
   }
-  if (!_reviews.length) { el.innerHTML = emptyState('&#x2B50;','No reviews yet','Reviews from completed trips will appear here.','',''); return; }
+  if (!_reviews.length) { el.innerHTML = emptyState('&#x2B50;','Отзывов пока нет','Отзывы о завершённых турах появятся здесь.','',''); return; }
   el.innerHTML = _reviews.map(function(rv, i) {
     var starsEl = '';
     for (var si = 1; si <= 5; si++) starsEl += '<span style="color:' + (si <= Math.round(rv.rating||0) ? '#f5c842' : 'var(--ln)') + ';font-size:14px">★</span>';
     // Pending reviews shown with a note
     var statusNote = rv.status === 'pending'
-      ? '<span style="font-size:11px;background:#fff8e0;color:#9a6000;padding:2px 8px;border-radius:10px;font-family:var(--bf);font-weight:600;margin-left:8px">Pending approval</span>'
+      ? '<span style="font-size:11px;background:#fff8e0;color:#9a6000;padding:2px 8px;border-radius:10px;font-family:var(--bf);font-weight:600;margin-left:8px">Ожидает одобрения</span>'
       : rv.status === 'rejected'
-        ? '<span style="font-size:11px;background:#fef0ee;color:#c03020;padding:2px 8px;border-radius:10px;font-family:var(--bf);font-weight:600;margin-left:8px">Rejected</span>'
+        ? '<span style="font-size:11px;background:#fef0ee;color:#c03020;padding:2px 8px;border-radius:10px;font-family:var(--bf);font-weight:600;margin-left:8px">Отклонено</span>'
         : '';
     var replySection = rv.operator_reply
-      ? '<div class="rv-reply-area"><div class="rv-reply-label">Your reply</div><div class="rv-reply-text">' + rv.operator_reply + '</div></div>'
-      : '<div style="margin-top:10px"><textarea class="rv-reply-input" id="rta-' + i + '" placeholder="Write a reply\u2026"></textarea>'
-        + '<div style="margin-top:6px;text-align:right"><button class="btn-sm filled" onclick="postReply(' + i + ',' + rv.id + ')">Post reply</button></div></div>';
+      ? '<div class="rv-reply-area"><div class="rv-reply-label">Ваш ответ</div><div class="rv-reply-text">' + rv.operator_reply + '</div></div>'
+      : '<div style="margin-top:10px"><textarea class="rv-reply-input" id="rta-' + i + '" placeholder="Напишите ответ…"></textarea>'
+        + '<div style="margin-top:6px;text-align:right"><button class="btn-sm filled" onclick="postReply(' + i + ',' + rv.id + ')">Отправить ответ</button></div></div>';
     var reviewTitle = rv.title ? '<div style="font-weight:600;font-size:13.5px;margin-bottom:4px">' + rv.title + '</div>' : '';
     return '<div class="rv-card">'
       + '<div class="rv-card-head">'
-      + '<div><div class="rv-card-tour">' + (rv.tour_title || 'Tour') + statusNote + '</div>'
-      + '<div class="rv-card-reviewer">' + (rv.tourist_name || 'Traveller') + '</div></div>'
+      + '<div><div class="rv-card-tour">' + (rv.tour_title || 'Тур') + statusNote + '</div>'
+      + '<div class="rv-card-reviewer">' + (rv.tourist_name || 'Путешественник') + '</div></div>'
       + '<div><div class="rv-stars">' + starsEl + '</div>'
       + '<div style="font-size:11px;color:var(--mu);font-family:var(--bf);text-align:right;margin-top:2px">' + fmtD(rv.created_at?rv.created_at.slice(0,10):'') + '</div></div>'
       + '</div>'
@@ -2364,18 +2337,18 @@ async function postReply(i, id) {
     });
     if (r.ok) {
       var section = ta.closest('div');
-      if (section) section.innerHTML = '<div class="rv-reply-area"><div class="rv-reply-label">Your reply</div><div class="rv-reply-text">' + reply + '</div></div>';
+      if (section) section.innerHTML = '<div class="rv-reply-area"><div class="rv-reply-label">Ваш ответ</div><div class="rv-reply-text">' + reply + '</div></div>';
       // Update local state
       _reviews = _reviews.map(function(rv) {
         return rv.id === id ? Object.assign({}, rv, { operator_reply: reply }) : rv;
       });
     } else {
-      showToast('Could not save reply. Try again.', 'error');
+      showToast('Не удалось сохранить ответ. Попробуйте ещё раз.', 'error');
     }
   } catch(e) {
     // Offline: update UI only
     var section = ta.closest('div');
-    if (section) section.innerHTML = '<div class="rv-reply-area"><div class="rv-reply-label">Your reply</div><div class="rv-reply-text">' + reply + '</div></div>';
+    if (section) section.innerHTML = '<div class="rv-reply-area"><div class="rv-reply-label">Ваш ответ</div><div class="rv-reply-text">' + reply + '</div></div>';
   }
 }
 
@@ -2383,7 +2356,7 @@ var _earnSort = 'date';
 function setEarnSort(mode) {
   _earnSort = mode;
   var lbl = document.getElementById('earnSortLabel');
-  if (lbl) lbl.textContent = mode === 'tour' ? 'Sorted by tour name' : 'Sorted by date (newest first)';
+  if (lbl) lbl.textContent = mode === 'tour' ? 'Сортировано по названию тура' : 'Сортировано по дате (сначала новые)';
   renderEarnings();
 }
 
@@ -2423,13 +2396,13 @@ function renderEarnings() {
 
   document.getElementById('earnTotal').textContent = fmtP(total + penKept, primCur);
   document.getElementById('earnMonth').textContent = fmtP(mTotal, primCur);
-  document.getElementById('earnNote').textContent  = thisM.length + ' completed booking' + (thisM.length!==1?'s':'') + ' this month'
-    + (withPenalty.length ? ' · ' + withPenalty.length + ' cancellation penalt' + (withPenalty.length!==1?'ies':'y') : '');
+  document.getElementById('earnNote').textContent  = thisM.length + 'завершённое бронирование' + (thisM.length!==1?'s':'') + 'в этом месяце'
+    + (withPenalty.length ? ' · ' + withPenalty.length + 'штраф за отмену' + (withPenalty.length!==1?'ies':'y') : '');
 
   // ── Group by tour + departure date ──────────────────────
   var groups = {};
   function addToGroup(b, type) {
-    var title = (b.tour_detail||{}).title || b.tour_title || 'Tour';
+    var title = (b.tour_detail||{}).title || b.tour_title || 'Туры';
     var dep   = b.departure_date || '';
     var key   = title + '|' + dep + '|' + type;
     if (!groups[key]) groups[key] = { title:title, dep:dep, type:type, cur:b.currency||'RUB', bookings:[], guests:0, amount:0 };
@@ -2450,7 +2423,7 @@ function renderEarnings() {
   var groupList = Object.values(groups);
 
   // Sort
-  if (_earnSort === 'tour') {
+  if (_earnSort === 'тур') {
     groupList.sort(function(a,b){ return a.title.localeCompare(b.title) || (b.dep||'').localeCompare(a.dep||''); });
   } else {
     groupList.sort(function(a,b){ return (b.dep||'').localeCompare(a.dep||'') || a.title.localeCompare(b.title); });
@@ -2458,17 +2431,17 @@ function renderEarnings() {
 
   var rows = document.getElementById('earnRows');
   if (!groupList.length) {
-    rows.innerHTML = '<div style="text-align:center;padding:30px;color:var(--mu);font-family:var(--bf);font-size:13px">No earnings yet.</div>';
+    rows.innerHTML = '<div style="text-align:center;padding:30px;color:var(--mu);font-family:var(--bf);font-size:13px">Доход еще не получен.</div>';
     return;
   }
 
   rows.innerHTML = groupList.map(function(g){
     var bkCount = g.bookings.length;
     var isPenalty = g.type === 'penalty';
-    var bg = isPenalty ? ' style="background:#fffdf5"' : '';
-    var badge = isPenalty ? ' <span style="font-size:10px;background:#fff4e0;color:#9a6000;padding:1px 7px;border-radius:10px;font-family:var(--bf);font-weight:700;vertical-align:middle">Cancelled</span>' : '';
+    var bg = isPenalty ? 'style="background:#fffdf5"' : '';
+    var badge = isPenalty ? '<span style="font-size:10px;background:#fff4e0;color:#9a6000;padding:1px 7px;border-radius:10px;font-family:var(--bf);font-weight:700;vertical-align:middle">Отменено</span>' : '';
     var amtStyle = isPenalty ? 'font-weight:600;color:#9a6000' : 'font-weight:600';
-    var amtSuffix = isPenalty ? ' <span style="font-size:10px;font-weight:400;color:var(--mu)">penalty</span>' : '';
+    var amtSuffix = isPenalty ? '<span style="font-size:10px;font-weight:400;color:var(--mu)">штраф</span>' : '';
     return '<div class="et-row"' + bg + '>'
       + '<div>' + g.title + badge + '</div>'
       + '<div>' + bkCount + '</div>'
@@ -2504,8 +2477,8 @@ function demoBks() {
 }
 function demoRevs() {
   return [
-    { id:1, rating:5, reviewer_name:'Ana K.', tour_title:'Georgia: Kazbegi & Svaneti Trek', text:'Absolutely incredible. Sandro is a fantastic guide \u2014 knowledgeable, warm, and made us feel safe. The Svaneti towers at sunset were unforgettable.', reply:'', created_at:'2025-10-22' },
-    { id:2, rating:4, reviewer_name:'James T.', tour_title:'Georgia: Kazbegi & Svaneti Trek', text:'Great trek overall. The scenery is breathtaking. Would have liked slightly more time at Ushguli but understand the schedule.', reply:'Thanks James! We are adjusting the 2026 schedule to add an extra half day at Ushguli.', created_at:'2025-09-14' }
+    { id:1, rating:5, reviewer_name:'Ana K.', tour_title:'Georgia: Kazbegi & Svaneti Trek', text:'Absolutely incredible. Sandro is a fantastic guide — knowledgeable, warm, and made us feel safe. The Svaneti towers at sunset were unforgettable.', reply:'', created_at:'2025-10-22' },
+    { id:2, rating:4, reviewer_name:'James T.', tour_title:'Georgia: Kazbegi & Svaneti Trek', text:'Great trek overall. The scenery is breathtaking. Would have liked slightly more time at Ushguli but understand the schedule.', reply:'Спасибо, James! Мы корректируем расписание на 2026 год, чтобы добавить дополнительно полдня в Ушгули.', created_at:'2025-09-14' }
   ];
 }
 

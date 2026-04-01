@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Bookings — Waybound</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&amp;family=Space+Grotesk:wght@300..700&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..700&amp;family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&amp;display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+
+/* ══ THEME VARIABLES (default = ocean) ══ */
+body{
+  transition:background .35s,color .35s;
+  --ink:#0d1f2d; --paper:#f0f5f9; --white:#ffffff;
+  --ac:#4fa8d4;  --ad:#2080ae;
+  --mu:#607a8a;  --ln:#c0d4e0;
+  --ha-bg:#e8f4fb; --ha-bd:#94c8e4; --ha-tx:#0e5070;
+  --hb-bg:#e6f4f0; --hb-bd:#88c4b4; --hb-tx:#0e4840;
+  --tr-bg:#f4f9fc;
+  --df:'Fraunces',serif;
+  --bf:'Space Grotesk',sans-serif;
+}
+/* warm */
+body.warm{
+  --ink:#1C140C; --paper:#FFFFFF; --white:#FFFFFF;
+  --ac:#C05430;  --ad:#9A3A20;
+  --mu:#8C7A68;  --ln:#EFE6D8;
+  --ha-bg:#FBF0EB; --ha-bd:#EECCB8; --ha-tx:#8C3010;
+  --hb-bg:#EEF5EC; --hb-bd:#B0D0A8; --hb-tx:#2A5030;
+  --tr-bg:#FBF8F4;
+  --df:'Playfair Display',serif;
+  --bf:'DM Sans',sans-serif;
+}
+/* ivory */
+body.ivory{
+  --ink:#1A1208; --paper:#FAF6EE; --white:#FAF6EE;
+  --ac:#B84D2A;  --ad:#96381A;
+  --mu:#8A7862;  --ln:#DDD0BC;
+  --ha-bg:#F8EFE6; --ha-bd:#E0C8A8; --ha-tx:#7A3010;
+  --hb-bg:#EAF0E4; --hb-bd:#A8C8A0; --hb-tx:#285030;
+  --tr-bg:#F2EAD8;
+  --df:'Playfair Display',serif;
+  --bf:'DM Sans',sans-serif;
+}
+/* gold */
+body.gold{
+  --ink:#1a1a2e; --paper:#f7f4ef; --white:#ffffff;
+  --ac:#c8a96e;  --ad:#a8893e;
+  --mu:#8a8070;  --ln:#ddd8d0;
+  --ha-bg:#fdf8ed; --ha-bd:#e8d9a0; --ha-tx:#7a6020;
+  --hb-bg:#edf5ef; --hb-bd:#a0c8a8; --hb-tx:#2d5a38;
+  --tr-bg:#faf8f5;
+  --df:'Playfair Display',serif;
+  --bf:'DM Sans',sans-serif;
+}
+/* forest */
+body.forest{
+  --ink:#1e2a22; --paper:#f2f7f3; --white:#ffffff;
+  --ac:#6aab7a;  --ad:#3d7a50;
+  --mu:#6a8070;  --ln:#c4d8c8;
+  --ha-bg:#edf7ee; --ha-bd:#aad4b0; --ha-tx:#245530;
+  --hb-bg:#e8f5ec; --hb-bd:#96c8a0; --hb-tx:#1a4828;
+  --tr-bg:#f4faf5;
+  --df:'Libre Baskerville',serif;
+  --bf:'Outfit',sans-serif;
+}
+/* ocean (explicit — same as :root default) */
+body.ocean{
+  --ink:#0d1f2d; --paper:#f0f5f9; --white:#ffffff;
+  --ac:#4fa8d4;  --ad:#2080ae;
+  --mu:#607a8a;  --ln:#c0d4e0;
+  --ha-bg:#e8f4fb; --ha-bd:#94c8e4; --ha-tx:#0e5070;
+  --hb-bg:#e6f4f0; --hb-bd:#88c4b4; --hb-tx:#0e4840;
+  --tr-bg:#f4f9fc;
+  --df:'Fraunces',serif;
+  --bf:'Space Grotesk',sans-serif;
+}
+/* terra */
+body.terra{
+  --ink:#2a1f1a; --paper:#faf6f2; --white:#ffffff;
+  --ac:#d4735e;  --ad:#b05040;
+  --mu:#907060;  --ln:#e0cec4;
+  --ha-bg:#fdf0ec; --ha-bd:#e0a898; --ha-tx:#7a2818;
+  --hb-bg:#edf5ec; --hb-bd:#98c898; --hb-tx:#285030;
+  --tr-bg:#faf4f0;
+  --df:'Playfair Display',serif;
+  --bf:'DM Sans',sans-serif;
+}
+
+/* ══ BASE ══ */
+body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',sans-serif);transition:background .35s,color .35s;min-height:100vh;}
+
+/* ══ NAV ══ */
+
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--ink);height:62px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;gap:12px;
+  transition:background .35s;
+}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--df);font-size:19px;font-weight:400;color:var(--ac);letter-spacing:.03em;flex-shrink:0;text-decoration:none;transition:color .35s,font-family .35s}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .35s}
+.logo-mark svg{width:16px;height:16px}
+.nav-search{flex:1;max-width:190px;display:flex;align-items:center;gap:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:0;overflow:hidden;font-size:12px;color:rgba(255,255,255,.38);font-family:var(--bf);transition:border-color .2s}
+.nav-search:hover{border-color:rgba(255,255,255,.28)}
+.nav-links{display:flex}
+.nav-link{font-size:12px;font-weight:500;color:rgba(255,255,255,.4);padding:6px 9px;cursor:pointer;font-family:var(--bf);transition:color .15s}
+.nav-link.on,.nav-link:hover{color:var(--ac)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-ghost-sm{font-size:12px;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.16);border-radius:5px;padding:6px 12px;background:none;cursor:pointer;font-family:var(--bf);font-weight:500}
+.btn-ac-sm{font-size:12px;font-weight:600;color:var(--ink);background:var(--ac);border:none;border-radius:5px;padding:7px 14px;cursor:pointer;font-family:var(--bf);transition:background .35s,color .35s}
+
+/* ── Gear button ── */
+.gear{
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:rgba(255,255,255,.5);font-size:15px;
+  transition:background .15s,color .15s;flex-shrink:0;
+}
+.gear:hover{background:rgba(255,255,255,.16);color:rgba(255,255,255,.8)}
+.gear.open{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.3)}
+
+/* ══ SETTINGS DRAWER ══ */
+
+.btn-ghost-sm{font-size:12px;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.16);border-radius:5px;padding:6px 12px;background:none;cursor:pointer;font-family:var(--bf);font-weight:500}
+.btn-ac-sm{font-size:12px;font-weight:600;color:var(--ink);background:var(--ac);border:none;border-radius:5px;padding:7px 14px;cursor:pointer;font-family:var(--bf);transition:background .35s,color .35s}
+
+
+.nav-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--ac);border:2px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;flex-shrink:0;overflow:hidden;
+  transition:border-color .15s,box-shadow .15s;
+  position:relative;
+}
+.nav-avatar:hover{border-color:rgba(255,255,255,.6);box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+
+/* ── Dropdown menu ── */
+.nav-dropdown{
+  position:absolute;top:calc(100% + 10px);right:0;
+  width:220px;
+  background:var(--white);border:1px solid var(--ln);border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.14);
+  padding:6px 0;
+  display:none;z-index:2000;
+  animation:dropIn .18s ease;
+}
+.nav-dropdown.open{display:block;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.nav-dropdown-head{
+  padding:12px 16px 10px;
+  border-bottom:1px solid var(--ln);
+  margin-bottom:4px;
+}
+.nav-dropdown-name{font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);}
+.nav-dropdown-email{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px;}
+.nav-dd-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 16px;
+  font-size:13px;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;transition:background .12s;
+  text-decoration:none;
+}
+.nav-dd-item:hover{background:var(--paper)}
+.nav-dd-item .dd-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-dd-item.dd-danger{color:#c0392b;}
+.nav-dd-item.dd-danger:hover{background:#fef0ee;}
+.nav-dd-sep{height:1px;background:var(--ln);margin:4px 0;}
+/* position wrapper */
+.nav-r-wrap{position:relative;display:flex;align-items:center;gap:8px;}
+
+
+.overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(5px);
+  animation:fadein .2s ease;
+}
+.overlay.open{display:block}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:330px;
+  background:var(--white);
+  border-left:1px solid var(--ln);
+  display:flex;flex-direction:column;
+  transform:translateX(330px);
+  transition:transform .3s cubic-bezier(.4,0,.2,1),background .35s,border-color .35s;
+  z-index:501;
+}
+.overlay.open .drawer{transform:translateX(0)}
+.drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;height:60px;
+  background:var(--ink);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  flex-shrink:0;
+  transition:background .35s;
+}
+.drawer-title{font-family:var(--df);font-size:17px;font-weight:400;color:var(--ac);transition:font-family .35s,color .35s}
+.drawer-close{
+  width:30px;height:30px;border-radius:7px;
+  background:rgba(255,255,255,.1);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.6);font-size:16px;
+}
+.drawer-close:hover{background:rgba(255,255,255,.2);color:#fff}
+
+.drawer-body{flex:1;overflow-y:auto;padding:22px}
+.drawer-body::-webkit-scrollbar{width:4px}
+.drawer-body::-webkit-scrollbar-track{background:transparent}
+.drawer-body::-webkit-scrollbar-thumb{background:var(--ln);border-radius:2px}
+
+.d-section-label{
+  font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--mu);
+  margin-bottom:14px;font-family:var(--bf);
+  transition:color .35s;
+}
+
+/* theme grid in drawer */
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px}
+.th-opt{
+  border:2px solid var(--ln);border-radius:10px;
+  padding:11px 11px 10px;cursor:pointer;
+  background:var(--white);
+  transition:border-color .2s,box-shadow .2s,background .35s;
+  position:relative;
+}
+.th-opt:hover{border-color:var(--ac)}
+.th-opt.sel{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}
+.th-opt.sel .th-check{opacity:1;transform:scale(1)}
+.th-check{
+  position:absolute;top:8px;right:8px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--ac);display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--ink);font-weight:700;
+  opacity:0;transform:scale(.7);transition:opacity .15s,transform .15s,background .35s,color .35s;
+}
+.th-swatches{display:flex;gap:4px;margin-bottom:8px}
+.th-sw{width:18px;height:18px;border-radius:5px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.th-name{font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:2px;transition:color .35s}
+.th-desc{font-size:10.5px;color:var(--mu);font-family:var(--bf);line-height:1.4;transition:color .35s}
+.th-default-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:600;color:var(--ha-tx);
+  background:var(--ha-bg);border:1px solid var(--ha-bd);
+  border-radius:100px;padding:2px 7px;margin-top:5px;
+  transition:all .35s;
+}
+
+.drawer-apply{
+  width:100%;padding:13px;
+  background:var(--ac);color:var(--ink);
+  border:none;border-radius:7px;
+  font-size:14px;font-weight:700;font-family:var(--bf);
+  cursor:pointer;transition:filter .2s,background .35s,color .35s;
+  margin-bottom:4px;
+}
+.drawer-apply:hover{filter:brightness(1.08)}
+.drawer-divider{height:1px;background:var(--ln);margin:20px 0;transition:background .35s}
+.drawer-note{font-size:11.5px;color:var(--mu);font-family:var(--bf);line-height:1.65;transition:color .35s}
+
+/* ══ HERO ══ */
+.hero{background:var(--paper);padding:42px 26px 38px;position:relative;overflow:hidden;transition:background .35s}
+.hero::after{
+  content:'';position:absolute;top:-80px;right:-60px;
+  width:300px;height:300px;border-radius:50%;
+  background:color-mix(in srgb,var(--ac) 10%,transparent);
+  filter:blur(65px);pointer-events:none;transition:background .35s;
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--ha-bg);border:1px solid var(--ha-bd);
+  border-radius:100px;padding:5px 15px;
+  font-size:11px;font-weight:500;color:var(--ha-tx);
+  margin-bottom:18px;font-family:var(--bf);
+  position:relative;z-index:1;transition:all .35s;
+}
+.ey-dot{width:6px;height:6px;border-radius:50%;background:var(--ac);flex-shrink:0;transition:background .35s}
+.hero h1{
+  font-family:var(--df);font-size:38px;font-weight:400;
+  color:var(--ink);line-height:1.08;margin-bottom:14px;
+  letter-spacing:-.02em;position:relative;z-index:1;
+  transition:font-family .35s,color .35s;
+}
+.hero h1 em{font-style:italic;color:var(--ad);transition:color .35s}
+.hero-sub{font-size:14px;color:var(--mu);line-height:1.65;max-width:400px;margin-bottom:28px;font-family:var(--bf);position:relative;z-index:1;transition:color .35s}
+.hero-btns{display:flex;gap:10px;position:relative;z-index:1}
+.btn-primary{font-size:13.5px;font-weight:600;color:var(--white);background:var(--ink);border:none;border-radius:6px;padding:13px 25px;cursor:pointer;font-family:var(--bf);transition:background .35s,color .35s}
+.btn-outline{font-size:13.5px;font-weight:500;color:var(--ink);background:transparent;border:1.5px solid var(--ln);border-radius:6px;padding:12px 22px;cursor:pointer;font-family:var(--bf);transition:border-color .2s,color .35s}
+.btn-outline:hover{border-color:var(--ink)}
+
+.hero-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:30px}
+.htile{border-radius:11px 11px 0 0;overflow:hidden;position:relative;height:158px}
+.htile-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px}
+.htile-lbl{position:absolute;bottom:10px;left:12px;font-size:11px;font-weight:600;color:#fff;letter-spacing:.02em;font-family:var(--df);line-height:1.3}
+.htile-cnt{position:absolute;bottom:10px;right:10px;font-size:9.5px;color:rgba(255,255,255,.44);font-family:var(--bf)}
+
+/* ─ Tile image gradients per theme ─ */
+.warm   .ti1,.ivory .ti1{background:linear-gradient(150deg,#5C2010,#A83828)}
+.warm   .ti2,.ivory .ti2{background:linear-gradient(150deg,#1A3A20,#2E7A40)}
+.warm   .ti3,.ivory .ti3{background:linear-gradient(150deg,#1A1A3A,#2E3578)}
+.gold   .ti1{background:linear-gradient(150deg,#2c1e0e,#6b4c25)}
+.gold   .ti2{background:linear-gradient(150deg,#142414,#2a5530)}
+.gold   .ti3{background:linear-gradient(150deg,#151525,#262655)}
+.forest .ti1{background:linear-gradient(150deg,#0e2a16,#1a5832)}
+.forest .ti2{background:linear-gradient(150deg,#141e0e,#2a4e20)}
+.forest .ti3{background:linear-gradient(150deg,#0e1e28,#1a3a50)}
+.ocean  .ti1{background:linear-gradient(150deg,#0a182a,#0a4078)}
+.ocean  .ti2{background:linear-gradient(150deg,#081820,#0a4858)}
+.ocean  .ti3{background:linear-gradient(150deg,#0a1a18,#0a4838)}
+.terra  .ti1{background:linear-gradient(150deg,#3a1808,#8a3818)}
+.terra  .ti2{background:linear-gradient(150deg,#1a2816,#2a5828)}
+.terra  .ti3{background:linear-gradient(150deg,#181826,#2a2858)}
+
+/* ─ Card image gradients per theme ─ */
+.warm  .ci1,.ivory .ci1{background:linear-gradient(145deg,#5C2010,#A03828)}
+.warm  .ci2,.ivory .ci2{background:linear-gradient(145deg,#0A2840,#183870)}
+.warm  .ci3,.ivory .ci3{background:linear-gradient(145deg,#0A2A20,#185040)}
+.warm  .ci4,.ivory .ci4{background:linear-gradient(145deg,#1A1A40,#303880)}
+.gold  .ci1{background:linear-gradient(145deg,#2c1e0e,#6b4c25)}
+.gold  .ci2{background:linear-gradient(145deg,#151525,#262660)}
+.gold  .ci3{background:linear-gradient(145deg,#142414,#2a5530)}
+.gold  .ci4{background:linear-gradient(145deg,#251610,#5e3018)}
+.forest .ci1{background:linear-gradient(145deg,#0e2a16,#1a5832)}
+.forest .ci2{background:linear-gradient(145deg,#0e1e28,#1a3a52)}
+.forest .ci3{background:linear-gradient(145deg,#141e0e,#2a4e20)}
+.forest .ci4{background:linear-gradient(145deg,#182618,#264038)}
+.ocean  .ci1{background:linear-gradient(145deg,#0a182a,#0a4078)}
+.ocean  .ci2{background:linear-gradient(145deg,#081820,#0a4858)}
+.ocean  .ci3{background:linear-gradient(145deg,#0a1a18,#0a5040)}
+.ocean  .ci4{background:linear-gradient(145deg,#160a28,#3a1870)}
+.terra  .ci1{background:linear-gradient(145deg,#3a1808,#8a3818)}
+.terra  .ci2{background:linear-gradient(145deg,#181826,#2a2858)}
+.terra  .ci3{background:linear-gradient(145deg,#1a2816,#2a5828)}
+.terra  .ci4{background:linear-gradient(145deg,#281008,#704020)}
+
+/* ══ STATS ══ */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--white);border-bottom:1px solid var(--ln);transition:background .35s,border-color .35s}
+.stat{padding:18px 10px;text-align:center;border-right:1px solid var(--ln);transition:border-color .35s}
+.stat:last-child{border-right:none}
+.stat-n{font-family:var(--df);font-size:25px;font-weight:400;color:var(--ad);line-height:1;margin-bottom:3px;transition:color .35s,font-family .35s}
+.stat-l{font-size:9.5px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;font-family:var(--bf)}
+
+/* ══ SECTIONS ══ */
+.sec{padding:28px 26px 0;background:var(--white);transition:background .35s}
+.sec-paper{padding:28px 26px 0;background:var(--paper);transition:background .35s}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.sec-ey{font-size:10px;font-weight:500;color:var(--ad);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-family:var(--bf);transition:color .35s}
+.sec-h2{font-family:var(--df);font-size:22px;font-weight:400;color:var(--ink);line-height:1.2;transition:font-family .35s,color .35s}
+.sec-h2 em{font-style:italic;color:var(--ad);transition:color .35s}
+.sec-link{font-size:12px;color:var(--mu);cursor:pointer;border-bottom:1px solid var(--ln);padding-bottom:1px;white-space:nowrap;margin-top:8px;font-family:var(--bf);transition:color .35s,border-color .35s}
+.sec-link:hover{color:var(--ad)}
+
+/* ══ PILLS ══ */
+.pills{display:flex;gap:7px;padding:13px 26px;overflow-x:auto;background:var(--white);border-bottom:1px solid var(--ln);transition:background .35s,border-color .35s}
+.pills::-webkit-scrollbar{display:none}
+.pill{padding:6px 15px;border-radius:100px;border:1.5px solid var(--ln);font-size:12.5px;font-weight:500;color:var(--mu);cursor:pointer;white-space:nowrap;background:var(--white);font-family:var(--bf);transition:all .15s}
+.pill:hover{border-color:var(--ac);color:var(--ink)}
+.pill.on{background:var(--ink);border-color:var(--ink);color:var(--ac);font-weight:600}
+
+/* ══ CARDS ══ */
+.card-scroll{display:flex;gap:13px;padding:18px 26px 28px;overflow-x:auto;background:var(--paper);transition:background .35s}
+.card-scroll::-webkit-scrollbar{display:none}
+.tcard{flex-shrink:0;width:192px;border-radius:9px;overflow:hidden;background:var(--white);border:1px solid var(--ln);cursor:pointer;transition:box-shadow .2s,transform .2s,background .35s,border-color .35s}
+.tcard:hover{box-shadow:0 8px 28px rgba(0,0,0,.09);transform:translateY(-2px)}
+.tcard-img{height:130px;position:relative;display:flex;align-items:center;justify-content:center;font-size:38px}
+.tc-badge{position:absolute;top:9px;left:9px;font-size:9.5px;font-weight:600;padding:3px 9px;border-radius:100px;background:var(--ac);color:var(--ink);font-family:var(--bf);transition:background .35s,color .35s}
+.tc-disc{position:absolute;top:9px;right:9px;background:#b04040;color:#fff;font-size:9.5px;font-weight:700;padding:3px 7px;border-radius:4px;font-family:var(--bf)}
+.tc-guide{position:absolute;bottom:7px;left:7px;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.93);border-radius:100px;padding:3px 8px 3px 3px}
+.tc-av{width:18px;height:18px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--ac);flex-shrink:0;font-family:var(--bf);transition:background .35s,color .35s}
+.tc-gname{font-size:10px;font-weight:500;color:var(--ink);font-family:var(--bf)}
+.tcard-body{padding:12px 13px 13px}
+.tc-loc{font-size:10px;font-weight:500;color:var(--ad);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;font-family:var(--bf);transition:color .35s}
+.tc-ttl{font-family:var(--df);font-size:13px;font-weight:400;color:var(--ink);line-height:1.35;margin-bottom:9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:font-family .35s,color .35s}
+.tc-foot{display:flex;justify-content:space-between;align-items:center}
+.tc-rat{font-size:11px;color:var(--mu);font-family:var(--bf)}.tc-rat b{color:var(--ad)}
+.tc-price{font-family:var(--df);font-size:20px;font-weight:400;color:var(--ink);line-height:1;transition:font-family .35s,color .35s}
+.tc-days{font-size:9.5px;color:var(--mu);text-align:right;margin-top:1px;font-family:var(--bf)}
+.tc-dates{margin-top:8px;padding-top:8px;border-top:1px solid var(--ln);font-size:10.5px;color:var(--mu);display:flex;align-items:center;gap:5px;font-family:var(--bf);transition:border-color .35s}
+.tc-chip{background:var(--ha-bg);color:var(--ha-tx);border:1px solid var(--ha-bd);border-radius:4px;padding:2px 7px;font-size:9.5px;font-weight:600;transition:all .35s}
+
+/* ══ TRUST ══ */
+.trust{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--ln);transition:background .35s}
+.trust-item{background:var(--white);padding:17px 16px;display:flex;align-items:flex-start;gap:10px;transition:background .35s}
+.trust-ic{width:32px;height:32px;border-radius:7px;background:var(--ha-bg);border:1px solid var(--ha-bd);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .35s}
+.trust-item h4{font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:2px;font-family:var(--bf)}
+.trust-item p{font-size:11px;color:var(--mu);line-height:1.5;font-family:var(--bf)}
+
+/* ══ OPERATOR ══ */
+.operator{padding:30px 26px;background:var(--hb-bg);border-top:1px solid var(--hb-bd);transition:background .35s,border-color .35s}
+.op-ey{font-size:10px;font-weight:500;color:var(--hb-tx);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;font-family:var(--bf);transition:color .35s}
+.op-h2{font-family:var(--df);font-size:26px;font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:9px;transition:font-family .35s,color .35s}
+.op-h2 em{font-style:italic;color:var(--ad)}
+.op-sub{font-size:13.5px;color:var(--mu);line-height:1.65;margin-bottom:20px;font-family:var(--bf)}
+.op-row{display:flex;align-items:center;gap:13px}
+.op-note{font-size:12px;color:var(--mu);font-style:italic;font-family:var(--df)}
+.op-stats{display:flex;gap:28px;margin-top:20px;padding-top:16px;border-top:1px solid var(--hb-bd);transition:border-color .35s}
+.op-stat strong{display:block;font-family:var(--df);font-size:24px;font-weight:400;color:var(--ad);line-height:1;margin-bottom:2px;transition:font-family .35s,color .35s}
+.op-stat span{font-size:11px;color:var(--mu);font-family:var(--bf)}
+
+/* ══ FOOTER ══ */
+
+
+.pg-wrap{max-width:980px;margin:0 auto;padding:32px 24px 80px}
+@media(max-width:600px){.pg-wrap{padding:20px 16px 60px}}
+.pg-head{margin-bottom:28px}
+.pg-breadcrumb{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.pg-breadcrumb a{color:var(--mu);text-decoration:none}
+.pg-breadcrumb a:hover{color:var(--ac)}
+.pg-title{font-family:var(--df);font-size:28px;color:var(--ink);margin-bottom:4px}
+.pg-subtitle{font-size:13.5px;color:var(--mu);font-family:var(--bf)}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.filter-pill{font-size:12.5px;font-family:var(--bf);font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--ln);background:var(--white);color:var(--mu);cursor:pointer;transition:all .15s}
+.filter-pill:hover{border-color:var(--ac);color:var(--ac)}
+.filter-pill.active{background:var(--ac);border-color:var(--ac);color:var(--ink);font-weight:600}
+.auth-wall{max-width:440px;margin:80px auto;text-align:center;padding:0 24px}
+.auth-wall-ico{font-size:44px;margin-bottom:14px}
+.auth-wall-title{font-family:var(--df);font-size:24px;color:var(--ink);margin-bottom:8px}
+.auth-wall-sub{font-size:13.5px;color:var(--mu);font-family:var(--bf);line-height:1.6;margin-bottom:22px}
+.auth-wall-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{display:inline-block;padding:10px 24px;background:var(--ac);color:var(--ink);border:none;border-radius:7px;font-size:13px;font-weight:700;font-family:var(--bf);cursor:pointer;text-decoration:none;transition:background .15s}
+.btn-primary:hover{background:var(--ad);color:#fff}
+.btn-outline{display:inline-block;padding:10px 24px;background:none;color:var(--ink);border:1.5px solid var(--ln);border-radius:7px;font-size:13px;font-weight:600;font-family:var(--bf);cursor:pointer;text-decoration:none;transition:all .15s}
+.btn-outline:hover{border-color:var(--ac);color:var(--ac)}
+.spinner-wrap{text-align:center;padding:60px 20px}
+.spinner{display:inline-block;width:32px;height:32px;border:3px solid var(--ln);border-top-color:var(--ac);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-text{font-size:13px;color:var(--mu);font-family:var(--bf);margin-top:12px}
+.empty-state{text-align:center;padding:60px 20px}
+.empty-ico{font-size:42px;margin-bottom:12px}
+.empty-title{font-family:var(--df);font-size:19px;color:var(--ink);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--mu);font-family:var(--bf);margin-bottom:20px}
+.offline-banner{background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;padding:9px 16px;font-size:12px;color:var(--ha-tx);font-family:var(--bf);margin-bottom:18px;display:none}
+.offline-banner.show{display:block}
+.result-meta{font-size:12.5px;color:var(--mu);font-family:var(--bf);margin-bottom:16px}
+
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+@media(max-width:600px){.stats-strip{grid-template-columns:repeat(2,1fr)}}
+.stat-box{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:16px 18px;text-align:center;transition:border-color .15s}
+.stat-box:hover{border-color:var(--ac)}
+.stat-num{font-family:var(--df);font-size:26px;font-weight:600;color:var(--ac)}
+.stat-lbl{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:3px}
+.bk-card{background:var(--white);border:1.5px solid var(--ln);border-radius:14px;overflow:hidden;margin-bottom:16px;transition:box-shadow .2s,border-color .2s}
+.bk-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.09);border-color:color-mix(in srgb,var(--ac) 40%,var(--ln))}
+.bk-card-main{display:grid;grid-template-columns:100px 1fr auto;align-items:stretch}
+@media(max-width:560px){.bk-card-main{grid-template-columns:72px 1fr}}
+.bk-card-img{background:color-mix(in srgb,var(--ac) 10%,var(--paper));display:flex;align-items:center;justify-content:center;font-size:40px;border-right:1.5px solid var(--ln);min-height:120px;overflow:hidden}
+.bk-card-img img{width:100%;height:100%;object-fit:cover;display:block}
+@media(max-width:560px){.bk-card-img{font-size:28px}}
+.bk-card-body{padding:16px 18px}
+.bk-card-dest{font-size:10.5px;font-weight:600;color:var(--ad);text-transform:uppercase;letter-spacing:.06em;font-family:var(--bf);margin-bottom:4px}
+.bk-card-title{font-family:var(--df);font-size:17px;color:var(--ink);line-height:1.3;margin-bottom:10px}
+.bk-card-chips{display:flex;flex-wrap:wrap;gap:7px}
+.bk-chip{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu);font-family:var(--bf);background:var(--paper);border:1px solid var(--ln);padding:4px 10px;border-radius:100px}
+.bk-card-right{padding:16px 18px;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;min-width:140px;border-left:1.5px solid var(--ln)}
+@media(max-width:560px){.bk-card-right{display:none}}
+.bk-status{font-size:11px;font-weight:700;font-family:var(--bf);padding:4px 12px;border-radius:100px;white-space:nowrap}
+.bk-status.confirmed{background:#e3f4e3;color:#1a7030}
+.bk-status.pending{background:#fff4e0;color:#9a6000}
+.bk-status.completed{background:#e3eef8;color:#1a4a80}
+.bk-status.cancelled{background:#fdecea;color:#a02010}
+.bk-status.deposit-paid{background:#e8f0fe;color:#1a4090}
+.bk-status.balance-due{background:#fff4e0;color:#9a6000}
+.bk-price{font-family:var(--df);font-size:19px;color:var(--ink);text-align:right}
+.bk-price-sub{font-size:11px;color:var(--mu);font-family:var(--bf);text-align:right;margin-top:1px}
+.bk-card-actions{padding:10px 18px 14px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--ln);flex-wrap:wrap}
+.bk-actions-divider{width:1px;height:22px;background:#b0bec8;flex-shrink:0;border-radius:1px}
+.bk-btn{font-size:12px;font-weight:600;font-family:var(--bf);padding:7px 16px;border-radius:7px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s;border:none}
+.bk-btn.primary{background:var(--ac);color:var(--ink)}
+.bk-btn.primary:hover{background:var(--ad);color:#fff}
+.bk-btn.outline{background:none;color:var(--ink);border:1.5px solid var(--ln)}
+.bk-btn.outline:hover{border-color:var(--ac);color:var(--ac)}
+.bk-btn.ghost{background:none;color:var(--mu);border:1.5px solid var(--ln);font-size:11.5px}
+.bk-btn.ghost:hover{color:#c0392b;border-color:#e0a898}
+.bk-btn.ghost.danger{color:#c0392b;border-color:#e8c0ba}
+.bk-btn.ghost.danger:hover{background:#fdecea;border-color:#c0392b}
+.bk-btn.gold{background:#fef3c7;color:#92400e;border:1.5px solid #f59e0b}
+.bk-btn.gold:hover{background:#f59e0b;color:#fff}
+.bk-chip.reviewed{background:#fef3c7;color:#92400e;border-color:#f59e0b}
+.bk-ref{margin-left:auto;font-size:11px;color:var(--mu);font-family:var(--bf)}
+@media(max-width:560px){.bk-ref{display:none}}
+.bk-accordion{max-height:0;overflow:hidden;transition:max-height .32s ease}
+.bk-accordion.open{max-height:500px}
+.bk-accordion-inner{padding:18px;border-top:1px solid var(--ln);background:var(--paper);display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:480px){.bk-accordion-inner{grid-template-columns:1fr}}
+.bk-dl{display:flex;flex-direction:column;gap:3px}
+.bk-dt{font-size:10.5px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;font-family:var(--bf)}
+.bk-dd{font-size:13px;color:var(--ink);font-family:var(--bf)}
+
+
+.footer{background:var(--ink);padding:32px 26px 24px;transition:background .35s}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:20px;margin-bottom:22px}
+.foot-logo{font-family:var(--df);font-size:18px;color:var(--ac);display:flex;align-items:center;gap:8px;margin-bottom:9px;transition:color .35s,font-family .35s}
+.foot-desc{font-size:11.5px;color:rgba(255,255,255,.24);line-height:1.65;font-family:var(--bf)}
+.foot-col-h{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:11px;font-family:var(--bf)}
+.footer a{text-decoration:none;}
+.foot-link{display:block;font-size:12px;color:rgba(255,255,255,.42);padding:3.5px 0;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s;}
+.foot-link:hover{color:rgba(255,255,255,.8);}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:15px;display:flex;justify-content:space-between;align-items:center}
+.foot-copy{font-size:11px;color:rgba(255,255,255,.18);font-family:var(--bf)}
+.foot-soc{display:flex;gap:7px}
+.soc-btn{width:27px;height:27px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:rgba(255,255,255,.3)}
+
+/* ── Explore by style cards ── */
+.style-card{flex:0 0 180px;border-radius:12px;overflow:hidden;position:relative;height:220px;cursor:pointer;transition:transform .2s}
+.style-card:hover{transform:translateY(-4px)}
+.style-card-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:56px;transition:transform .3s}
+.style-card:hover .style-card-bg{transform:scale(1.06)}
+.style-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 60%)}
+.style-card-body{position:absolute;bottom:14px;left:14px;right:14px}
+.style-card-title{font-size:13px;font-weight:700;color:#fff;font-family:var(--df);margin-bottom:3px}
+.style-card-sub{font-size:10.5px;color:rgba(255,255,255,.75);font-family:var(--bf)}
+
+/* Featured tour cards - homepage */
+.feat-row{display:flex;gap:16px;overflow-x:auto;padding:0 24px 24px;-ms-overflow-style:none;scrollbar-width:none}
+.feat-row::-webkit-scrollbar{display:none}
+.feat-card{flex:0 0 272px;background:var(--white);border:1.5px solid var(--ln);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s}
+.feat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.feat-card-img{height:136px;background:var(--ha-bg);display:flex;align-items:center;justify-content:center;font-size:54px;position:relative}
+.feat-card-badge{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;font-family:var(--bf)}
+.feat-card-body{padding:14px}
+.feat-card-dest{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-bottom:3px}
+.feat-card-title{font-family:var(--df);font-size:14px;color:var(--ink);margin-bottom:8px;line-height:1.35}
+.feat-card-foot{display:flex;align-items:center;justify-content:space-between}
+.feat-card-price{font-family:var(--df);font-size:15px;font-weight:700;color:var(--ink)}
+.feat-card-rating{font-size:12px;color:var(--mu);font-family:var(--bf)}
+.feat-spots-low{color:#c0392b;font-size:11px;font-weight:600;font-family:var(--bf);margin-top:5px}
+
+/* ── Hamburger button (logged-out) ── */
+.nav-hamburger{
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4.5px;cursor:pointer;transition:background .15s,border-color .15s;
+  flex-shrink:0;
+}
+.nav-hamburger:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
+.nav-hamburger span{
+  display:block;width:16px;height:1.8px;border-radius:2px;
+  background:rgba(255,255,255,.65);transition:background .15s;
+}
+.nav-hamburger:hover span{background:rgba(255,255,255,.9)}
+.nav-hamburger.open{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.32)}
+
+/* ── User avatar button (logged-in) ── */
+.nav-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--ac);border:2px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;flex-shrink:0;overflow:hidden;
+  transition:border-color .15s,box-shadow .15s;
+  position:relative;
+}
+.nav-avatar:hover{border-color:rgba(255,255,255,.6);box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+
+/* ── Dropdown menu ── */
+.nav-dropdown{
+  position:absolute;top:calc(100% + 10px);right:0;
+  width:220px;
+  background:var(--white);border:1px solid var(--ln);border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.14);
+  padding:6px 0;
+  display:none;z-index:2000;
+  animation:dropIn .18s ease;
+}
+.nav-dropdown.open{display:block;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.nav-dropdown-head{
+  padding:12px 16px 10px;
+  border-bottom:1px solid var(--ln);
+  margin-bottom:4px;
+}
+.nav-dropdown-name{font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);}
+.nav-dropdown-email{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px;}
+.nav-dd-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 16px;
+  font-size:13px;color:var(--ink);font-family:var(--bf);
+  cursor:pointer;transition:background .12s;
+  text-decoration:none;
+}
+.nav-dd-item:hover{background:var(--paper)}
+.nav-dd-item .dd-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-dd-item.dd-danger{color:#c0392b;}
+.nav-dd-item.dd-danger:hover{background:#fef0ee;}
+.nav-dd-sep{height:1px;background:var(--ln);margin:4px 0;}
+/* position wrapper */
+.nav-r-wrap{position:relative;display:flex;align-items:center;gap:8px;}
+</style>
+<script src="config.js"></script>
+</head>
+<body class="ocean">
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+<div class="drawer">
+<div class="drawer-head">
+<div class="drawer-title">Оформление</div>
+<button class="drawer-close" onclick="closeSettings()">✕</button>
+</div>
+<div class="drawer-body">
+<div class="d-section-label">Выберите тему</div>
+<div class="theme-grid" id="themeGrid"></div>
+<button class="drawer-apply" onclick="applyPending()">Применить тему</button>
+<div class="drawer-divider"></div>
+<p class="drawer-note">Ваш выбор сохранён локально.</p>
+</div>
+</div>
+</div>
+<nav class="nav">
+<a class="logo" href="waybound_ru.html">
+<div class="logo-mark" id="lm">
+<svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg>
+</div>
+    Waybound
+  </a>
+<div class="nav-search"><span style="padding:0 10px;font-size:13px;flex-shrink:0">🔍</span><input autocomplete="off" id="navSearchInput" onkeydown="if(event.key==='Enter'){var q=this.value.trim();if(q)window.location.href='adventures.html?q='+encodeURIComponent(q);}" placeholder="Куда отправиться?" style="background:none;border:none;outline:none;width:100%;padding:7px 14px 7px 0;font-size:12px;color:rgba(255,255,255,.7);font-family:var(--bf);" type="text"/></div>
+<div class="nav-links">
+<a class="nav-link" href="adventures_ru.html">Приключения</a>
+<a class="nav-link" href="how-it-works_ru.html">Как это работает</a>
+<a class="nav-link" href="about_ru.html">О компании</a>
+<a class="nav-link" href="help_ru.html">Справка</a>
+<a class="nav-link" href="contact_ru.html">Контакты</a>
+</div>
+<div class="nav-r nav-r-wrap">
+<button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin_ru.html'">Вход / Регистрация</button>
+<a class="btn-ac-sm" href="operator_ru.html" id="navListTourBtn" style="text-decoration:none">Добавить тур</a>
+<div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" style="display:none" title="Мой профиль"></div>
+<div class="nav-dropdown" id="navDropdown"></div>
+</div>
+</nav>
+<div class="auth-wall" id="authWall" style="display:none">
+<div class="auth-wall-ico">🔒</div>
+<div class="auth-wall-title">Войдите, чтобы просмотреть ваши бронирования</div>
+<div class="auth-wall-sub">Все ваши подтвержденные поездки и прошлые приключения находятся здесь.</div>
+<div class="auth-wall-btns">
+<a class="btn-primary" href="signin_ru.html">Вход</a>
+<a class="btn-outline" href="signup_ru.html">Создать аккаунт</a>
+</div>
+</div>
+<div id="mainContent" style="display:none">
+<div class="pg-wrap">
+<div class="pg-head">
+<div class="pg-breadcrumb"><a href="waybound_ru.html">Главная</a><span class="pg-breadcrumb-sep">›</span><span>Мои бронирования</span></div>
+<div class="pg-title">Мои бронирования</div>
+<div class="pg-subtitle" id="pgSub">Ваши поездки и приключения</div>
+</div>
+<div class="stats-strip" id="statsStrip" style="display:none">
+<div class="stat-box"><div class="stat-num" id="sAll">0</div><div class="stat-lbl">Всего поездок</div></div>
+<div class="stat-box"><div class="stat-num" id="sConf">0</div><div class="stat-lbl">Подтверждены</div></div>
+<div class="stat-box"><div class="stat-num" id="sDone">0</div><div class="stat-lbl">Завершены</div></div>
+<div class="stat-box"><div class="stat-num" id="sPend">0</div><div class="stat-lbl">В ожидании</div></div>
+</div>
+<div class="filter-row" id="filterRow" style="display:none">
+<button class="filter-pill active" onclick="setFilter('all',this)">Все</button>
+<button class="filter-pill" onclick="setFilter('confirmed',this)">Подтверждено</button>
+<button class="filter-pill" onclick="setFilter('pending',this)">Ожидание оплаты</button>
+<button class="filter-pill" onclick="setFilter('completed',this)">Завершено</button>
+<button class="filter-pill" onclick="setFilter('cancelled',this)">Отменено</button>
+</div>
+<div class="offline-banner" id="offlineBanner"></div>
+<div class="result-meta" id="resultMeta" style="display:none"></div>
+<div id="bookingsList"></div>
+</div>
+</div>
+<footer class="footer">
+<div class="foot-grid">
+<div>
+<a class="foot-logo" href="waybound_ru.html">
+<div class="foot-logo-mark"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>
+        Waybound
+      </a>
+<p class="foot-tag">Малые группы. Настоящие гиды. Подлинные места.</p>
+</div>
+<div><div class="foot-col-title">Исследовать</div><a class="foot-link" href="adventures_ru.html">Все приключения</a><a class="foot-link" href="how-it-works_ru.html">Как это работает</a><a class="foot-link" href="reviews_ru.html">Отзывы</a></div>
+<div><div class="foot-col-title">Компания</div><a class="foot-link" href="about_ru.html">О нас</a><a class="foot-link" href="contact_ru.html">Контакты</a><a class="foot-link" href="operator_ru.html">Добавить тур</a></div>
+<div><div class="foot-col-title">Справка</div><a class="foot-link" href="help_ru.html">Центр помощи</a><a class="foot-link" href="trust-safety_ru.html">Доверие и безопасность</a><a class="foot-link" href="privacy_ru.html">Приватность</a><a class="foot-link" href="terms_ru.html">Условия</a></div>
+</div>
+<div class="foot-bottom"><span class="foot-copy">© 2026 Waybound. Все права защищены.</span></div>
+</footer>
+<script>
+const THEMES={ocean:{name:'Глубокий океан',desc:'Холодный синий, изысканный',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Свет и тепло',desc:'Белая основа, яркая энергия',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Слоновая кость и земляной',desc:'Теплый пергамент, ручная работа',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Пергамент и золото',desc:'Теплое золото, изысканность',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Лес и шалфей',desc:'Приглушённый зелёный, естественный вид',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Терракота',desc:'Земляной красный, смелое тепло',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
+let current=localStorage.getItem('waybound-theme')||'ocean', pending=current;
+document.body.className=current;
+function renderGrid(){document.getElementById('themeGrid').innerHTML=Object.entries(THEMES).map(([k,d])=>`<div class="th-opt${k===current?' sel':''}" data-k="${k}" onclick="previewTheme('${k}')"><div class="th-check">✓</div><div class="th-swatches">${d.sw.map(s=>`<div class="th-sw" style="background:${s}"></div>`).join('')}</div><div class="th-name">${d.name}</div><div class="th-desc">${d.desc}</div>${d.def?`<span class="th-default-tag">★ Default</span>`:''}</div>`).join('');}
+function openSettings(){var dd=document.getElementById('navDropdown');if(dd)dd.classList.remove('open');pending=current;renderGrid();document.getElementById('overlay').classList.add('open');}
+function closeSettings(){document.body.className=current;document.getElementById('overlay').classList.remove('open');}
+function overlayClick(e){if(e.target===document.getElementById('overlay'))closeSettings();}
+function previewTheme(k){pending=k;document.querySelectorAll('.th-opt').forEach(el=>el.classList.toggle('sel',el.dataset.k===k));document.body.className=k;}
+function applyPending(){current=pending;localStorage.setItem('waybound-theme',current);document.getElementById('overlay').classList.remove('open');}
+
+
+// Hero destination tiles
+(function() {
+  var tiles = [
+    {cls:'ti1', dest:'Грузия',   sub:'Казбеги и Сванетия',    cnt:'8 туров',  emoji:'🏔️'},
+    {cls:'ti2', dest:'Кения',     sub:'Сафари Масаи Мара',    cnt:'5 туров',  emoji:'🦁'},
+    {cls:'ti3', dest:'Япония',     sub:'Киото и Токио',        cnt:'12 туров', emoji:'⛩️'},
+    {cls:'ti1', dest:'Марокко',   sub:'Экспедиция в Сахару',    cnt:'6 туров',  emoji:'🏜️'},
+    {cls:'ti2', dest:'Хорватия',   sub:'Далматинские острова',    cnt:'9 туров',  emoji:'🌊'},
+    {cls:'ti3', dest:'Исландия',   sub:'Северное сияние',      cnt:'4 тура',  emoji:'🌌'},
+  ];
+  var grid = document.getElementById('heroTiles');
+  if (!grid) return;
+  grid.innerHTML = tiles.map(function(t) {
+    return '<div class="htile' + t.cls + '" onclick="window.location.href=\'adventures.html\'" style="cursor:pointer">'
+      + '<div class="htile-bg">' + t.emoji + '</div>'
+      + '<div class="htile-lbl">' + t.dest + '<br><span style="font-weight:400;opacity:.7">' + t.sub + '</span></div>'
+      + '<div class="htile-cnt">' + t.cnt + '</div>'
+      + '</div>';
+  }).join('');
+})();
+
+
+// Explore by style cards
+(function() {
+  var styles = [
+    {title:'Треккинг',       sub:'Горы и высокогорье',  emoji:'🏔️', cls:'ti1'},
+    {title:'Сафари',         sub:'Дикая природа и нетронутые земли',emoji:'🦁', cls:'ti2'},
+    {title:'Культура',        sub:'История и местная жизнь', emoji:'🏛️', cls:'ti3'},
+    {title:'Парусный спорт',        sub:'Побережье и островные прыжки',  emoji:'⛵', cls:'ti1'},
+    {title:'Еда и вино',    sub:'Почувствуйте вкус пункта назначения',emoji:'🍷', cls:'ti2'},
+    {title:'Оздоровление',       sub:'Йога, ретриты и спа',  emoji:'🧘', cls:'ti3'},
+    {title:'Приключение',      sub:'Адреналин и экстремальные виды спорта',emoji:'🪂', cls:'ti1'},
+    {title:'Фотография',    sub:'Запечатлейте мир',    emoji:'📷', cls:'ti2'},
+  ];
+  var scroll = document.getElementById('cardScroll');
+  if (!scroll) return;
+  scroll.innerHTML = styles.map(function(s) {
+    return '<div class="style-card' + s.cls + '" onclick="window.location.href=\'adventures.html\'">'
+      + '<div class="style-card-bg">' + s.emoji + '</div>'
+      + '<div class="style-card-overlay"></div>'
+      + '<div class="style-card-body">'
+      + '<div class="style-card-title">' + s.title + '</div>'
+      + '<div class="style-card-sub">' + s.sub + '</div>'
+      + '</div></div>';
+  }).join('');
+})();
+
+
+
+/* Featured tours - homepage */
+var TOURS_API = window.API_V1 + '/tours/';
+
+function goFeatured(el) {
+  window.location.href = 'tour_detail_page.html?slug=' + el.dataset.slug;
+}
+
+async function loadFeaturedTours() {
+  try {
+    var res = await fetch(TOURS_API + '?featured=true');
+    if (!res.ok) return;
+    var data = await res.json();
+    var tours = data.results || [];
+    if (!tours.length) return;
+
+    var row = document.getElementById('featuredToursRow');
+    var sec = document.getElementById('featuredToursSec');
+    if (!row || !sec) return;
+
+    var html = '';
+    for (var i = 0; i < tours.length; i++) {
+      var t = tours[i];
+      var dayLabel = t.days === 1 ? '1 день' : t.days + 'дней';
+      var price = '₽' + parseInt(t.price).toLocaleString('ru-RU');
+      var spots = t.spots_left <= 3
+        ? '<div class="feat-spots-low">🔥 Осталось только' + t.spots_left + 'мест</div>'
+        : '';
+      html += '<div class="feat-card" data-slug="' + t.slug + '" onclick="goFeatured(this)">';
+      html += '<div class="feat-card-img">' + (t.emoji || '🌍');
+      html += '<div class="feat-card-badge">' + dayLabel + '</div></div>';
+      html += '<div class="feat-card-body">';
+      html += '<div class="feat-card-dest">📍' + t.destination + '</div>';
+      html += '<div class="feat-card-title">' + t.title + '</div>';
+      html += '<div class="feat-card-foot">';
+      html += '<div class="feat-card-price">' + price + '<span style="font-size:11px;color:var(--mu);font-weight:400"> /на человека</span></div>';
+      html += '<div class="feat-card-rating">⭐' + parseFloat(t.rating).toFixed(2) + ' (' + t.review_count + ')</div>';
+      html += '</div>' + spots + '</div></div>';
+    }
+    row.innerHTML = html;
+    sec.style.display = 'block';
+  } catch(e) {
+    // Backend not running - section stays hidden
+  }
+}
+
+loadFeaturedTours();
+
+var ACCT_API = window.API_V1;
+
+function authHeaders() {
+  var h = { 'Content-Type': 'application/json' };
+  var t = localStorage.getItem('waybound_access');
+  if (t) h['Authorization'] = 'Bearer ' + t;
+  return h;
+}
+
+async function fetchAuth(url, opts) {
+  opts = opts || {};
+  opts.headers = opts.headers || authHeaders();
+  var res = await fetch(url, opts);
+  if (res.status !== 401) return res;
+  var rt = localStorage.getItem('waybound_refresh');
+  if (!rt) { window.location.href = 'signin.html?next=' + encodeURIComponent(window.location.href); return res; }
+  var rr = await fetch(ACCT_API + '/auth/token/refresh/', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({refresh: rt})
+  });
+  if (!rr.ok) {
+    localStorage.removeItem('waybound_access'); localStorage.removeItem('waybound_refresh'); localStorage.removeItem('waybound_user');
+    window.location.href = 'signin.html?next=' + encodeURIComponent(window.location.href); return res;
+  }
+  var rd = await rr.json();
+  localStorage.setItem('waybound_access', rd.access);
+  if (rd.refresh) localStorage.setItem('waybound_refresh', rd.refresh);
+  opts.headers['Authorization'] = 'Bearer ' + rd.access;
+  return await fetch(url, opts);
+}
+
+function fmtPrice(n, b) {
+  var sym = b ? (symMap[b.currency || 'RUB'] || (b.currency + ' ')) : '₽';
+  return sym + parseInt(parseFloat(n)||0).toLocaleString('ru-RU');
+}
+
+function fmtDate(d) {
+  if (!d) return 'TBC';
+  var p = d.split('-');
+  var m = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+  return p[2] + ' ' + m[parseInt(p[1])-1] + ' ' + p[0];
+}
+
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('waybound_user') || 'null'); }
+  catch(e) { return null; }
+}
+
+function getCached(key) {
+  try { return JSON.parse(localStorage.getItem('_cache_' + key) || 'null'); }
+  catch(e) { return null; }
+}
+
+function setCached(key, val) {
+  try { localStorage.setItem('_cache_' + key, JSON.stringify(val)); } catch(e) {}
+}
+
+function showOffline(id, msg) {
+  var el = document.getElementById(id);
+  if (el) { el.textContent = msg || 'Бэкенд недоступен — отображаются кэшированные данные.'; el.classList.add('показать'); }
+}
+
+function spinner(text) {
+  return '<div class="spinner-wrap"><div class="spinner"></div>'
+    + '<div class="spinner-text">' + (text || 'Загрузка…') + '</div></div>';
+}
+
+function emptyState(ico, title, sub, ctaLabel, ctaHref) {
+  return '<div class="empty-state">'
+    + '<div class="empty-ico">' + ico + '</div>'
+    + '<div class="empty-title">' + title + '</div>'
+    + '<div class="empty-sub">' + sub + '</div>'
+    + (ctaLabel ? '<a class="btn-primary" href="' + ctaHref + '">' + ctaLabel + '</a>' : '')
+    + '</div>';
+}
+var _allBookings = [];
+var _activeFilter = 'all';
+var _reviewedTours = {}; // slug → true
+
+(function init() {
+  var user = getUser();
+  if (!user || !user.email) { document.getElementById('authWall').style.display='block'; return; }
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('pgSub').textContent = 'С возвращением,' + (user.first_name || user.email);
+  loadBookings();
+})();
+
+async function loadBookings() {
+  document.getElementById('bookingsList').innerHTML = spinner('Загрузка ваших бронирований…');
+  try {
+    var res = await fetchAuth(ACCT_API + '/bookings/', { headers: authHeaders() });
+    if (!res.ok) throw new Error(res.status);
+    var data = await res.json();
+    _allBookings = data.results || [];
+    setCached('bookings', _allBookings);
+    // Fetch user's existing reviews to hide "Написать отзыв" for already-reviewed tours
+    try {
+      var rvRes = await fetchAuth(window.API_V1 + '/reviews/mine/', { headers: authHeaders() });
+      if (rvRes.ok) {
+        var rvData = await rvRes.json();
+        (rvData.results || []).forEach(function(r) { if (r.tour_slug) _reviewedTours[r.tour_slug] = true; });
+      }
+    } catch(e) {}
+    renderAll();
+    startPolling();
+  } catch(e) {
+    var cached = getCached('bookings');
+    if (cached && cached.length) {
+      _allBookings = cached;
+      showOffline('offlineBanner');
+      renderAll();
+    } else {
+      document.getElementById('bookingsList').innerHTML =
+        emptyState('&#x1F9ED;', 'Бронирований нет',
+          'Ваши подтвержденные поездки появятся здесь после бронирования приключения.',
+          'Обзор приключений', 'adventures_ru.html');
+    }
+  }
+}
+
+/**
+ * Check if the tour for this booking has ended.
+ * Compares current date in the tour's departure timezone to the tour end date.
+ * Shows "Написать отзыв" once the end date has passed in the tour's timezone.
+ */
+function isTourEnded(b) {
+  if (!b.departure_date) return false;
+  var t = b.tour_detail || b.tour || {};
+  var days = parseInt(t.days) || 1;
+  // end_date = departure_date + (days - 1)
+  var dep = new Date(b.departure_date + 'T00:00:00');
+  if (isNaN(dep.getTime())) return false;
+  var endDate = new Date(dep);
+  endDate.setDate(endDate.getDate() + days - 1);
+  // Get today in the tour's timezone
+  var tz = t.timezone || 'Europe/Moscow';
+  try {
+    var tourDateStr = new Date().toLocaleDateString('en-CA', { timeZone: tz }); // YYYY-MM-DD
+    var tourToday = new Date(tourDateStr + 'T00:00:00');
+    var endStr = endDate.toISOString().slice(0, 10);
+    var endCmp = new Date(endStr + 'T00:00:00');
+    return tourToday > endCmp;
+  } catch(e) {
+    // Fallback: browser time, end of last day
+    endDate.setHours(23, 59, 59, 0);
+    return new Date() >= endDate;
+  }
+}
+
+function renderAll() {
+  var conf = _allBookings.filter(function(b){ return b.status==='confirmed'; }).length;
+  var done = _allBookings.filter(function(b){ return b.status==='completed'; }).length;
+  var pend = _allBookings.filter(function(b){ return b.status==='pending';   }).length;
+  document.getElementById('sAll').textContent  = _allBookings.length;
+  document.getElementById('sConf').textContent = conf;
+  document.getElementById('sDone').textContent = done;
+  document.getElementById('sPend').textContent = pend;
+  if (_allBookings.length) {
+    document.getElementById('statsStrip').style.display = 'grid';
+    document.getElementById('filterRow').style.display  = 'flex';
+    document.getElementById('resultMeta').style.display = 'block';
+  }
+  setFilter(_activeFilter, null);
+}
+
+function setFilter(status, btn) {
+  _activeFilter = status;
+  document.querySelectorAll('.filter-pill').forEach(function(p){ p.classList.remove('active'); });
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.filter-pill').forEach(function(p) {
+      if ((status === 'all' && p.textContent.trim() === 'Все') ||
+          p.textContent.trim().toLowerCase().replace(' payment','') === status)
+        p.classList.add('active');
+    });
+  }
+  var list = status === 'all' ? _allBookings
+    : _allBookings.filter(function(b){ return b.status === status; });
+  var meta = document.getElementById('resultMeta');
+  if (meta) meta.textContent = list.length + ' booking' + (list.length !== 1 ? 's' : '')
+    + (status !== 'all' ? ' · ' + status : '');
+  if (!list.length) {
+    document.getElementById('bookingsList').innerHTML =
+      emptyState('&#x1F50D;', 'Нет' + (status==='all' ? '' : status+' ') + 'bookings',
+        'Нет бронирований с этим статусом.', 'Обзор приключений', 'adventures_ru.html');
+    return;
+  }
+  renderBookings(list);
+}
+
+var symMap = { RUB:'₽', USD:'$', EUR:'€', GBP:'£', CNY:'¥', TRY:'₺', KZT:'₸' };
+function curSym(b) { return symMap[b.currency || 'RUB'] || (b.currency + ' '); }
+function fmtAmt(n, b) { return curSym(b) + parseFloat(n || 0).toLocaleString('ru-RU', {minimumFractionDigits:0, maximumFractionDigits:0}); }
+
+function getStatusLabel(b) {
+  if (b.status === 'pending' && b.deposit_status !== 'paid') return 'Ожидание депозита';
+  if (b.status === 'pending' && b.deposit_status === 'paid')  return 'Депозит оплачен · Ожидание подтверждения';
+  if (b.status === 'confirmed' && b.balance_status === 'paid') return 'Подтверждено · Полностью оплачено';
+  if (b.status === 'confirmed' && parseFloat(b.balance_due || 0) > 0) return 'Подтверждено · Требуется доплата';
+  if (b.status === 'cancelled') {
+    var _rfAmt = parseFloat(b.refund_amount || 0);
+    if (_rfAmt > 0 && b.refund_status === 'issued') return 'Отменено · Возврат выполнен';
+    if (_rfAmt > 0 && b.refund_status === 'pending') return 'Отменено · Возврат обрабатывается';
+    if (_rfAmt > 0 && b.refund_status === 'manual') return 'Отменено · Возврат ожидает';
+    return 'Отменено';
+  }
+  return { confirmed:'Подтверждено', completed:'Завершено' }[b.status] || b.status;
+}
+function getStatusClass(b) {
+  if (b.status === 'pending'   && b.deposit_status === 'paid')  return 'pending deposit-paid';
+  if (b.status === 'confirmed' && b.balance_status === 'paid')  return 'confirmed';
+  if (b.status === 'confirmed' && parseFloat(b.balance_due || 0) > 0) return 'confirmed balance-due';
+  return b.status;
+}
+
+function renderBookings(list) {
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    var b = list[i];
+    var t = b.tour_detail || {};
+    var slug = t.slug || '';
+    var dep  = fmtDate(b.departure_date);
+    var gg   = b.guests + ' guest' + (b.guests !== 1 ? 's' : '');
+    var days = t.days ? t.days + 'день' + (t.days !== 1 ? 's' : '') : '';
+    var lbl  = getStatusLabel(b);
+    var ref  = b.reference || ('#' + b.id);
+
+    var actions = '';
+    var depositAmt  = parseFloat(b.deposit_paid  || 0);
+    var balanceDue  = parseFloat(b.balance_due   || 0);
+
+    if (b.status === 'pending' && b.deposit_status !== 'paid') {
+      actions += '<a class="bk-btn primary" href="booking.html?slug=' + slug + '">Оплатить депозит</a>';
+    }
+    if (b.status === 'confirmed' && b.balance_status !== 'paid' && balanceDue > 0) {
+      actions += '<button class="bk-btn primary" onclick="payBalance(' + b.id + ')">Оплатить остаток:' + fmtAmt(balanceDue, b) + '</button>';
+    }
+    actions += '<a class="bk-btn outline" href="tour_detail_page.html?slug=' + slug + '">Просмотреть тур</a>';
+    actions += '<button class="bk-btn outline" id="dbt-' + i + '" onclick="toggleAcc(' + i + ')">Детали &#x25BE;</button>';
+    var tourEnded = isTourEnded(b);
+    var fullyPaid = (b.balance_status === 'paid' || parseFloat(b.balance_due || 0) <= 0);
+    var canReview = fullyPaid && (b.status === 'completed' || (b.status === 'confirmed' && tourEnded));
+    if (canReview && !_reviewedTours[slug]) {
+      actions += '<button class="bk-btn gold" onclick="openReviewModal(\'' + slug + '\',\'' + ref + '\',\'' + ((t.title||'Tour').replace(/'/g,'\\\'')) + '\')">&#x2B50; Написать отзыв</button>';
+    }
+    if (b.status === 'confirmed' || b.status === 'pending') {
+      actions += '<span class="bk-actions-divider"></span>';
+      actions += '<button class="bk-btn ghost" onclick="messageOperator(\'' + slug + '\',\'' + ref + '\')">&#x1F4AC; Написать гиду</button>';
+      actions += '<button class="bk-btn ghost danger" onclick="cancelBooking(' + b.id + ')">Отменить бронирование</button>';
+    }
+    actions += '<span class="bk-ref">Ref:' + ref + '</span>';
+
+    var paxParts = [b.adults + ' adult' + (b.adults !== 1 ? 's' : '')];
+    if (b.children) paxParts.push(b.children + ' child' + (b.children !== 1 ? 'ren' : ''));
+    if (b.infants)  paxParts.push(b.infants  + ' infant' + (b.infants  !== 1 ? 's' : ''));
+
+    var details = [
+      { l:'Номер бронирования',      v: ref },
+      { l:'Вылет',        v: dep },
+      { l:'Путешественники',       v: paxParts.join(', ') },
+      { l:'Продолжительность',         v: days || 'Посмотреть страницу тура' },
+      { l:'Гид',            v: (t.guide_display || 'Гид Waybound') },
+      { l:'Статус',           v: lbl },
+      { l:'Цена за человека', v: fmtPrice(b.price_per_person, b) },
+      { l:'Всего',            v: fmtPrice(b.total_price, b) },
+    ];
+    if (b.room_preference)  details.push({ l:'Тип номера',        v: b.room_preference });
+    if (b.selected_extras)  details.push({ l:'Дополнительные услуги',          v: b.selected_extras });
+    if (b.notes)            details.push({ l:'Особые пожелания', v: b.notes });
+    if (b.emergency_name)   details.push({ l:'Контакт для экстренных случаев',v: b.emergency_name + (b.emergency_phone ? ' · ' + b.emergency_phone : '') });
+    // Cancellation policy as agreed at booking time
+    var cpSnap = b.cancel_policy_snapshot;
+    if (cpSnap && cpSnap.length) {
+      var cpLines = cpSnap.map(function(cp) {
+        var when = cp.days_before_min != null && cp.days_before_max != null
+          ? cp.days_before_min + '–' + cp.days_before_max + 'дней до'
+          : cp.days_before_min != null ? cp.days_before_min + '+ дней до' : '< ' + cp.days_before_max + 'дней до';
+        var pct = parseInt(cp.penalty_pct || 0);
+        var outcome = pct === 0 ? 'Полный возврат' : pct >= 100 ? 'Возврат не предусмотрен' : (100 - pct) + '% возврата';
+        return when + ': ' + outcome;
+      });
+      details.push({ l:'Политика отмены (на момент бронирования)', v: cpLines.join(' · ') });
+    }
+    var dhtml = '';
+    for (var j = 0; j < details.length; j++) {
+      dhtml += '<div class="bk-dl"><div class="bk-dt">' + details[j].l
+             + '</div><div class="bk-dd">' + details[j].v + '</div></div>';
+    }
+
+    html += '<div class="bk-card" id="bkc-' + i + '" data-ref="' + ref + '">';
+    html += '<div class="bk-card-main">';
+    html += '<div class="bk-card-img">'
+          + (t.hero_photo_url
+              ? '<img src="' + t.hero_photo_url + '" alt="" loading="lazy">'
+              : (t.emoji || '&#x1F30D;'))
+          + '</div>';
+    html += '<div class="bk-card-body">';
+    html += '<div class="bk-card-dest">&#x1F4CD;' + (t.destination||'') + (days ? '&ensp;&middot;&ensp;' + days : '') + '</div>';
+    html += '<div class="bk-card-title">' + (t.title||'Тур') + '</div>';
+    html += '<div class="bk-card-chips">';
+    html += '<span class="bk-chip">&#x1F4C5;&ensp;' + dep + '</span>';
+    html += '<span class="bk-chip">&#x1F465;&ensp;' + gg + '</span>';
+    if (t.difficulty) html += '<span class="bk-chip">' + t.difficulty + '</span>';
+    var tourEndedChip = isTourEnded(b);
+    var fullyPaidChip = (b.balance_status === 'оплачено' || parseFloat(b.balance_due || 0) <= 0);
+    var canReviewChip = fullyPaidChip && (b.status === 'completed' || (b.status === 'confirmed' && tourEndedChip));
+    if (canReviewChip && _reviewedTours[slug]) html += '<span class="bk-chip reviewed">&#x2B50; Проверено</span>';
+    html += '</div></div>';
+    // Build top-right amount line: show balance due / refund amount if relevant
+    var priceSubLine = '';
+    if (b.status === 'confirmed' && balanceDue > 0) {
+      priceSubLine = '<div class="bk-price-sub">Остаток к оплате:' + fmtAmt(balanceDue, b) + '</div>';
+    } else if (b.status === 'cancelled' && parseFloat(b.refund_amount || 0) > 0) {
+      var rfSub = b.refund_status === 'issued'  ? 'Возвращено:' + fmtAmt(b.refund_amount, b)
+                : b.refund_status === 'manual'  ? 'Возврат в ожидании:' + fmtAmt(b.refund_amount, b)
+                : b.refund_status === 'pending' ? 'Обработка:' + fmtAmt(b.refund_amount, b)
+                : '';
+      if (rfSub) priceSubLine = '<div class="bk-price-sub">' + rfSub + '</div>';
+    } else if (b.status === 'pending' && depositAmt > 0) {
+      priceSubLine = '<div class="bk-price-sub">Депозит:' + fmtAmt(depositAmt, b) + '</div>';
+    }
+    html += '<div class="bk-card-right">';
+    html += '<span class="bk-status' + getStatusClass(b) + '">' + lbl + '</span>';
+    html += '<div><div class="bk-price">' + fmtPrice(b.total_price, b) + '</div>' + priceSubLine + '</div>';
+    html += '</div></div>';
+    html += '<div class="bk-accordion" id="acc-' + i + '"><div class="bk-accordion-inner">' + dhtml + '</div></div>';
+    html += '<div class="bk-card-actions">' + actions + '</div>';
+    html += '</div>';
+  }
+  document.getElementById('bookingsList').innerHTML = html;
+}
+
+function toggleAcc(i) {
+  var acc = document.getElementById('acc-' + i);
+  var btn = document.getElementById('dbt-' + i);
+  if (!acc) return;
+  var open = acc.classList.toggle('open');
+  if (btn) btn.innerHTML = open ? 'Скрыть детали &#x25B4;' : 'Детали &#x25BE;';
+}
+
+
+
+// ── Balance payment ──────────────────────────────────────────────────────────
+async function payBalance(bookingId) {
+  var btn = event && event.target;
+  if (btn) { btn.disabled = true; btn.textContent = 'Перенаправление…'; }
+  try {
+    var res = await fetchAuth(window.API_V1 + '/payments/initiate/', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ booking_id: bookingId, payment_type: 'balance', payment_method: 'yookassa' })
+    });
+    var data = await res.json();
+    if (res.ok && data.confirmation_url) {
+      window.location.href = data.confirmation_url;
+    } else {
+      showToast(data.detail || 'Не удалось инициировать платёж. Пожалуйста, попробуйте снова.');
+      if (btn) { btn.disabled = false; btn.textContent = btn._origText || 'Оплатить остаток'; }
+    }
+  } catch(e) {
+    showToast('Ошибка сети. Пожалуйста, попробуйте снова.');
+    if (btn) { btn.disabled = false; }
+  }
+}
+
+// ── Message operator ────────────────────────────────────────────────────────
+function messageOperator(tourSlug, bookingRef) {
+  // Navigate to messages; if a thread exists for this tour it will be shown there.
+  // Passing compose=1&tour= so my-messages can auto-open a compose flow if no thread exists.
+  window.location.href = 'my-messages.html?compose=1&tour=' + encodeURIComponent(tourSlug)
+    + '&ref=' + encodeURIComponent(bookingRef);
+}
+
+// ── Booking status polling ───────────────────────────────────────────────────
+var _pollTimer = null;
+function startPolling() {
+  _pollTimer = setInterval(async function() {
+    try {
+      var res = await fetchAuth(ACCT_API + '/bookings/', { headers: authHeaders() });
+      if (!res.ok) return;
+      var data = await res.json();
+      var fresh = data.results || [];
+      // Check if any status changed
+      var changed = fresh.some(function(nb) {
+        var ob = _allBookings.find(function(b) { return b.id === nb.id; });
+        return ob && ob.status !== nb.status;
+      }) || fresh.length !== _allBookings.length;
+      if (changed) {
+        _allBookings = fresh;
+        setCached('bookings', _allBookings);
+        renderAll();
+        showToast('Статус вашего бронирования обновлён.');
+      }
+    } catch(e) {}
+  }, 30000);
+}
+function stopPolling() { if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; } }
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) stopPolling(); else startPolling();
+});
+
+function showToast(msg) {
+  var t = document.getElementById('bkToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'bkToast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a2535;color:#fff;padding:12px 22px;border-radius:8px;font-size:13px;font-family:var(--bf);z-index:9999;opacity:0;transition:opacity .3s';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(function() { t.style.opacity = '0'; }, 3500);
+}
+
+// ── Cancel booking ───────────────────────────────────────────────────────────
+var _cancelBookingId = null;
+
+async function cancelBooking(bookingId) {
+  _cancelBookingId = bookingId;
+  var modal = document.getElementById('cancelModal');
+  var body  = document.getElementById('cancelModalBody');
+  if (!modal || !body) return;
+  body.innerHTML = '<p style="color:var(--mu);font-size:13px">Загрузка деталей возврата…</p>';
+  modal.style.display = 'flex';
+
+  try {
+    var res = await fetchAuth(window.API_V1 + '/bookings/' + bookingId + '/cancel-preview/', { headers: authHeaders() });
+    var d   = await res.json();
+    if (!res.ok) {
+      body.innerHTML = '<p style="color:#a02010">' + (d.detail || 'Ошибка загрузки предпросмотра.') + '</p>';
+      return;
+    }
+
+    // Use RUB for YooKassa/SBP (actual refund currency), tour currency for bank
+    var useRub = (d.payment_method === 'yookassa' || d.payment_method === 'sbp') && d.refund_rub !== undefined;
+    var sym    = useRub ? '₽' : (symMap[d.currency || 'RUB'] || (d.currency + ' '));
+    var fmtN   = function(n) { return sym + parseFloat(n||0).toLocaleString('ru-RU', {minimumFractionDigits:0, maximumFractionDigits:0}); };
+    var totalPaidShow  = useRub ? d.total_paid_rub  : d.total_paid;
+    var refundAmtShow  = useRub ? d.refund_rub       : d.refund_amount;
+
+    var _paid   = parseFloat(d.total_paid || 0);
+    var _refund = parseFloat(d.refund_amount || 0);
+    var _penAmt = parseFloat(d.penalty_amount || 0);
+    var penaltyShow = useRub && d.refund_rub !== undefined
+        ? parseFloat(totalPaidShow) - parseFloat(refundAmtShow)
+        : _penAmt;
+
+    var refundRow = '';
+    if (_paid <= 0) {
+      refundRow = '<div style="font-size:13px;color:var(--mu)">Платёж не был произведён — возврат не требуется.</div>';
+    } else if (_refund > 0) {
+      // Partial or full refund
+      refundRow = '<div style="background:#f4f8fb;border-radius:8px;padding:14px 16px;font-size:13px;line-height:1.8;font-family:var(--bf)">'
+        + '<div><span style="color:var(--mu)">Оплачено:</span>&ensp;<strong>' + fmtN(totalPaidShow) + '</strong></div>'
+        + (penaltyShow > 0 ? '<div><span style="color:var(--mu)">Плата за отмену (' + d.penalty_pct + '% бронирования):</span>&ensp;<strong style="color:#a02010">\u2212' + fmtN(penaltyShow) + '</strong></div>' : '')
+        + '<div style="border-top:1px solid var(--ln);margin-top:6px;padding-top:6px"><span style="color:var(--mu)">Вы получите:</span>&ensp;<strong style="color:#1a7a40">' + fmtN(refundAmtShow) + '</strong></div>'
+        + (d.payment_method === 'bank'
+            ? '<div style="margin-top:6px;font-size:12px;color:var(--mu)">Банковский перевод — возврат обработан вручную в течение 5–10 рабочих дней.</div>'
+            : '<div style="margin-top:6px;font-size:12px;color:var(--mu)">Возврат в RUB на исходный способ оплаты в течение 3–10 рабочих дней.</div>')
+        + '</div>';
+      if (d.tier_label && d.tier_label !== 'Полный возврат' && d.tier_label !== 'Ничего не оплачено') {
+        refundRow += '<div style="font-size:12px;color:var(--mu);margin-top:8px;font-style:italic">' + d.tier_label + '</div>';
+      }
+    } else {
+      // No refund — penalty exceeds or equals what was paid
+      refundRow = '<div style="background:#fdecea;border-radius:8px;padding:14px 16px;font-size:13px;line-height:1.8;font-family:var(--bf);color:#a02010">'
+        + '<div>Возврат не производится —' + d.penalty_pct + '% плата за отмену.'
+        + '<div style="font-size:12px;margin-top:4px;color:var(--mu)">' + (d.tier_label || '') + '</div>'
+        + '</div>';
+    }
+
+    body.innerHTML = '<p style="font-size:14px;color:var(--ink);margin:0 0 14px">Вы уверены, что хотите отменить это бронирование?</p>'
+      + refundRow;
+  } catch(e) {
+    body.innerHTML = '<p style="color:#a02010">Не удалось загрузить предпросмотр возврата.</p>';
+  }
+}
+
+async function confirmCancel() {
+  if (!_cancelBookingId) return;
+  var btn = document.getElementById('cancelConfirmBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Отмена…'; }
+
+  try {
+    var res = await fetchAuth(window.API_V1 + '/bookings/' + _cancelBookingId + '/cancel/', {
+      method: 'PATCH',
+      headers: authHeaders(),
+      body: JSON.stringify({})
+    });
+    var d = await res.json();
+    closeCancelModal();
+    if (res.ok) {
+      // Update in _allBookings cache
+      var idx = _allBookings.findIndex(function(b) { return b.id === _cancelBookingId; });
+      if (idx >= 0) _allBookings[idx] = d;
+      else _allBookings.push(d);
+      setCached('bookings', _allBookings);
+      renderAll();
+      showToast('Бронирование отменено.');
+    } else {
+      showToast(d.detail || 'Не удалось отменить бронирование.');
+    }
+  } catch(e) {
+    closeCancelModal();
+    showToast('Ошибка сети. Пожалуйста, попробуйте снова.');
+  }
+}
+
+function closeCancelModal() {
+  _cancelBookingId = null;
+  var modal = document.getElementById('cancelModal');
+  if (modal) modal.style.display = 'none';
+}
+
+// ── Review modal ──────────────────────────────────────────────────────────────
+var _rvSlug = '', _rvRef = '', _rvRating = 0;
+
+function openReviewModal(slug, ref, title) {
+  _rvSlug = slug; _rvRef = ref; _rvRating = 0;
+  document.getElementById('rvTourTitle').textContent = title;
+  document.getElementById('rvTitle').value = '';
+  document.getElementById('rvBody').value = '';
+  document.getElementById('rvError').textContent = '';
+  document.querySelectorAll('#rvStars .rv-star').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('reviewModal').style.display = 'flex';
+}
+
+function closeReviewModal() {
+  document.getElementById('reviewModal').style.display = 'none';
+}
+
+function setRvRating(n) {
+  _rvRating = n;
+  _highlightStars(n);
+}
+function _highlightStars(n) {
+  document.querySelectorAll('#rvStars .rv-star').forEach(function(s, i) {
+    s.classList.toggle('active', i < n);
+  });
+}
+// Hover preview
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('#rvStars .rv-star').forEach(function(s, i) {
+    s.addEventListener('mouseenter', function() { _highlightStars(i + 1); });
+  });
+  document.getElementById('rvStars').addEventListener('mouseleave', function() {
+    _highlightStars(_rvRating);
+  });
+});
+
+async function submitReview() {
+  var errEl = document.getElementById('rvError');
+  if (!_rvRating) { errEl.textContent = 'Пожалуйста, выберите рейтинг.'; return; }
+  var title = document.getElementById('rvTitle').value.trim();
+  var body  = document.getElementById('rvBody').value.trim();
+  if (!body) { errEl.textContent = 'Пожалуйста, напишите свой отзыв.'; return; }
+  errEl.textContent = '';
+
+  var btn = document.getElementById('rvSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Отправка…';
+
+  try {
+    var res = await fetch(window.API_V1 + '/reviews/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('waybound_access') },
+      body: JSON.stringify({ tour_slug: _rvSlug, booking_ref: _rvRef, rating: _rvRating, title: title, body: body })
+    });
+    var d = await res.json();
+    if (res.ok) {
+      closeReviewModal();
+      showToast('Отзыв отправлен! Спасибо.');
+      _reviewedTours[_rvSlug] = true;
+      renderAll(); // Re-render to show "Отзыв оставлен" badge instead of button
+    } else {
+      var msg = d.detail || d.non_field_errors || d.tour_slug || 'Не удалось отправить отзыв.';
+      if (Array.isArray(msg)) msg = msg.join(' ');
+      errEl.textContent = msg;
+    }
+  } catch(e) {
+    errEl.textContent = 'Ошибка сети. Пожалуйста, попробуйте снова.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Отправить отзыв';
+  }
+}
+
+// Auto-open review modal from email link (?review=REF)
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var reviewRef = params.get('review');
+  if (!reviewRef) return;
+  // Wait for bookings to load, then open modal
+  var _waitCount = 0;
+  var _waitTimer = setInterval(function() {
+    _waitCount++;
+    if (_waitCount > 40) { clearInterval(_waitTimer); return; } // give up after ~4s
+    var match = _allBookings.find(function(b) { return b.reference === reviewRef; });
+    if (match && match.status === 'completed') {
+      clearInterval(_waitTimer);
+      var slug = (match.tour && match.tour.slug) || '';
+      var title = (match.tour && match.tour.title) || 'Тур';
+      openReviewModal(slug, reviewRef, title);
+      // Clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, 100);
+})();
+
+// Nav: handled by nav.js
+</script>
+<!-- Cancel booking modal -->
+<div id="cancelModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center;padding:16px">
+<div style="background:var(--white,#fff);border-radius:14px;padding:28px 28px 22px;max-width:440px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.18)">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+<span style="font-size:16px;font-weight:700;color:var(--ink,#0d1f2d);font-family:var(--bf,'Inter',sans-serif)">Отменить бронирование</span>
+<button onclick="closeCancelModal()" style="background:none;border:none;font-size:22px;line-height:1;cursor:pointer;color:var(--mu,#607080)">×</button>
+</div>
+<div id="cancelModalBody"></div>
+<div style="display:flex;gap:10px;margin-top:20px">
+<button id="cancelConfirmBtn" onclick="confirmCancel()" style="flex:1;background:#a02010;color:#fff;border:none;border-radius:8px;padding:11px 0;font-size:14px;font-weight:700;font-family:var(--bf,'Inter',sans-serif);cursor:pointer">
+        Да, отменить бронирование
+      </button>
+<button onclick="closeCancelModal()" style="flex:1;background:var(--ha-bg,#f0f5f9);color:var(--ink,#0d1f2d);border:none;border-radius:8px;padding:11px 0;font-size:14px;font-weight:600;font-family:var(--bf,'Inter',sans-serif);cursor:pointer">
+        Оставить бронирование
+      </button>
+</div>
+</div>
+</div>
+<!-- Review modal -->
+<div id="reviewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center;padding:16px">
+<div style="background:var(--white,#fff);border-radius:14px;padding:28px 28px 22px;max-width:500px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.18)">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+<span style="font-size:16px;font-weight:700;color:var(--ink,#0d1f2d);font-family:var(--bf,'Inter',sans-serif)">Написать отзыв</span>
+<button onclick="closeReviewModal()" style="background:none;border:none;font-size:22px;line-height:1;cursor:pointer;color:var(--mu,#607080)">×</button>
+</div>
+<div id="rvTourTitle" style="font-size:13px;color:var(--mu,#607080);margin-bottom:18px;font-family:var(--bf,'Inter',sans-serif)"></div>
+<!-- Star picker -->
+<div id="rvStars" style="display:flex;gap:6px;margin-bottom:16px">
+<span class="rv-star" onclick="setRvRating(1)" style="font-size:28px;cursor:pointer;transition:color .15s">★</span>
+<span class="rv-star" onclick="setRvRating(2)" style="font-size:28px;cursor:pointer;transition:color .15s">★</span>
+<span class="rv-star" onclick="setRvRating(3)" style="font-size:28px;cursor:pointer;transition:color .15s">★</span>
+<span class="rv-star" onclick="setRvRating(4)" style="font-size:28px;cursor:pointer;transition:color .15s">★</span>
+<span class="rv-star" onclick="setRvRating(5)" style="font-size:28px;cursor:pointer;transition:color .15s">★</span>
+</div>
+<input id="rvTitle" maxlength="120" placeholder="Заголовок отзыва (опционально)" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d0d8e0;border-radius:8px;font-size:14px;font-family:var(--bf,'Inter',sans-serif);margin-bottom:10px" type="text"/>
+<textarea id="rvBody" maxlength="2000" placeholder="Поделитесь своим впечатлением…" rows="4" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d0d8e0;border-radius:8px;font-size:14px;font-family:var(--bf,'Inter',sans-serif);resize:vertical;margin-bottom:6px"></textarea>
+<div id="rvError" style="color:#c03020;font-size:13px;min-height:18px;margin-bottom:10px;font-family:var(--bf,'Inter',sans-serif)"></div>
+<div style="display:flex;gap:10px">
+<button id="rvSubmitBtn" onclick="submitReview()" style="flex:1;background:var(--ac,#1a73e8);color:#fff;border:none;border-radius:8px;padding:11px 0;font-size:14px;font-weight:700;font-family:var(--bf,'Inter',sans-serif);cursor:pointer">
+        Отправить отзыв
+      </button>
+<button onclick="closeReviewModal()" style="flex:1;background:var(--ha-bg,#f0f5f9);color:var(--ink,#0d1f2d);border:none;border-radius:8px;padding:11px 0;font-size:14px;font-weight:600;font-family:var(--bf,'Inter',sans-serif);cursor:pointer">
+        Отмена
+      </button>
+</div>
+</div>
+</div>
+<style>
+  .rv-star { color: #d0d8e0; }
+  .rv-star.active { color: #f5a623; }
+</style>
+<script src="nav.js"></script>
+</body>
+</html>

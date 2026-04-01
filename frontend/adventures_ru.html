@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>All Adventures — Waybound</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&amp;family=DM+Sans:wght@300;400;500;600&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Outfit:wght@300;400;500;600&amp;family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&amp;family=Space+Grotesk:wght@400;500;600&amp;display=swap"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-font-smoothing:antialiased}
@@ -355,258 +356,242 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 <script src="config.js"></script>
 </head>
 <body class="ocean">
-
 <!-- SETTINGS DRAWER -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
-  <div class="drawer" id="drawer">
-    <div class="drawer-head">
-      <div class="drawer-title">Appearance</div>
-      <button class="drawer-close" onclick="closeSettings()">✕</button>
-    </div>
-    <div class="drawer-body">
-      <div class="d-section-label">Choose your theme</div>
-      <div class="theme-grid" id="themeGrid"></div>
-      <button class="drawer-apply" onclick="applyPending()">Apply theme</button>
-      <div class="drawer-divider"></div>
-      <p class="drawer-note">Your choice is saved locally and remembered on your next visit.</p>
-    </div>
-  </div>
+<div class="drawer" id="drawer">
+<div class="drawer-head">
+<div class="drawer-title">Оформление</div>
+<button class="drawer-close" onclick="closeSettings()">✕</button>
 </div>
-
+<div class="drawer-body">
+<div class="d-section-label">Выберите тему</div>
+<div class="theme-grid" id="themeGrid"></div>
+<button class="drawer-apply" onclick="applyPending()">Применить тему</button>
+<div class="drawer-divider"></div>
+<p class="drawer-note">Ваш выбор сохранён локально и будет восстановлен при следующем посещении.</p>
+</div>
+</div>
+</div>
 <!-- NAV -->
 <nav class="nav">
-  <a class="logo" href="waybound.html">
-    <div class="logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>
-    waybound
+<a class="logo" href="waybound_ru.html">
+<div class="logo-mark"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>
+    Waybound
   </a>
-  <div class="nav-search"><span style="padding:0 10px;font-size:13px;flex-shrink:0">🔍</span><input id="navSearchInput" type="text" placeholder="Where to go?" autocomplete="off" style="background:none;border:none;outline:none;width:100%;padding:7px 14px 7px 0;font-size:12px;color:rgba(255,255,255,.7);font-family:var(--bf);" onkeydown="if(event.key==='Enter'){var q=this.value.trim();if(q)window.location.href='adventures.html?q='+encodeURIComponent(q);}"></div>
-  <div class="nav-links"><a class="nav-link" href="adventures.html">Adventures</a><a class="nav-link" href="how-it-works.html">How it works</a><a class="nav-link" href="about.html">About</a><a class="nav-link" href="help.html">Help</a><a class="nav-link" href="contact.html">Contact</a></div>
-      <div class="nav-r nav-r-wrap">
-    <button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin.html'">Sign in / Sign up</button>
-    <a class="btn-ac-sm" href="operator.html" style="text-decoration:none" id="navListTourBtn">List a tour</a>
-    <div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" title="My account" style="display:none"></div>
-    <div class="nav-dropdown" id="navDropdown"></div>
-  </div>
+<div class="nav-search"><span style="padding:0 10px;font-size:13px;flex-shrink:0">🔍</span><input autocomplete="off" id="navSearchInput" onkeydown="if(event.key==='Enter'){var q=this.value.trim();if(q)window.location.href='adventures.html?q='+encodeURIComponent(q);}" placeholder="Куда отправиться?" style="background:none;border:none;outline:none;width:100%;padding:7px 14px 7px 0;font-size:12px;color:rgba(255,255,255,.7);font-family:var(--bf);" type="text"/></div>
+<div class="nav-links"><a class="nav-link" href="adventures_ru.html">Путешествия</a><a class="nav-link" href="how-it-works_ru.html">Как это работает</a><a class="nav-link" href="about_ru.html">О нас</a><a class="nav-link" href="help_ru.html">Справка</a><a class="nav-link" href="contact_ru.html">Контакты</a></div>
+<div class="nav-r nav-r-wrap">
+<button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin_ru.html'">Вход / Регистрация</button>
+<a class="btn-ac-sm" href="operator_ru.html" id="navListTourBtn" style="text-decoration:none">Добавить тур</a>
+<div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" style="display:none" title="Мой аккаунт"></div>
+<div class="nav-dropdown" id="navDropdown"></div>
+</div>
 </nav>
-
 <!-- SEARCH HERO -->
 <div class="search-hero">
-  <div style="max-width:1200px;margin:0 auto;padding:0 26px 0 0">
-    <div class="sh-label">Explore the world</div>
-    <h1 class="sh-title">Find your perfect <em>adventure</em></h1>
-    <p class="sh-sub">Tours across Russia, Georgia, Turkey &amp; Kazakhstan, led by verified local guides</p>
-    <div class="search-bar">
-      <div class="sb-field" id="sbDest" onclick="toggleDrop('dropDest',this)">
-        <span class="sb-icon">📍</span>
-        <div class="sb-inner">
-          <span class="sb-lbl">Destination</span>
-          <span class="sb-val" id="sbDestVal">Anywhere in the world</span>
-        </div>
-        <div class="sb-dropdown" id="dropDest" onclick="event.stopPropagation()">
-          <div class="sb-drop-section">All destinations</div>
-          <div class="sb-drop-item" onclick="pickDest('Anywhere in the world',this)">🌍 Anywhere in the world</div>
-          <div class="sb-drop-section">Europe</div>
-          <div class="sb-drop-item" onclick="pickDest('Portugal',this)">🇵🇹 Portugal</div>
-          <div class="sb-drop-item" onclick="pickDest('Croatia',this)">🇭🇷 Croatia</div>
-          <div class="sb-drop-item" onclick="pickDest('Greece',this)">🇬🇷 Greece</div>
-          <div class="sb-drop-item" onclick="pickDest('Iceland',this)">🇮🇸 Iceland</div>
-          <div class="sb-drop-section">Asia</div>
-          <div class="sb-drop-item" onclick="pickDest('Japan',this)">🇯🇵 Japan</div>
-          <div class="sb-drop-item" onclick="pickDest('Nepal',this)">🇳🇵 Nepal</div>
-          <div class="sb-drop-item" onclick="pickDest('Indonesia',this)">🇮🇩 Indonesia</div>
-          <div class="sb-drop-section">Caucasus</div>
-          <div class="sb-drop-item" onclick="pickDest('Georgia',this)">🇬🇪 Georgia</div>
-          <div class="sb-drop-section">Africa</div>
-          <div class="sb-drop-item" onclick="pickDest('Kenya',this)">🇰🇪 Kenya</div>
-          <div class="sb-drop-item" onclick="pickDest('Morocco',this)">🇲🇦 Morocco</div>
-          <div class="sb-drop-item" onclick="pickDest('Tanzania',this)">🇹🇿 Tanzania</div>
-          <div class="sb-drop-section">Indian Ocean & Pacific</div>
-          <div class="sb-drop-item" onclick="pickDest('Seychelles',this)">🏝️ Seychelles</div>
-          <div class="sb-drop-item" onclick="pickDest('New Zealand',this)">🇳🇿 New Zealand</div>
-        </div>
-      </div>
-      <div class="sb-field" id="sbWhen" onclick="toggleDrop('dropWhen',this)">
-        <span class="sb-icon">📅</span>
-        <div class="sb-inner">
-          <span class="sb-lbl">When</span>
-          <span class="sb-val" id="sbWhenVal">Any dates</span>
-        </div>
-        <div class="sb-dropdown" id="dropWhen" onclick="event.stopPropagation()">
-          <div class="sb-drop-section">Travel window</div>
-          <div class="sb-drop-item" onclick="pickWhen('Any dates',this)">📅 Any dates</div>
-          <div class="sb-drop-item" onclick="pickWhen('Next 30 days',this)">🔜 Next 30 days</div>
-          <div class="sb-drop-item" onclick="pickWhen('Next 3 months',this)">📆 Next 3 months</div>
-          <div class="sb-drop-section">Month</div>
-          <div class="sb-drop-item" onclick="pickWhen('March 2026',this)">March 2026</div>
-          <div class="sb-drop-item" onclick="pickWhen('April 2026',this)">April 2026</div>
-          <div class="sb-drop-item" onclick="pickWhen('May 2026',this)">May 2026</div>
-          <div class="sb-drop-item" onclick="pickWhen('June 2026',this)">June 2026</div>
-          <div class="sb-drop-item" onclick="pickWhen('July 2026',this)">July 2026</div>
-          <div class="sb-drop-item" onclick="pickWhen('August 2026',this)">August 2026</div>
-          <div class="sb-drop-item" onclick="pickWhen('September 2026',this)">September 2026</div>
-          <div class="sb-drop-item" onclick="pickWhen('October 2026',this)">October 2026</div>
-        </div>
-      </div>
-      <div class="sb-field" id="sbSize" onclick="toggleDrop('dropSize',this)">
-        <span class="sb-icon">👥</span>
-        <div class="sb-inner">
-          <span class="sb-lbl">Group size</span>
-          <span class="sb-val" id="sbSizeVal">Any size</span>
-        </div>
-        <div class="sb-dropdown" id="dropSize" onclick="event.stopPropagation()">
-          <div class="sb-drop-section">Travelers</div>
-          <div class="sb-drop-item" onclick="pickSize('Any size',this)">👥 Any size</div>
-          <div class="sb-drop-item" onclick="pickSize('Solo (1)',this)">🙋 Solo (1)</div>
-          <div class="sb-drop-item" onclick="pickSize('2 travelers',this)">👫 2 travelers</div>
-          <div class="sb-drop-item" onclick="pickSize('3-5 travelers',this)">👨‍👩‍👧 3–5 travelers</div>
-          <div class="sb-drop-item" onclick="pickSize('6-10 travelers',this)">👨‍👩‍👧‍👦 6–10 travelers</div>
-          <div class="sb-drop-item" onclick="pickSize('10+ travelers',this)">🏫 10+ travelers</div>
-        </div>
-      </div>
-      <button class="sb-btn" onclick="runSearch()">Search</button>
-    </div>
-    <div class="sh-cats">
-      <div class="sh-cat on" onclick="setCatFilter('',this)"><span class="sh-cat-ico">🌍</span>All trips</div>
-      <div class="sh-cat" onclick="setCatFilter('Trekking',this)"><span class="sh-cat-ico">🥾</span>Trekking</div>
-      <div class="sh-cat" onclick="setCatFilter('Wildlife',this)"><span class="sh-cat-ico">🦁</span>Wildlife</div>
-      <div class="sh-cat" onclick="setCatFilter('Culture',this)"><span class="sh-cat-ico">🏛️</span>Culture</div>
-      <div class="sh-cat" onclick="setCatFilter('Adventure',this)"><span class="sh-cat-ico">🧗</span>Adventure</div>
-      <div class="sh-cat" onclick="setCatFilter('Food & Wine',this)"><span class="sh-cat-ico">🍷</span>Food & Wine</div>
-      <div class="sh-cat" onclick="setCatFilter('Cycling',this)"><span class="sh-cat-ico">🚵</span>Cycling</div>
-      <div class="sh-cat" onclick="setCatFilter('Water Sports',this)"><span class="sh-cat-ico">🏄</span>Water Sports</div>
-      <div class="sh-cat" onclick="setCatFilter('Winter Sports',this)"><span class="sh-cat-ico">⛷</span>Winter Sports</div>
-      <div class="sh-cat" onclick="setCatFilter('Wellness',this)"><span class="sh-cat-ico">🧘</span>Wellness</div>
-    </div>
-  </div>
+<div style="max-width:1200px;margin:0 auto;padding:0 26px 0 0">
+<div class="sh-label">Исследуйте мир</div>
+<h1 class="sh-title">Найдите своё идеальное <em>путешествие</em></h1>
+<p class="sh-sub">Туры по России, Грузии, Турции и Казахстану с опытными местными гидами</p>
+<div class="search-bar">
+<div class="sb-field" id="sbDest" onclick="toggleDrop('dropDest',this)">
+<span class="sb-icon">📍</span>
+<div class="sb-inner">
+<span class="sb-lbl">Направление</span>
+<span class="sb-val" id="sbDestVal">Любая точка мира</span>
 </div>
-
+<div class="sb-dropdown" id="dropDest" onclick="event.stopPropagation()">
+<div class="sb-drop-section">Все направления</div>
+<div class="sb-drop-item" onclick="pickDest('Anywhere in the world',this)">🌍 Любая точка мира</div>
+<div class="sb-drop-section">Европа</div>
+<div class="sb-drop-item" onclick="pickDest('Portugal',this)">🇵🇹 Португалия</div>
+<div class="sb-drop-item" onclick="pickDest('Croatia',this)">🇭🇷 Хорватия</div>
+<div class="sb-drop-item" onclick="pickDest('Greece',this)">🇬🇷 Греция</div>
+<div class="sb-drop-item" onclick="pickDest('Iceland',this)">🇮🇸 Исландия</div>
+<div class="sb-drop-section">Азия</div>
+<div class="sb-drop-item" onclick="pickDest('Japan',this)">🇯🇵 Япония</div>
+<div class="sb-drop-item" onclick="pickDest('Nepal',this)">🇳🇵 Непал</div>
+<div class="sb-drop-item" onclick="pickDest('Indonesia',this)">🇮🇩 Индонезия</div>
+<div class="sb-drop-section">Кавказ</div>
+<div class="sb-drop-item" onclick="pickDest('Georgia',this)">🇬🇪 Грузия</div>
+<div class="sb-drop-section">Африка</div>
+<div class="sb-drop-item" onclick="pickDest('Kenya',this)">🇰🇪 Кения</div>
+<div class="sb-drop-item" onclick="pickDest('Morocco',this)">🇲🇦 Марокко</div>
+<div class="sb-drop-item" onclick="pickDest('Tanzania',this)">🇹🇿 Танзания</div>
+<div class="sb-drop-section">Индийский океан и Тихий океан</div>
+<div class="sb-drop-item" onclick="pickDest('Seychelles',this)">🏝️ Сейшелы</div>
+<div class="sb-drop-item" onclick="pickDest('New Zealand',this)">🇳🇿 Новая Зеландия</div>
+</div>
+</div>
+<div class="sb-field" id="sbWhen" onclick="toggleDrop('dropWhen',this)">
+<span class="sb-icon">📅</span>
+<div class="sb-inner">
+<span class="sb-lbl">Когда</span>
+<span class="sb-val" id="sbWhenVal">Любые даты</span>
+</div>
+<div class="sb-dropdown" id="dropWhen" onclick="event.stopPropagation()">
+<div class="sb-drop-section">Период путешествия</div>
+<div class="sb-drop-item" onclick="pickWhen('Any dates',this)">📅 Любые даты</div>
+<div class="sb-drop-item" onclick="pickWhen('Next 30 days',this)">🔜 Следующие 30 дней</div>
+<div class="sb-drop-item" onclick="pickWhen('Next 3 months',this)">📆 Следующие 3 месяца</div>
+<div class="sb-drop-section">Месяц</div>
+<div class="sb-drop-item" onclick="pickWhen('March 2026',this)">Март 2026</div>
+<div class="sb-drop-item" onclick="pickWhen('April 2026',this)">Апрель 2026</div>
+<div class="sb-drop-item" onclick="pickWhen('May 2026',this)">Май 2026</div>
+<div class="sb-drop-item" onclick="pickWhen('June 2026',this)">Июнь 2026</div>
+<div class="sb-drop-item" onclick="pickWhen('July 2026',this)">Июль 2026</div>
+<div class="sb-drop-item" onclick="pickWhen('August 2026',this)">Август 2026</div>
+<div class="sb-drop-item" onclick="pickWhen('September 2026',this)">Сентябрь 2026</div>
+<div class="sb-drop-item" onclick="pickWhen('October 2026',this)">Октябрь 2026</div>
+</div>
+</div>
+<div class="sb-field" id="sbSize" onclick="toggleDrop('dropSize',this)">
+<span class="sb-icon">👥</span>
+<div class="sb-inner">
+<span class="sb-lbl">Размер группы</span>
+<span class="sb-val" id="sbSizeVal">Любой размер</span>
+</div>
+<div class="sb-dropdown" id="dropSize" onclick="event.stopPropagation()">
+<div class="sb-drop-section">Путешественники</div>
+<div class="sb-drop-item" onclick="pickSize('Any size',this)">👥 Любой размер</div>
+<div class="sb-drop-item" onclick="pickSize('Solo (1)',this)">🙋 Один путешественник (1)</div>
+<div class="sb-drop-item" onclick="pickSize('2 travelers',this)">👫 2 путешественника</div>
+<div class="sb-drop-item" onclick="pickSize('3-5 travelers',this)">👨‍👩‍👧 3–5 путешественников</div>
+<div class="sb-drop-item" onclick="pickSize('6-10 travelers',this)">👨‍👩‍👧‍👦 6–10 путешественников</div>
+<div class="sb-drop-item" onclick="pickSize('10+ travelers',this)">🏫 10 и более путешественников</div>
+</div>
+</div>
+<button class="sb-btn" onclick="runSearch()">Поиск</button>
+</div>
+<div class="sh-cats">
+<div class="sh-cat on" onclick="setCatFilter('',this)"><span class="sh-cat-ico">🌍</span>Все туры</div>
+<div class="sh-cat" onclick="setCatFilter('Trekking',this)"><span class="sh-cat-ico">🥾</span>Трекинг</div>
+<div class="sh-cat" onclick="setCatFilter('Wildlife',this)"><span class="sh-cat-ico">🦁</span>Дикая природа</div>
+<div class="sh-cat" onclick="setCatFilter('Culture',this)"><span class="sh-cat-ico">🏛️</span>Культура</div>
+<div class="sh-cat" onclick="setCatFilter('Adventure',this)"><span class="sh-cat-ico">🧗</span>Приключения</div>
+<div class="sh-cat" onclick="setCatFilter('Food &amp; Wine',this)"><span class="sh-cat-ico">🍷</span>Гастрономия и вино</div>
+<div class="sh-cat" onclick="setCatFilter('Cycling',this)"><span class="sh-cat-ico">🚵</span>Велоспорт</div>
+<div class="sh-cat" onclick="setCatFilter('Water Sports',this)"><span class="sh-cat-ico">🏄</span>Водные виды спорта</div>
+<div class="sh-cat" onclick="setCatFilter('Winter Sports',this)"><span class="sh-cat-ico">⛷</span>Зимние виды спорта</div>
+<div class="sh-cat" onclick="setCatFilter('Wellness',this)"><span class="sh-cat-ico">🧘</span>Оздоровление</div>
+</div>
+</div>
+</div>
 <!-- LAYOUT -->
 <div class="page-layout">
-
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sb-head"><span class="sb-h">Filters</span><span class="sb-clear" onclick="clearFilters()">Clear all</span></div>
-
-    <!-- Dates available -->
-    <div style="padding:0 20px 18px;border-bottom:1px solid var(--ln)">
-      <div class="sb-h" style="margin-bottom:12px">Availability</div>
-      <div class="sb-toggle-row"><span class="sb-toggle-lbl">Show guaranteed departures</span><div class="toggle" id="toggleGuaranteed" onclick="toggleFilter(this,'guaranteed')"><div class="toggle-knob"></div></div></div>
-      <div class="sb-toggle-row"><span class="sb-toggle-lbl">Dates in next 30 days</span><div class="toggle" id="toggleNext30" onclick="toggleFilter(this,'next30')"><div class="toggle-knob"></div></div></div>
-    </div>
-
-    <!-- Price -->
-    <div style="padding:16px 20px 18px;border-bottom:1px solid var(--ln)">
-      <div class="sb-h" style="margin-bottom:6px">Max price per person</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:12px;color:var(--mu);font-family:var(--bf)">Up to:</span>
-        <span id="priceDisplay" style="font-size:14px;font-weight:700;color:var(--ink);font-family:var(--bf)">Any price</span>
-      </div>
-      <input type="range" id="priceMax" min="0" max="200000" value="200000" step="5000"
-        oninput="updatePriceRange()" style="width:100%;accent-color:var(--ac);margin:4px 0"/>
-      <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--mu);font-family:var(--bf);margin-top:4px">
-        <span>&#8381;0</span><span>&#8381;200,000</span>
-      </div>
-    </div>
-    <!-- Duration -->
-    <div style="padding:16px 20px 18px;border-bottom:1px solid var(--ln)" data-filter="duration">
-      <div class="sb-h" style="margin-bottom:10px">Duration</div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">1–3 days</span><span class="sb-chk-count" id="cnt-dur-1-3"></span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">4–7 days</span><span class="sb-chk-count" id="cnt-dur-4-7"></span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">8–14 days</span><span class="sb-chk-count" id="cnt-dur-8-14"></span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">15+ days</span><span class="sb-chk-count" id="cnt-dur-15"></span></div>
-    </div>
-
-    <!-- Difficulty -->
-    <div style="padding:16px 20px 18px;border-bottom:1px solid var(--ln)" data-filter="difficulty">
-      <div class="sb-h" style="margin-bottom:10px">Difficulty</div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Easy</span><span class="sb-chk-count" id="cnt-diff-Easy"></span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Moderate</span><span class="sb-chk-count" id="cnt-diff-Moderate"></span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Challenging</span><span class="sb-chk-count" id="cnt-diff-Challenging"></span></div>
-      <div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Expert</span><span class="sb-chk-count" id="cnt-diff-Expert"></span></div>
-    </div>
-
-    <!-- Rating -->
-    <div style="padding:16px 20px 18px;">
-      <div class="sb-h" style="margin-bottom:10px">Minimum rating</div>
-      <div class="star-row">
-        <div class="star-opt" onclick="selStar(this)">Any</div>
-        <div class="star-opt on" onclick="selStar(this)"><span class="so-star">★</span>4+</div>
-        <div class="star-opt" onclick="selStar(this)"><span class="so-star">★</span>4.5+</div>
-        <div class="star-opt" onclick="selStar(this)"><span class="so-star">★</span>5.0</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RESULTS -->
-  <div class="results">
-    <div class="results-bar">
-      <span class="results-count"><strong id="resultCount">18 adventures</strong> found</span>
-      <div class="sort-wrap">
-        <span class="sort-lbl">Sort by</span>
-        <select class="sort-select" id="sortSelect" onchange="applySort()">
-          <option>Recommended</option>
-          <option>Price: low to high</option>
-          <option>Price: high to low</option>
-          <option>Highest rated</option>
-          <option>Most reviewed</option>
-          <option>Newest</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="active-filters" id="activeFilters" style="display:none"></div>
-
-    <div class="card-grid" id="cardGrid"></div>
-
-    <div class="load-more">
-      <button class="btn-load" id="btnLoadMore" onclick="loadMoreCards()" style="display:none">Load more adventures</button>
-      <div class="results-note" id="resultsNote" style="display:none"></div>
-    </div>
-  </div>
+<!-- SIDEBAR -->
+<div class="sidebar">
+<div class="sb-head"><span class="sb-h">Фильтры</span><span class="sb-clear" onclick="clearFilters()">Очистить всё</span></div>
+<!-- Dates available -->
+<div style="padding:0 20px 18px;border-bottom:1px solid var(--ln)">
+<div class="sb-h" style="margin-bottom:12px">Доступность</div>
+<div class="sb-toggle-row"><span class="sb-toggle-lbl">Показать гарантированные даты отправления</span><div class="toggle" id="toggleGuaranteed" onclick="toggleFilter(this,'guaranteed')"><div class="toggle-knob"></div></div></div>
+<div class="sb-toggle-row"><span class="sb-toggle-lbl">Даты в течение следующих 30 дней</span><div class="toggle" id="toggleNext30" onclick="toggleFilter(this,'next30')"><div class="toggle-knob"></div></div></div>
 </div>
-
+<!-- Price -->
+<div style="padding:16px 20px 18px;border-bottom:1px solid var(--ln)">
+<div class="sb-h" style="margin-bottom:6px">Макс. цена на человека</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+<span style="font-size:12px;color:var(--mu);font-family:var(--bf)">До:</span>
+<span id="priceDisplay" style="font-size:14px;font-weight:700;color:var(--ink);font-family:var(--bf)">Любая цена</span>
+</div>
+<input id="priceMax" max="200000" min="0" oninput="updatePriceRange()" step="5000" style="width:100%;accent-color:var(--ac);margin:4px 0" type="range" value="200000">
+<div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--mu);font-family:var(--bf);margin-top:4px">
+<span>₽0</span><span>₽200,000</span>
+</div>
+</input></div>
+<!-- Duration -->
+<div data-filter="duration" style="padding:16px 20px 18px;border-bottom:1px solid var(--ln)">
+<div class="sb-h" style="margin-bottom:10px">Длительность</div>
+<div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">1–3 дня</span><span class="sb-chk-count" id="cnt-dur-1-3"></span></div>
+<div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">4–7 дней</span><span class="sb-chk-count" id="cnt-dur-4-7"></span></div>
+<div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">8–14 дней</span><span class="sb-chk-count" id="cnt-dur-8-14"></span></div>
+<div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">15+ дней</span><span class="sb-chk-count" id="cnt-dur-15"></span></div>
+</div>
+<!-- Difficulty -->
+<div data-filter="difficulty" style="padding:16px 20px 18px;border-bottom:1px solid var(--ln)">
+<div class="sb-h" style="margin-bottom:10px">Сложность</div>
+<div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Легкий</span><span class="sb-chk-count" id="cnt-diff-Easy"></span></div>
+<div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Средний</span><span class="sb-chk-count" id="cnt-diff-Moderate"></span></div>
+<div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Сложный</span><span class="sb-chk-count" id="cnt-diff-Challenging"></span></div>
+<div class="sb-check-row" onclick="toggleChk(this)"><div class="sb-chk"></div><span class="sb-chk-lbl">Экспертный</span><span class="sb-chk-count" id="cnt-diff-Expert"></span></div>
+</div>
+<!-- Rating -->
+<div style="padding:16px 20px 18px;">
+<div class="sb-h" style="margin-bottom:10px">Минимальный рейтинг</div>
+<div class="star-row">
+<div class="star-opt" onclick="selStar(this)">Любой</div>
+<div class="star-opt on" onclick="selStar(this)"><span class="so-star">★</span>4+</div>
+<div class="star-opt" onclick="selStar(this)"><span class="so-star">★</span>4.5+</div>
+<div class="star-opt" onclick="selStar(this)"><span class="so-star">★</span>5.0</div>
+</div>
+</div>
+</div>
+<!-- RESULTS -->
+<div class="results">
+<div class="results-bar">
+<span class="results-count"><strong id="resultCount">18 приключений</strong> найдено</span>
+<div class="sort-wrap">
+<span class="sort-lbl">Сортировать по</span>
+<select class="sort-select" id="sortSelect" onchange="applySort()">
+<option>Рекомендуемые</option>
+<option>Цена: от низкой к высокой</option>
+<option>Цена: от высокой к низкой</option>
+<option>Самые высокооцененные</option>
+<option>Самые рецензируемые</option>
+<option>Новейшие</option>
+</select>
+</div>
+</div>
+<div class="active-filters" id="activeFilters" style="display:none"></div>
+<div class="card-grid" id="cardGrid"></div>
+<div class="load-more">
+<button class="btn-load" id="btnLoadMore" onclick="loadMoreCards()" style="display:none">Загрузить еще приключения</button>
+<div class="results-note" id="resultsNote" style="display:none"></div>
+</div>
+</div>
+</div>
 <!-- FOOTER -->
 <footer class="footer">
-  <div class="foot-grid">
-    <div>
-      <div class="foot-logo">
-        <div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound
+<div class="foot-grid">
+<div>
+<div class="foot-logo">
+<div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>Waybound
       </div>
-      <div class="foot-desc">Connecting bold travelers with local experts. Central Asia &amp; Caucasus specialists, small groups always.</div>
-    </div>
-    <div>
-      <div class="foot-col-h">Explore</div>
-      <a class="foot-link" href="adventures.html">All adventures</a>
-      <a class="foot-link" href="how-it-works.html">How it works</a>
-      <a class="foot-link" href="small-group-benefits.html">Small group benefits</a>
-      <a class="foot-link" href="reviews.html">Traveler reviews</a>
-    </div>
-    <div>
-      <div class="foot-col-h">Company</div>
-      <a class="foot-link" href="about.html">About us</a>
-      <a class="foot-link" href="help.html">Help center</a>
-      <a class="foot-link" href="contact.html">Contact us</a>
-      <a class="foot-link" href="operator.html">List a tour</a>
-    </div>
-    <div>
-      <div class="foot-col-h">Legal</div>
-      <a class="foot-link" href="trust-safety.html">Trust &amp; Safety</a>
-      <a class="foot-link" href="terms.html">Terms of use</a>
-      <a class="foot-link" href="terms-experts.html">Terms for guides</a>
-      <a class="foot-link" href="privacy.html">Privacy policy</a>
-    </div>
-  </div>
-  <div class="foot-bottom">
-    <div class="foot-copy">© 2026 Waybound.com</div>
-    <div class="foot-soc">
-      <div class="soc-btn">𝕏</div><div class="soc-btn">◎</div><div class="soc-btn">𝔽</div>
-    </div>
-  </div>
+<div class="foot-desc">Соединяем смелых путешественников с местными экспертами. Специалисты по Центральной Азии и Кавказу, всегда в маленьких группах.</div>
+</div>
+<div>
+<div class="foot-col-h">Исследовать</div>
+<a class="foot-link" href="adventures_ru.html">Все приключения</a>
+<a class="foot-link" href="how-it-works_ru.html">Как это работает</a>
+<a class="foot-link" href="small-group-benefits_ru.html">Преимущества малых групп</a>
+<a class="foot-link" href="reviews_ru.html">Отзывы путешественников</a>
+</div>
+<div>
+<div class="foot-col-h">Компания</div>
+<a class="foot-link" href="about_ru.html">О нас</a>
+<a class="foot-link" href="help_ru.html">Справочный центр</a>
+<a class="foot-link" href="contact_ru.html">Свяжитесь с нами</a>
+<a class="foot-link" href="operator_ru.html">Добавить тур</a>
+</div>
+<div>
+<div class="foot-col-h">Правовая информация</div>
+<a class="foot-link" href="trust-safety_ru.html">Доверие и безопасность</a>
+<a class="foot-link" href="terms_ru.html">Условия использования</a>
+<a class="foot-link" href="terms-experts_ru.html">Условия для гидов</a>
+<a class="foot-link" href="privacy_ru.html">Политика конфиденциальности</a>
+</div>
+</div>
+<div class="foot-bottom">
+<div class="foot-copy">© 2026 Waybound.com</div>
+<div class="foot-soc">
+<div class="soc-btn">𝕏</div><div class="soc-btn">◎</div><div class="soc-btn">𝔽</div>
+</div>
+</div>
 </footer>
-
 <script>
 
-const THEMES={ocean:{name:'Deep Ocean',desc:'Cool blue, refined',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Light & Warm',desc:'White base, bright energy',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Ivory & Earthy',desc:'Warm parchment, handcrafted',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Parchment & Gold',desc:'Warm gold, sophisticated',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Forest & Sage',desc:'Muted green, natural feel',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Terracotta',desc:'Earthy red, bold warmth',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
+const THEMES={ocean:{name:'Глубокий океан',desc:'Прохладный синий, утонченный',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Свет и теплота',desc:'Белая основа, яркая энергия',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Слоновая кость и земля',desc:'Теплый пергамент, ручная работа',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Пергамент и золото',desc:'Теплое золото, изысканно',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Лес и шалфей',desc:'Приглушенный зеленый, естественный вид',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Терракота',desc:'Земляной красный, смелое тепло',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
 let current=localStorage.getItem('waybound-theme')||'ocean', pending=current;
 document.body.className=current;
 function renderGrid(){document.getElementById('themeGrid').innerHTML=Object.entries(THEMES).map(([k,d])=>`<div class="th-opt${k===current?' sel':''}" data-k="${k}" onclick="previewTheme('${k}')"><div class="th-check">✓</div><div class="th-swatches">${d.sw.map(s=>`<div class="th-sw" style="background:${s}"></div>`).join('')}</div><div class="th-name">${d.name}</div><div class="th-desc">${d.desc}</div>${d.def?`<span class="th-default-tag">★ Default</span>`:''}</div>`).join('');}
@@ -638,7 +623,7 @@ document.addEventListener('click', function(e) {
 function stopPropagation(e){ if(e) e.stopPropagation(); }
 
 function pickDest(val, el) {
-  pendingDest = (val === 'Anywhere in the world') ? '' : val;
+  pendingDest = (val === 'Любое место в мире') ? '' : val;
   var v = document.getElementById('sbDestVal');
   if (v) v.textContent = val;
   document.querySelectorAll('.sb-dropdown').forEach(function(d){ d.classList.remove('open'); });
@@ -665,7 +650,7 @@ function updatePriceRange() {
   filters.maxPrice = parseInt(maxEl.value) || 200000;
   filters.minPrice = 0;
   var rub = '&#8381;';
-  if (dispEl) dispEl.textContent = filters.maxPrice >= 200000 ? 'Any price' : '₽' + filters.maxPrice.toLocaleString('ru-RU');
+  if (dispEl) dispEl.textContent = filters.maxPrice >= 200000 ? 'Любая цена' : '₽' + filters.maxPrice.toLocaleString('ru-RU');
   applyFilters();
 }
 function toggleChk(el) {
@@ -686,7 +671,7 @@ function toggleChk(el) {
     else { filters.diffs = filters.diffs.filter(function(d){ return d !== val; }); }
   } else if (filterType === 'duration') {
     // Map label to range key
-    var rangeMap = {'1–3 days':'1-3','4–7 days':'4-7','8–14 days':'8-14','15+ days':'15+'};
+    var rangeMap = {'1–3 дня':'1-3','4–7 дней':'4-7','8–14 дней':'8-14','15+ дней':'15+'};
     var range = rangeMap[val] || val;
     if (!filters.durs) filters.durs = [];
     if (chk.classList.contains('on')) { if (filters.durs.indexOf(range) < 0) filters.durs.push(range); }
@@ -704,7 +689,7 @@ function selStar(el) {
   document.querySelectorAll('.star-opt').forEach(function(o){ o.classList.remove('on'); });
   el.classList.add('on');
   var txt = el.textContent.trim();
-  filters.rating = (txt === 'Any') ? 0 : parseFloat(txt.replace(/[^0-9.]/g,'')) || 0;
+  filters.rating = (txt === 'Любой') ? 0 : parseFloat(txt.replace(/[^0-9.]/g,'')) || 0;
   applyFilters();
 }
 function runSearch() {
@@ -727,13 +712,13 @@ function clearFilters() {
   var maxEl = document.getElementById('priceMax');
   if (maxEl) maxEl.value = 200000;
   var dispEl = document.getElementById('priceDisplay');
-  if (dispEl) dispEl.textContent = 'Any price';
+  if (dispEl) dispEl.textContent = 'Любая цена';
   var destVal = document.getElementById('sbDestVal');
-  if (destVal) destVal.textContent = 'Anywhere in the world';
+  if (destVal) destVal.textContent = 'В любой точке мира';
   var whenVal = document.getElementById('sbWhenVal');
-  if (whenVal) whenVal.textContent = 'Any dates';
+  if (whenVal) whenVal.textContent = 'В любые даты';
   var sizeVal = document.getElementById('sbSizeVal');
-  if (sizeVal) sizeVal.textContent = 'Any size';
+  if (sizeVal) sizeVal.textContent = 'Любой размер группы';
   // Reset category tabs
   document.querySelectorAll('.sh-cat').forEach(function(c){ c.classList.remove('on'); });
   var allCat = document.querySelector('.sh-cat');
@@ -758,13 +743,13 @@ function applyFilters() {
     if (filters.dest && t.dest.toLowerCase().indexOf(filters.dest.toLowerCase()) < 0 &&
         t.region.toLowerCase().indexOf(filters.dest.toLowerCase()) < 0) return false;
     // Group size
-    if (filters.size && filters.size !== 'Any size') {
+    if (filters.size && filters.size !== 'Любой размер группы') {
       var maxG = t.maxGroup;
-      if (filters.size === 'Solo (1)'       && maxG > 2)  return false;
-      if (filters.size === '2 travelers'    && maxG < 2)  return false;
-      if (filters.size === '3-5 travelers'  && maxG < 3)  return false;
-      if (filters.size === '6-10 travelers' && maxG < 6)  return false;
-      if (filters.size === '10+ travelers'  && maxG < 10) return false;
+      if (filters.size === 'В одиночку (1)'       && maxG > 2)  return false;
+      if (filters.size === '2 путешественника'    && maxG < 2)  return false;
+      if (filters.size === '3–5 путешественников'  && maxG < 3)  return false;
+      if (filters.size === '6–10 путешественников' && maxG < 6)  return false;
+      if (filters.size === '10+ путешественников'  && maxG < 10) return false;
     }
     // Price
     if (t.price < filters.minPrice || t.price > filters.maxPrice) return false;
@@ -798,20 +783,20 @@ function applyFilters() {
       var dep30 = new Date((t.departure.start || '') + 'T00:00:00');
       if (isNaN(dep30) || dep30 < today || dep30 > in30) return false;
     }
-    // When filter (search bar — 'Next 30 days', 'Next 3 months', 'Month YYYY')
-    if (filters.when && filters.when !== 'Any dates') {
+    // When filter (search bar — 'Следующие 30 дней', 'Следующие 3 месяца', 'MMMM YYYY')
+    if (filters.when && filters.when !== 'В любые даты') {
       var depStart = t.departure ? t.departure.start : null;
       if (!depStart) return false;
       var depDate = new Date(depStart + 'T00:00:00');
       if (isNaN(depDate)) return false;
-      if (filters.when === 'Next 30 days') {
+      if (filters.when === 'Следующие 30 дней') {
         if (depDate < today || depDate > in30) return false;
-      } else if (filters.when === 'Next 3 months') {
+      } else if (filters.when === 'Следующие 3 месяца') {
         var in3m = new Date(today); in3m.setMonth(in3m.getMonth() + 3);
         if (depDate < today || depDate > in3m) return false;
       } else {
-        // Month YYYY — e.g. 'March 2026'
-        var mNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        // Month YYYY — e.g. 'Март 2026'
+        var mNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
         var parts  = filters.when.split(' ');
         var wMonth = mNames.indexOf(parts[0]);
         var wYear  = parseInt(parts[1]);
@@ -828,7 +813,7 @@ function applyFilters() {
 
   // Sort
   var sortEl = document.getElementById('sortSelect');
-  var sortVal = sortEl ? sortEl.value : 'Recommended';
+  var sortVal = sortEl ? sortEl.value : 'Рекомендуется';
   filtered = sortTours(filtered, sortVal);
 
   currentFiltered = filtered;
@@ -862,7 +847,7 @@ function updateFilterCounts() {
     if (el) el.textContent = all.filter(durMap[id]).length || '';
   });
   // Difficulty counts
-  ['Easy','Moderate','Challenging','Expert'].forEach(function(d) {
+  ['Легко','Средняя сложность','Сложно','Очень сложно'].forEach(function(d) {
     var el = document.getElementById('cnt-diff-' + d);
     if (el) el.textContent = all.filter(function(t){ return t.difficulty === d; }).length || '';
   });
@@ -888,7 +873,7 @@ async function loadTours() {
   }
   try {
     var res = await fetch(TOURS_API);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+    if (!res.ok) throw new Error('HTTP' + res.status);
     var data = await res.json();
     TOURS = (data.results || []).map(function(t) {
       return {
@@ -934,13 +919,13 @@ async function loadTours() {
     if (paramCat) {
       // Map homepage style card titles to DB category values
       var catMap = {
-        'Trekking':'Trekking', 'Mountain':'Trekking',
-        'Safari':'Wildlife',   'Wildlife':'Wildlife',
-        'Culture':'Culture',   'Sightseeing':'Culture', 'Photography':'Culture',
-        'Sailing':'Sailing',
-        'Food & Wine':'Food',  'Food':'Food',
-        'Wellness':'Wellness',
-        'Adventure':'Adventure', 'Beach':'Adventure', 'Camping':'Adventure'
+        'Треккинг':'Треккинг', 'Горы':'Треккинг',
+        'Сафари':'Дикая природа',   'Дикая природа':'Дикая природа',
+        'Культура':'Культура',   'Осмотр достопримечательностей':'Культура', 'Фотография':'Культура',
+        'Парусный спорт':'Парусный спорт',
+        'Еда и вино':'Еда',  'Еда':'Еда',
+        'Оздоровление':'Оздоровление',
+        'Приключения':'Приключения', 'Пляж':'Приключения', 'Кемпинг':'Приключения'
       };
       var dbCat = catMap[paramCat] || paramCat;
       filters.cats = [dbCat];
@@ -962,13 +947,13 @@ async function loadTours() {
     updateFilterCounts();
     applyFilters();
   } catch(e) {
-    console.warn('Tours API unreachable:', e.message);
+    console.warn('Tours API недоступен:', e.message);
     if (grid) {
       grid.innerHTML =
         '<div style="grid-column:1/-1;text-align:center;padding:60px 20px">' +
         '<div style="font-size:40px;margin-bottom:12px">⚠️</div>' +
-        '<div style="font-size:16px;font-weight:600;color:var(--ink)">Could not load adventures</div>' +
-        '<div style="font-size:13px;color:var(--mu);margin-top:8px;font-family:var(--bf)">Make sure the backend is running: python manage.py runserver</div>' +
+        '<div style="font-size:16px;font-weight:600;color:var(--ink)">Не удалось загрузить приключения</div>' +
+        '<div style="font-size:13px;color:var(--mu);margin-top:8px;font-family:var(--bf)">Убедитесь, что бэкенд запущен: python manage.py runserver</div>' +
         '</div>';
     }
   }
@@ -986,15 +971,15 @@ function setCatFilter(catVal, el) {
 
 function sortTours(list, sortVal) {
   var arr = list.slice();
-  if (sortVal === 'Price: low to high') {
+  if (sortVal === 'Цена: от низкой к высокой') {
     arr.sort(function(a,b){ return a.price - b.price; });
-  } else if (sortVal === 'Price: high to low') {
+  } else if (sortVal === 'Цена: от высокой к низкой') {
     arr.sort(function(a,b){ return b.price - a.price; });
-  } else if (sortVal === 'Highest rated') {
+  } else if (sortVal === 'Наивысший рейтинг') {
     arr.sort(function(a,b){ return b.rating - a.rating; });
-  } else if (sortVal === 'Most reviewed') {
+  } else if (sortVal === 'Самые рецензируемые') {
     arr.sort(function(a,b){ return b.reviews - a.reviews; });
-  } else if (sortVal === 'Newest') {
+  } else if (sortVal === 'Новейшие') {
     arr.sort(function(a,b){ return b.id - a.id; });
   }
   // Recommended = default API order (featured first)
@@ -1004,7 +989,7 @@ function sortTours(list, sortVal) {
 function applySort() {
   // Re-sort and re-render current filtered set
   var sortEl = document.getElementById('sortSelect');
-  var sortVal = sortEl ? sortEl.value : 'Recommended';
+  var sortVal = sortEl ? sortEl.value : 'Рекомендуется';
   var sorted = sortTours(currentFiltered, sortVal);
   currentPage = 1;
   renderPage(sorted);
@@ -1036,7 +1021,7 @@ function renderPage(list) {
   if (btn)  btn.style.display  = showing < total ? 'inline-block' : 'none';
   if (note) {
     note.style.display = total > 0 ? 'block' : 'none';
-    note.textContent   = 'Showing ' + showing + ' of ' + total + ' result' + (total !== 1 ? 's' : '');
+    note.textContent   = 'Показано' + showing + 'из' + total + ' result' + (total !== 1 ? 's' : '');
   }
 }
 
@@ -1051,8 +1036,8 @@ function renderCards(list) {
   if (!list || list.length === 0) {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px">' +
       '<div style="font-size:40px;margin-bottom:12px">&#128269;</div>' +
-      '<div style="font-size:16px;font-weight:600;color:var(--ink)">No adventures match your filters</div>' +
-      '<button onclick="clearFilters()" style="margin-top:16px;padding:10px 22px;background:var(--ac);border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--bf)">Clear filters</button>' +
+      '<div style="font-size:16px;font-weight:600;color:var(--ink)">Нет приключений, соответствующих вашим фильтрам</div>' +
+      '<button onclick="clearFilters()" style="margin-top:16px;padding:10px 22px;background:var(--ac);border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--bf)">Очистить фильтры</button>' +
       '</div>';
     return;
   }
@@ -1060,7 +1045,7 @@ function renderCards(list) {
   for (var i = 0; i < list.length; i++) {
     var t = list[i];
     var spotsStyle = t.spots <= 3 ? 'color:#c0392b;font-weight:700' : t.spots <= 6 ? 'color:#e67e22;font-weight:600' : 'color:var(--mu)';
-    var dayLabel = t.days === 1 ? '1 day' : t.days + ' days';
+    var dayLabel = t.days === 1 ? '1 день' : t.days + 'дней';
     var price = t.currency + t.price.toLocaleString('ru-RU');
     html += '<div class="tour-card" data-slug="' + t.slug + '" data-dest="' + t.dest + '" data-cat="' + t.cat + '" data-dur="' + t.dur + '" data-price="' + t.price + '" data-rating="' + t.rating + '" onclick="goToTour(this.dataset.slug)" style="cursor:pointer">';
     var imgContent = t.heroPhoto
@@ -1068,16 +1053,16 @@ function renderCards(list) {
       : '<div class="tc-img-inner">' + t.img + '</div>';
     html += '<div class="tc-img">' + imgContent + '<div class="tc-badge">' + dayLabel + '</div></div>';
     html += '<div class="tc-body">';
-    html += '<div class="tc-dest">&#128205; ' + t.dest + '</div>';
+    html += '<div class="tc-dest">&#128205;' + t.dest + '</div>';
     html += '<div class="tc-title">' + t.title + '</div>';
     html += '<div class="tc-tags"></div>';
     html += '<div class="tc-meta">';
     html += '<div class="tc-rating"><span class="tc-star">&#9733;</span><span>' + t.rating + '</span><span class="tc-reviews">(' + t.reviews + ')</span></div>';
-    html += '<div class="tc-spots" style="' + spotsStyle + '">' + t.spots + ' spots left</div>';
+    html += '<div class="tc-spots" style="' + spotsStyle + '">' + t.spots + 'мест осталось</div>';
     html += '</div>';
     html += '<div class="tc-footer">';
-    html += '<div class="tc-price"><span class="tc-price-num">' + price + '</span><span class="tc-price-sub"> /person</span></div>';
-    html += '<button class="tc-btn" onclick="event.stopPropagation();goToTour(this.closest(\'.tour-card\').dataset.slug)">View tour</button>';
+    html += '<div class="tc-price"><span class="tc-price-num">' + price + '</span><span class="tc-price-sub"> /человека</span></div>';
+    html += '<button class="tc-btn" onclick="event.stopPropagation();goToTour(this.closest(\'.tour-card\').dataset.slug)">Посмотреть тур</button>';
     html += '</div></div></div>';
   }
   grid.innerHTML = html;

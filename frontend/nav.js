@@ -39,6 +39,47 @@ function navSignOut() {
   window.location.href = 'waybound.html';
 }
 
+// ── Language switcher ─────────────────────────────────────────────────────────
+function _navCurrentLang() {
+  return localStorage.getItem('waybound_lang') || 'en';
+}
+
+function _navIsRuPage() {
+  return window.location.pathname.endsWith('_ru.html');
+}
+
+function navSwitchLang(lang) {
+  localStorage.setItem('waybound_lang', lang);
+  var path = window.location.pathname;
+  var search = window.location.search;
+  var isRu = _navIsRuPage();
+
+  var target;
+  if (lang === 'ru') {
+    target = isRu ? null : path.replace('.html', '_ru.html') + search;
+  } else {
+    target = isRu ? path.replace('_ru.html', '.html') + search : null;
+  }
+  if (target) window.location.href = target;
+}
+
+// Auto-redirect on page load if saved language doesn't match current page variant.
+// Deploy _ru.html files first — until then, keep waybound_lang unset (default English).
+(function () {
+  var savedLang = localStorage.getItem('waybound_lang');
+  if (!savedLang) return;
+  var isRu = _navIsRuPage();
+  if (savedLang === 'ru' && !isRu) {
+    var path = window.location.pathname;
+    var base = path.split('/').pop();
+    if (base && base !== 'index.html' && base !== '404.html') {
+      window.location.replace(path.replace('.html', '_ru.html') + window.location.search);
+    }
+  } else if (savedLang === 'en' && isRu) {
+    window.location.replace(window.location.pathname.replace('_ru.html', '.html') + window.location.search);
+  }
+})();
+
 // Called by operator-dashboard renderMessages() to sync badge after loading enquiries.
 function navUpdateMsgBadge(unread) {
   // Bell icon badge
@@ -81,6 +122,36 @@ function navUpdateMsgBadge(unread) {
   }
 }
 
+function _navInjectLangBtn() {
+  var wrap = document.querySelector('.nav-r-wrap');
+  if (!wrap || document.getElementById('_navLangBtn')) return;
+  var currentLang = _navCurrentLang();
+  var langBtn = document.createElement('button');
+  langBtn.id = '_navLangBtn';
+  langBtn.title = currentLang === 'ru' ? 'Switch to English' : 'Переключить на русский';
+  langBtn.textContent = currentLang === 'ru' ? 'EN' : 'RU';
+  langBtn.onclick = function (e) {
+    e.stopPropagation();
+    navSwitchLang(currentLang === 'ru' ? 'en' : 'ru');
+  };
+  langBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;'
+    + 'height:28px;min-width:34px;padding:0 7px;border-radius:5px;border:1px solid rgba(255,255,255,.22);'
+    + 'background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);cursor:pointer;'
+    + 'font-size:11px;font-weight:700;font-family:var(--bf,"Space Grotesk",sans-serif);'
+    + 'letter-spacing:.04em;transition:all .15s;flex-shrink:0';
+  langBtn.addEventListener('mouseenter', function () {
+    this.style.background = 'rgba(255,255,255,.2)';
+    this.style.color = '#fff';
+    this.style.borderColor = 'rgba(255,255,255,.4)';
+  });
+  langBtn.addEventListener('mouseleave', function () {
+    this.style.background = 'rgba(255,255,255,.08)';
+    this.style.color = 'rgba(255,255,255,.65)';
+    this.style.borderColor = 'rgba(255,255,255,.22)';
+  });
+  wrap.insertBefore(langBtn, wrap.firstChild);
+}
+
 // ── Main nav init ─────────────────────────────────────────────────────────────
 (function () {
   var API_V1 = window.API_V1 || 'http://127.0.0.1:8000/api/v1';
@@ -92,6 +163,9 @@ function navUpdateMsgBadge(unread) {
   var hamburger = document.getElementById('navHamburger');
   var avatar    = document.getElementById('navAvatar');
   var dropdown  = document.getElementById('navDropdown');
+
+  // ── Language toggle (always visible, logged in or out) ───────────────────
+  _navInjectLangBtn();
 
   if (!user || !user.email) {
     // Logged out — show sign-in, hide avatar + bell
@@ -132,7 +206,8 @@ function navUpdateMsgBadge(unread) {
       bell.title = 'Messages';
       bell.onclick = function (e) {
         e.stopPropagation();
-        window.location.href = 'operator-dashboard.html?tab=messages';
+        var sfx = _navIsRuPage() ? '_ru.html' : '.html';
+        window.location.href = 'operator-dashboard' + sfx + '?tab=messages';
       };
       bell.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;'
         + 'width:36px;height:36px;border-radius:50%;border:none;'
@@ -150,23 +225,38 @@ function navUpdateMsgBadge(unread) {
   function buildDropdown(unread) {
     if (!dropdown) return;
 
+    var isRu = _navIsRuPage();
+    var sfx  = isRu ? '_ru.html' : '.html';
+
     var badge = unread > 0
       ? ' <span class="_navDdBadge" style="background:#e03030;color:#fff;border-radius:10px;padding:1px 7px;'
         + 'font-size:10px;font-weight:700;margin-left:4px;font-family:sans-serif">' + unread + '</span>'
       : '';
 
+    var t = isRu ? {
+      dashboard: 'Дашборд', messages: 'Сообщения', newTour: 'Новый тур',
+      myBookings: 'Мои бронирования', savedTours: 'Сохранённые туры',
+      myReviews: 'Мои отзывы', rewards: 'Бонусы',
+      settings: 'Настройки', signOut: 'Выйти'
+    } : {
+      dashboard: 'Dashboard', messages: 'Messages', newTour: 'New tour',
+      myBookings: 'My bookings', savedTours: 'Saved tours',
+      myReviews: 'My reviews', rewards: 'Rewards',
+      settings: 'Settings', signOut: 'Sign out'
+    };
+
     var opLinks =
-      '<a class="nav-dd-item" href="operator-dashboard.html"><span class="dd-ico">&#x1F4CA;</span>Dashboard</a>'
-      + '<a class="nav-dd-item" data-nav="messages" href="operator-dashboard.html?tab=messages">'
-          + '<span class="dd-ico">&#x1F4AC;</span>Messages' + badge + '</a>'
-      + '<a class="nav-dd-item" href="operator-tour-create.html"><span class="dd-ico">&#x2795;</span>New tour</a>';
+      '<a class="nav-dd-item" href="operator-dashboard' + sfx + '"><span class="dd-ico">&#x1F4CA;</span>' + t.dashboard + '</a>'
+      + '<a class="nav-dd-item" data-nav="messages" href="operator-dashboard' + sfx + '?tab=messages">'
+          + '<span class="dd-ico">&#x1F4AC;</span>' + t.messages + badge + '</a>'
+      + '<a class="nav-dd-item" href="operator-tour-create' + sfx + '"><span class="dd-ico">&#x2795;</span>' + t.newTour + '</a>';
 
     var touristLinks =
-      '<a class="nav-dd-item" href="my-bookings.html"><span class="dd-ico">&#x1F9ED;</span>My bookings</a>'
-      + '<a class="nav-dd-item" href="my-messages.html"><span class="dd-ico">&#x1F4AC;</span>Messages</a>'
-      + '<a class="nav-dd-item" href="saved-tours.html"><span class="dd-ico">&#x2764;&#xFE0F;</span>Saved tours</a>'
-      + '<a class="nav-dd-item" href="my-reviews.html"><span class="dd-ico">&#x2B50;</span>My reviews</a>'
-      + '<a class="nav-dd-item" href="rewards.html"><span class="dd-ico">&#x1F3C6;</span>Rewards</a>';
+      '<a class="nav-dd-item" href="my-bookings' + sfx + '"><span class="dd-ico">&#x1F9ED;</span>' + t.myBookings + '</a>'
+      + '<a class="nav-dd-item" href="my-messages' + sfx + '"><span class="dd-ico">&#x1F4AC;</span>' + t.messages + '</a>'
+      + '<a class="nav-dd-item" href="saved-tours' + sfx + '"><span class="dd-ico">&#x2764;&#xFE0F;</span>' + t.savedTours + '</a>'
+      + '<a class="nav-dd-item" href="my-reviews' + sfx + '"><span class="dd-ico">&#x2B50;</span>' + t.myReviews + '</a>'
+      + '<a class="nav-dd-item" href="rewards' + sfx + '"><span class="dd-ico">&#x1F3C6;</span>' + t.rewards + '</a>';
 
     dropdown.innerHTML =
       '<div class="nav-dropdown-head">'
@@ -175,9 +265,9 @@ function navUpdateMsgBadge(unread) {
       + '</div>'
       + (isOp ? opLinks : touristLinks)
       + '<div class="nav-dd-sep"></div>'
-      + '<a class="nav-dd-item" href="settings.html"><span class="dd-ico">&#x2699;&#xFE0F;</span>Settings</a>'
+      + '<a class="nav-dd-item" href="settings' + sfx + '"><span class="dd-ico">&#x2699;&#xFE0F;</span>' + t.settings + '</a>'
       + '<div class="nav-dd-sep"></div>'
-      + '<div class="nav-dd-item dd-danger" onclick="navSignOut()"><span class="dd-ico">&#x1F6AA;</span>Sign out</div>';
+      + '<div class="nav-dd-item dd-danger" onclick="navSignOut()"><span class="dd-ico">&#x1F6AA;</span>' + t.signOut + '</div>';
   }
 
   // Build dropdown immediately (instant feel, no count yet)

@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Help Center — Waybound</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&amp;family=DM+Sans:wght@300;400;500;600&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Outfit:wght@300;400;500;600&amp;family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&amp;family=Space+Grotesk:wght@400;500;600&amp;display=swap"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{transition:background .35s,color .35s;--ink:#0d1f2d;--paper:#f0f5f9;--white:#ffffff;--ac:#4fa8d4;--ad:#2080ae;--mu:#607a8a;--ln:#c0d4e0;--ha-bg:#e8f4fb;--ha-bd:#94c8e4;--ha-tx:#0e5070;--hb-bg:#e6f4f0;--hb-bd:#88c4b4;--hb-tx:#0e4840;--tr-bg:#f4f9fc;--df:'Fraunces',serif;--bf:'Space Grotesk',sans-serif;}
+body.warm{--ink:#1C140C;--paper:#FFFFFF;--white:#FFFFFF;--ac:#C05430;--ad:#9A3A20;--mu:#8C7A68;--ln:#EFE6D8;--ha-bg:#FBF0EB;--ha-bd:#EECCB8;--ha-tx:#8C3010;--hb-bg:#EEF5EC;--hb-bd:#B0D0A8;--hb-tx:#2A5030;--tr-bg:#FBF8F4;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+body.ivory{--ink:#1A1208;--paper:#FAF6EE;--white:#FAF6EE;--ac:#B84D2A;--ad:#96381A;--mu:#8A7862;--ln:#DDD0BC;--ha-bg:#F8EFE6;--ha-bd:#E0C8A8;--ha-tx:#7A3010;--hb-bg:#EAF0E4;--hb-bd:#A8C8A0;--hb-tx:#285030;--tr-bg:#F2EAD8;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+body.gold{--ink:#1a1a2e;--paper:#f7f4ef;--white:#ffffff;--ac:#c8a96e;--ad:#a8893e;--mu:#8a8070;--ln:#ddd8d0;--ha-bg:#fdf8ed;--ha-bd:#e8d9a0;--ha-tx:#7a6020;--hb-bg:#edf5ef;--hb-bd:#a0c8a8;--hb-tx:#2d5a38;--tr-bg:#faf8f5;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+body.forest{--ink:#1e2a22;--paper:#f2f7f3;--white:#ffffff;--ac:#6aab7a;--ad:#3d7a50;--mu:#6a8070;--ln:#c4d8c8;--ha-bg:#edf7ee;--ha-bd:#aad4b0;--ha-tx:#245530;--hb-bg:#e8f5ec;--hb-bd:#96c8a0;--hb-tx:#1a4828;--tr-bg:#f4faf5;--df:'Libre Baskerville',serif;--bf:'Outfit',sans-serif;}
+body.ocean{--ink:#0d1f2d;--paper:#f0f5f9;--white:#ffffff;--ac:#4fa8d4;--ad:#2080ae;--mu:#607a8a;--ln:#c0d4e0;--ha-bg:#e8f4fb;--ha-bd:#94c8e4;--ha-tx:#0e5070;--hb-bg:#e6f4f0;--hb-bd:#88c4b4;--hb-tx:#0e4840;--tr-bg:#f4f9fc;--df:'Fraunces',serif;--bf:'Space Grotesk',sans-serif;}
+body.terra{--ink:#2a1f1a;--paper:#faf6f2;--white:#ffffff;--ac:#d4735e;--ad:#b05040;--mu:#907060;--ln:#e0cec4;--ha-bg:#fdf0ec;--ha-bd:#e0a898;--ha-tx:#7a2818;--hb-bg:#edf5ec;--hb-bd:#98c898;--hb-tx:#285030;--tr-bg:#faf4f0;--df:'Playfair Display',serif;--bf:'DM Sans',sans-serif;}
+body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:100vh;}
+
+.nav{position:sticky;top:0;z-index:100;background:var(--ink);height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;gap:12px;transition:background .35s;}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--df);font-size:19px;font-weight:400;color:var(--ac);letter-spacing:.03em;flex-shrink:0;text-decoration:none;}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .35s}
+.logo-mark svg{width:16px;height:16px}
+.nav-search{flex:1;max-width:190px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:7px 14px;font-size:12px;color:rgba(255,255,255,.38);cursor:pointer;font-family:var(--bf)}
+.nav-links{display:flex}
+.nav-link{font-size:12px;font-weight:500;color:rgba(255,255,255,.4);padding:6px 9px;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s}
+.nav-link.on,.nav-link:hover{color:var(--ac)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-ghost-sm{font-size:12px;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.16);border-radius:5px;padding:6px 12px;background:none;cursor:pointer;font-family:var(--bf);font-weight:500}
+.btn-ac-sm{font-size:12px;font-weight:600;color:var(--ink);background:var(--ac);border:none;border-radius:5px;padding:7px 14px;cursor:pointer;font-family:var(--bf);transition:background .35s,color .35s}
+.overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.4);backdrop-filter:blur(5px);}
+.overlay.open{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:330px;background:var(--white);border-left:1px solid var(--ln);display:flex;flex-direction:column;transform:translateX(330px);transition:transform .3s cubic-bezier(.4,0,.2,1),background .35s;z-index:501;}
+.overlay.open .drawer{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:0 22px;height:60px;background:var(--ink);flex-shrink:0;transition:background .35s;}
+.drawer-title{font-family:var(--df);font-size:17px;font-weight:400;color:var(--ac);}
+.drawer-close{width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,.1);border:none;cursor:pointer;color:rgba(255,255,255,.6);font-size:16px;display:flex;align-items:center;justify-content:center;}
+.drawer-close:hover{background:rgba(255,255,255,.2);color:#fff}
+.drawer-body{flex:1;overflow-y:auto;padding:22px}
+.d-section-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:14px;font-family:var(--bf);}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px}
+.th-opt{border:2px solid var(--ln);border-radius:10px;padding:11px 11px 10px;cursor:pointer;background:var(--white);transition:border-color .2s;position:relative;}
+.th-opt:hover{border-color:var(--ac)}.th-opt.sel{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}.th-opt.sel .th-check{opacity:1;transform:scale(1)}
+.th-check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ink);font-weight:700;opacity:0;transform:scale(.7);transition:opacity .15s,transform .15s;}
+.th-swatches{display:flex;gap:4px;margin-bottom:8px}.th-sw{width:18px;height:18px;border-radius:5px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.th-name{font-size:12px;font-weight:600;color:var(--ink);font-family:var(--bf);margin-bottom:2px;}.th-desc{font-size:10.5px;color:var(--mu);font-family:var(--bf);line-height:1.4;}
+.th-default-tag{display:inline-flex;font-size:9px;font-weight:600;color:var(--ha-tx);background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:100px;padding:2px 7px;margin-top:5px;}
+.drawer-apply{width:100%;padding:13px;background:var(--ac);color:var(--ink);border:none;border-radius:7px;font-size:14px;font-weight:700;font-family:var(--bf);cursor:pointer;margin-bottom:4px;}
+.drawer-apply:hover{filter:brightness(1.08)}.drawer-divider{height:1px;background:var(--ln);margin:20px 0;}.drawer-note{font-size:11.5px;color:var(--mu);font-family:var(--bf);line-height:1.65;}
+.nav-hamburger{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4.5px;cursor:pointer;transition:background .15s,border-color .15s;flex-shrink:0;}
+.nav-hamburger:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
+.nav-hamburger span{display:block;width:16px;height:1.8px;border-radius:2px;background:rgba(255,255,255,.65);transition:background .15s;}
+.nav-hamburger:hover span{background:rgba(255,255,255,.9)}
+.nav-hamburger.open{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.32)}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--ac);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);cursor:pointer;flex-shrink:0;overflow:hidden;transition:border-color .15s,box-shadow .15s;position:relative;}
+.nav-avatar:hover{border-color:rgba(255,255,255,.6);box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.nav-dropdown{position:absolute;top:calc(100% + 10px);right:0;width:220px;background:var(--white);border:1px solid var(--ln);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.14);padding:6px 0;display:none;z-index:2000;animation:dropIn .18s ease;}
+.nav-dropdown.open{display:block;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.nav-dropdown-head{padding:12px 16px 10px;border-bottom:1px solid var(--ln);margin-bottom:4px;}
+.nav-dropdown-name{font-size:13px;font-weight:700;color:var(--ink);font-family:var(--bf);}
+.nav-dropdown-email{font-size:11px;color:var(--mu);font-family:var(--bf);margin-top:2px;}
+.nav-dd-item{display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:13px;color:var(--ink);font-family:var(--bf);cursor:pointer;transition:background .12s;text-decoration:none;}
+.nav-dd-item:hover{background:var(--paper)}
+.nav-dd-item .dd-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-dd-item.dd-danger{color:#c0392b;}
+.nav-dd-item.dd-danger:hover{background:#fef0ee;}
+.nav-dd-sep{height:1px;background:var(--ln);margin:4px 0;}
+.nav-r-wrap{position:relative;display:flex;align-items:center;gap:8px;}
+
+/* HERO */
+.help-hero{background:var(--ink);padding:52px 26px 44px;text-align:center;position:relative;overflow:hidden;transition:background .35s;}
+.help-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,color-mix(in srgb,var(--ac) 14%,transparent),transparent 55%);pointer-events:none;}
+.hh-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:100px;padding:5px 14px;font-size:11px;font-weight:500;color:rgba(255,255,255,.6);margin-bottom:16px;font-family:var(--bf);}
+.hh-title{font-family:var(--df);font-size:36px;font-weight:400;color:#fff;line-height:1.1;margin-bottom:8px;}
+.hh-title em{font-style:italic;color:var(--ac);}
+.hh-sub{font-size:14px;color:rgba(255,255,255,.5);font-family:var(--bf);margin-bottom:26px;}
+.help-search{display:flex;align-items:center;background:var(--white);border-radius:8px;overflow:hidden;max-width:540px;margin:0 auto;box-shadow:0 4px 24px rgba(0,0,0,.2);transition:background .35s;}
+.hs-input{flex:1;height:50px;padding:0 18px;border:none;font-size:14px;font-family:var(--bf);color:var(--ink);background:transparent;outline:none;}
+.hs-input::placeholder{color:var(--mu)}
+.hs-btn{height:50px;padding:0 22px;background:var(--ac);color:var(--ink);border:none;font-size:13px;font-weight:700;font-family:var(--bf);cursor:pointer;flex-shrink:0;transition:background .35s,color .35s;}
+.hs-btn:hover{filter:brightness(1.08)}
+.popular{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+.pop-lbl{font-size:11px;color:rgba(255,255,255,.4);font-family:var(--bf);}
+.pop-tag{font-size:11.5px;font-weight:500;color:rgba(255,255,255,.6);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:100px;padding:4px 12px;cursor:pointer;font-family:var(--bf);transition:color .15s,background .15s;}
+.pop-tag:hover{background:rgba(255,255,255,.14);color:rgba(255,255,255,.9)}
+
+/* FEATURED */
+.featured{padding:44px 26px 0;max-width:960px;margin:0 auto;}
+.sec-ey{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ad);font-family:var(--bf);margin-bottom:8px;transition:color .35s;}
+.sec-h2{font-family:var(--df);font-size:24px;font-weight:400;color:var(--ink);margin-bottom:22px;transition:font-family .35s,color .35s;}
+.sec-h2 em{font-style:italic;color:var(--ad);}
+.featured-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+@media(max-width:700px){.featured-grid{grid-template-columns:1fr 1fr;}}
+.fa-card{background:var(--white);border:1px solid var(--ln);border-radius:10px;padding:18px;cursor:pointer;transition:box-shadow .2s,transform .2s,background .35s,border-color .35s;display:block;text-decoration:none;}
+.fa-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.08);transform:translateY(-2px)}
+.fa-icon{font-size:24px;margin-bottom:12px;}
+.fa-tag{font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ad);font-family:var(--bf);margin-bottom:6px;}
+.fa-title{font-size:13px;font-weight:600;color:var(--ink);font-family:var(--bf);line-height:1.4;margin-bottom:8px;}
+.fa-arrow{font-size:12px;color:var(--ac);font-family:var(--bf);}
+
+/* TOPICS */
+.topics{padding:36px 26px 0;max-width:960px;margin:0 auto;}
+.topics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:700px){.topics-grid{grid-template-columns:1fr 1fr;}}
+.topic-card{background:var(--white);border:1px solid var(--ln);border-radius:10px;padding:20px;cursor:pointer;transition:background .35s,border-color .35s,box-shadow .2s;}
+.topic-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07)}
+.topic-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.topic-icon{width:36px;height:36px;border-radius:8px;background:var(--ha-bg);border:1px solid var(--ha-bd);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.topic-name{font-family:var(--df);font-size:15px;font-weight:400;color:var(--ink);}
+.topic-link{display:block;font-size:12.5px;color:var(--mu);font-family:var(--bf);padding:4px 0;border-bottom:1px solid transparent;transition:color .15s,border-color .15s;}
+.topic-link:hover{color:var(--ad);border-bottom-color:var(--ln)}
+
+/* FAQ BODY */
+.faq-body{max-width:960px;margin:0 auto;padding:44px 26px 60px;display:grid;grid-template-columns:200px 1fr;gap:36px;align-items:start;}
+@media(max-width:700px){.faq-body{grid-template-columns:1fr;}.faq-sidebar{display:none}}
+.faq-sidebar{position:sticky;top:118px;}
+.sb-head{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);font-family:var(--bf);margin-bottom:12px;}
+.sb-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;font-size:12.5px;font-family:var(--bf);color:var(--mu);text-decoration:none;transition:background .15s,color .15s;cursor:pointer;}
+.sb-link:hover{background:var(--ha-bg);color:var(--ad)}
+.sb-link.active{background:var(--ha-bg);color:var(--ad);font-weight:600;}
+.sb-ico{font-size:13px;width:18px;text-align:center;flex-shrink:0;}
+.sb-contact{margin-top:20px;padding:13px;background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:8px;}
+.sb-contact-head{font-size:11.5px;font-weight:600;color:var(--ha-tx);font-family:var(--bf);margin-bottom:5px;}
+.sb-contact-body{font-size:11.5px;color:var(--mu);font-family:var(--bf);line-height:1.6;margin-bottom:9px;}
+.sb-contact-link{font-size:11.5px;font-weight:600;color:var(--ad);font-family:var(--bf);text-decoration:none;}
+.sb-contact-link:hover{text-decoration:underline}
+
+/* SECTIONS & ACCORDION */
+.faq-section-block{margin-bottom:48px;}
+.faq-section-block:last-child{margin-bottom:0}
+.fsb-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--ln);}
+.fsb-icon{width:36px;height:36px;border-radius:8px;background:var(--ha-bg);border:1px solid var(--ha-bd);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.fsb-title{font-family:var(--df);font-size:19px;font-weight:400;color:var(--ink);}
+.fsb-title em{font-style:italic;color:var(--ad);}
+.faq-item{border:1px solid var(--ln);border-radius:8px;margin-bottom:8px;overflow:hidden;background:var(--white);transition:background .35s,border-color .35s,box-shadow .2s;}
+.faq-item:hover{box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;cursor:pointer;gap:14px;}
+.faq-q-text{flex:1;font-size:13.5px;font-weight:500;color:var(--ink);font-family:var(--bf);line-height:1.4;}
+.faq-toggle{width:24px;height:24px;border-radius:6px;background:var(--ha-bg);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ad);flex-shrink:0;font-weight:700;transition:all .2s;}
+.faq-item.open .faq-toggle{background:var(--ac);color:var(--ink);transform:rotate(45deg);}
+.faq-a{display:none;padding:0 18px 15px;font-size:13px;color:var(--mu);line-height:1.75;font-family:var(--bf);}
+.faq-item.open .faq-a{display:block}
+.faq-a a{color:var(--ad);text-decoration:none;}
+.faq-a a:hover{text-decoration:underline}
+.faq-a strong{color:var(--ink);}
+.faq-a ul{margin:8px 0 4px 18px;}
+.faq-a ul li{margin-bottom:5px;}
+.faq-a .note{margin-top:10px;padding:10px 14px;background:var(--ha-bg);border-left:3px solid var(--ac);border-radius:0 6px 6px 0;font-size:12.5px;}
+
+/* CONTACT */
+.contact{padding:44px 26px;max-width:960px;margin:0 auto;}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:580px;}
+.contact-card{background:var(--white);border:1px solid var(--ln);border-radius:10px;padding:22px;text-align:center;transition:background .35s,border-color .35s;}
+.cc-icon{font-size:28px;margin-bottom:12px;}
+.cc-title{font-family:var(--df);font-size:16px;font-weight:400;color:var(--ink);margin-bottom:6px;}
+.cc-sub{font-size:12.5px;color:var(--mu);font-family:var(--bf);line-height:1.55;margin-bottom:14px;}
+.cc-btn{display:inline-block;font-size:12.5px;font-weight:600;color:var(--ad);background:var(--ha-bg);border:1px solid var(--ha-bd);border-radius:6px;padding:8px 16px;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:all .15s;}
+.cc-btn:hover{background:var(--ac);color:var(--ink);border-color:var(--ac)}
+.cc-note{font-size:10.5px;color:var(--mu);font-family:var(--bf);margin-top:6px;}
+
+/* FOOTER */
+.footer{background:var(--ink);padding:32px 26px 24px;transition:background .35s;}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:20px;margin-bottom:22px;}
+.foot-logo{font-family:var(--df);font-size:18px;color:var(--ac);display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.foot-desc{font-size:11.5px;color:rgba(255,255,255,.24);line-height:1.65;font-family:var(--bf);}
+.foot-col-h{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:11px;font-family:var(--bf);}
+.footer a{text-decoration:none;}
+.foot-link{display:block;font-size:12px;color:rgba(255,255,255,.42);padding:3.5px 0;cursor:pointer;font-family:var(--bf);text-decoration:none;transition:color .15s;}
+.foot-link:hover{color:rgba(255,255,255,.8);}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:15px;display:flex;justify-content:space-between;align-items:center;}
+.foot-copy{font-size:11px;color:rgba(255,255,255,.18);font-family:var(--bf);}
+.foot-soc{display:flex;gap:7px;}
+.soc-btn{width:27px;height:27px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:rgba(255,255,255,.3);}
+</style>
+</head>
+<body class="ocean">
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+<div class="drawer"><div class="drawer-head"><div class="drawer-title">Внешний вид</div><button class="drawer-close" onclick="closeSettings()">✕</button></div><div class="drawer-body"><div class="d-section-label">Выберите тему оформления</div><div class="theme-grid" id="themeGrid"></div><button class="drawer-apply" onclick="applyPending()">Применить тему</button><div class="drawer-divider"></div><p class="drawer-note">Ваш выбор сохранен и будет восстановлен при следующем посещении.</p></div></div>
+</div>
+<nav class="nav">
+<a class="logo" href="waybound_ru.html"><div class="logo-mark"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>Waybound</a>
+<div class="nav-search">🔍 Куда отправиться?</div>
+<div class="nav-links"><a class="nav-link" href="adventures_ru.html">Приключения</a><a class="nav-link" href="how-it-works_ru.html">Как это работает</a><a class="nav-link" href="about_ru.html">О нас</a><a class="nav-link on" href="help_ru.html">Справка</a><a class="nav-link" href="contact_ru.html">Связаться с нами</a></div>
+<div class="nav-r nav-r-wrap">
+<button class="btn-ghost-sm" id="navSignInBtn" onclick="window.location.href='signin_ru.html'">Вход / Регистрация</button>
+<a class="btn-ac-sm" href="operator_ru.html" id="navListTourBtn" style="text-decoration:none">Предложить тур</a>
+<div class="nav-avatar" id="navAvatar" onclick="toggleNavMenu('avatar')" style="display:none" title="Мой аккаунт"></div>
+<div class="nav-dropdown" id="navDropdown"></div>
+</div>
+</nav>
+<!-- HERO -->
+<div class="help-hero">
+<div class="hh-tag">💬 Центр помощи и часто задаваемые вопросы</div>
+<h1 class="hh-title">Чем мы можем <em>вам помочь?</em></h1>
+<p class="hh-sub">Поищите в нашей базе знаний или просмотрите темы ниже</p>
+<div class="help-search">
+<input class="hs-input" id="searchInput" oninput="liveSearch(this.value)" placeholder="например «отмена бронирования», «численность группы», «возврат средств»…"/>
+<button class="hs-btn" onclick="liveSearch(document.getElementById('searchInput').value)">Поиск</button>
+</div>
+<div class="popular">
+<span class="pop-lbl">Популярное:</span>
+<span class="pop-tag" onclick="jumpTo('cancellations')">Политика отмены</span>
+<span class="pop-tag" onclick="jumpTo('payments')">Платежи</span>
+<span class="pop-tag" onclick="jumpTo('bookings')">Как забронировать</span>
+<span class="pop-tag" onclick="jumpTo('safety')">Проверка гидов</span>
+<span class="pop-tag" onclick="jumpTo('groups')">Численность группы</span>
+<span class="pop-tag" onclick="jumpTo('operators')">Предложить тур</span>
+</div>
+</div>
+<!-- FEATURED ARTICLES -->
+<div class="featured">
+<div class="sec-ey">Наиболее полезное в данный момент</div>
+<h2 class="sec-h2">Избранные <em>статьи</em></h2>
+<div class="featured-grid">
+<a class="fa-card" onclick="jumpToFaq('bookings',0)">
+<div class="fa-icon">📋</div><div class="fa-tag">Бронирования</div>
+<div class="fa-title">Как забронировать тур на Waybound</div>
+<div class="fa-arrow">Читать →</div>
+</a>
+<a class="fa-card" onclick="jumpToFaq('cancellations',0)">
+<div class="fa-icon">↩️</div><div class="fa-tag">Отмены</div>
+<div class="fa-title">Период охлаждения и правила возврата средств</div>
+<div class="fa-arrow">Читать →</div>
+</a>
+<a class="fa-card" onclick="jumpToFaq('payments',2)">
+<div class="fa-icon">💳</div><div class="fa-tag">Платежи</div>
+<div class="fa-title">Депозит, остаток и способы оплаты</div>
+<div class="fa-arrow">Читать →</div>
+</a>
+<a class="fa-card" onclick="jumpToFaq('tours',1)">
+<div class="fa-icon">🛡️</div><div class="fa-tag">Доверие и безопасность</div>
+<div class="fa-title">Как проверяются гиды</div>
+<div class="fa-arrow">Читать →</div>
+</a>
+</div>
+</div>
+<!-- TOPICS GRID -->
+<div class="topics">
+<div class="sec-ey">Просмотр по темам</div>
+<h2 class="sec-h2">Все <em>темы</em></h2>
+<div class="topics-grid">
+<div class="topic-card" onclick="jumpTo('bookings')">
+<div class="topic-head"><div class="topic-icon">📋</div><div class="topic-name">Бронирования и резервирования</div></div>
+<span class="topic-link" onclick="jumpToFaq('bookings',0);event.stopPropagation()">Как сделать бронирование</span>
+<span class="topic-link" onclick="jumpToFaq('bookings',1);event.stopPropagation()">Какие страны охвачены</span>
+<span class="topic-link" onclick="jumpToFaq('bookings',2);event.stopPropagation()">Окно подтверждения оператором</span>
+<span class="topic-link" onclick="jumpToFaq('bookings',3);event.stopPropagation()">Групповые и индивидуальные бронирования</span>
+<span class="topic-link" onclick="jumpToFaq('bookings',4);event.stopPropagation()">Цены для детей</span>
+</div>
+<div class="topic-card" onclick="jumpTo('payments')">
+<div class="topic-head"><div class="topic-icon">💳</div><div class="topic-name">Платежи и стоимость</div></div>
+<span class="topic-link" onclick="jumpToFaq('payments',1);event.stopPropagation()">Принимаемые способы оплаты</span>
+<span class="topic-link" onclick="jumpToFaq('payments',2);event.stopPropagation()">Модель депозита и остатка</span>
+<span class="topic-link" onclick="jumpToFaq('payments',3);event.stopPropagation()">Когда будет снята плата с моей карты?</span>
+<span class="topic-link" onclick="jumpToFaq('payments',0);event.stopPropagation()">Защищены ли мои платежи?</span>
+</div>
+<div class="topic-card" onclick="jumpTo('cancellations')">
+<div class="topic-head"><div class="topic-icon">↩️</div><div class="topic-name">Отмены и возвраты средств</div></div>
+<span class="topic-link" onclick="jumpToFaq('cancellations',0);event.stopPropagation()">Период охлаждения (правило платформы)</span>
+<span class="topic-link" onclick="jumpToFaq('cancellations',1);event.stopPropagation()">Стандартные уровни отмены</span>
+<span class="topic-link" onclick="jumpToFaq('cancellations',2);event.stopPropagation()">Если оператор отменяет тур</span>
+<span class="topic-link" onclick="jumpToFaq('cancellations',4);event.stopPropagation()">Непредвиденные обстоятельства и сроки возврата средств</span>
+</div>
+<div class="topic-card" onclick="jumpTo('tours')">
+<div class="topic-head"><div class="topic-icon">🧭</div><div class="topic-name">Туры и гиды</div></div>
+<span class="topic-link" onclick="jumpToFaq('tours',0);event.stopPropagation()">Кто такие Travel Experts?</span>
+<span class="topic-link" onclick="jumpToFaq('tours',1);event.stopPropagation()">Процесс проверки гидов</span>
+<span class="topic-link" onclick="jumpToFaq('tours',2);event.stopPropagation()">Уровни сложности</span>
+<span class="topic-link" onclick="jumpToFaq('tours',3);event.stopPropagation()">Рекомендации по туристической страховке</span>
+</div>
+<div class="topic-card" onclick="jumpTo('groups')">
+<div class="topic-head"><div class="topic-icon">👥</div><div class="topic-name">Численность группы</div></div>
+<span class="topic-link" onclick="jumpToFaq('groups',0);event.stopPropagation()">Максимум 15 человек в группе (правило платформы)</span>
+<span class="topic-link" onclick="jumpToFaq('groups',1);event.stopPropagation()">Почему малые группы?</span>
+<span class="topic-link" onclick="jumpToFaq('groups',2);event.stopPropagation()">Варианты приватных туров</span>
+</div>
+<div class="topic-card" onclick="jumpTo('operators')">
+<div class="topic-head"><div class="topic-icon">🗺️</div><div class="topic-name">Для Travel Experts</div></div>
+<span class="topic-link" onclick="jumpToFaq('operators',0);event.stopPropagation()">Как предложить тур</span>
+<span class="topic-link" onclick="jumpToFaq('operators',1);event.stopPropagation()">Комиссия и сборы</span>
+<span class="topic-link" onclick="jumpToFaq('operators',2);event.stopPropagation()">Установка политики отмены</span>
+<span class="topic-link" onclick="jumpToFaq('operators',3);event.stopPropagation()">Обязательства оператора по отмене</span>
+</div>
+</div>
+</div>
+<!-- FAQ BODY -->
+<div class="faq-body">
+<aside class="faq-sidebar">
+<div class="sb-head">Перейти к разделу</div>
+<a class="sb-link active" onclick="jumpTo('bookings')"><span class="sb-ico">📋</span>Бронирования</a>
+<a class="sb-link" onclick="jumpTo('payments')"><span class="sb-ico">💳</span>Платежи</a>
+<a class="sb-link" onclick="jumpTo('cancellations')"><span class="sb-ico">↩️</span>Отмены</a>
+<a class="sb-link" onclick="jumpTo('tours')"><span class="sb-ico">🧭</span>Туры и Гиды</a>
+<a class="sb-link" onclick="jumpTo('groups')"><span class="sb-ico">👥</span>Размер группы</a>
+<a class="sb-link" onclick="jumpTo('safety')"><span class="sb-ico">🛡️</span>Безопасность и доверие</a>
+<a class="sb-link" onclick="jumpTo('operators')"><span class="sb-ico">🗺️</span>Экспертов путешествий</a>
+<a class="sb-link" onclick="jumpTo('account')"><span class="sb-ico">👤</span>Аккаунт</a>
+<div class="sb-contact">
+<div class="sb-contact-head">Всё ещё не знаете?</div>
+<div class="sb-contact-body">Напишите Виктории напрямую — обычно отвечает в течение 24 часов.</div>
+<a class="sb-contact-link" href="mailto:viktoriia.strazhnikova@gmail.com">Отправить письмо →</a>
+</div>
+</aside>
+<div id="faqMain">
+<!-- BOOKINGS -->
+<div class="faq-section-block" id="bookings">
+<div class="fsb-head"><div class="fsb-icon">📋</div><div class="fsb-title">Бронирования и <em>Резервирования</em></div></div>
+<div class="faq-item open" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Как работает бронирование тура на Waybound?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Бронирование состоит из трёх этапов:<ul><li><strong>Найдите свой тур</strong> — просмотрите туры в России, Грузии, Турции или Казахстане и выберите дату отправления.</li><li><strong>Внесите депозит</strong> — зарезервируйте место, внеся депозит (процент устанавливает оператор). Ваше место не подтверждается до получения депозита.</li><li><strong>Оператор подтверждает</strong> — эксперт путешествий подтверждает ваше бронирование в течение 48 часов. Вы получите письмо со всеми деталями.</li></ul>Оставшийся баланс должен быть оплачен перед отправлением (конкретная дата указана в вашем бронировании). См. <a href="how-it-works_ru.html">Как это работает</a> для полного описания.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Какие страны охватывает Waybound?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">В настоящее время мы работаем в четырёх странах: <strong>России, Грузии, Турции и Казахстане</strong>. Каждый тур проводит местный эксперт путешествий, который живёт и работает гидом полный день в этом направлении. Со временем мы планируем расширяться.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Сколько времени у оператора на подтверждение бронирования?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">После внесения депозита эксперт путешествий имеет <strong>48 часов</strong> на подтверждение вашего места. Если они не подтвердят вовремя, бронирование автоматически отменяется и депозит полностью возвращается. Вы будете уведомлены по электронной почте.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Могу ли я забронировать для группы или присоединиться в одиночку?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Оба варианта приветствуются. При бронировании вы указываете количество взрослых и детей — цена рассчитывается автоматически. Одиночные путешественники очень часто встречаются, и гиды опытны в том, чтобы все чувствовали себя частью группы. Все туры имеют <strong>максимум 15 участников</strong>. См. <a href="small-group-benefits_ru.html">Преимущества малых групп</a>.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Какая цена для детей?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">По умолчанию дети в возрасте 2–17 лет взимаются по <strong>85% от цены взрослого</strong>. Отдельные операторы могут установить более жёсткий тариф, при котором стоимость ребёнка сопоставима с взрослой. Точная цена для ребёнка всегда показывается перед оплатой. Для детей до 2 лет обратитесь к оператору напрямую.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Что означает «гарантированное отправление»?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Гарантированное отправление означает, что тур будет проводиться в эту дату независимо от количества забронировавших — даже если вы один. Ищите <strong>значок «Гарантировано»</strong> в списке туров. Это даёт вам уверенность при бронировании авиабилетов и жилья.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Как мне связаться с гидом перед поездкой?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">После подтверждения бронирования используйте <a href="my-messages_ru.html">Мои сообщения</a> для связи с оператором. Вы также можете отправить запрос перед бронированием со страницы любого тура. Большинство операторов отвечают в течение 24–48 часов.</div>
+</div>
+</div>
+<!-- PAYMENTS -->
+<div class="faq-section-block" id="payments">
+<div class="fsb-head"><div class="fsb-icon">💳</div><div class="fsb-title">Платежи и <em>Цены</em></div></div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Защищены ли мои платежи?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Да. Все платежи по картам и SBP обрабатываются через <strong>YooKassa</strong>, полностью лицензированного российского платёжного провайдера. Мы никогда не сохраняем данные вашей карты. См. <a href="trust-safety_ru.html">Доверие и безопасность</a> для полных деталей.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Какие способы оплаты принимаются?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a"><ul><li><strong>Банковская карта</strong> (Visa, Mastercard, Mir) — безопасно обработано через YooKassa</li><li><strong>SBP</strong> (Система быстрых платежей) — мгновенный перевод через QR-код</li></ul>Все платежи в рублях. Если тур указан в другой валюте, эквивалент в рублях показывается перед подтверждением.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Как работает система депозита и баланса?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Waybound использует <strong>двухэтапную модель платежа</strong>:<ul><li><strong>Депозит</strong> — вносится при бронировании для резервирования места. Процент устанавливает эксперт путешествий и ясно показывается перед оплатой.</li><li><strong>Баланс</strong> — оставшаяся сумма, которая должна быть оплачена к дате платежа баланса, установленной оператором. Напоминающие письма отправляются по мере приближения даты.</li></ul>Для срочных бронирований оператор может потребовать полную сумму авансом.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Когда будет снята сумма с моей карты?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Ваша карта будет заряжена <strong>немедленно</strong> при внесении депозита — это реальный платёж, а не предварительная авторизация. Если оператор не подтвердит в течение 48 часов, вам будет автоматически возвращена полная сумма.</div>
+</div>
+</div>
+<!-- CANCELLATIONS -->
+<div class="faq-section-block" id="cancellations">
+<div class="fsb-head"><div class="fsb-icon">↩️</div><div class="fsb-title">Отмены и <em>Возвраты</em></div></div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Могу ли я отменить сразу после бронирования и получить полный возврат?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Да — каждое бронирование включает <strong>период охлаждения</strong> сразу после оплаты. Это правило платформы, которое операторы не могут переопределить:<ul><li>Отправление <strong>более чем на 7 дней позже</strong>: 30 минут для отмены и полного возврата.</li><li>Дата отправления <strong>За 7 дней или менее до отправления</strong>: 15 минут.</li></ul>После закрытия окна действует политика отмены туров.
+          <div class="note">Чтобы отменить бронирование, перейдите в <a href="my-bookings_ru.html">Мои бронирования</a> и выберите «Отменить бронирование».</div>
+</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Каковы стандартные условия отмены?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Политика по умолчанию Waybound (применяется, если оператор не установил собственную):<ul><li><strong>30+ дней до отправления:</strong> Полный возврат.</li><li><strong>14–29 дней до отправления:</strong> Возврат 50%.</li><li><strong>0–13 дней до отправления:</strong> Без возврата.</li></ul>Операторы могут установить <strong>более строгие или щедрые</strong> уровни — всегда проверяйте конкретную политику в объявлении.
+          <div class="note">Полная политика в <a href="terms_ru.html#cancellations">Условиях использования — Отмены</a>.</div>
+</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Что, если тур отменен гидом?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Если Travel Expert отменит вашу подтвержденную бронирование по любой причине, находящейся в их власти, вы получите <strong>полный возврат всех уплаченных сумм</strong>. Это неизменяемое правило платформы. Возвраты обрабатываются в течение 5 рабочих дней. См. <a href="trust-safety_ru.html">Безопасность и доверие</a>.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Что, если оператор изменит детали тура после моей бронирования?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Если Travel Expert вносит <strong>существенное изменение</strong> (маршрут, цена, даты, включения), вы получите уведомление по электронной почте и льготный период без штрафов для отмены с полным возвратом — даже если стандартная политика обычно предусматривает штраф.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Что считается непреодолимой силой?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Стихийные бедствия, государственные запреты на поездки или подтвержденная экстремальная погода дают право на <strong>полный возврат независимо от политики</strong>. Свяжитесь с <a href="mailto:viktoriia.strazhnikova@gmail.com">viktoriia.strazhnikova@gmail.com</a> с указанием ссылки на бронирование и документацией.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Сколько времени занимает возврат средств?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Одобренные возвраты обрабатываются в течение <strong>5 рабочих дней</strong> и возвращаются на исходный способ оплаты. Вы получите подтверждение по электронной почте после инициирования. Время поступления зависит от вашего банка.</div>
+</div>
+</div>
+<!-- TOURS & GUIDES -->
+<div class="faq-section-block" id="tours">
+<div class="fsb-head"><div class="fsb-icon">🧭</div><div class="fsb-title">Туры и <em>гиды</em></div></div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Кто такие Travel Experts?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Все гиды на Waybound — <strong>местные, штатные профессионалы</strong> базирующиеся в России, Грузии, Турции или Казахстане. Они живут в месте проведения тура и работают гидами как основную работу — не агентства и не перепродавцы. Каждый гид проверяется перед размещением в списке.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Как проверяются гиды?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Каждый Travel Expert проходит проверку личности, проверку опыта и — для приключенческих, горных и треккинговых туров — подтверждение действительного сертификата первой помощи. Гиды проверяются ежегодно. См. <a href="trust-safety_ru.html">Безопасность и доверие</a>.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Какие уровни сложности доступны?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a"><ul><li><strong>Легкий</strong> — подходит для большинства уровней физической подготовки.</li><li><strong>Средний</strong> — некоторые пешие прогулки; требуется хорошая физическая подготовка.</li><li><strong>Сложный</strong> — хорошая физическая подготовка и иногда предыдущий опыт.</li><li><strong>Экспертный</strong> — требовательный; необходимы специальные навыки или высокая физическая подготовка.</li></ul>Всегда читайте требования в описании тура перед бронированием.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Нужна ли мне туристическая страховка?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Мы настоятельно рекомендуем полную туристическую страховку, включающую отмену поездки, медицинские чрезвычайные ситуации и эвакуацию. Это <strong>ваша ответственность</strong> организовать это — Waybound не предоставляет страховку. Для приключенческих туров убедитесь, что ваш полис покрывает конкретные виды деятельности.</div>
+</div>
+</div>
+<!-- GROUP SIZE -->
+<div class="faq-section-block" id="groups">
+<div class="fsb-head"><div class="fsb-icon">👥</div><div class="fsb-title">Размер <em>группы</em></div></div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Каков максимальный размер группы?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Все туры на Waybound имеют <strong>максимум 15 участников</strong>. Это правило уровня платформы — операторы не могут размещать туры для более крупных групп. Небольшие группы означают более персонализированное внимание, лучший доступ в удаленные места и более богатый общий опыт. См. <a href="small-group-benefits_ru.html">Преимущества небольших групп</a>.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Почему Waybound ограничивает группы в 15 человек?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Большие группы меняют характер впечатления — сложнее управлять безопасно в удаленных районах, нарушает жизнь местных сообществ, и гиды не могут обеспечить адекватное внимание каждому человеку. При 15 или менее человек гид знает всех по имени, может изменить темп и может получить доступ в места, закрытые для больших групп. Это решение о качестве, а не коммерческое.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Могу ли я заказать приватный тур?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Некоторые Travel Experts предлагают приватные отправления (только ваша группа). Они отмечены в объявлении. Если частной опции нет, отправьте оператору сообщение со страницы тура — многие гиды с удовольствием обсудят пользовательские варианты.</div>
+</div>
+</div>
+<!-- SAFETY & TRUST -->
+<div class="faq-section-block" id="safety">
+<div class="fsb-head"><div class="fsb-icon">🛡️</div><div class="fsb-title">Безопасность и <em>доверие</em></div></div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Что такое Waybound Guarantee?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Waybound Guarantee защищает вас в трех ситуациях:<ul><li>Ваш гид <strong>отменяет</strong> по любой причине, находящейся под их контролем → полный возврат.</li><li>Тур является <strong>существенно отличается</strong> от рекламируемого → полный возврат или бесплатное перебронирование.</li><li>Имеется <strong>проверяемая проблема безопасности</strong> во время тура → полный возврат.</li></ul>Все возвраты обрабатываются в течение 5 рабочих дней. См. <a href="trust-safety_ru.html">Доверие и безопасность</a>.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Как сообщить о проблеме?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Свяжитесь с нами по адресу <a href="mailto:viktoriia.strazhnikova@gmail.com">viktoriia.strazhnikova@gmail.com</a> или <a href="tel:+79280782498">+7 928 078-24-98</a> с указанием номера вашего бронирования и описания проблемы. При срочных проблемах во время тура звоните напрямую. Вы также можете использовать <a href="contact_ru.html">нашу страницу контактов</a>.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Защищены ли мои персональные данные?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Да. Мы делимся только информацией, необходимой для завершения вашего бронирования с Travel Expert. Мы никогда не продаем ваши данные третьим лицам. Прочитайте нашу полную <a href="privacy_ru.html">Политику конфиденциальности</a>.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Предупреждение о мошенничестве — на что следует обратить внимание?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Waybound <strong>никогда</strong> не свяжется с вами с просьбой об оплате через WhatsApp, Telegram или банковский перевод по электронной почте. Если кто-то утверждает, что представляет Waybound и просит внеплатформенный платеж, не платите и немедленно сообщите об этом через <a href="contact_ru.html">нашу страницу контактов</a>.</div>
+</div>
+</div>
+<!-- FOR OPERATORS -->
+<div class="faq-section-block" id="operators">
+<div class="fsb-head"><div class="fsb-icon">🗺️</div><div class="fsb-title">Для <em>Travel Expert'ов</em></div></div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Как разместить тур на Waybound?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Создайте учетную запись Travel Expert на <a href="signup-operator_ru.html">Зарегистрируйтесь как гид</a>. После проверки создайте свой первый тур из панели оператора. Новые туры проходят проверку перед публикацией — обычно в течение 48 часов. Посетите <a href="operator_ru.html">страницу оператора</a> для полной информации.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Какую комиссию берет Waybound?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Waybound берет <strong>15% комиссию</strong> от стоимости тура. Нет платы за размещение или авансовых платежей — вы платите только при заработке. Комиссия вычитается перед переводом остатка вам.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Могу ли я установить собственную политику отмены?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Да, в пределах ограничений. Вы можете установить уровни более строгие или более мягкие, чем политика Waybound по умолчанию. Два правила не могут быть переопределены:<ul><li>Каждый турист получает <strong>период охлаждения</strong> при бронировании (30 мин, если отправление &gt;7 дней; 15 мин, если ≤7 дней).</li><li>Если <strong>вы отменяете</strong> подтвержденное бронирование, турист получает <strong>полный возврат</strong> — без исключений.</li></ul></div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Что если мне нужно отменить подтвержденное бронирование?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Если вы отмените подтвержденное бронирование по любой причине, находящейся под вашим контролем, турист имеет право на <strong>полный возврат всех уплаченных сумм</strong>. Вы не можете удерживать часть стоимости тура. Повторные отмены могут привести к приостановлению аккаунта. См. <a href="terms-experts_ru.html">Условия для Travel Expert'ов</a>.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Могу ли я изменить детали тура после бронирования туристов?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Незначительные обновления (фото, формулировки описания) можно вносить в любое время. Если вы измените <strong>существенные детали</strong> — маршрут, цену, даты, включения — туристы с подтвержденными бронированиями будут автоматически уведомлены и получат окно отмены без штрафов. Администратор также будет уведомлен.</div>
+</div>
+</div>
+<!-- ACCOUNT -->
+<div class="faq-section-block" id="account">
+<div class="fsb-head"><div class="fsb-icon">👤</div><div class="fsb-title">Аккаунт и <em>профиль</em></div></div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Как создать учетную запись?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Перейдите на <a href="signup_ru.html">Регистрация</a> и зарегистрируйтесь по электронной почте или используйте вход через Google, Yandex или VK. Вы получите письмо подтверждения — нажмите ссылку для проверки перед бронированием.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Я забыл пароль — как его сбросить?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Нажмите «Забыли пароль» на <a href="signin_ru.html">странице входа</a>. Введите свой адрес электронной почты, и мы отправим вам ссылку сброса. Если вы не получили письмо, проверьте папку спама или свяжитесь с нами.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Как просмотреть или управлять своими бронированиями?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Все ваши бронирования находятся в <a href="my-bookings_ru.html">Мои бронирования</a>. Оттуда вы можете просмотреть детали, оплатить остаток, сообщить гиду, отменить (согласно политике) и оставить отзыв после тура.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Как оставить отзыв?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">После завершения тура вы получите запрос на отзыв по электронной почте. Вы также можете оставить отзыв из <a href="my-bookings_ru.html">Мои бронирования</a> по любому завершенному бронированию. Только проверенные бронирующие могут оставлять отзывы.</div>
+</div>
+<div class="faq-item" onclick="toggleFaq(this)">
+<div class="faq-q"><span class="faq-q-text">Как удалить свой аккаунт?</span><div class="faq-toggle">+</div></div>
+<div class="faq-a">Запросите удаление из <a href="settings_ru.html">Параметров аккаунта</a>. Если у вас есть активные бронирования, их необходимо сначала разрешить. Для запросов на удаление данных отправьте письмо на <a href="mailto:viktoriia.strazhnikova@gmail.com">viktoriia.strazhnikova@gmail.com</a> с темой «Запрос на удаление аккаунта».</div>
+</div>
+</div>
+</div><!-- end main -->
+</div><!-- end faq-body -->
+<!-- CONTACT -->
+<div class="contact">
+<div class="sec-ey">Нужна помощь?</div>
+<h2 class="sec-h2" style="margin-bottom:22px">Получить <em>Касание</em></h2>
+<div class="contact-grid">
+<div class="contact-card">
+<div class="cc-icon">📧</div>
+<h3 class="cc-title">Напишите нам</h3>
+<p class="cc-sub">Отправьте подробное сообщение, и мы ответим в течение 24 часов, часто быстрее.</p>
+<a class="cc-btn" href="mailto:viktoriia.strazhnikova@gmail.com">Отправить письмо</a>
+<div class="cc-note">viktoriia.strazhnikova@gmail.com</div>
+</div>
+<div class="contact-card">
+<div class="cc-icon">📞</div>
+<h3 class="cc-title">Телефон</h3>
+<p class="cc-sub">Поговорите напрямую с Viktoriia Strazhnikova по срочным вопросам бронирования или проблемам во время путешествия.</p>
+<a class="cc-btn" href="tel:+79280782498">Позвоните нам</a>
+<div class="cc-note">+7 928 078-24-98 · Обычно в течение 24 часов</div>
+</div>
+</div>
+</div>
+<!-- FOOTER -->
+<footer class="footer">
+<div class="foot-grid">
+<div>
+<div class="foot-logo"><div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>Waybound</div>
+<div class="foot-desc">Соединяем смелых путешественников с местными экспертами. Специалисты по Центральной Азии и Кавказу, всегда небольшие группы.</div>
+</div>
+<div>
+<div class="foot-col-h">Исследовать</div>
+<a class="foot-link" href="adventures_ru.html">Все приключения</a>
+<a class="foot-link" href="how-it-works_ru.html">Как это работает</a>
+<a class="foot-link" href="small-group-benefits_ru.html">Преимущества небольших групп</a>
+<a class="foot-link" href="reviews_ru.html">Отзывы путешественников</a>
+</div>
+<div>
+<div class="foot-col-h">Компания</div>
+<a class="foot-link" href="about_ru.html">О нас</a>
+<a class="foot-link" href="help_ru.html">Справочный центр</a>
+<a class="foot-link" href="contact_ru.html">Свяжитесь с нами</a>
+<a class="foot-link" href="operator_ru.html">Разместить тур</a>
+</div>
+<div>
+<div class="foot-col-h">Правовая информация</div>
+<a class="foot-link" href="trust-safety_ru.html">Надежность и безопасность</a>
+<a class="foot-link" href="terms_ru.html">Условия использования</a>
+<a class="foot-link" href="terms-experts_ru.html">Условия для гидов</a>
+<a class="foot-link" href="privacy_ru.html">Политика конфиденциальности</a>
+</div>
+</div>
+<div class="foot-bottom">
+<div class="foot-copy">© 2026 Waybound.com</div>
+<div class="foot-soc"><div class="soc-btn">𝕏</div><div class="soc-btn">◎</div><div class="soc-btn">𝔽</div></div>
+</div>
+</footer>
+<script>
+const THEMES={ocean:{name:'Глубокий океан',desc:'Холодный синий, утонченный',sw:['#f0f5f9','#4fa8d4','#2080ae','#0d1f2d'],def:true},warm:{name:'Светлое и теплое',desc:'Белая основа, яркая энергия',sw:['#FFFFFF','#C05430','#A03820','#1C140C'],def:false},ivory:{name:'Слоновая кость и земляные тона',desc:'Теплый пергамент, ручная работа',sw:['#FAF6EE','#B84D2A','#96381A','#1A1208'],def:false},gold:{name:'Пергамент и золото',desc:'Теплое золото, изысканность',sw:['#f7f4ef','#c8a96e','#a8893e','#1a1a2e'],def:false},forest:{name:'Лес и шалфей',desc:'Приглушенный зеленый, естественность',sw:['#f2f7f3','#6aab7a','#3d7a50','#1e2a22'],def:false},terra:{name:'Терракота',desc:'Земляной красный, смелое тепло',sw:['#faf6f2','#d4735e','#b05040','#2a1f1a'],def:false}};
+let current=localStorage.getItem('waybound-theme')||'ocean', pending=current;
+document.body.className=current;
+function renderGrid(){document.getElementById('themeGrid').innerHTML=Object.entries(THEMES).map(([k,d])=>`<div class="th-opt${k===current?' sel':''}" data-k="${k}" onclick="previewTheme('${k}')"><div class="th-check">✓</div><div class="th-swatches">${d.sw.map(s=>`<div class="th-sw" style="background:${s}"></div>`).join('')}</div><div class="th-name">${d.name}</div><div class="th-desc">${d.desc}</div>${d.def?`<span class="th-default-tag">★ Default</span>`:''}</div>`).join('');}
+function openSettings(){var dd=document.getElementById('navDropdown');if(dd)dd.classList.remove('open');pending=current;renderGrid();document.getElementById('overlay').classList.add('open');}
+function closeSettings(){document.body.className=current;document.getElementById('overlay').classList.remove('open');}
+function overlayClick(e){if(e.target===document.getElementById('overlay'))closeSettings();}
+function previewTheme(k){pending=k;document.querySelectorAll('.th-opt').forEach(el=>el.classList.toggle('sel',el.dataset.k===k));document.body.className=k;}
+function applyPending(){current=pending;localStorage.setItem('waybound-theme',current);document.getElementById('overlay').classList.remove('open');}
+
+function toggleFaq(el) {
+  var wasOpen = el.classList.contains('open');
+  var section = el.closest('.faq-section-block');
+  if (section) section.querySelectorAll('.faq-item.open').forEach(function(i){ i.classList.remove('open'); });
+  if (!wasOpen) el.classList.add('open');
+}
+
+var _sids = ['bookings','payments','cancellations','tours','groups','safety','operators','account'];
+function jumpTo(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var top = el.getBoundingClientRect().top + window.pageYOffset - 62 - 16;
+  window.scrollTo({ top: top, behavior: 'smooth' });
+  _setActive(id);
+}
+function jumpToFaq(sectionId, itemIdx) {
+  jumpTo(sectionId);
+  setTimeout(function() {
+    var sec = document.getElementById(sectionId);
+    if (!sec) return;
+    var items = sec.querySelectorAll('.faq-item');
+    if (!items[itemIdx]) return;
+    sec.querySelectorAll('.faq-item.open').forEach(function(i){ i.classList.remove('open'); });
+    items[itemIdx].classList.add('open');
+    var top = items[itemIdx].getBoundingClientRect().top + window.pageYOffset - 90;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }, 380);
+}
+function _setActive(id) {
+  var idx = _sids.indexOf(id);
+  document.querySelectorAll('.sb-link').forEach(function(b,i){ b.classList.toggle('active', i===idx); });
+}
+window.addEventListener('scroll', function() {
+  var off = 62 + 30, cur = _sids[0];
+  _sids.forEach(function(id){ var el=document.getElementById(id); if(el && el.getBoundingClientRect().top<=off) cur=id; });
+  _setActive(cur);
+}, {passive:true});
+
+function liveSearch(query) {
+  var q = query.trim().toLowerCase();
+  var sections = document.querySelectorAll('.faq-section-block');
+  if (!q) { sections.forEach(function(s){ s.style.display=''; s.querySelectorAll('.faq-item').forEach(function(it){ it.style.display=''; }); }); return; }
+  sections.forEach(function(sec) {
+    var vis = 0;
+    sec.querySelectorAll('.faq-item').forEach(function(it){ var show=it.textContent.toLowerCase().includes(q); it.style.display=show?'':'none'; if(show) vis++; });
+    sec.style.display = vis ? '' : 'none';
+  });
+}
+
+(function(){
+  var p = new URLSearchParams(window.location.search).get('section');
+  if (p) setTimeout(function(){ jumpTo(p); }, 200);
+})();
+</script>
+<script src="nav.js"></script>
+</body>
+</html>
