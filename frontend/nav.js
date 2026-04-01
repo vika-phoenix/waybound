@@ -54,13 +54,20 @@ function navSwitchLang(lang) {
   var search = window.location.search;
   var isRu = _navIsRuPage();
 
+  // Normalise path: Cloudflare Pages serves extensionless URLs (/adventures),
+  // but _ru pages always have the full suffix (_ru.html). Ensure we have .html
+  // before doing string replacement.
+  var htmlPath = path.endsWith('.html') ? path : path + '.html';
+
   var target;
-  if (lang === 'ru') {
-    target = isRu ? null : path.replace('.html', '_ru.html') + search;
+  if (lang === 'ru' && !isRu) {
+    target = htmlPath.replace('.html', '_ru.html') + search;
+  } else if (lang === 'en' && isRu) {
+    target = htmlPath.replace('_ru.html', '.html') + search;
   } else {
-    target = isRu ? path.replace('_ru.html', '.html') + search : null;
+    return; // already on the right variant
   }
-  if (target) window.location.href = target;
+  if (target && target !== path + search) window.location.href = target;
 }
 
 // Auto-redirect on page load if saved language doesn't match current page variant.
