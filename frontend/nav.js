@@ -40,56 +40,52 @@ function navSignOut() {
 }
 
 // ── Language switcher ─────────────────────────────────────────────────────────
+
 function _navCurrentLang() {
   return localStorage.getItem('waybound_lang') || 'en';
 }
 
+// Detect Russian page — handles both /page_ru.html (explicit) and /page_ru (CF Pages extensionless)
 function _navIsRuPage() {
-  return window.location.pathname.endsWith('_ru.html');
+  var p = window.location.pathname;
+  return p.endsWith('_ru.html') || p.endsWith('_ru');
+}
+
+// Strip _ru suffix and .html extension to get the bare page base path
+// e.g. /waybound_ru.html → /waybound  |  /waybound_ru → /waybound  |  /waybound.html → /waybound
+function _navPageBase(path) {
+  return path.replace(/_ru\.html$/, '').replace(/_ru$/, '').replace(/\.html$/, '');
 }
 
 function navSwitchLang(lang) {
   localStorage.setItem('waybound_lang', lang);
-  var path = window.location.pathname;
+  var path   = window.location.pathname;
   var search = window.location.search;
-  var isRu = _navIsRuPage();
+  var isRu   = _navIsRuPage();
 
-  // Normalise path: Cloudflare Pages serves extensionless URLs (/adventures),
-  // but _ru pages always have the full suffix (_ru.html). Ensure we have .html
-  // before doing string replacement.
-  var htmlPath = path.endsWith('.html') ? path : path + '.html';
+  if ((lang === 'ru') === isRu) return; // already on correct variant
 
-  var target;
-  if (lang === 'ru' && !isRu) {
-    target = htmlPath.replace('.html', '_ru.html') + search;
-  } else if (lang === 'en' && isRu) {
-    target = htmlPath.replace('_ru.html', '.html') + search;
-  } else {
-    return; // already on the right variant
-  }
-  if (target && target !== path + search) window.location.href = target;
+  var base   = _navPageBase(path);
+  var target = (lang === 'ru') ? base + '_ru.html' : base + '.html';
+  window.location.href = target + search;
 }
 
 // Auto-redirect on page load if saved language doesn't match current page variant.
-// Only redirects when the URL contains .html — Cloudflare Pages can serve extensionless
-// URLs (/adventures instead of /adventures.html) and a replace() that changes nothing
-// would cause an infinite reload loop.
 (function () {
   var savedLang = localStorage.getItem('waybound_lang');
   if (!savedLang) return;
-  var path = window.location.pathname;
-  // Only act on explicit .html paths — skip extensionless, /, index.html, 404.html
-  if (!path.endsWith('.html')) return;
-  var base = path.split('/').pop();
-  if (!base || base === 'index.html' || base === '404.html') return;
-  var isRu = _navIsRuPage();
-  if (savedLang === 'ru' && !isRu) {
-    var ruPath = path.replace('.html', '_ru.html');
-    if (ruPath !== path) window.location.replace(ruPath + window.location.search);
-  } else if (savedLang === 'en' && isRu) {
-    var enPath = path.replace('_ru.html', '.html');
-    if (enPath !== path) window.location.replace(enPath + window.location.search);
-  }
+  var path  = window.location.pathname;
+  var isRu  = _navIsRuPage();
+
+  if ((savedLang === 'ru') === isRu) return; // already on correct variant
+
+  // Skip root, index, 404
+  var base = _navPageBase(path);
+  var leaf = base.split('/').pop();
+  if (!leaf || leaf === 'index' || leaf === '404') return;
+
+  var target = (savedLang === 'ru') ? base + '_ru.html' : base + '.html';
+  if (target !== path) window.location.replace(target + window.location.search);
 })();
 
 // Called by operator-dashboard renderMessages() to sync badge after loading enquiries.
