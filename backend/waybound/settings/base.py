@@ -145,6 +145,10 @@ CORS_ALLOWED_ORIGINS = config(
     cast=Csv(),
     default='http://localhost:8080,http://127.0.0.1:8080',
 )
+# Allow all Cloudflare Pages preview deployments (*.waybound.pages.dev)
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r'^https://[a-z0-9]+\.waybound\.pages\.dev$',
+]
 CORS_ALLOW_CREDENTIALS = True
 
 # ── django-allauth ────────────────────────────────────────────
@@ -197,6 +201,13 @@ SOCIALACCOUNT_ADAPTER  = 'apps.users.social_adapter.SocialAccountAdapter'
 # Frontend URL — where to redirect after OAuth callback
 # Change to your real domain in prod .env
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:8080')
+
+# Cloudflare Pages preview deployments need to be trusted for CSRF
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    cast=Csv(),
+    default='http://localhost:8080,http://127.0.0.1:8080',
+)
 
 # ── Email ─────────────────────────────────────────────────────
 # For local dev: set EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend in .env
