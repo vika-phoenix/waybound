@@ -139,6 +139,15 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+# ── Session cookies — must be SameSite=None so the allauth session cookie
+# is sent on the cross-origin /api/v1/auth/social/token/ fetch from the
+# frontend (different origin than Django during local dev).
+# On production (same ngrok/Railway domain not needed) these are set via env.
+SESSION_COOKIE_SAMESITE = config('SESSION_COOKIE_SAMESITE', default='Lax')
+SESSION_COOKIE_SECURE   = config('SESSION_COOKIE_SECURE',   default=False, cast=bool)
+CSRF_COOKIE_SAMESITE    = config('CSRF_COOKIE_SAMESITE',    default='Lax')
+CSRF_COOKIE_SECURE      = config('CSRF_COOKIE_SECURE',      default=False, cast=bool)
+
 # ── CORS ──────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
