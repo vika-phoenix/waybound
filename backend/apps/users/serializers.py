@@ -123,6 +123,7 @@ class UserMeSerializer(serializers.ModelSerializer):
             'id', 'email', 'phone',
             'first_name', 'last_name', 'full_name',
             'avatar', 'photo_url', 'bio', 'country', 'role',
+            'experience_years',
             'is_verified', 'verification_status', 'credentials_files',
             'email_verified', 'phone_verified', 'marketing_emails',
             'telegram_chat_id',

@@ -352,6 +352,17 @@ footer a:hover{color:rgba(255,255,255,.75)}
             <label class="field-label">Phone number</label>
             <input class="field-input" id="phoneField" type="tel" placeholder="+7 (999) 000-00-00">
           </div>
+          <div class="field-row" id="experienceRow" style="display:none">
+            <label class="field-label">Years of guiding experience</label>
+            <select class="field-input" id="experienceField">
+              <option value="">Select (optional)</option>
+              <option>Less than 1 year</option>
+              <option>1–3 years</option>
+              <option>3–5 years</option>
+              <option>5–10 years</option>
+              <option>10+ years</option>
+            </select>
+          </div>
           <div class="field-row">
             <label class="field-label" id="bioLabel">About you</label>
             <textarea class="field-input" id="bioField" rows="3" placeholder="Tell guides and fellow travellers a little about yourself…" style="resize:vertical;min-height:70px;"></textarea>
@@ -786,10 +797,14 @@ function showPanel(name, btn) {
     }
   }
 
-  // Mark bio as required for operators
+  // Operator-only fields
   if (user.role === 'operator') {
     var bioLabel = document.getElementById('bioLabel');
     if (bioLabel) bioLabel.textContent = 'About you *';
+    var expRow = document.getElementById('experienceRow');
+    if (expRow) expRow.style.display = '';
+    var expField = document.getElementById('experienceField');
+    if (expField && user.experience_years) expField.value = user.experience_years;
   }
 
   // Show operator-only nav items
@@ -1170,11 +1185,13 @@ async function saveProfile() {
   if (bioMsg) bioMsg.style.display = 'none';
 
   // Save text fields
+  var expEl = document.getElementById('experienceField');
   var payload = {
-    first_name: document.getElementById('firstName').value,
-    last_name:  document.getElementById('lastName').value,
-    phone:      document.getElementById('phoneField').value,
-    bio:        bioVal,
+    first_name:       document.getElementById('firstName').value,
+    last_name:        document.getElementById('lastName').value,
+    phone:            document.getElementById('phoneField').value,
+    bio:              bioVal,
+    experience_years: expEl ? expEl.value : '',
   };
   var user = null;
   try { user = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ user = {}; }

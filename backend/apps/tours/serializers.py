@@ -162,15 +162,20 @@ class TourDetailSerializer(TourListSerializer):
     cancel_policy = CancelPeriodSerializer(many=True, read_only=True)
     photos        = TourPhotoSerializer(many=True, read_only=True)
     faqs          = TourFAQSerializer(many=True, read_only=True)
-    operator_bio  = serializers.SerializerMethodField()
+    operator_bio             = serializers.SerializerMethodField()
+    operator_experience_years = serializers.SerializerMethodField()
 
     def get_operator_bio(self, obj):
         return obj.operator.bio or ''
+
+    def get_operator_experience_years(self, obj):
+        return obj.operator.experience_years or ''
 
     class Meta(TourListSerializer.Meta):
         fields = TourListSerializer.Meta.fields + [
             'status',
             'operator_bio',
+            'operator_experience_years',
             'description', 'highlights', 'includes', 'excludes',
             'requirements', 'meeting_point', 'meeting_time', 'end_point',
             'latitude', 'longitude', 'timezone', 'min_group',

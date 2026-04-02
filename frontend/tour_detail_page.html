@@ -1493,8 +1493,9 @@ body,body.ocean,body.warm,body.ivory,body.gold,body.forest,body.terra {
         <div class="org-meta" style="margin-bottom:6px">
           <span>⭐ <span id="guideRating">4.9</span></span>
           <span class="verified-badge">✅ Verified</span>
+          <span id="guideExperience" style="display:none;font-size:12px;color:var(--muted);font-family:var(--font-body)"></span>
         </div>
-        <div id="operatorBio" style="display:none;font-size:13px;color:var(--muted);margin:6px 0;line-height:1.55;font-family:var(--font-body)"></div>
+        <div id="operatorBio" style="display:none;font-size:13px;color:var(--muted);margin:6px 0;line-height:1.55;font-family:var(--font-body);white-space:pre-wrap"></div>
         <div id="organiserNote" style="display:none;font-size:13px;color:var(--ink);margin:8px 0;line-height:1.6;font-family:var(--font-body);font-style:italic;"></div>
         <button class="org-contact-btn" onclick="openMsgModal()">Send a message</button>
       </div>
@@ -3625,6 +3626,13 @@ function patchPage(t) {
     } else {
       ageItem.style.display = 'none';
     }
+  }
+
+  // ── Operator experience years ────────────────────────────
+  var expEl = document.getElementById('guideExperience');
+  if (expEl) {
+    if (t.operator_experience_years) { expEl.textContent = '· ' + t.operator_experience_years; expEl.style.display = ''; }
+    else expEl.style.display = 'none';
   }
 
   // ── Operator bio ─────────────────────────────────────────

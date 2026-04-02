@@ -40,9 +40,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     role         = models.CharField(max_length=10, choices=Role.choices, default=Role.TOURIST)
 
     # ── Profile ────────────────────────────────────────────
-    avatar       = models.ImageField(upload_to='avatars/', blank=True, null=True)
-    bio          = models.TextField(blank=True)
-    country      = models.CharField(max_length=80, blank=True)
+    avatar           = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    bio              = models.TextField(blank=True)
+    country          = models.CharField(max_length=80, blank=True)
+    experience_years = models.CharField(max_length=20, blank=True, default='',
+                                        help_text='Operator: years of guiding experience (e.g. "5–10 years")')
 
     # ── Flags ──────────────────────────────────────────────
     is_active    = models.BooleanField(default=True)
