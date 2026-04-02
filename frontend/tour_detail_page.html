@@ -1642,7 +1642,7 @@ body,body.ocean,body.warm,body.ivory,body.gold,body.forest,body.terra {
 
       <!-- PRICE -->
       <div class="booking-price-main" id="bookingPrice">₽89,000</div>
-      <div class="booking-price-sub"><b>per person</b> &nbsp;·&nbsp; <span id="bookingDays" style="color:var(--muted)">8 days</span> &nbsp;·&nbsp; max <span id="bookingGroup" style="color:var(--muted)">15</span> people</div>
+      <div class="booking-price-sub"><b>per person</b> &nbsp;·&nbsp; <span id="bookingDays" style="color:var(--muted)">8 days</span> &nbsp;·&nbsp; <span id="minGroupWrap" style="display:none">min <span id="bookingMinGroup" style="color:var(--muted)">2</span> · </span>max <span id="bookingGroup" style="color:var(--muted)">15</span> people</div>
 
       <!-- TOUR TYPE FLAG (multi-day = departure dropdown / single-day = calendar) -->
       <!-- data-tour-type="multi" means operator has set fixed departure windows -->
@@ -3525,6 +3525,12 @@ function patchPage(t) {
   setText('guideRating',    parseFloat(t.rating).toFixed(1));
   setText('bookingDays',    dayLabel);
   setText('bookingGroup',   t.max_group);
+  var minGrp = parseInt(t.min_group) || 0;
+  var minWrap = document.getElementById('minGroupWrap');
+  if (minWrap) {
+    if (minGrp > 1) { setText('bookingMinGroup', minGrp); minWrap.style.display = ''; }
+    else { minWrap.style.display = 'none'; }
+  }
 
   // Price
   var priceEl = document.getElementById('bookingPrice');

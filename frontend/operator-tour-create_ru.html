@@ -2629,7 +2629,6 @@ function validateForm() {
   if (!group || group <= 0) markField('fGroup', 'Максимальный размер группы обязателен');
   else if (group > 15) markField('fGroup', 'Максимальный размер группы не может превышать 15.');
   var minGroup = parseInt((document.getElementById('fMinGroup') || {}).value) || 0;
-  if (minGroup && group && minGroup > group) markField('fMinGroup', 'Минимальный размер группы не может превышать максимальный.');
 
   // Description check
   var descEl = document.getElementById('fDesc');
@@ -2833,16 +2832,6 @@ function validateGroupSize() {
   // Cap at 15
   if (warn) warn.style.display = maxVal > 15 ? '' : 'none';
   if (maxVal > 15 && maxEl) maxEl.value = 15;
-
-  // Min cannot exceed max
-  if (minVal && maxVal && minVal > maxVal) {
-    if (minEl) {
-      minEl.style.borderColor = '#e05040';
-      minEl.title = 'Минимальный размер группы не может превышать максимальный';
-    }
-  } else {
-    if (minEl) { minEl.style.borderColor = ''; minEl.title = ''; }
-  }
 
   // Re-check all departure spot inputs against new group size
   document.querySelectorAll('#departureDateList input[id^="depSpots_"]').forEach(function(el) {
