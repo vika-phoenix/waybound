@@ -893,7 +893,8 @@ var currentStep = 1;
   document.getElementById('sumPax').textContent = paxTxt;
 
   // Generate bank reference
-  document.getElementById('bankRef').textContent = 'TRP-' + Date.now().toString(36).toUpperCase().slice(-6);
+  var bankRefEl = document.getElementById('bankRef');
+  if (bankRefEl) bankRefEl.textContent = 'TRP-' + Date.now().toString(36).toUpperCase().slice(-6);
 
   // Pre-fill traveller steppers
   document.getElementById('bk-adults-val').textContent   = adults;
