@@ -671,6 +671,12 @@ function saveAndRedirect(data) {
     window.location.href = 'operator-dashboard_ru.html';
     return;
   }
+  var bookingReturn = sessionStorage.getItem('waybound_booking_return');
+  if (bookingReturn) {
+    sessionStorage.removeItem('waybound_booking_return');
+    window.location.href = bookingReturn;
+    return;
+  }
   var ref = document.referrer;
   var noReturn = ['signin_ru.html','signup_ru.html','signup-operator_ru.html','reset-password_ru.html'];
   var canReturn = ref && !noReturn.some(function(p){ return ref.indexOf(p) >= 0; });

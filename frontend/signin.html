@@ -680,6 +680,12 @@ function saveAndRedirect(data) {
     window.location.href = 'operator-dashboard.html';
     return;
   }
+  var bookingReturn = sessionStorage.getItem('waybound_booking_return');
+  if (bookingReturn) {
+    sessionStorage.removeItem('waybound_booking_return');
+    window.location.href = bookingReturn;
+    return;
+  }
   var ref = document.referrer;
   var noReturn = ['signin.html','signup.html','signup-operator.html','reset-password.html'];
   var canReturn = ref && !noReturn.some(function(p){ return ref.indexOf(p) >= 0; });

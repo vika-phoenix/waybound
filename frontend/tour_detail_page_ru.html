@@ -2391,6 +2391,14 @@ function goToBooking() {
     if (label) selectedExtras.push(label.textContent.trim());
   });
 
+  // Min group check
+  var totalPax = bkPax.adult + bkPax.child;
+  var minG = TOUR_DATA.minGroup || 1;
+  if (minG > 1 && totalPax < minG) {
+    showToast('Для этого тура минимальное количество участников — ' + minG + '. Пожалуйста, добавьте больше путешественников.', 'error');
+    return;
+  }
+
   var roomSuppAmt = calcRoomSuppTotal();
   var depId = (TOUR_DATA.type !== 'single' && sel) ? sel.value : '';
   var url = 'booking.html?slug=' + encodeURIComponent(slug)
@@ -2404,6 +2412,15 @@ function goToBooking() {
           + (roomSuppAmt !== 0 ? '&roomSupp=' + roomSuppAmt : '')
           + (_selectedExtrasTotal > 0 ? '&extrasCost=' + _selectedExtrasTotal : '')
           + (selectedExtras.length ? '&extras=' + encodeURIComponent(selectedExtras.join(',')) : '');
+
+  // Auth check — save destination and redirect to sign-in if not logged in
+  var token = localStorage.getItem('waybound_access');
+  if (!token) {
+    sessionStorage.setItem('waybound_booking_return', url);
+    window.location.href = 'signin_ru.html';
+    return;
+  }
+
   window.location.href = url;
 }
 
@@ -2711,6 +2728,7 @@ async function loadTour(slug) {
     TOUR_DATA.priceAdult  = parseFloat(t.price_adult || t.price || 0);
     TOUR_DATA.priceChild  = parseFloat(t.price_child || TOUR_DATA.priceAdult * 0.85);
     TOUR_DATA.maxGroup    = t.max_group || 12;
+    TOUR_DATA.minGroup    = parseInt(t.min_group) || 1;
     TOUR_DATA.type        = t.tour_type || 'multi';
     TOUR_DATA.days        = t.days || 1;
     TOUR_DATA.depositPct  = t.deposit_pct || 30;
