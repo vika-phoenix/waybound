@@ -2081,8 +2081,10 @@ function handlePhotoUpload(input) {
     var reader = new FileReader();
     reader.onload = function(e) {
       if (capturedReplaceIdx >= 0 && i === 0) {
-        // Replace existing slot
-        _photos[capturedReplaceIdx] = { file: file, dataUrl: e.target.result };
+        // Replace existing slot — carry old apiId as _deleteApiId so uploadPhotos
+        // will delete the old backend photo before uploading the new file
+        var oldApiId = _photos[capturedReplaceIdx] && _photos[capturedReplaceIdx].apiId;
+        _photos[capturedReplaceIdx] = { file: file, dataUrl: e.target.result, _deleteApiId: oldApiId || null };
       } else {
         // Deduplicate by name + size to prevent double-upload
         var isDup = _photos.some(function(p) { return p.file && p.file.name === file.name && p.file.size === file.size; });
@@ -3401,6 +3403,14 @@ async function uploadPhotos(slug, token) {
     var photo = _photos[i];
     if (!photo.file) continue;  // skip if only dataUrl (already uploaded)
     try {
+      // If this slot is a replacement, delete the old backend photo first
+      if (photo._deleteApiId) {
+        await fetch(TOUR_API + '/tours/' + slug + '/photos/' + photo._deleteApiId + '/', {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        }).catch(function(){});
+        photo._deleteApiId = null;
+      }
       var fd = new FormData();
       fd.append('file', photo.file);
       fd.append('order', i);
