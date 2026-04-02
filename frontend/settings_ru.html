@@ -408,16 +408,6 @@ footer a:hover{color:rgba(255,255,255,.75)}
 </div>
 <div class="conn-row">
 <div class="conn-left">
-<div class="conn-ico">🍎</div>
-<div>
-<div class="conn-name">Apple</div>
-<div class="conn-status" id="appleStatus">Не подключено</div>
-</div>
-</div>
-<button class="btn-conn connect" id="appleBtn" onclick="connectSocial('apple')">Подключить</button>
-</div>
-<div class="conn-row">
-<div class="conn-left">
 <div class="conn-ico" style="font-size:16px;color:#FC3F1D;font-weight:700">Y</div>
 <div>
 <div class="conn-name">Yandex</div>
@@ -1416,7 +1406,7 @@ async function loadSocialConnections() {
     var accounts = await res.json();
     var providers = {};
     accounts.forEach(function(a) { providers[a.provider] = a; });
-    ['google', 'apple', 'yandex'].forEach(function(p) {
+    ['google', 'yandex'].forEach(function(p) {
       var btn = document.getElementById(p + 'Btn');
       var st  = document.getElementById(p + 'Status');
       if (!btn) return;

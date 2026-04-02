@@ -35,7 +35,7 @@ THIRD_PARTY_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',   # Task 10
-    'allauth.socialaccount.providers.apple',    # Task 11
+    # 'allauth.socialaccount.providers.apple',  # removed — requires paid Apple Developer account
     'allauth.socialaccount.providers.yandex',   # Task 10
     'allauth.socialaccount.providers.vk',       # Task 10
     'django_filters',
@@ -166,16 +166,6 @@ SOCIALACCOUNT_PROVIDERS = {
         'APP': {
             'client_id': config('GOOGLE_CLIENT_ID', default=''),
             'secret':    config('GOOGLE_CLIENT_SECRET', default=''),
-        },
-    },
-    'apple': {
-        'APP': {
-            'client_id': config('APPLE_CLIENT_ID', default=''),
-            'secret':    config('APPLE_PRIVATE_KEY', default=''),
-            'key':       config('APPLE_KEY_ID', default=''),
-            'settings': {
-                'team_id': config('APPLE_TEAM_ID', default=''),
-            },
         },
     },
 }
