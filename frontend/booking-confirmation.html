@@ -762,7 +762,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
         </div>
         <div class="q-field">
           <label>Dietary requirements</label>
-          <select id="qDietary">
+          <select id="qDietary" onchange="document.getElementById('qDietaryOther').style.display=this.value==='Other (describe below)'?'':'none'">
             <option>None</option>
             <option>Vegetarian</option>
             <option>Vegan</option>
@@ -771,6 +771,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
             <option>Gluten free</option>
             <option>Other (describe below)</option>
           </select>
+          <textarea id="qDietaryOther" placeholder="Please describe your dietary requirements…" style="display:none;margin-top:8px;width:100%;padding:9px 11px;border:1.5px solid var(--ln);border-radius:7px;font-size:13px;font-family:var(--bf);resize:vertical;min-height:70px"></textarea>
         </div>
         <div class="q-field">
           <label>Medical conditions or allergies relevant to this tour</label>
@@ -1077,6 +1078,32 @@ var _confBookingId = null;
     set('epGuide', guideName || '');
     set('epDeposit', fmtP(depositPaid));
 
+    // Poll for deposit confirmation — YooKassa webhook is async and may not have
+    // fired by the time the user lands here. Retry every 2s for up to 10s.
+    if (method !== 'bank' && b.deposit_status !== 'paid') {
+      var _pollCount = 0;
+      var _pollTimer = setInterval(async function() {
+        _pollCount++;
+        if (_pollCount > 5) { clearInterval(_pollTimer); return; }
+        try {
+          var pr = await fetch(window.API_V1 + '/bookings/', { headers: { 'Authorization': 'Bearer ' + token } });
+          if (!pr.ok) return;
+          var pd = await pr.json();
+          var pb = (pd.results || pd).find(function(x) { return x.reference === ref; });
+          if (!pb || pb.deposit_status !== 'paid') return;
+          clearInterval(_pollTimer);
+          var dp = parseFloat(pb.deposit_paid || 0);
+          var bd = parseFloat(pb.balance_due  || 0);
+          var depEl = document.getElementById('payDepositVal');
+          if (depEl) depEl.textContent = fmtP(dp);
+          set('payBalanceVal', fmtP(bd));
+          var brEl = document.getElementById('payBalanceRow');
+          if (brEl) brEl.style.display = bd <= 0 ? 'none' : '';
+          set('epDeposit', fmtP(dp));
+        } catch(e) {}
+      }, 2000);
+    }
+
   } catch(e) {
     // silently keep demo content if API fails
   }
@@ -1087,6 +1114,10 @@ async function submitQuestionnaire() {
   if (!_confBookingId) { showToast('Booking not loaded yet.', 'error'); return; }
   var fitness  = (document.getElementById('qFitness')  || {}).value || '';
   var dietary  = (document.getElementById('qDietary')  || {}).value || '';
+  if (dietary === 'Other (describe below)') {
+    var _dietOtherText = ((document.getElementById('qDietaryOther') || {}).value || '').trim();
+    dietary = _dietOtherText ? 'Other: ' + _dietOtherText : 'Other';
+  }
   var medical  = ((document.getElementById('qMedical') || {}).value || '').trim();
   var other    = ((document.getElementById('qOther')   || {}).value || '').trim();
   var fitOk    = fitness && fitness !== 'Select';
