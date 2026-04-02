@@ -711,7 +711,7 @@ var API = window.API_V1 + '/auth';
 
 function socialLogin(provider) {
   var base = window.API_V1.replace('/api/v1', '');
-  window.location.href = base + '/accounts/' + provider + '/login/?process=login&next=' + encodeURIComponent(window.location.pathname + '?login=confirmed');
+  window.location.href = base + '/accounts/' + provider + '/login/?process=login';
 }
 
 // ── Social OAuth callback ────────────────────────────────────────────────

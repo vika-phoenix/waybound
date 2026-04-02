@@ -27,8 +27,11 @@ class AccountAdapter(DefaultAccountAdapter):
         return True
 
     def get_login_redirect_url(self, request):
-        # After email confirm etc., send to frontend
-        return getattr(settings, 'FRONTEND_URL', '/') + '?login=confirmed'
+        # Always redirect to the frontend signin page so the JS can exchange
+        # the allauth session for a JWT. Never use the `next` param from the
+        # OAuth URL — it contains the Railway domain, not the frontend domain.
+        frontend = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080').rstrip('/')
+        return frontend + '/signin.html?login=confirmed'
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
