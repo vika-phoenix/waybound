@@ -1037,7 +1037,7 @@ function renderBookings(list) {
     var balanceDue  = parseFloat(b.balance_due   || 0);
 
     if (b.status === 'pending' && b.deposit_status !== 'paid') {
-      actions += '<a class="bk-btn primary" href="booking.html?slug=' + slug + '">Pay deposit</a>';
+      actions += '<button class="bk-btn primary" onclick="payDeposit(' + b.id + ', this)">Pay deposit</button>';
     }
     if (b.status === 'confirmed' && b.balance_status !== 'paid' && balanceDue > 0) {
       actions += '<button class="bk-btn primary" onclick="payBalance(' + b.id + ')">Pay balance: ' + fmtAmt(balanceDue, b) + '</button>';
@@ -1146,6 +1146,28 @@ function toggleAcc(i) {
 }
 
 
+
+// ── Deposit payment ──────────────────────────────────────────────────────────
+async function payDeposit(bookingId, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = 'Redirecting\u2026'; }
+  try {
+    var res = await fetchAuth(window.API_V1 + '/payments/initiate/', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ booking_id: bookingId, payment_type: 'deposit', payment_method: 'yookassa' })
+    });
+    var data = await res.json();
+    if (res.ok && data.confirmation_url) {
+      window.location.href = data.confirmation_url;
+    } else {
+      showToast(data.detail || 'Could not initiate payment. Please try again.');
+      if (btn) { btn.disabled = false; btn.textContent = 'Pay deposit'; }
+    }
+  } catch(e) {
+    showToast('Network error. Please try again.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Pay deposit'; }
+  }
+}
 
 // ── Balance payment ──────────────────────────────────────────────────────────
 async function payBalance(bookingId) {
