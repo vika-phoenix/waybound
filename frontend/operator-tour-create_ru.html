@@ -3535,6 +3535,12 @@ function showCustomConfirm(warnings) {
 }
 
 /** Convert API error object into a human-readable string. */
+function _flattenErrVal(v) {
+  if (Array.isArray(v)) return v.map(_flattenErrVal).filter(Boolean).join(', ');
+  if (v && typeof v === 'object') return Object.entries(v).map(function(kv){ return kv[0] + ': ' + _flattenErrVal(kv[1]); }).join(', ');
+  return String(v);
+}
+
 function _parseApiError(err) {
   if (!err || typeof err !== 'object') return 'ошибка сервера';
   if (err.detail) return err.detail;
@@ -3547,14 +3553,14 @@ function _parseApiError(err) {
       var txt = [].concat(e.start_date || []).join(' ');
       if (txt.toLowerCase().indexOf('прошлое') >= 0) { hasPastDate = true; return; }
       if (txt.toLowerCase().indexOf('unique') >= 0 || txt.toLowerCase().indexOf('duplicate') >= 0) { hasDuplicate = true; return; }
-      var other = Object.values(e).map(function(v){ return [].concat(v).join(', '); }).join(', ');
+      var other = Object.values(e).map(function(v){ return _flattenErrVal(v); }).join(', ');
       if (other && uniqueMsgs.indexOf(other) < 0) uniqueMsgs.push(other);
     });
     if (hasPastDate) uniqueMsgs.unshift('Одна или более дат вылета в прошлом — удалите их и попробуйте снова.');
     if (hasDuplicate) uniqueMsgs.unshift('Найдены дублирующиеся даты вылета — каждая дата должна быть уникальной.');
     return uniqueMsgs.length ? uniqueMsgs.join(' ') : 'Недействительные даты вылета.';
   }
-  return Object.entries(err).map(function(kv){ return kv[0] + ': ' + [].concat(kv[1]).join(', '); }).join(' · ').slice(0, 120);
+  return Object.entries(err).map(function(kv){ return kv[0] + ': ' + _flattenErrVal(kv[1]); }).join(' · ').slice(0, 200);
 }
 
 function getDepMinDate() {
