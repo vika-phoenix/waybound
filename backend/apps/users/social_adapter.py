@@ -18,32 +18,36 @@ class AccountAdapter(DefaultAccountAdapter):
     def is_open_for_signup(self, request):
         return True
 
-    def get_login_redirect_url(self, request):
-        """
-        Called by allauth after ANY login (social or email-confirmed).
-        Mint JWT immediately and embed in redirect URL — no cross-origin
-        cookie needed, works in all browsers.
-        """
+    def _jwt_redirect(self, request, page='signin.html'):
+        """Mint JWT and embed in redirect URL to the given frontend page."""
         from rest_framework_simplejwt.tokens import RefreshToken
         from apps.users.serializers import UserMeSerializer
 
         frontend = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080').rstrip('/')
 
-        if request.user.is_authenticated:
-            user = request.user
-            refresh = RefreshToken.for_user(user)
-            user_data = UserMeSerializer(user, context={'request': request}).data
-            params = urlencode({
-                'social_access':  str(refresh.access_token),
-                'social_refresh': str(refresh),
-                'social_user':    json.dumps(user_data, separators=(',', ':')),
-            })
-            return f'{frontend}/signin.html?{params}'
+        if not request.user.is_authenticated:
+            return f'{frontend}/signin.html?social_error=auth_failed'
 
-        return f'{frontend}/signin.html?social_error=auth_failed'
+        user = request.user
+        refresh = RefreshToken.for_user(user)
+        user_data = UserMeSerializer(user, context={'request': request}).data
+        params = urlencode({
+            'social_access':  str(refresh.access_token),
+            'social_refresh': str(refresh),
+            'social_user':    json.dumps(user_data, separators=(',', ':')),
+        })
+        return f'{frontend}/{page}?{params}'
+
+    def get_login_redirect_url(self, request):
+        """Called by allauth after login completes."""
+        # connect=1 means user was already logged in and wanted to link this provider
+        if request.GET.get('connect') == '1' or request.session.get('wb_connect') == '1':
+            request.session.pop('wb_connect', None)
+            return self._jwt_redirect(request, page='settings.html')
+        return self._jwt_redirect(request, page='signin.html')
 
     def get_signup_redirect_url(self, request):
-        return self.get_login_redirect_url(request)
+        return self._jwt_redirect(request, page='signin.html')
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -58,6 +62,15 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             uid      = sociallogin.account.uid
             user.email = f'{provider}_{uid}_{uuid.uuid4().hex[:8]}@placeholder.waybound.com'
         return user
+
+    def pre_social_login(self, request, sociallogin):
+        """
+        Called before the social login is processed.
+        If connect=1, store a flag so get_login_redirect_url sends back to settings.
+        SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT handles the actual linking.
+        """
+        if request.GET.get('connect') == '1':
+            request.session['wb_connect'] = '1'
 
     def save_user(self, request, sociallogin, form=None):
         user = super().save_user(request, sociallogin, form)
