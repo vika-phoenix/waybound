@@ -909,6 +909,25 @@ function showPanel(name, btn) {
   .catch(function(){});
   // Load social connections
   loadSocialConnections();
+
+  // If returning from a social connect/login OAuth flow, show toast
+  var _sp = new URLSearchParams(window.location.search);
+  if (_sp.get('social') === 'connected') {
+    showToast('Account connected successfully.', 'success');
+    history.replaceState(null, '', window.location.pathname);
+  }
+  if (_sp.get('social_access')) {
+    // Returning from OAuth — update stored tokens with fresh ones
+    try {
+      localStorage.setItem('waybound_access',  _sp.get('social_access'));
+      localStorage.setItem('waybound_refresh', _sp.get('social_refresh'));
+      var _su = JSON.parse(_sp.get('social_user') || '{}');
+      if (_su.email) localStorage.setItem('waybound_user', JSON.stringify(_su));
+    } catch(e) {}
+    showToast('Account connected successfully.', 'success');
+    history.replaceState(null, '', window.location.pathname);
+    loadSocialConnections();
+  }
 })();
 
 // ── Avatar upload ─────────────────────────────────────────────────────────────
@@ -1268,7 +1287,7 @@ function updatePwStrength(pw) {
 
 function connectSocial(provider) {
   var base = window.API_V1.replace('/api/v1', '');
-  window.location.href = base + '/accounts/' + provider + '/login/?process=connect&next=' + encodeURIComponent(window.location.pathname + '#connected');
+  window.location.href = base + '/accounts/' + provider + '/login/?process=connect';
 }
 
 // ── Verification document upload ─────────────────────────────────────────────

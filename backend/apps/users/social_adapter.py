@@ -62,9 +62,33 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def save_user(self, request, sociallogin, form=None):
         user = super().save_user(request, sociallogin, form)
         provider = sociallogin.account.provider
+        extra = sociallogin.account.extra_data or {}
+        update_fields = []
+
         if provider in ('google', 'yandex', 'apple'):
             user.email_verified = True
-            user.save(update_fields=['email_verified'])
+            update_fields.append('email_verified')
+
+        # Fill in missing profile fields from provider data
+        if not user.first_name:
+            first = extra.get('first_name') or extra.get('given_name') or ''
+            if first:
+                user.first_name = first
+                update_fields.append('first_name')
+        if not user.last_name:
+            last = extra.get('last_name') or extra.get('family_name') or ''
+            if last:
+                user.last_name = last
+                update_fields.append('last_name')
+        # Yandex returns default_phone.number
+        if not user.phone:
+            phone = (extra.get('default_phone') or {}).get('number') or extra.get('phone') or ''
+            if phone:
+                user.phone = phone
+                update_fields.append('phone')
+
+        if update_fields:
+            user.save(update_fields=update_fields)
         return user
 
     def get_connect_redirect_url(self, request, socialaccount):
