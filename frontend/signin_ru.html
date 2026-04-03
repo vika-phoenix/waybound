@@ -615,24 +615,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ── Social OAuth callback ────────────────────────────────────────────────
   var params = new URLSearchParams(window.location.search);
-  if (params.get('login') === 'confirmed') {
-    // Session was set by allauth callback — exchange for JWT
+  if (params.get('social_access')) {
+    try {
+      var userData = JSON.parse(params.get('social_user') || '{}');
+      saveAndRedirect({
+        access:  params.get('social_access'),
+        refresh: params.get('social_refresh'),
+        user:    userData,
+      });
+    } catch(e) {
+      showSigninError('Ошибка при социальном входе. Пожалуйста, попробуйте снова.');
+    }
+  } else if (params.get('social_error')) {
+    showSigninError('Ошибка при социальном входе. Попробуйте другой способ входа.');
+  } else if (params.get('login') === 'confirmed') {
     fetch(window.API_V1 + '/auth/social/token/', {
-      method: 'POST',
-      credentials: 'include',
+      method: 'POST', credentials: 'include',
       headers: { 'Content-Type': 'application/json' }
     })
     .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
     .then(function(res) {
-      if (res.ok) {
-        saveAndRedirect(res.data);
-      } else {
-        showSigninError(res.data.error || 'Ошибка при социальном входе. Пожалуйста, попробуйте снова.');
-      }
+      if (res.ok) { saveAndRedirect(res.data); }
+      else { showSigninError(res.data.error || 'Ошибка при социальном входе. Пожалуйста, попробуйте снова.'); }
     })
-    .catch(function() {
-      showSigninError('Невозможно подключиться к серверу. Убедитесь, что бэкенд запущен.');
-    });
+    .catch(function() { showSigninError('Невозможно подключиться к серверу.'); });
   }
 });
 

@@ -624,24 +624,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ── Social OAuth callback ────────────────────────────────────────────────
   var params = new URLSearchParams(window.location.search);
-  if (params.get('login') === 'confirmed') {
-    // Session was set by allauth callback — exchange for JWT
+  if (params.get('social_access')) {
+    // JWT tokens embedded directly in URL by Django adapter — no cookie needed
+    try {
+      var userData = JSON.parse(params.get('social_user') || '{}');
+      saveAndRedirect({
+        access:  params.get('social_access'),
+        refresh: params.get('social_refresh'),
+        user:    userData,
+      });
+    } catch(e) {
+      showSigninError('Social login failed. Please try again.');
+    }
+  } else if (params.get('social_error')) {
+    showSigninError('Social login failed. Please try again or use email/password.');
+  } else if (params.get('login') === 'confirmed') {
+    // Legacy session-based fallback
     fetch(window.API_V1 + '/auth/social/token/', {
-      method: 'POST',
-      credentials: 'include',
+      method: 'POST', credentials: 'include',
       headers: { 'Content-Type': 'application/json' }
     })
     .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
     .then(function(res) {
-      if (res.ok) {
-        saveAndRedirect(res.data);
-      } else {
-        showSigninError(res.data.error || 'Social login failed. Please try again.');
-      }
+      if (res.ok) { saveAndRedirect(res.data); }
+      else { showSigninError(res.data.error || 'Social login failed. Please try again.'); }
     })
-    .catch(function() {
-      showSigninError('Cannot connect to server. Make sure the backend is running.');
-    });
+    .catch(function() { showSigninError('Cannot connect to server.'); });
   }
 });
 
