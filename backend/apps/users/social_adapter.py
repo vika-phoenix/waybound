@@ -1,10 +1,9 @@
 """
 apps/users/social_adapter.py
-Custom allauth social adapter.
 
-After OAuth completes, mint JWT tokens immediately and embed them in the
-redirect URL so the frontend never needs a cross-origin cookie exchange.
-This avoids SameSite/CORS cookie issues entirely.
+After OAuth completes, allauth calls AccountAdapter.get_login_redirect_url.
+We mint JWT tokens there and embed them in the redirect URL so the frontend
+never needs a cross-origin cookie exchange (which browsers increasingly block).
 """
 import json
 import uuid
@@ -20,10 +19,31 @@ class AccountAdapter(DefaultAccountAdapter):
         return True
 
     def get_login_redirect_url(self, request):
-        # Fallback for non-social logins — shouldn't normally be called
-        # for social flow since SocialAccountAdapter overrides it below.
+        """
+        Called by allauth after ANY login (social or email-confirmed).
+        Mint JWT immediately and embed in redirect URL — no cross-origin
+        cookie needed, works in all browsers.
+        """
+        from rest_framework_simplejwt.tokens import RefreshToken
+        from apps.users.serializers import UserMeSerializer
+
         frontend = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080').rstrip('/')
-        return frontend + '/signin.html?login=confirmed'
+
+        if request.user.is_authenticated:
+            user = request.user
+            refresh = RefreshToken.for_user(user)
+            user_data = UserMeSerializer(user, context={'request': request}).data
+            params = urlencode({
+                'social_access':  str(refresh.access_token),
+                'social_refresh': str(refresh),
+                'social_user':    json.dumps(user_data, separators=(',', ':')),
+            })
+            return f'{frontend}/signin.html?{params}'
+
+        return f'{frontend}/signin.html?social_error=auth_failed'
+
+    def get_signup_redirect_url(self, request):
+        return self.get_login_redirect_url(request)
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -33,7 +53,6 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def populate_user(self, request, sociallogin, data):
         user = super().populate_user(request, sociallogin, data)
-        # VK sometimes returns no email — generate a placeholder
         if not user.email:
             provider = sociallogin.account.provider
             uid      = sociallogin.account.uid
@@ -48,48 +67,6 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             user.save(update_fields=['email_verified'])
         return user
 
-    def get_login_redirect_url(self, request):
-        """
-        Mint JWT tokens immediately after OAuth and embed them in the redirect
-        URL. The frontend reads them from URL params and stores in localStorage.
-        No cross-origin cookie needed — works in all browsers.
-        """
-        from rest_framework_simplejwt.tokens import RefreshToken
-        from apps.users.serializers import UserMeSerializer
-
-        frontend = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080').rstrip('/')
-
-        if not request.user.is_authenticated:
-            return frontend + '/signin.html?social_error=auth_failed'
-
-        user = request.user
-        refresh = RefreshToken.for_user(user)
-        user_data = UserMeSerializer(user, context={'request': request}).data
-
-        params = urlencode({
-            'social_access':  str(refresh.access_token),
-            'social_refresh': str(refresh),
-            'social_user':    json.dumps(user_data, separators=(',', ':')),
-        })
-        return f'{frontend}/signin.html?{params}'
-
     def get_connect_redirect_url(self, request, socialaccount):
-        """After connecting a social account from settings page."""
-        from rest_framework_simplejwt.tokens import RefreshToken
-        from apps.users.serializers import UserMeSerializer
-
         frontend = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080').rstrip('/')
-
-        if not request.user.is_authenticated:
-            return frontend + '/settings.html'
-
-        user = request.user
-        refresh = RefreshToken.for_user(user)
-        user_data = UserMeSerializer(user, context={'request': request}).data
-
-        params = urlencode({
-            'social_access':  str(refresh.access_token),
-            'social_refresh': str(refresh),
-            'social_user':    json.dumps(user_data, separators=(',', ':')),
-        })
-        return f'{frontend}/settings.html?{params}'
+        return f'{frontend}/settings.html?social=connected'
