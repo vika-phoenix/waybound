@@ -202,6 +202,9 @@ SOCIALACCOUNT_PROVIDERS.update({
 # If same email already exists from email/pw login, link the social account to it
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+# Skip the allauth "Sign in via X" confirmation page — go straight through
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 # ── Custom allauth adapters (Tasks 10-11) ─────────────────────
 ACCOUNT_ADAPTER        = 'apps.users.social_adapter.AccountAdapter'
