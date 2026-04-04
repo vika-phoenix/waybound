@@ -208,6 +208,18 @@ footer a:hover{color:rgba(255,255,255,.75)}
 <script src="config.js"></script>
 </head>
 <body class="ocean">
+<!-- ══ DISCONNECT CONFIRM MODAL ══════════════════════════════════ -->
+<div id="disconnectModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div style="background:var(--white);border-radius:16px;padding:32px 28px 24px;max-width:360px;width:90%;box-shadow:0 12px 48px rgba(0,0,0,.22);animation:dropIn .18s ease;">
+    <div id="disconnectModalTitle" style="font-family:var(--df);font-size:18px;font-weight:500;color:var(--ink);margin-bottom:8px;line-height:1.3"></div>
+    <div id="disconnectModalBody" style="font-size:13.5px;color:var(--mu);margin-bottom:24px;line-height:1.5"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeDisconnectModal()" style="font-size:13px;font-weight:500;color:var(--mu);background:var(--paper);border:1.5px solid var(--ln);border-radius:8px;padding:9px 18px;cursor:pointer;font-family:var(--bf);transition:border-color .15s">Отмена</button>
+      <button id="disconnectModalBtn" onclick="confirmDisconnect()" style="font-size:13px;font-weight:600;color:#fff;background:#c03020;border:none;border-radius:8px;padding:9px 18px;cursor:pointer;font-family:var(--bf);transition:background .15s">Отключить</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ SETTINGS OVERLAY (for theme preview from this page too) ══ -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
 <div class="drawer" id="drawer">
@@ -362,11 +374,11 @@ footer a:hover{color:rgba(255,255,255,.75)}
 <div class="settings-panel" id="panel-security">
 <div class="settings-card">
 <div class="settings-card-head">
-<div class="settings-card-title">Изменить пароль</div>
-<div class="settings-card-desc">Используйте надёжный пароль, который вы не используете больше нигде</div>
+<div class="settings-card-title" id="pwCardTitle">Изменить пароль</div>
+<div class="settings-card-desc" id="pwCardDesc">Используйте надёжный пароль, который вы не используете больше нигде</div>
 </div>
 <div class="settings-card-body">
-<div class="field-row">
+<div class="field-row" id="currentPwRow">
 <label class="field-label">Текущий пароль</label>
 <input class="field-input" id="currentPw" oninput="clearPwError()" placeholder="Введите текущий пароль" type="password"/>
 </div>
@@ -860,6 +872,17 @@ function showPanel(name, btn) {
     // Sync marketing toggle
     var mt = document.getElementById('toggleMarketing');
     if (mt) mt.classList.toggle('on', !!data.marketing_emails);
+    // Adapt Security panel for OAuth-only users (no password set)
+    if (data.has_password === false) {
+      var pwTitle = document.getElementById('pwCardTitle');
+      var pwDesc  = document.getElementById('pwCardDesc');
+      var pwRow   = document.getElementById('currentPwRow');
+      var pwBtn   = document.querySelector('#panel-security .btn-save');
+      if (pwTitle) pwTitle.textContent = 'Установить пароль';
+      if (pwDesc)  pwDesc.textContent  = 'Добавьте пароль, чтобы также входить по электронной почте';
+      if (pwRow)   pwRow.style.display  = 'none';
+      if (pwBtn)   pwBtn.textContent    = 'Установить пароль';
+    }
   })
   .catch(function(){});
   // Load social connections
@@ -1199,7 +1222,10 @@ async function changePassword() {
   var cur = document.getElementById('currentPw').value;
   var nw  = document.getElementById('newPw').value;
   var cf  = document.getElementById('confirmPw').value;
-  if (!cur) { showPwError('Пожалуйста, введите ваш текущий пароль.'); return; }
+  // Only require current password when the field is visible (user already has a password)
+  var curRow = document.getElementById('currentPwRow');
+  var needsCurrent = !curRow || curRow.style.display !== 'none';
+  if (needsCurrent && !cur) { showPwError('Пожалуйста, введите ваш текущий пароль.'); return; }
   if (!nw)  { showPwError('Пожалуйста, введите новый пароль.'); return; }
   if (nw.length < 8) { showPwError('Новый пароль должен содержать не менее 8 символов.'); return; }
   if (nw !== cf) { showPwError('Пароли не совпадают — пожалуйста, повторно введите новый пароль в обоих полях.'); return; }
@@ -1220,6 +1246,26 @@ async function changePassword() {
               : 'Не удалось обновить пароль. Пожалуйста, попробуйте снова.';
       showPwError(msg);
       return;
+    }
+    // If user just set a password for the first time, switch panel to "Change password" mode
+    var pwRow = document.getElementById('currentPwRow');
+    if (pwRow && pwRow.style.display === 'none') {
+      pwRow.style.display = '';
+      var pwTitle = document.getElementById('pwCardTitle');
+      var pwDesc  = document.getElementById('pwCardDesc');
+      var pwBtn   = document.querySelector('#panel-security .btn-save');
+      if (pwTitle) pwTitle.textContent = 'Изменить пароль';
+      if (pwDesc)  pwDesc.textContent  = 'Используйте надёжный пароль, который вы не используете больше нигде';
+      if (pwBtn)   pwBtn.textContent   = 'Обновить пароль';
+      // Update cached user so has_password reflects new state
+      try {
+        var _u = JSON.parse(localStorage.getItem('waybound_user') || '{}');
+        _u.has_password = true;
+        localStorage.setItem('waybound_user', JSON.stringify(_u));
+      } catch(e) {}
+      document.getElementById('pwFeedback').textContent = '✓ Пароль установлен';
+    } else {
+      document.getElementById('pwFeedback').textContent = '✓ Пароль обновлён';
     }
     showFeedback('pwFeedback');
     document.getElementById('currentPw').value = '';
@@ -1449,7 +1495,7 @@ async function loadSocialConnections() {
       if (providers[p]) {
         btn.textContent = 'Отключить';
         btn.className = 'btn-conn disconnect';
-        btn.onclick = function() { disconnectSocial(p); };
+        btn.onclick = (function(prov){ return function() { disconnectSocial(prov, this); }; })(p);
         if (st) {
           st.textContent = 'Подключено' + (providers[p].email ? ' · ' + providers[p].email : '');
           st.className = 'conn-status connected';
@@ -1464,11 +1510,35 @@ async function loadSocialConnections() {
   } catch(e) { console.error('[social] loadSocialConnections error:', e); }
 }
 
-async function disconnectSocial(provider) {
+// ── Disconnect confirm modal ──────────────────────────────────────────────────
+var _disconnectProvider = null;
+var _disconnectBtn = null;
+
+function disconnectSocial(provider, btn) {
   var name = provider.charAt(0).toUpperCase() + provider.slice(1);
-  if (!confirm('Отключить ' + name + '?\n\nВы сможете подключить его снова в любое время.')) return;
+  _disconnectProvider = provider;
+  _disconnectBtn = btn;
+  var modal = document.getElementById('disconnectModal');
+  document.getElementById('disconnectModalTitle').textContent = 'Отключить ' + name + '?';
+  document.getElementById('disconnectModalBody').textContent = 'Вы сможете подключить его снова в любое время в настройках подключённых аккаунтов.';
+  modal.style.display = 'flex';
+}
+
+function closeDisconnectModal() {
+  document.getElementById('disconnectModal').style.display = 'none';
+  _disconnectProvider = null;
+  _disconnectBtn = null;
+}
+
+async function confirmDisconnect() {
+  var provider = _disconnectProvider;
+  var btn = _disconnectBtn;
+  if (!provider) return;
+  closeDisconnectModal();
+  var name = provider.charAt(0).toUpperCase() + provider.slice(1);
   var token = localStorage.getItem('waybound_access');
   if (!token) return;
+  if (btn) { btn.disabled = true; btn.textContent = 'Отключение…'; }
   try {
     var res = await fetch(window.API_V1 + '/auth/social/connections/' + provider + '/', {
       method: 'DELETE',
@@ -1476,13 +1546,24 @@ async function disconnectSocial(provider) {
     });
     var data = await res.json().catch(function(){ return {}; });
     if (!res.ok) {
-      showToast(data.detail || 'Невозможно отключиться.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'Отключить'; }
+      var noPassword = data.detail && data.detail.toLowerCase().indexOf('no password') >= 0;
+      if (noPassword) {
+        showToast('Сначала установите пароль — открываем настройки безопасности.', 'error');
+        setTimeout(function() {
+          var secBtn = document.querySelector('.settings-nav-item[onclick*="security"]');
+          if (secBtn) secBtn.click();
+        }, 1200);
+      } else {
+        showToast(data.detail || 'Не удалось отключить ' + name + '.', 'error');
+      }
       return;
     }
     loadSocialConnections();
     showToast(name + ' отключено.', 'success');
   } catch(e) {
-    showToast('Невозможно подключиться к серверу.', 'error');
+    showToast('Ошибка сети. Пожалуйста, попробуйте снова.', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Отключить'; }
   }
 }
 
