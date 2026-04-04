@@ -176,29 +176,15 @@ SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
-        'APP': {
-            'client_id': config('GOOGLE_CLIENT_ID', default=''),
-            'secret':    config('GOOGLE_CLIENT_SECRET', default=''),
-        },
+        # Credentials live in the DB SocialApp record (populated by migration).
+        # Do NOT add 'APP' here — allauth 0.62 would create a second in-memory
+        # app and get_app() would raise MultipleObjectsReturned.
     },
-}
-
-# ── Yandex + VK OAuth (added Task 10) ────────────────────────
-SOCIALACCOUNT_PROVIDERS.update({
-    'yandex': {
-        'APP': {
-            'client_id': config('YANDEX_CLIENT_ID', default=''),
-            'secret':    config('YANDEX_CLIENT_SECRET', default=''),
-        },
-    },
+    'yandex': {},
     'vk': {
         'SCOPE': ['email'],
-        'APP': {
-            'client_id': config('VK_CLIENT_ID', default=''),
-            'secret':    config('VK_CLIENT_SECRET', default=''),
-        },
     },
-})
+}
 # If same email already exists from email/pw login, link the social account to it
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
