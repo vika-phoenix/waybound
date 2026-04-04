@@ -1429,13 +1429,17 @@ async function toggleMarketingEmails() {
 // ── Load social connections status ───────────────────────────────────────────
 async function loadSocialConnections() {
   var token = localStorage.getItem('waybound_access');
-  if (!token) return;
+  if (!token) { console.warn('[social] No access token in localStorage'); return; }
   try {
     var res = await fetch(window.API_V1 + '/auth/social/connections/', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
-    if (!res.ok) return;
+    if (!res.ok) {
+      console.warn('[social] connections API returned', res.status);
+      return;
+    }
     var accounts = await res.json();
+    console.log('[social] connections:', accounts);
     var providers = {};
     accounts.forEach(function(a) { providers[a.provider] = a; });
     ['google', 'yandex'].forEach(function(p) {
@@ -1457,7 +1461,7 @@ async function loadSocialConnections() {
         if (st) { st.textContent = 'Не подключено'; st.className = 'conn-status'; }
       }
     });
-  } catch(e) {}
+  } catch(e) { console.error('[social] loadSocialConnections error:', e); }
 }
 
 async function disconnectSocial(provider) {
