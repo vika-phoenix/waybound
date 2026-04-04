@@ -1349,11 +1349,11 @@ function updatePwStrength(pw) {
 }
 
 function connectSocial(provider) {
-  // Store current JWT so backend can link the social account to the existing user
   var token = localStorage.getItem('waybound_access') || '';
   sessionStorage.setItem('waybound_connect_token', token);
+  // Mark as a connect operation so signin.html can redirect back here if needed
+  sessionStorage.setItem('waybound_connect_pending', 'en');
   var base = window.API_V1.replace('/api/v1', '');
-  // Use process=login — backend detects the stored token and links accounts
   window.location.href = base + '/accounts/' + provider + '/login/?process=login&connect=1';
 }
 

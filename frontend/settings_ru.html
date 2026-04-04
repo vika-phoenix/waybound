@@ -1299,6 +1299,8 @@ function updatePwStrength(pw) {
 function connectSocial(provider) {
   var token = localStorage.getItem('waybound_access') || '';
   sessionStorage.setItem('waybound_connect_token', token);
+  // Mark as a connect operation so signin.html can redirect back here if needed
+  sessionStorage.setItem('waybound_connect_pending', 'ru');
   var base = window.API_V1.replace('/api/v1', '');
   window.location.href = base + '/accounts/' + provider + '/login/?process=login&connect=1';
 }

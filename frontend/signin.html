@@ -702,6 +702,13 @@ function saveAndRedirect(data, fromOAuth) {
     window.location.href = bookingReturn;
     return;
   }
+  // If this was a connect-from-settings operation, send back to settings
+  var connectPending = sessionStorage.getItem('waybound_connect_pending');
+  if (fromOAuth && connectPending) {
+    sessionStorage.removeItem('waybound_connect_pending');
+    window.location.href = connectPending === 'ru' ? 'settings_ru.html?social=connected' : 'settings.html?social=connected';
+    return;
+  }
   // After OAuth, never use document.referrer — it points to the OAuth callback URL
   // which causes an infinite redirect loop (allauth starts a new OAuth flow on each visit).
   if (fromOAuth) {

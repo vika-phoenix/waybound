@@ -58,7 +58,7 @@ Frontend (vanilla HTML/JS)          Backend (Django REST)
 | Language | Python 3.11+ |
 | Framework | Django 4.2.11, Django REST Framework 3.15 |
 | Database | SQLite (dev), PostgreSQL (prod) |
-| Auth | JWT (simplejwt), django-allauth (OAuth) |
+| Auth | JWT (simplejwt), django-allauth 0.63.2[socialaccount] (OAuth) |
 | Payments | YooKassa SDK 3.3 |
 | Email | django-anymail + Brevo |
 | Scheduler | APScheduler + django-apscheduler |
@@ -351,11 +351,18 @@ User
   - is_verified (operator verification status)
   - email_verified, phone_verified
   - marketing_emails, telegram_chat_id
+  - experience_years (operator)
+  - payout_name, payout_bank, payout_account, payout_bik, payout_corr_account
+
+  Computed via serializer (read-only):
+  - has_password: False for OAuth-only accounts (no usable password set)
+    Used by settings page to show "Set password" instead of "Change password"
 
 VerificationDocument
-  - operator -> User (OneToOne)
-  - document (image)
+  - user -> User (FK, multiple docs per user)
+  - doc_type: identity | credential
   - status: pending | approved | rejected
+  - submitted_at, original_name
 
 OTPCode
   - phone, code, created_at, used
@@ -445,13 +452,34 @@ TourReview
 4. On 401, frontend calls `/auth/token/refresh/` with the refresh token
 5. Logout blacklists the refresh token
 
+### `change-password` endpoint
+
+`current_password` is optional. If the user has no usable password (`has_usable_password() = False`, i.e. OAuth-only account), the backend skips the current-password check and allows setting a new password directly. After setting a password, the user can disconnect social accounts.
+
+### `social/connections/<provider>/` DELETE
+
+Uses `provider__iexact` (case-insensitive) for the DB lookup because allauth stores provider names in title case (`'Yandex'`, `'Google'`) but the frontend passes lowercase. Blocks disconnect if the user has no usable password and no other social accounts (would lock them out).
+
+---
+
 ### OAuth Providers
-- **Google** - Standard OAuth2
-- **Apple** - Sign in with Apple (requires Apple Developer account)
-- **Yandex** - Yandex ID (for Russian users)
+- **Google** - Standard OAuth2 (consent screen must be set to "External" in Google Cloud Console)
+- **Apple** - Disabled (requires $99/yr Apple Developer account — commented out in `INSTALLED_APPS`)
+- **Yandex** - Yandex ID (primary for Russian users)
 - **VK** - VKontakte (for Russian users)
 
-Flow: Frontend redirects to provider -> provider redirects to `/accounts/<provider>/login/callback/` -> allauth creates/links user -> frontend calls `/auth/social/token/` with provider + access_token -> backend returns JWT
+**OAuth flow (JWT-embedded redirect):**
+1. Frontend calls `/accounts/<provider>/login/?process=login` (or `?process=login&connect=1` to link to existing account)
+2. allauth handles provider redirect and callback
+3. Custom `AccountAdapter._jwt_redirect()` in `social_adapter.py` mints JWT tokens and embeds them directly in the redirect URL as query params (`social_access`, `social_refresh`, `social_user`)
+4. Browser lands on `signin.html?social_access=...` — frontend reads tokens from URL, stores in `localStorage`, cleans up URL
+5. No cookie exchange needed — works cross-origin without `SameSite=None` cookies
+
+**Language routing after OAuth:** `signin_ru.html` and `signup_ru.html` store `sessionStorage.waybound_oauth_lang = 'ru'` before the OAuth redirect. `signin.html` reads this on landing and routes to Russian pages (`waybound_ru.html`, `settings_ru.html`, etc.).
+
+**Connecting a provider to an existing account:** Uses `connect=1` param. `pre_social_login` stores `wb_connect=1` in the session; `get_login_redirect_url` detects this and redirects back to `settings.html?social_access=...` instead of `signin.html`.
+
+**`/auth/social/token/` endpoint** — legacy session-based fallback, no longer the primary flow.
 
 ### Staff Roles (Django Groups)
 

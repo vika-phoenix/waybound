@@ -116,6 +116,10 @@ These are real issues encountered during deployment. **Read this before debuggin
 
 12. **Check Deploy logs, not Database logs** — PostgreSQL logs show checkpoint info, not your app errors. Always look at the Django service logs.
 
+13. **Local dev: cookie settings in `.env` break local HTTP** — Railway `.env` sets `SESSION_COOKIE_SECURE=True` and `CSRF_COOKIE_SAMESITE=None`. Both break local HTTP dev: secure cookies require HTTPS; `SameSite=None` without `Secure` is silently dropped by Chrome. Fix is already in `dev.py` which overrides these to `False`/`Lax`. Also set `LOGIN_REDIRECT_URL = '/admin/'` in `dev.py` so admin login doesn't 404 at `/accounts/profile/`.
+
+14. **allauth provider names are title-cased in DB** — allauth stores `'Yandex'` and `'Google'` (capitalized) in `SocialAccount.provider`. The frontend passes lowercase. Always use `provider__iexact` in backend queries and `.toLowerCase()` when building the frontend providers map.
+
 ### Troubleshooting Quick Reference
 
 | Symptom | Cause | Fix |
@@ -128,6 +132,12 @@ These are real issues encountered during deployment. **Read this before debuggin
 | App crash on startup | Missing env var with no default | Add `default=''` or set the variable |
 | Duplicate scheduler warnings | Multiple workers starting scheduler | Use `--preload` in gunicorn command |
 | Nothing loads at all | Wrong target port in domain settings | Set to `8080` (check deploy logs) |
+| Local admin form clears on submit | `SESSION_COOKIE_SECURE=True` in `.env`, HTTP locally | `dev.py` sets `SESSION_COOKIE_SECURE=False` — restart server |
+| Local admin CSRF 403 "cookie not set" | `CSRF_COOKIE_SAMESITE=None` without Secure, Chrome drops it | `dev.py` sets `CSRF_COOKIE_SAMESITE='Lax'` |
+| Local admin 404 at `/accounts/profile/` | `LOGIN_REDIRECT_URL` defaults to allauth path | `dev.py` sets `LOGIN_REDIRECT_URL='/admin/'` |
+| Google OAuth "Access blocked: can only be used within its organization" | Consent screen User type is `Internal` | Change to `External` in Google Cloud Console |
+| Social login stuck in redirect loop | `document.referrer` after OAuth is the callback URL | Fixed: `signin.html` detects `fromOAuth=true` and skips referrer |
+| Connect from settings redirects to home instead of back to settings | `wb_connect` session flag lost cross-origin | Fixed: `sessionStorage.waybound_connect_pending` flag routes back to settings |
 
 ---
 
@@ -228,6 +238,7 @@ YOOKASSA_SECRET_KEY = (your secret key)
 2. Create project -> APIs & Services -> Credentials -> Create OAuth 2.0 Client
 3. Authorized redirect URI: `https://your-domain.railway.app/accounts/google/login/callback/`
 4. Copy Client ID and Secret
+5. **APIs & Services → OAuth consent screen → User type: must be `External`** — if left as `Internal`, only users within your Google Workspace org can log in and everyone else sees "Access blocked: can only be used within its organization"
 
 **Env vars:**
 ```
