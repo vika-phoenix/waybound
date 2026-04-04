@@ -632,7 +632,7 @@ document.addEventListener('DOMContentLoaded', function() {
         access:  params.get('social_access'),
         refresh: params.get('social_refresh'),
         user:    userData,
-      });
+      }, true);
     } catch(e) {
       showSigninError('Social login failed. Please try again.');
     }
@@ -680,12 +680,17 @@ function hideSigninError() {
   if (el) el.style.display = 'none';
 }
 
-function saveAndRedirect(data) {
+function saveAndRedirect(data, fromOAuth) {
   localStorage.setItem('waybound_access',  data.access);
   localStorage.setItem('waybound_refresh', data.refresh);
   localStorage.setItem('waybound_user',    JSON.stringify(data.user));
   if (data.user && data.user.role === 'operator') {
     window.location.href = 'operator-dashboard.html';
+    return;
+  }
+  // OAuth users may be missing phone — redirect to settings to complete profile
+  if (fromOAuth && data.user && !data.user.phone) {
+    window.location.href = 'settings.html?prompt=phone';
     return;
   }
   var bookingReturn = sessionStorage.getItem('waybound_booking_return');

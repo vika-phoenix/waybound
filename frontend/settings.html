@@ -928,6 +928,20 @@ function showPanel(name, btn) {
     history.replaceState(null, '', window.location.pathname);
     loadSocialConnections();
   }
+  if (_sp.get('prompt') === 'phone') {
+    history.replaceState(null, '', window.location.pathname);
+    // Show a banner prompting the user to add their phone number
+    var _banner = document.createElement('div');
+    _banner.style.cssText = 'background:#fff8e1;border:1.5px solid #f5c842;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:13.5px;font-family:var(--bf);color:var(--ink);display:flex;align-items:center;gap:10px';
+    _banner.innerHTML = '<span style="font-size:20px">📱</span><span>Welcome! Please add your <strong>phone number</strong> so guides can contact you about your bookings.</span>';
+    var _firstCard = document.querySelector('.settings-card');
+    if (_firstCard) _firstCard.parentElement.insertBefore(_banner, _firstCard);
+    // Scroll to and highlight the phone field
+    setTimeout(function() {
+      var _pf = document.getElementById('phoneField');
+      if (_pf) { _pf.focus(); _pf.scrollIntoView({ behavior: 'smooth', block: 'center' }); _pf.style.borderColor = 'var(--ac)'; }
+    }, 400);
+  }
 })();
 
 // ── Avatar upload ─────────────────────────────────────────────────────────────
@@ -1482,9 +1496,9 @@ async function loadSocialConnections() {
       var st  = document.getElementById(p + 'Status');
       if (!btn) return;
       if (providers[p]) {
-        btn.textContent = 'Disconnect';
+        btn.textContent = 'Remove';
         btn.className = 'btn-conn disconnect';
-        btn.onclick = function() { disconnectSocial(p); };
+        btn.onclick = (function(prov){ return function() { disconnectSocial(prov, this); }; })(p);
         if (st) {
           st.textContent = 'Connected' + (providers[p].email ? ' · ' + providers[p].email : '');
           st.className = 'conn-status connected';
@@ -1499,24 +1513,28 @@ async function loadSocialConnections() {
   } catch(e) {}
 }
 
-async function disconnectSocial(provider) {
+async function disconnectSocial(provider, btn) {
+  var name = provider.charAt(0).toUpperCase() + provider.slice(1);
+  if (!confirm('Remove ' + name + ' as a sign-in method?\n\nYou can still log in with your email and password.')) return;
   var token = localStorage.getItem('waybound_access');
   if (!token) return;
-  if (!confirm('Disconnect ' + provider.charAt(0).toUpperCase() + provider.slice(1) + '?')) return;
+  if (btn) { btn.disabled = true; btn.textContent = 'Removing…'; }
   try {
     var res = await fetch(window.API_V1 + '/auth/social/connections/' + provider + '/', {
       method: 'DELETE',
       headers: { 'Authorization': 'Bearer ' + token }
     });
+    var data = await res.json().catch(function(){ return {}; });
     if (!res.ok) {
-      var data = await res.json();
-      showToast(data.detail || 'Cannot disconnect.', 'error');
+      showToast(data.detail || 'Could not remove ' + name + '.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'Remove'; }
       return;
     }
     loadSocialConnections();
-    showToast(provider.charAt(0).toUpperCase() + provider.slice(1) + ' disconnected.', 'success');
+    showToast(name + ' removed from your sign-in methods.', 'success');
   } catch(e) {
-    showToast('Cannot connect to server.', 'error');
+    showToast('Network error. Please try again.', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Remove'; }
   }
 }
 
