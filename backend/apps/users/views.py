@@ -598,7 +598,8 @@ def social_disconnect(request, provider):
     Disconnect a social account. User must have a password set or another
     social account linked (otherwise they'd be locked out).
     """
-    accounts = SocialAccount.objects.filter(user=request.user, provider=provider)
+    # Provider name in DB may be title-cased (e.g. 'Yandex'); normalise for lookup
+    accounts = SocialAccount.objects.filter(user=request.user, provider__iexact=provider)
     if not accounts.exists():
         return Response({'detail': 'This provider is not connected.'},
                         status=status.HTTP_404_NOT_FOUND)
@@ -606,7 +607,7 @@ def social_disconnect(request, provider):
     # Safety: ensure user won't be locked out
     user = request.user
     has_password = user.has_usable_password()
-    other_socials = SocialAccount.objects.filter(user=user).exclude(provider=provider).count()
+    other_socials = SocialAccount.objects.filter(user=user).exclude(provider__iexact=provider).count()
     if not has_password and other_socials == 0:
         return Response(
             {'detail': 'Cannot disconnect — you have no password set. '

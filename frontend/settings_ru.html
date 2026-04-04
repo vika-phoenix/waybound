@@ -1465,21 +1465,22 @@ async function loadSocialConnections() {
 }
 
 async function disconnectSocial(provider) {
+  var name = provider.charAt(0).toUpperCase() + provider.slice(1);
+  if (!confirm('Отключить ' + name + '?\n\nВы сможете подключить его снова в любое время.')) return;
   var token = localStorage.getItem('waybound_access');
   if (!token) return;
-  if (!confirm('Отключить' + provider.charAt(0).toUpperCase() + provider.slice(1) + '?')) return;
   try {
     var res = await fetch(window.API_V1 + '/auth/social/connections/' + provider + '/', {
       method: 'DELETE',
       headers: { 'Authorization': 'Bearer ' + token }
     });
+    var data = await res.json().catch(function(){ return {}; });
     if (!res.ok) {
-      var data = await res.json();
       showToast(data.detail || 'Невозможно отключиться.', 'error');
       return;
     }
     loadSocialConnections();
-    showToast(provider.charAt(0).toUpperCase() + provider.slice(1) + 'отключено.', 'success');
+    showToast(name + ' отключено.', 'success');
   } catch(e) {
     showToast('Невозможно подключиться к серверу.', 'error');
   }

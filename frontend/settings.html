@@ -1503,7 +1503,7 @@ async function loadSocialConnections() {
       var st  = document.getElementById(p + 'Status');
       if (!btn) return;
       if (providers[p]) {
-        btn.textContent = 'Remove';
+        btn.textContent = 'Disconnect';
         btn.className = 'btn-conn disconnect';
         btn.onclick = (function(prov){ return function() { disconnectSocial(prov, this); }; })(p);
         if (st) {
@@ -1522,10 +1522,10 @@ async function loadSocialConnections() {
 
 async function disconnectSocial(provider, btn) {
   var name = provider.charAt(0).toUpperCase() + provider.slice(1);
-  if (!confirm('Remove ' + name + ' as a sign-in method?\n\nYou can still log in with your email and password.')) return;
+  if (!confirm('Disconnect ' + name + '?\n\nYou can reconnect at any time.')) return;
   var token = localStorage.getItem('waybound_access');
   if (!token) return;
-  if (btn) { btn.disabled = true; btn.textContent = 'Removing…'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Disconnecting…'; }
   try {
     var res = await fetch(window.API_V1 + '/auth/social/connections/' + provider + '/', {
       method: 'DELETE',
@@ -1533,15 +1533,15 @@ async function disconnectSocial(provider, btn) {
     });
     var data = await res.json().catch(function(){ return {}; });
     if (!res.ok) {
-      showToast(data.detail || 'Could not remove ' + name + '.', 'error');
-      if (btn) { btn.disabled = false; btn.textContent = 'Remove'; }
+      showToast(data.detail || 'Could not disconnect ' + name + '.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'Disconnect'; }
       return;
     }
     loadSocialConnections();
-    showToast(name + ' removed from your sign-in methods.', 'success');
+    showToast(name + ' disconnected.', 'success');
   } catch(e) {
     showToast('Network error. Please try again.', 'error');
-    if (btn) { btn.disabled = false; btn.textContent = 'Remove'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Disconnect'; }
   }
 }
 

@@ -25,13 +25,13 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 # ── CORS: allow all origins locally ──────────────────────────
 CORS_ALLOW_ALL_ORIGINS = True
 
-# ── Cookies: local dev is HTTP, so Secure must be False ──────
-# If .env has SESSION_COOKIE_SECURE=True (set for Railway prod),
-# it would prevent the session cookie from being sent on HTTP,
-# causing Django admin login to succeed but immediately redirect
-# back to /admin/login/ with an empty form.
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE    = False
+# ── Cookies: local dev is HTTP — override any Railway .env values ─
+# Secure=True → browser only sends cookie over HTTPS → admin loops back to login
+# SameSite=None requires Secure=True → Chrome drops the cookie entirely → 403 CSRF
+SESSION_COOKIE_SECURE   = False
+CSRF_COOKIE_SECURE      = False
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE    = 'Lax'
 
 # ── Debug toolbar (optional — uncomment if installed) ─────────
 # INSTALLED_APPS += ['debug_toolbar']
