@@ -757,6 +757,7 @@ function showPanel(name, btn) {
   if (panel) panel.classList.add('active');
   if (btn)  btn.classList.add('active');
   if (name === 'appearance') renderInlineGrid();
+  if (name === 'connected') loadSocialConnections();
 }
 
 // ── Load user data into form ──────────────────────────────────────────────────

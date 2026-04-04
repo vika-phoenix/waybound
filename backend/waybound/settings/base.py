@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # ── Security ──────────────────────────────────────────────────
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 ANTHROPIC_API_KEY = config('ANTHROPIC_API_KEY', default='')
-ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', cast=Csv(), default='localhost')
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', cast=Csv(), default='localhost,127.0.0.1')
 
 # ── Applications ──────────────────────────────────────────────
 DJANGO_APPS = [
