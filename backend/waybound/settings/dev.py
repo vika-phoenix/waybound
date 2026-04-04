@@ -25,6 +25,9 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 # ── CORS: allow all origins locally ──────────────────────────
 CORS_ALLOW_ALL_ORIGINS = True
 
+# ── Admin redirect ────────────────────────────────────────────────
+LOGIN_REDIRECT_URL = '/admin/'
+
 # ── Cookies: local dev is HTTP — override any Railway .env values ─
 # Secure=True → browser only sends cookie over HTTPS → admin loops back to login
 # SameSite=None requires Secure=True → Chrome drops the cookie entirely → 403 CSRF
