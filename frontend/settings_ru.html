@@ -1441,7 +1441,7 @@ async function loadSocialConnections() {
     var accounts = await res.json();
     console.log('[social] connections:', accounts);
     var providers = {};
-    accounts.forEach(function(a) { providers[a.provider] = a; });
+    accounts.forEach(function(a) { providers[a.provider.toLowerCase()] = a; });
     ['google', 'yandex'].forEach(function(p) {
       var btn = document.getElementById(p + 'Btn');
       var st  = document.getElementById(p + 'Status');
