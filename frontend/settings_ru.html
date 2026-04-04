@@ -864,6 +864,37 @@ function showPanel(name, btn) {
   .catch(function(){});
   // Load social connections
   loadSocialConnections();
+
+  // If returning from a social connect/login OAuth flow, show toast
+  var _sp = new URLSearchParams(window.location.search);
+  if (_sp.get('social') === 'connected') {
+    showToast('Аккаунт успешно подключён.', 'success');
+    history.replaceState(null, '', window.location.pathname);
+    loadSocialConnections();
+  }
+  if (_sp.get('social_access')) {
+    try {
+      localStorage.setItem('waybound_access',  _sp.get('social_access'));
+      localStorage.setItem('waybound_refresh', _sp.get('social_refresh'));
+      var _su = JSON.parse(_sp.get('social_user') || '{}');
+      if (_su.email) localStorage.setItem('waybound_user', JSON.stringify(_su));
+    } catch(e) {}
+    showToast('Аккаунт успешно подключён.', 'success');
+    history.replaceState(null, '', window.location.pathname);
+    loadSocialConnections();
+  }
+  if (_sp.get('prompt') === 'phone') {
+    history.replaceState(null, '', window.location.pathname);
+    var _banner = document.createElement('div');
+    _banner.style.cssText = 'background:#fff8e1;border:1.5px solid #f5c842;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:13.5px;font-family:var(--bf);color:var(--ink);display:flex;align-items:center;gap:10px';
+    _banner.innerHTML = '<span style="font-size:20px">📱</span><span>Добро пожаловать! Пожалуйста, добавьте <strong>номер телефона</strong>, чтобы гиды могли с вами связаться.</span>';
+    var _firstCard = document.querySelector('.settings-card');
+    if (_firstCard) _firstCard.parentElement.insertBefore(_banner, _firstCard);
+    setTimeout(function() {
+      var _pf = document.getElementById('phoneField');
+      if (_pf) { _pf.focus(); _pf.scrollIntoView({ behavior: 'smooth', block: 'center' }); _pf.style.borderColor = 'var(--ac)'; }
+    }, 400);
+  }
 })();
 
 // ── Avatar upload ─────────────────────────────────────────────────────────────

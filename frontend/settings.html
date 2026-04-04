@@ -916,6 +916,8 @@ function showPanel(name, btn) {
   if (_sp.get('social') === 'connected') {
     showToast('Account connected successfully.', 'success');
     history.replaceState(null, '', window.location.pathname);
+    // Refresh connected panel immediately so button/status reflect new link
+    loadSocialConnections();
   }
   if (_sp.get('social_access')) {
     // Returning from OAuth — update stored tokens with fresh ones
