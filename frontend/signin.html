@@ -684,19 +684,28 @@ function saveAndRedirect(data, fromOAuth) {
   localStorage.setItem('waybound_access',  data.access);
   localStorage.setItem('waybound_refresh', data.refresh);
   localStorage.setItem('waybound_user',    JSON.stringify(data.user));
+  // Check if the user started OAuth from the Russian page
+  var isRu = sessionStorage.getItem('waybound_oauth_lang') === 'ru';
+  if (isRu) sessionStorage.removeItem('waybound_oauth_lang');
   if (data.user && data.user.role === 'operator') {
-    window.location.href = 'operator-dashboard.html';
+    window.location.href = isRu ? 'operator-dashboard_ru.html' : 'operator-dashboard.html';
     return;
   }
   // OAuth users may be missing phone — redirect to settings to complete profile
   if (fromOAuth && data.user && !data.user.phone) {
-    window.location.href = 'settings.html?prompt=phone&social=connected';
+    window.location.href = isRu ? 'settings_ru.html?prompt=phone&social=connected' : 'settings.html?prompt=phone&social=connected';
     return;
   }
   var bookingReturn = sessionStorage.getItem('waybound_booking_return');
   if (bookingReturn) {
     sessionStorage.removeItem('waybound_booking_return');
     window.location.href = bookingReturn;
+    return;
+  }
+  // After OAuth, never use document.referrer — it points to the OAuth callback URL
+  // which causes an infinite redirect loop (allauth starts a new OAuth flow on each visit).
+  if (fromOAuth) {
+    window.location.href = isRu ? 'waybound_ru.html' : 'waybound.html';
     return;
   }
   var ref = document.referrer;

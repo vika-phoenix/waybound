@@ -690,6 +690,7 @@ function saveAndRedirect(data) {
 }
 
 function socialLogin(provider) {
+  sessionStorage.setItem('waybound_oauth_lang', 'ru');
   var base = window.API_V1.replace('/api/v1', '');
   window.location.href = base + '/accounts/' + provider + '/login/?process=login';
 }
