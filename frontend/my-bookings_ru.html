@@ -455,8 +455,8 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .bk-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.09);border-color:color-mix(in srgb,var(--ac) 40%,var(--ln))}
 .bk-card-main{display:grid;grid-template-columns:100px 1fr auto;align-items:stretch}
 @media(max-width:560px){.bk-card-main{grid-template-columns:72px 1fr}}
-.bk-card-img{background:color-mix(in srgb,var(--ac) 10%,var(--paper));display:flex;align-items:center;justify-content:center;font-size:40px;border-right:1.5px solid var(--ln);min-height:120px;overflow:hidden}
-.bk-card-img img{width:100%;height:100%;object-fit:cover;display:block}
+.bk-card-img{background:color-mix(in srgb,var(--ac) 10%,var(--paper));display:flex;align-items:center;justify-content:center;font-size:40px;border-right:1.5px solid var(--ln);min-height:120px;height:100%;overflow:hidden}
+.bk-card-img img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
 @media(max-width:560px){.bk-card-img{font-size:28px}}
 .bk-card-body{padding:16px 18px}
 .bk-card-dest{font-size:10.5px;font-weight:600;color:var(--ad);text-transform:uppercase;letter-spacing:.06em;font-family:var(--bf);margin-bottom:4px}

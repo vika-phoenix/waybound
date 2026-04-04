@@ -690,7 +690,7 @@ function saveAndRedirect(data, fromOAuth) {
   }
   // OAuth users may be missing phone — redirect to settings to complete profile
   if (fromOAuth && data.user && !data.user.phone) {
-    window.location.href = 'settings.html?prompt=phone';
+    window.location.href = 'settings.html?prompt=phone&social=connected';
     return;
   }
   var bookingReturn = sessionStorage.getItem('waybound_booking_return');
