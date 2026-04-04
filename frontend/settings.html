@@ -1554,7 +1554,7 @@ async function loadSocialConnections() {
         btn.className = 'btn-conn disconnect';
         btn.onclick = (function(prov){ return function() { disconnectSocial(prov, this); }; })(p);
         if (st) {
-          st.textContent = 'Connected' + (providers[p].email ? ' · ' + providers[p].email : '');
+          st.textContent = 'Connected' + (providers[p].email ? ' — ' + providers[p].email : '');
           st.className = 'conn-status connected';
         }
       } else {

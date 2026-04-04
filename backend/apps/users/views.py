@@ -584,11 +584,13 @@ def social_connections(request):
     accounts = SocialAccount.objects.filter(user=request.user)
     result = []
     for acc in accounts:
+        extra = acc.extra_data or {}
+        email = extra.get('email') or extra.get('default_email') or ''
         result.append({
             'id': acc.id,
             'provider': acc.provider,
             'uid': acc.uid,
-            'email': acc.extra_data.get('email', ''),
+            'email': email,
         })
     return Response(result)
 

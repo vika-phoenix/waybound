@@ -622,7 +622,7 @@ document.addEventListener('DOMContentLoaded', function() {
         access:  params.get('social_access'),
         refresh: params.get('social_refresh'),
         user:    userData,
-      });
+      }, true);
     } catch(e) {
       showSigninError('Ошибка при социальном входе. Пожалуйста, попробуйте снова.');
     }
@@ -635,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
     .then(function(res) {
-      if (res.ok) { saveAndRedirect(res.data); }
+      if (res.ok) { saveAndRedirect(res.data, true); }
       else { showSigninError(res.data.error || 'Ошибка при социальном входе. Пожалуйста, попробуйте снова.'); }
     })
     .catch(function() { showSigninError('Невозможно подключиться к серверу.'); });
@@ -669,7 +669,7 @@ function hideSigninError() {
   if (el) el.style.display = 'none';
 }
 
-function saveAndRedirect(data) {
+function saveAndRedirect(data, fromOAuth) {
   localStorage.setItem('waybound_access',  data.access);
   localStorage.setItem('waybound_refresh', data.refresh);
   localStorage.setItem('waybound_user',    JSON.stringify(data.user));
@@ -677,10 +677,28 @@ function saveAndRedirect(data) {
     window.location.href = 'operator-dashboard_ru.html';
     return;
   }
+  // If this was a connect-from-settings operation, send back to settings
+  var connectPending = sessionStorage.getItem('waybound_connect_pending');
+  if (fromOAuth && connectPending) {
+    sessionStorage.removeItem('waybound_connect_pending');
+    window.location.href = 'settings_ru.html?social=connected';
+    return;
+  }
+  // OAuth users may be missing phone — redirect to settings to complete profile
+  if (fromOAuth && data.user && !data.user.phone) {
+    window.location.href = 'settings_ru.html?prompt=phone&social=connected';
+    return;
+  }
   var bookingReturn = sessionStorage.getItem('waybound_booking_return');
   if (bookingReturn) {
     sessionStorage.removeItem('waybound_booking_return');
     window.location.href = bookingReturn;
+    return;
+  }
+  // After OAuth, never use document.referrer — the referrer is the OAuth callback
+  // URL which causes allauth to start a new OAuth flow → infinite loop.
+  if (fromOAuth) {
+    window.location.href = 'waybound_ru.html';
     return;
   }
   var ref = document.referrer;
