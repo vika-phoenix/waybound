@@ -208,6 +208,18 @@ footer a:hover{color:rgba(255,255,255,.75)}
 </head>
 <body class="ocean">
 
+<!-- ══ DISCONNECT CONFIRM MODAL ══════════════════════════════════ -->
+<div id="disconnectModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div style="background:var(--white);border-radius:16px;padding:32px 28px 24px;max-width:360px;width:90%;box-shadow:0 12px 48px rgba(0,0,0,.22);animation:dropIn .18s ease;">
+    <div id="disconnectModalTitle" style="font-family:var(--df);font-size:18px;font-weight:500;color:var(--ink);margin-bottom:8px;line-height:1.3"></div>
+    <div id="disconnectModalBody" style="font-size:13.5px;color:var(--mu);margin-bottom:24px;line-height:1.5"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeDisconnectModal()" style="font-size:13px;font-weight:500;color:var(--mu);background:var(--paper);border:1.5px solid var(--ln);border-radius:8px;padding:9px 18px;cursor:pointer;font-family:var(--bf);transition:border-color .15s">Cancel</button>
+      <button id="disconnectModalBtn" onclick="confirmDisconnect()" style="font-size:13px;font-weight:600;color:#fff;background:#c03020;border:none;border-radius:8px;padding:9px 18px;cursor:pointer;font-family:var(--bf);transition:background .15s">Disconnect</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ SETTINGS OVERLAY (for theme preview from this page too) ══ -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
   <div class="drawer" id="drawer">
@@ -381,11 +393,11 @@ footer a:hover{color:rgba(255,255,255,.75)}
     <div class="settings-panel" id="panel-security">
       <div class="settings-card">
         <div class="settings-card-head">
-          <div class="settings-card-title">Change password</div>
-          <div class="settings-card-desc">Use a strong password you don't use anywhere else</div>
+          <div class="settings-card-title" id="pwCardTitle">Change password</div>
+          <div class="settings-card-desc" id="pwCardDesc">Use a strong password you don't use anywhere else</div>
         </div>
         <div class="settings-card-body">
-          <div class="field-row">
+          <div class="field-row" id="currentPwRow">
             <label class="field-label">Current password</label>
             <input class="field-input" id="currentPw" type="password" placeholder="Enter current password" oninput="clearPwError()">
           </div>
@@ -906,6 +918,17 @@ function showPanel(name, btn) {
     // Sync marketing toggle
     var mt = document.getElementById('toggleMarketing');
     if (mt) mt.classList.toggle('on', !!data.marketing_emails);
+    // Adapt Security panel for OAuth-only users (no password set)
+    if (data.has_password === false) {
+      var pwTitle = document.getElementById('pwCardTitle');
+      var pwDesc  = document.getElementById('pwCardDesc');
+      var pwRow   = document.getElementById('currentPwRow');
+      var pwBtn   = document.querySelector('#panel-security .btn-save');
+      if (pwTitle) pwTitle.textContent = 'Set a password';
+      if (pwDesc)  pwDesc.textContent  = 'Add a password so you can also sign in with your email address';
+      if (pwRow)   pwRow.style.display  = 'none';
+      if (pwBtn)   pwBtn.textContent    = 'Set password';
+    }
   })
   .catch(function(){});
   // Load social connections
@@ -1251,7 +1274,10 @@ async function changePassword() {
   var cur = document.getElementById('currentPw').value;
   var nw  = document.getElementById('newPw').value;
   var cf  = document.getElementById('confirmPw').value;
-  if (!cur) { showPwError('Please enter your current password.'); return; }
+  // Only require current password when the field is visible (user already has a password)
+  var curRow = document.getElementById('currentPwRow');
+  var needsCurrent = !curRow || curRow.style.display !== 'none';
+  if (needsCurrent && !cur) { showPwError('Please enter your current password.'); return; }
   if (!nw)  { showPwError('Please enter a new password.'); return; }
   if (nw.length < 8) { showPwError('New password must be at least 8 characters.'); return; }
   if (nw !== cf) { showPwError('Passwords do not match — please re-enter the new password in both fields.'); return; }
@@ -1272,6 +1298,26 @@ async function changePassword() {
               : 'Failed to update password. Please try again.';
       showPwError(msg);
       return;
+    }
+    // If user just set a password for the first time, switch panel to "Change password" mode
+    var pwRow = document.getElementById('currentPwRow');
+    if (pwRow && pwRow.style.display === 'none') {
+      pwRow.style.display = '';
+      var pwTitle = document.getElementById('pwCardTitle');
+      var pwDesc  = document.getElementById('pwCardDesc');
+      var pwBtn   = document.querySelector('#panel-security .btn-save');
+      if (pwTitle) pwTitle.textContent = 'Change password';
+      if (pwDesc)  pwDesc.textContent  = 'Use a strong password you don\'t use anywhere else';
+      if (pwBtn)   pwBtn.textContent   = 'Update password';
+      // Update cached user so has_password reflects new state
+      try {
+        var _u = JSON.parse(localStorage.getItem('waybound_user') || '{}');
+        _u.has_password = true;
+        localStorage.setItem('waybound_user', JSON.stringify(_u));
+      } catch(e) {}
+      document.getElementById('pwFeedback').textContent = '✓ Password set';
+    } else {
+      document.getElementById('pwFeedback').textContent = '✓ Password updated';
     }
     showFeedback('pwFeedback');
     document.getElementById('currentPw').value = '';
@@ -1520,9 +1566,32 @@ async function loadSocialConnections() {
   } catch(e) { console.error('[social] loadSocialConnections error:', e); }
 }
 
-async function disconnectSocial(provider, btn) {
+// ── Disconnect confirm modal ──────────────────────────────────────────────────
+var _disconnectProvider = null;
+var _disconnectBtn = null;
+
+function disconnectSocial(provider, btn) {
   var name = provider.charAt(0).toUpperCase() + provider.slice(1);
-  if (!confirm('Disconnect ' + name + '?\n\nYou can reconnect at any time.')) return;
+  _disconnectProvider = provider;
+  _disconnectBtn = btn;
+  var modal = document.getElementById('disconnectModal');
+  document.getElementById('disconnectModalTitle').textContent = 'Disconnect ' + name + '?';
+  document.getElementById('disconnectModalBody').textContent = 'You can reconnect at any time from Connected accounts settings.';
+  modal.style.display = 'flex';
+}
+
+function closeDisconnectModal() {
+  document.getElementById('disconnectModal').style.display = 'none';
+  _disconnectProvider = null;
+  _disconnectBtn = null;
+}
+
+async function confirmDisconnect() {
+  var provider = _disconnectProvider;
+  var btn = _disconnectBtn;
+  if (!provider) return;
+  closeDisconnectModal();
+  var name = provider.charAt(0).toUpperCase() + provider.slice(1);
   var token = localStorage.getItem('waybound_access');
   if (!token) return;
   if (btn) { btn.disabled = true; btn.textContent = 'Disconnecting…'; }
@@ -1533,8 +1602,18 @@ async function disconnectSocial(provider, btn) {
     });
     var data = await res.json().catch(function(){ return {}; });
     if (!res.ok) {
-      showToast(data.detail || 'Could not disconnect ' + name + '.', 'error');
       if (btn) { btn.disabled = false; btn.textContent = 'Disconnect'; }
+      var noPassword = data.detail && data.detail.toLowerCase().indexOf('no password') >= 0;
+      if (noPassword) {
+        // Guide user to set a password first
+        showToast('Please set a password first — opening Security settings.', 'error');
+        setTimeout(function() {
+          var secBtn = document.querySelector('.settings-nav-item[onclick*="security"]');
+          if (secBtn) secBtn.click();
+        }, 1200);
+      } else {
+        showToast(data.detail || 'Could not disconnect ' + name + '.', 'error');
+      }
       return;
     }
     loadSocialConnections();

@@ -191,11 +191,14 @@ def change_password(request):
     serializer = ChangePasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    if not user.check_password(serializer.validated_data['current_password']):
-        return Response(
-            {'current_password': 'Current password is incorrect.'},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+    if user.has_usable_password():
+        # Normal change-password: require current password
+        if not user.check_password(serializer.validated_data.get('current_password', '')):
+            return Response(
+                {'current_password': 'Current password is incorrect.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+    # OAuth-only users (no password set): allow setting a new password without current_password
 
     user.set_password(serializer.validated_data['new_password'])
     user.save()

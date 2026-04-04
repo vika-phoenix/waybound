@@ -101,6 +101,10 @@ class UserMeSerializer(serializers.ModelSerializer):
     verification_status = serializers.SerializerMethodField()
     photo_url           = serializers.SerializerMethodField()
     credentials_files   = serializers.SerializerMethodField()
+    has_password        = serializers.SerializerMethodField()
+
+    def get_has_password(self, obj):
+        return obj.has_usable_password()
 
     def get_verification_status(self, obj):
         doc = obj.documents.filter(doc_type='identity').order_by('-submitted_at').first()
@@ -128,18 +132,20 @@ class UserMeSerializer(serializers.ModelSerializer):
             'email_verified', 'phone_verified', 'marketing_emails',
             'telegram_chat_id',
             'payout_name', 'payout_bank', 'payout_account', 'payout_bik', 'payout_corr_account',
-            'date_joined',
+            'date_joined', 'has_password',
         )
         read_only_fields = (
             'id', 'email', 'role', 'full_name',
             'is_verified', 'verification_status', 'credentials_files',
-            'email_verified', 'phone_verified', 'date_joined',
+            'email_verified', 'phone_verified', 'date_joined', 'has_password',
         )
 
 
 class ChangePasswordSerializer(serializers.Serializer):
-    """POST /api/v1/auth/change-password/"""
-    current_password = serializers.CharField(write_only=True)
+    """POST /api/v1/auth/change-password/
+    current_password is optional — omit when user has no password (OAuth-only accounts).
+    """
+    current_password = serializers.CharField(write_only=True, required=False, allow_blank=True, default='')
     new_password     = serializers.CharField(write_only=True, validators=[validate_password])
     new_password2    = serializers.CharField(write_only=True)
 
