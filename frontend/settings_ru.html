@@ -1297,8 +1297,10 @@ function updatePwStrength(pw) {
 }
 
 function connectSocial(provider) {
+  var token = localStorage.getItem('waybound_access') || '';
+  sessionStorage.setItem('waybound_connect_token', token);
   var base = window.API_V1.replace('/api/v1', '');
-  window.location.href = base + '/accounts/' + provider + '/login/?process=connect&next=' + encodeURIComponent(window.location.pathname + '#connected');
+  window.location.href = base + '/accounts/' + provider + '/login/?process=login&connect=1';
 }
 
 // ── Verification document upload ─────────────────────────────────────────────
@@ -1492,6 +1494,7 @@ async function loadSocialConnections() {
       var btn = document.getElementById(p + 'Btn');
       var st  = document.getElementById(p + 'Status');
       if (!btn) return;
+      btn.disabled = false;
       if (providers[p]) {
         btn.textContent = 'Отключить';
         btn.className = 'btn-conn disconnect';

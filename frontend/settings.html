@@ -1548,6 +1548,7 @@ async function loadSocialConnections() {
       var btn = document.getElementById(p + 'Btn');
       var st  = document.getElementById(p + 'Status');
       if (!btn) return;
+      btn.disabled = false;
       if (providers[p]) {
         btn.textContent = 'Disconnect';
         btn.className = 'btn-conn disconnect';
