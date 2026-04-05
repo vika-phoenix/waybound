@@ -2766,6 +2766,10 @@ async function loadTour(slug) {
     var tok = localStorage.getItem('waybound_access');
     if (tok) hdrs['Authorization'] = 'Bearer ' + tok;
     var res = await fetch(TOURS_API + slug + '/', { headers: hdrs });
+    // If token is expired the server returns 401 even for public tours — retry without auth
+    if (res.status === 401 && tok) {
+      res = await fetch(TOURS_API + slug + '/', {});
+    }
     if (!res.ok) { console.warn('Tour not found:', slug); return; }
     var t = await res.json();
 
