@@ -134,14 +134,20 @@ def tour_detail(request, slug):
         qs = Tour.objects.select_related('operator').prefetch_related(
             'photos', 'departures', 'itinerary', 'stays', 'cancel_policy', 'faqs'
         )
-        # Operators and admins can preview their own tours at any status
+        # Operators, admins, and tourists with a booking can view at any status
         if request.user.is_authenticated:
             tour = qs.filter(slug=slug).first()
-            if tour and (tour.status == Tour.Status.LIVE
-                         or tour.operator == request.user
-                         or request.user.is_staff):
-                return Response(TourDetailSerializer(tour, context={'request': request}).data)
-        tour = get_object_or_404(qs, slug=slug, status=Tour.Status.LIVE)
+            if tour:
+                from apps.bookings.models import Booking
+                has_booking = Booking.objects.filter(
+                    tourist=request.user, tour=tour
+                ).exclude(status=Booking.Status.CANCELLED).exists()
+                if (tour.status == Tour.Status.LIVE
+                        or tour.operator == request.user
+                        or request.user.is_staff
+                        or has_booking):
+                    return Response(TourDetailSerializer(tour, context={'request': request}).data)
+        tour = get_object_or_404(qs, slug=slug, status=Tour.Status.LIVE, is_private=False)
         return Response(TourDetailSerializer(tour, context={'request': request}).data)
 
     # Write operations require auth + ownership
