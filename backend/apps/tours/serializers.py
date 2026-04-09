@@ -194,7 +194,7 @@ class TourDetailSerializer(TourListSerializer):
 class DepartureDateWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model  = DepartureDate
-        fields = ['start_date', 'end_date', 'spots_total', 'spots_left', 'price_override', 'notes']
+        fields = ['start_date', 'end_date', 'spots_total', 'spots_left', 'price_override', 'notes', 'status']
 
     def validate(self, data):
         today = timezone.now().date()
