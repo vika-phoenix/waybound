@@ -1,5 +1,5 @@
 """
-apps/tours/models.py  —  Task 18
+apps/tours/models.py
 Complete tour data model.
 
 Design decisions:

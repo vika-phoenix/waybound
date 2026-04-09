@@ -1,5 +1,5 @@
 """
-apps/bookings/views.py  —  Task 18
+apps/bookings/views.py
 
 Endpoints:
   GET  /api/v1/bookings/                 — tourist: own bookings

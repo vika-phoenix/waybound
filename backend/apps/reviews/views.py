@@ -1,5 +1,5 @@
 """
-apps/reviews/views.py — Task 20
+apps/reviews/views.py
 
 GET  /api/v1/reviews/            — public: approved reviews (filter by ?tour=<slug>)
 POST /api/v1/reviews/            — tourist: submit review

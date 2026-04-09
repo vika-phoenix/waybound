@@ -1,12 +1,12 @@
 """
-apps/bookings/models.py  —  Task 18
+apps/bookings/models.py
 Booking and enquiry models.
 
 A Booking is created when a tourist submits the booking form.
 Status flow:  pending → confirmed → completed  (or → cancelled)
 
-EnquiryMessage handles the private-tour request modal (Task 21 will
-add full threading; for now it's a simple one-way message).
+EnquiryMessage handles tour enquiries. Reply threading is supported
+via EnquiryReply (tourist and operator can exchange follow-up messages).
 """
 from django.db import models
 from django.conf import settings
@@ -163,7 +163,7 @@ class EnquiryMessage(models.Model):
     """
     Private tour enquiry — from the 'Request private dates' modal.
     Stores structured data from the form.
-    Task 21 will add reply threading.
+    Replies are stored in EnquiryReply — both tourist and operator can respond.
     """
     tour        = models.ForeignKey('tours.Tour', on_delete=models.CASCADE, related_name='enquiries')
     sender      = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,

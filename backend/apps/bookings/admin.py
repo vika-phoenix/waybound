@@ -1,5 +1,5 @@
 """
-apps/bookings/admin.py  —  Task 18
+apps/bookings/admin.py
 """
 from django.contrib import admin
 from django.utils import timezone

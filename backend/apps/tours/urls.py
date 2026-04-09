@@ -1,5 +1,5 @@
 """
-apps/tours/urls.py  —  Task 18
+apps/tours/urls.py
 
 /api/v1/tours/ routes
 """

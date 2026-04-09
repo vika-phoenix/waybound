@@ -1,12 +1,12 @@
 """
 apps/users/views.py
-All auth endpoints — Tasks 9, 10, 11, 12.
 
-Task 9  — email + password:  register, login, logout, /me, change-password
-Task 10 — social OAuth:      Google, Yandex, VK  (allauth handles the browser
-                              redirect; these views handle the JWT exchange after)
-Task 11 — Apple OAuth:       same pattern as Task 10, Apple-specific notes inline
-Task 12 — Phone OTP:         otp/request, otp/verify
+Authentication and user profile endpoints.
+
+Covers email/password registration and login, JWT token management,
+social OAuth via allauth (Google, Yandex, VK), phone OTP verification,
+profile updates, password reset, operator document upload, and social
+account connection/disconnection.
 """
 from django.conf import settings
 from django.contrib.auth import update_session_auth_hash

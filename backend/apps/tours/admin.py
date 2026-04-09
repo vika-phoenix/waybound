@@ -1,5 +1,5 @@
 """
-apps/tours/admin.py  —  Task 18
+apps/tours/admin.py
 """
 from django.contrib import admin, messages
 from django.utils.html import format_html

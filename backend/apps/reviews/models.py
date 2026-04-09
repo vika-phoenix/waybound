@@ -1,5 +1,5 @@
 """
-apps/reviews/models.py — Task 20
+apps/reviews/models.py
 TourReview: tourist submits a review after completing a tour.
 """
 from django.db import models

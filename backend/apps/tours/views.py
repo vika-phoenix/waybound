@@ -1,5 +1,5 @@
 """
-apps/tours/views.py  —  Task 18
+apps/tours/views.py
 
 Endpoints:
   GET  /api/v1/tours/                   — public list (filtered, paginated)

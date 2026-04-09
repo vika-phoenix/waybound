@@ -34,10 +34,10 @@ THIRD_PARTY_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',   # Task 10
+    'allauth.socialaccount.providers.google',
     # 'allauth.socialaccount.providers.apple',  # removed — requires paid Apple Developer account
-    'allauth.socialaccount.providers.yandex',   # Task 10
-    'allauth.socialaccount.providers.vk',       # Task 10
+    'allauth.socialaccount.providers.yandex',
+    'allauth.socialaccount.providers.vk',
     'django_filters',
     'django_extensions',
     'django_apscheduler',
@@ -109,7 +109,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ── Custom user model (Task 9) ────────────────────────────────
+# ── Custom user model ────────────────────────────────────────
 AUTH_USER_MODEL = 'users.User'
 
 # ── REST Framework ────────────────────────────────────────────

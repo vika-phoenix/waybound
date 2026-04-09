@@ -2,7 +2,7 @@
 apps/users/models.py
 Custom User model — extends AbstractBaseUser so we own every field.
 Role field distinguishes tourists from operators/guides.
-Phone field added now (OTP auth in Task 12).
+Supports both email/password and social OAuth login (Google, Yandex, VK).
 """
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
@@ -109,7 +109,7 @@ class VerificationDocument(models.Model):
 
 
 class OTPCode(models.Model):
-    """Short-lived SMS OTP — used by Task 12 phone auth."""
+    """Short-lived SMS OTP for phone number verification."""
     phone      = models.CharField(max_length=20)
     code       = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)

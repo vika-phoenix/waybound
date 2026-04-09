@@ -1,5 +1,5 @@
 """
-apps/tours/serializers.py  —  Task 18
+apps/tours/serializers.py
 
 Serializers for:
   TourListSerializer     — lightweight card view (adventures grid)

@@ -1,5 +1,5 @@
 """
-apps/tours/permissions.py  —  Task 18
+apps/tours/permissions.py
 Custom DRF permission classes for tour operations.
 """
 from rest_framework.permissions import BasePermission

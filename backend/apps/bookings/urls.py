@@ -1,5 +1,5 @@
 """
-apps/bookings/urls.py  —  Task 18
+apps/bookings/urls.py
 """
 from django.urls import path
 from . import views

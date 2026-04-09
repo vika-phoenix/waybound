@@ -1,5 +1,5 @@
 """
-apps/reviews/serializers.py — Task 20
+apps/reviews/serializers.py
 """
 from rest_framework import serializers
 from django.utils import timezone

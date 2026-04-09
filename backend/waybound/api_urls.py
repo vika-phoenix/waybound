@@ -1,5 +1,5 @@
 """
-waybound/api_urls.py  —  Task 18 update
+waybound/api_urls.py
 All REST API routes under /api/v1/
 """
 from django.urls import path, include

@@ -8,7 +8,7 @@ from rest_framework import serializers
 from .models import User
 
 
-# ── Task 9: Email + password ───────────────────────────────────────────────
+# ── Registration and login ────────────────────────────────────────────────
 
 class TouristRegisterSerializer(serializers.ModelSerializer):
     """POST /api/v1/auth/register/tourist/"""
@@ -155,7 +155,7 @@ class ChangePasswordSerializer(serializers.Serializer):
         return data
 
 
-# ── Task 12: Phone OTP ─────────────────────────────────────────────────────
+# ── Phone OTP ─────────────────────────────────────────────────────────────
 
 class OTPRequestSerializer(serializers.Serializer):
     """POST /api/v1/auth/otp/request/"""
