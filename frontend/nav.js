@@ -420,3 +420,28 @@ function _navInjectLangBtn() {
     });
   }
 })();
+
+// ── Swipe support for the tour-detail photo gallery modal ─────────────────────
+// The modal (#photoModalBg) and its photoNav(dir) function live in the tour
+// detail pages. We attach touch handlers here so both EN and RU pages get
+// swipe-to-navigate for free. photoNav is resolved at touch time, so load
+// order doesn't matter; the guard makes this a no-op on other pages.
+(function () {
+  var bg = document.getElementById('photoModalBg');
+  if (!bg) return;
+  var startX = null, startY = null;
+  bg.addEventListener('touchstart', function (e) {
+    var t = e.changedTouches[0];
+    startX = t.clientX; startY = t.clientY;
+  }, { passive: true });
+  bg.addEventListener('touchend', function (e) {
+    if (startX === null) return;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - startX, dy = t.clientY - startY;
+    // Horizontal swipe only (ignore vertical scrolls), min 40px.
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) && typeof window.photoNav === 'function') {
+      window.photoNav(dx < 0 ? 1 : -1);
+    }
+    startX = startY = null;
+  }, { passive: true });
+})();
