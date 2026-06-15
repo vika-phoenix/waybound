@@ -104,8 +104,9 @@ main/
 |   +-- operator-dashboard.html    # Operator portal
 |   +-- operator-tour-create.html  # Tour creation form
 |   +-- (24 more HTML pages)
-|   +-- nav.js                     # Shared navigation
+|   +-- nav.js                     # Shared navigation + mobile slide-in menu
 |   +-- config.js                  # API base URL config
+|   +-- mobile.css                 # Shared responsive layer (loaded on all pages)
 |
 +-- TECHNICAL_DOC.md               # This file
 +-- PROD_SETUP.md                  # Production setup, external services, roadmap
@@ -332,8 +333,9 @@ Every page has an English version and a Russian (`_ru.html`) counterpart. The Ru
 
 | File | Purpose |
 |------|---------|
-| `nav.js` | Shared navigation component (injected into all pages) — language-aware, detects `_ru.html` pages and renders Russian labels + correct `_ru.html` hrefs |
+| `nav.js` | Shared navigation component (injected into all pages) — language-aware, detects `_ru.html` pages and renders Russian labels + correct `_ru.html` hrefs. Also injects the mobile hamburger + slide-in drawer (cloning each page's nav links so EN/RU labels carry over) |
 | `config.js` | API base URL - change this when switching between local and prod |
+| `mobile.css` | Shared responsive layer linked before `</head>` on every page. All rules are scoped to `@media (max-width: 768px)` / `(max-width: 480px)`, so desktop layout is unaffected. Collapses multi-column grids, stacks the tour-detail sidebar, and guards against horizontal scroll (`overflow-x: clip`) |
 | `404.html` | Error page |
 
 ---
@@ -863,6 +865,10 @@ In Railway, make sure you're looking at the **Django service** logs, not the **P
 ### nav.js language detection
 
 `nav.js` exports `_navIsRuPage()` which checks if the current page filename ends in `_ru.html`. The shared `buildDropdown()` function uses this to render menu labels (Дашборд / Dashboard, etc.) and route all hrefs to the correct `_ru.html` or `.html` file.
+
+### Mobile navigation (responsive)
+
+`nav.js` injects a hamburger button (`.wb-burger`) and a slide-in drawer (`.wb-drawer`) on every page. The drawer is built by **cloning the page's existing `.nav-links` anchors**, so EN/RU labels and hrefs carry over automatically with no hardcoding. The burger is `display:none` above 768px (see `mobile.css`), so desktop is unaffected. Styling for the drawer/overlay and all responsive grid collapses live in `mobile.css`, scoped to `@media (max-width: 768px)` / `(max-width: 480px)`.
 
 ### Client-side translation maps (Russian pages)
 
