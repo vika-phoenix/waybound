@@ -157,6 +157,11 @@
   .footer-top { gap: 22px 16px !important; margin-bottom: 24px !important; }
   .footer-brand { grid-column: 1 / -1 !important; }
   .footer-brand p { max-width: none !important; }
+  /* Match the other pages' footer type scale (this footer ran bigger:
+     24px logo / 13.5px links vs 18px / 12px elsewhere). */
+  .footer-brand .logo { font-size: 18px !important; }
+  .footer-col a, .footer-brand p { font-size: 12px !important; }
+  .footer-col h5 { font-size: 11px !important; }
 
   /* Homepage tour/style carousels — convert the horizontal-scroll flex
      strips into grids so nothing scrolls sideways or gets clipped.
