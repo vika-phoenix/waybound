@@ -2847,7 +2847,8 @@ async function loadTour(slug) {
       if (placeholder) placeholder.style.display = 'none';
       if (slot0) {
         var img0 = document.getElementById('mosaicImg0');
-        if (img0) img0.src = photos[0].url || photos[0];
+        // Grid uses the small thumbnail; the lightbox (ALL_PHOTOS) keeps full-res.
+        if (img0) img0.src = photos[0].thumb_url || photos[0].url || photos[0];
         slot0.style.display = '';
       }
       // Show right 2x2 grid if there are more photos
@@ -2860,7 +2861,7 @@ async function loadTour(slug) {
           if (!slotEl) continue;
           if (pi < photos.length) {
             // This slot has a photo
-            if (imgEl) imgEl.src = photos[pi].url || photos[pi];
+            if (imgEl) imgEl.src = photos[pi].thumb_url || photos[pi].url || photos[pi];
             slotEl.style.display = '';
             // "+X more" badge on slot 4 (index 4) when there are more than 5 photos
             var moreOverlay = slotEl.querySelector('.mosaic-more');

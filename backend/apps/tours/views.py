@@ -367,6 +367,10 @@ def tour_photo_upload(request, slug):
     caption = request.data.get('caption', '')
 
     photo = TourPhoto.objects.create(tour=tour, image=file, order=order, caption=caption)
+    try:
+        photo.make_thumbnail()  # small fast version for cards/gallery grid
+    except Exception:
+        pass  # never fail the upload over a thumbnail
     return Response(TourPhotoSerializer(photo, context={'request': request}).data,
                     status=status.HTTP_201_CREATED)
 

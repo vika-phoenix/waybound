@@ -19,6 +19,8 @@ from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.files.base import ContentFile
+from io import BytesIO
 import uuid
 
 
@@ -27,6 +29,10 @@ import uuid
 def tour_photo_path(instance, filename):
     ext = filename.rsplit('.', 1)[-1].lower()
     return f'tours/{instance.tour.slug}/photos/{uuid.uuid4().hex[:8]}.{ext}'
+
+
+def tour_thumb_path(instance, filename):
+    return f'tours/{instance.tour.slug}/photos/thumbs/{uuid.uuid4().hex[:8]}.jpg'
 
 
 def stay_photo_path(instance, filename):
@@ -341,16 +347,44 @@ class CancelPeriod(models.Model):
 # ── Photos ────────────────────────────────────────────────────────────────────
 
 class TourPhoto(models.Model):
-    tour    = models.ForeignKey(Tour, on_delete=models.CASCADE, related_name='photos')
-    image   = models.ImageField(upload_to=tour_photo_path)
-    order   = models.PositiveSmallIntegerField(default=0, help_text='0 = hero image')
-    caption = models.CharField(max_length=200, blank=True)
+    tour      = models.ForeignKey(Tour, on_delete=models.CASCADE, related_name='photos')
+    image     = models.ImageField(upload_to=tour_photo_path)
+    # Small, fast-loading version for cards/gallery grid. The full-resolution
+    # `image` is kept untouched and used for the lightbox (no quality loss).
+    thumbnail = models.ImageField(upload_to=tour_thumb_path, blank=True, null=True)
+    order     = models.PositiveSmallIntegerField(default=0, help_text='0 = hero image')
+    caption   = models.CharField(max_length=200, blank=True)
 
     class Meta:
         ordering = ['order']
 
     def __str__(self):
         return f'{self.tour.slug} photo #{self.order}'
+
+    # Max thumbnail dimension (px) — covers retina cards + the detail mosaic.
+    THUMB_MAX = 800
+
+    def make_thumbnail(self, save=True):
+        """Generate a compressed JPEG thumbnail from `image`. Idempotent-ish:
+        always regenerates. Safe to call from upload + a backfill command."""
+        if not self.image:
+            return
+        try:
+            from PIL import Image, ImageOps
+        except ImportError:
+            return  # Pillow missing — skip silently rather than break uploads
+
+        self.image.open()
+        img = Image.open(self.image)
+        img = ImageOps.exif_transpose(img)        # honour camera orientation
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+        img.thumbnail((self.THUMB_MAX, self.THUMB_MAX), Image.LANCZOS)
+
+        buf = BytesIO()
+        img.save(buf, format='JPEG', quality=80, optimize=True, progressive=True)
+        buf.seek(0)
+        self.thumbnail.save(f'{uuid.uuid4().hex[:8]}.jpg', ContentFile(buf.read()), save=save)
 
 
 # ── FAQ ───────────────────────────────────────────────────────────────────────

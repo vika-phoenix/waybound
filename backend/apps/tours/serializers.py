@@ -69,16 +69,24 @@ class CancelPeriodSerializer(serializers.ModelSerializer):
 
 
 class TourPhotoSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
+    url       = serializers.SerializerMethodField()  # full-res original (lightbox)
+    thumb_url = serializers.SerializerMethodField()  # small thumbnail (cards/grid)
 
     class Meta:
         model  = TourPhoto
-        fields = ['id', 'url', 'order', 'caption']
+        fields = ['id', 'url', 'thumb_url', 'order', 'caption']
 
     def get_url(self, obj):
         request = self.context.get('request')
         if obj.image and request:
             return request.build_absolute_uri(obj.image.url)
+        return ''
+
+    def get_thumb_url(self, obj):
+        request = self.context.get('request')
+        src = obj.thumbnail if obj.thumbnail else obj.image  # fall back to original
+        if src and request:
+            return request.build_absolute_uri(src.url)
         return ''
 
 
@@ -125,7 +133,8 @@ class TourListSerializer(serializers.ModelSerializer):
         if not photo:
             return None
         request = self.context.get('request')
-        return request.build_absolute_uri(photo.image.url) if request else photo.image.url
+        src = photo.thumbnail if photo.thumbnail else photo.image  # cards use the thumbnail
+        return request.build_absolute_uri(src.url) if request else src.url
 
     def get_next_departure(self, obj):
         nxt = obj.departures.filter(
@@ -408,4 +417,5 @@ class OperatorTourListSerializer(serializers.ModelSerializer):
         if not photo:
             return None
         request = self.context.get('request')
-        return request.build_absolute_uri(photo.image.url) if request else photo.image.url
+        src = photo.thumbnail if photo.thumbnail else photo.image  # cards use the thumbnail
+        return request.build_absolute_uri(src.url) if request else src.url
