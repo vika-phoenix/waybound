@@ -146,6 +146,18 @@
      horizontal-scroll strip. */
   .pills { flex-wrap: wrap !important; overflow-x: visible !important; }
 
+  /* Adventures category strip below the search (.sh-cats: All trips /
+     Trekking / Wildlife …) — was a horizontal-scroll row; wrap it. */
+  .sh-cats { flex-wrap: wrap !important; overflow-x: visible !important; }
+
+  /* Tour-detail footer was bigger + misaligned vs other pages: footer-top
+     is a 5-col grid with a tall brand/Trustpilot cell. Put the brand on
+     its own full-width row, tighten padding/gap so it matches the rest. */
+  .site-footer { padding: 30px 18px 22px !important; }
+  .footer-top { gap: 22px 16px !important; margin-bottom: 24px !important; }
+  .footer-brand { grid-column: 1 / -1 !important; }
+  .footer-brand p { max-width: none !important; }
+
   /* Homepage tour/style carousels — convert the horizontal-scroll flex
      strips into grids so nothing scrolls sideways or gets clipped.
      .feat-row = image-heavy tour cards → full-width stack (matches the
