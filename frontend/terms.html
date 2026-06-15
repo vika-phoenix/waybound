@@ -142,6 +142,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 /* position wrapper */
 .nav-r-wrap{position:relative;display:flex;align-items:center;gap:8px;}
 </style>
+<link rel="stylesheet" href="mobile.css"/>
 </head>
 <body class="ocean">
 <div class="overlay" id="overlay" onclick="overlayClick(event)"><div class="drawer"><div class="drawer-head"><div class="drawer-title">Appearance</div><button class="drawer-close" onclick="closeSettings()">✕</button></div><div class="drawer-body"><div class="d-section-label">Choose your theme</div><div class="theme-grid" id="themeGrid"></div><button class="drawer-apply" onclick="applyPending()">Apply theme</button><div class="drawer-divider"></div><p class="drawer-note">Your choice is saved and remembered on your next visit.</p></div></div></div>

@@ -316,3 +316,107 @@ function _navInjectLangBtn() {
   // Tourist unread: needs tourist_read_at field on EnquiryMessage (future task).
   // Messages link shown without count for now.
 })();
+
+// ── Mobile slide-in menu (injected on every page) ─────────────────────────────
+// Runs after the main init IIFE above, so #navDropdown is already populated for
+// logged-in users. Builds a hamburger + drawer by cloning the page's existing
+// .nav-links anchors, so EN/RU labels carry over automatically. The burger is
+// display:none on desktop (see mobile.css) — desktop layout is untouched.
+(function () {
+  var nav = document.querySelector('nav.nav, nav.site-nav, .nav, .site-nav');
+  if (!nav || document.getElementById('wbBurger')) return;
+
+  var isRu = (function () {
+    var p = window.location.pathname;
+    return p.endsWith('_ru.html') || p.endsWith('_ru');
+  })();
+  var sfx = isRu ? '_ru.html' : '.html';
+
+  // Hamburger button — inserted at the start of the nav bar.
+  var burger = document.createElement('button');
+  burger.id = 'wbBurger';
+  burger.className = 'wb-burger';
+  burger.setAttribute('aria-label', 'Open menu');
+  burger.innerHTML = '<span></span><span></span><span></span>';
+  nav.insertBefore(burger, nav.firstChild);
+
+  // Drawer markup.
+  var parts = ['<div class="wb-drawer-head">'
+    + '<span class="wb-drawer-brand">waybound</span>'
+    + '<button class="wb-drawer-close" id="wbDrawerClose" aria-label="Close menu">&times;</button>'
+    + '</div>'];
+
+  // Main links — cloned from the existing desktop nav (correct per page + language).
+  var linkWrap = document.querySelector('.nav-links');
+  if (linkWrap) {
+    var as = linkWrap.querySelectorAll('a');
+    for (var i = 0; i < as.length; i++) {
+      var href = as[i].getAttribute('href');
+      if (href) parts.push('<a href="' + href + '">' + as[i].textContent.trim() + '</a>');
+    }
+  }
+
+  parts.push('<div class="wb-drawer-sep"></div>');
+
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch (e) {}
+
+  if (user && user.email) {
+    // Logged in — clone the account dropdown items built by the init IIFE above.
+    var dd = document.getElementById('navDropdown');
+    if (dd) {
+      var items = dd.querySelectorAll('a.nav-dd-item');
+      for (var j = 0; j < items.length; j++) {
+        parts.push('<a href="' + items[j].getAttribute('href') + '">'
+          + items[j].textContent.trim() + '</a>');
+      }
+    }
+    parts.push('<button class="wb-drawer-item" onclick="navSignOut()">'
+      + (isRu ? 'Выйти' : 'Sign out') + '</button>');
+  } else {
+    // Logged out — sign in + list a tour.
+    parts.push('<a href="signin' + sfx + '">' + (isRu ? 'Войти / Регистрация' : 'Sign in / Sign up') + '</a>');
+    parts.push('<a href="operator' + sfx + '">' + (isRu ? 'Разместить тур' : 'List a tour') + '</a>');
+  }
+
+  // Language toggle.
+  parts.push('<div class="wb-drawer-sep"></div>');
+  var curLang = localStorage.getItem('waybound_lang') || 'en';
+  parts.push('<button class="wb-drawer-item" id="wbLangToggle">'
+    + (curLang === 'ru' ? 'English' : 'Русский') + '</button>');
+
+  var overlay = document.createElement('div');
+  overlay.className = 'wb-drawer-overlay';
+  overlay.id = 'wbDrawerOverlay';
+
+  var drawer = document.createElement('aside');
+  drawer.className = 'wb-drawer';
+  drawer.id = 'wbDrawer';
+  drawer.innerHTML = parts.join('');
+
+  document.body.appendChild(overlay);
+  document.body.appendChild(drawer);
+
+  function openDrawer() {
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  burger.addEventListener('click', openDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  document.getElementById('wbDrawerClose').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDrawer(); });
+
+  var langToggle = document.getElementById('wbLangToggle');
+  if (langToggle) {
+    langToggle.addEventListener('click', function () {
+      navSwitchLang(curLang === 'ru' ? 'en' : 'ru');
+    });
+  }
+})();
