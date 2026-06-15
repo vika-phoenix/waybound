@@ -1,0 +1,6 @@
+# Local-only mobile QA pipeline (scripts, screenshots, node deps) — never pushed
+tools/mobile-qa/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db

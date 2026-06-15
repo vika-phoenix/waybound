@@ -119,3 +119,44 @@
   /* Stats + foot-grid stay 2-up (look better than a tall single column) */
   .stats, .stats-grid, .foot-grid { grid-template-columns: 1fr 1fr !important; }
 }
+
+/* ============================================================
+   PAGE-SPECIFIC FIXES (≤ 768px) — found via screenshot QA
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Header: everything on the right (Sign in / List a tour / RU / avatar)
+     now lives in the slide-in drawer, so drop it from the bar. Leaves a
+     clean [☰] waybound header that never overflows. */
+  .nav-r, .nav-r-wrap { display: none !important; }
+  /* With only [burger] + [logo] left, stop space-between from flinging the
+     logo to the far right — keep them together on the left. */
+  .nav, .site-nav { justify-content: flex-start !important; }
+
+  /* Adventures hero search — stack the fields vertically instead of one
+     cramped row. */
+  .search-bar { flex-direction: column !important; max-width: 100% !important; }
+  .search-bar .sb-field {
+    width: 100% !important; flex: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--ln, rgba(0,0,0,.1)) !important;
+  }
+  .search-bar .sb-btn { width: 100% !important; }
+  .search-hero > div { padding: 0 16px !important; }
+
+  /* Category / filter pills — wrap onto multiple rows rather than a
+     horizontal-scroll strip. */
+  .pills { flex-wrap: wrap !important; overflow-x: visible !important; }
+
+  /* Tour-detail photo gallery — stack the mosaic: big image on top,
+     thumbnails in a single row underneath. */
+  .photo-mosaic {
+    flex-direction: column !important; height: auto !important;
+    padding: 0 16px !important; gap: 6px !important;
+  }
+  .mosaic-left { flex: none !important; height: 240px !important; }
+  .mosaic-left img { height: 240px !important; }
+  .mosaic-right {
+    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-rows: 64px !important; height: 64px !important;
+  }
+}

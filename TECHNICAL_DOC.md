@@ -870,6 +870,12 @@ In Railway, make sure you're looking at the **Django service** logs, not the **P
 
 `nav.js` injects a hamburger button (`.wb-burger`) and a slide-in drawer (`.wb-drawer`) on every page. The drawer is built by **cloning the page's existing `.nav-links` anchors**, so EN/RU labels and hrefs carry over automatically with no hardcoding. The burger is `display:none` above 768px (see `mobile.css`), so desktop is unaffected. Styling for the drawer/overlay and all responsive grid collapses live in `mobile.css`, scoped to `@media (max-width: 768px)` / `(max-width: 480px)`.
 
+On mobile the desktop nav's right cluster (`.nav-r` / `.nav-r-wrap` — Sign in, List a tour, language toggle, avatar) is hidden because all of it is reachable from the drawer; this leaves a clean `[☰] waybound` header. `mobile.css` also stacks the adventures hero search (`.search-bar`), wraps filter `.pills`, and stacks the tour-detail photo gallery (`.photo-mosaic`).
+
+### Mobile QA pipeline (local-only)
+
+Responsive bugs are caught with a screenshot harness at `tools/mobile-qa/` — a Playwright script that serves the frontend locally, captures every page at mobile viewports (390px / 360px), and flags horizontal-overflow in the filename. The whole directory is **gitignored** (not pushed); it's reusable for other static sites by editing `pages.json`. See `tools/mobile-qa/README.md` for the setup and the capture → visual-review → fix → re-capture loop. The data-driven pages need the local Django backend running so they render real content.
+
 ### Client-side translation maps (Russian pages)
 
 These maps live inside the `_ru.html` files and **must not** be modified by a translation script:
