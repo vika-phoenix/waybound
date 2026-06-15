@@ -155,7 +155,9 @@
      its own full-width row, tighten padding/gap so it matches the rest. */
   .site-footer { padding: 30px 18px 22px !important; }
   .footer-top { gap: 22px 16px !important; margin-bottom: 24px !important; }
-  .footer-brand { grid-column: 1 / -1 !important; }
+  /* Brand stays a normal grid cell (not full-width) so the footer is a
+     balanced 2x2 — [brand][Explore] / [Company][Legal] — exactly like the
+     other pages, instead of a wide brand row on top. */
   .footer-brand p { max-width: none !important; }
   /* Match the other pages' footer type scale (this footer ran bigger:
      24px logo / 13.5px links vs 18px / 12px elsewhere). */
