@@ -162,6 +162,10 @@
   .footer-brand .logo { font-size: 18px !important; }
   .footer-col a, .footer-brand p { font-size: 12px !important; }
   .footer-col h5 { font-size: 11px !important; }
+  /* The Trustpilot trust badge exists only in this footer (no other page
+     has it), which made the brand block taller/inconsistent. Hide it on
+     mobile so the footer matches the rest of the site. */
+  .site-footer .trustpilot { display: none !important; }
 
   /* Homepage tour/style carousels — convert the horizontal-scroll flex
      strips into grids so nothing scrolls sideways or gets clipped.
