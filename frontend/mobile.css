@@ -111,13 +111,12 @@
   .card-grid,
   .featured-grid, .topics-grid,
   .overview-strip,
-  .tour-cards-row,
-  .footer-top,
-  .footer-middle,
-  .sitemap-bar { grid-template-columns: 1fr !important; }
+  .tour-cards-row { grid-template-columns: 1fr !important; }
 
-  /* Stats + foot-grid stay 2-up (look better than a tall single column) */
-  .stats, .stats-grid, .foot-grid { grid-template-columns: 1fr 1fr !important; }
+  /* Footers + stats stay 2-up (a tall single column looks bad, and the
+     tour-detail footer-top has 5 sections — 1-col made it very long). */
+  .stats, .stats-grid, .foot-grid,
+  .footer-top, .footer-middle, .sitemap-bar { grid-template-columns: 1fr 1fr !important; }
 }
 
 /* ============================================================
@@ -187,6 +186,18 @@
      card that overflowed. Stack it. */
   .op-hero-inner { grid-template-columns: 1fr !important; gap: 28px !important; }
   .op-hero { padding-left: 16px !important; padding-right: 16px !important; }
+
+  /* Operator page lower sections that overflowed (grid tracks couldn't
+     shrink below their content): why-cards (3-col), promise numbers
+     (4-col), and the sample tour preview (280px image + content split). */
+  .why-grid { grid-template-columns: 1fr !important; }
+  .promise-grid { grid-template-columns: 1fr 1fr !important; }
+  .sample-inner { grid-template-columns: 1fr !important; }
+  .sample-img { min-height: 180px !important; }
+
+  /* Tour-detail "Day-by-day programme" header: title + PDF/Expand buttons
+     was a no-wrap space-between row that clipped the buttons. Wrap it. */
+  .itin-header { flex-wrap: wrap !important; gap: 10px !important; padding: 16px 18px !important; }
 
   /* Photo gallery modal — the prev/next arrows live at left/right:-56px
      (just outside the image on desktop) which is off-screen on a
