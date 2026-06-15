@@ -7,6 +7,7 @@ Supports both email/password and social OAuth login (Google, Yandex, VK).
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils import timezone
+from .storages import private_media_storage
 
 
 class UserManager(BaseUserManager):
@@ -96,7 +97,7 @@ class VerificationDocument(models.Model):
         CREDENTIAL = 'credential', 'Guide credential'
 
     operator      = models.ForeignKey('User', on_delete=models.CASCADE, related_name='documents')
-    document      = models.FileField(upload_to='verification/')
+    document      = models.FileField(upload_to='verification/', storage=private_media_storage)
     doc_type      = models.CharField(max_length=12, choices=DocType.choices, default=DocType.IDENTITY)
     original_name = models.CharField(max_length=255, blank=True, default='')
     submitted_at  = models.DateTimeField(auto_now_add=True)

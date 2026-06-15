@@ -66,6 +66,11 @@ AWS_DEFAULT_ACL          = None   # R2 doesn't support ACLs — public access vi
 #
 # When R2_PUBLIC_URL is unset we keep the old presigned behaviour, so
 # deploying this change before the bucket is public is safe.
+# Sensitive uploads (ID / credentials) live in a SEPARATE private bucket so
+# they stay presigned/private when the main bucket goes public. See
+# apps/users/storages.py. Leave unset in dev (filesystem) / before split.
+R2_PRIVATE_BUCKET = config('R2_PRIVATE_BUCKET', default='')
+
 _r2_public = config('R2_PUBLIC_URL', default='')
 if _r2_public:
     AWS_S3_CUSTOM_DOMAIN     = _r2_public.replace('https://', '').replace('http://', '').strip('/')
