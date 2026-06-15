@@ -147,6 +147,24 @@
      horizontal-scroll strip. */
   .pills { flex-wrap: wrap !important; overflow-x: visible !important; }
 
+  /* Homepage tour/style carousels — convert the horizontal-scroll flex
+     strips into grids so nothing scrolls sideways or gets clipped.
+     .feat-row = image-heavy tour cards → full-width stack (matches the
+     adventures cards). .card-scroll = smaller style cards → 2-up. */
+  .feat-row {
+    display: grid !important; grid-template-columns: 1fr !important;
+    overflow-x: visible !important; gap: 14px !important;
+    padding: 0 16px 22px !important;
+  }
+  .card-scroll {
+    display: grid !important; grid-template-columns: 1fr 1fr !important;
+    overflow-x: visible !important; gap: 12px !important;
+    padding: 14px 16px 24px !important;
+  }
+  .feat-row > *, .card-scroll > * {
+    width: auto !important; flex: none !important; min-width: 0 !important;
+  }
+
   /* Tour-detail photo gallery — stack the mosaic: big image on top,
      thumbnails in a single row underneath. */
   .photo-mosaic {
