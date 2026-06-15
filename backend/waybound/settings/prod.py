@@ -52,9 +52,30 @@ AWS_S3_ENDPOINT_URL      = config('R2_ENDPOINT_URL', default='')   # https://<ac
 AWS_S3_REGION_NAME       = 'auto'
 AWS_S3_FILE_OVERWRITE    = False
 AWS_DEFAULT_ACL          = None   # R2 doesn't support ACLs — public access via bucket policy
-AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-_media_url               = config('R2_PUBLIC_URL', default='/media/')
-MEDIA_URL                = _media_url if _media_url.endswith('/') else _media_url + '/'
+
+# ── Public, CDN-cacheable media URLs ──────────────────────────
+# By default django-storages serves *presigned* URLs (a signature that
+# changes every request), which browsers and the Cloudflare CDN cannot
+# cache — every view re-fetches from the R2 origin.
+#
+# Set R2_PUBLIC_URL to the bucket's public base URL to switch to stable,
+# cacheable URLs. That URL is either:
+#   • the R2 managed domain   → https://pub-<hash>.r2.dev
+#   • a custom domain bound to the bucket → https://images.waybound.com
+# (enable one in the Cloudflare R2 bucket → Settings → Public access).
+#
+# When R2_PUBLIC_URL is unset we keep the old presigned behaviour, so
+# deploying this change before the bucket is public is safe.
+_r2_public = config('R2_PUBLIC_URL', default='')
+if _r2_public:
+    AWS_S3_CUSTOM_DOMAIN     = _r2_public.replace('https://', '').replace('http://', '').strip('/')
+    AWS_QUERYSTRING_AUTH     = False  # drop the signature → cacheable by browser + CDN
+    # Filenames are unique UUIDs, so a given URL never changes content → cache hard.
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'public, max-age=2592000, immutable'}  # 30 days
+    MEDIA_URL                = 'https://' + AWS_S3_CUSTOM_DOMAIN + '/'
+else:
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    MEDIA_URL                = '/media/'
 
 # ── Logging ───────────────────────────────────────────────────
 LOGGING = {
