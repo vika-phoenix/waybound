@@ -147,25 +147,55 @@ These are real issues encountered during deployment. **Read this before debuggin
 
 Stores all user-generated files: tour photos, avatars, identity verification documents, guide credential files (PDFs, images), stay photos. Accepts any file type — not just images.
 
+**Two buckets.** Tour photos must be *public* so browsers and the Cloudflare CDN can cache
+them (presigned URLs change every request and defeat caching). Identity / guide-credential
+uploads must stay *private*. So they live in separate buckets:
+
+| Bucket | Contents | Access | Env var |
+|--------|----------|--------|---------|
+| `waybound-media` | Tour photos + thumbnails, avatars, stay photos | Public (stable URLs, 30-day immutable cache) | `R2_BUCKET_NAME` + `R2_PUBLIC_URL` |
+| `waybound-private` | `VerificationDocument` uploads (ID, guide credentials) | Private (short-lived presigned URLs) | `R2_PRIVATE_BUCKET` |
+
+The split is wired in `backend/apps/users/storages.py`. If `R2_PRIVATE_BUCKET` is unset,
+verification docs fall back to the local filesystem (fine for dev, **not** for prod).
+If `R2_PUBLIC_URL` is unset, the public bucket falls back to the old presigned behaviour —
+still works, just not cacheable.
+
 **Setup:**
 1. Sign up at **cloudflare.com** (free)
 2. Left sidebar -> **R2** -> Create bucket -> name: `waybound-media`
 3. Bucket Settings -> Public Access -> enable "R2.dev subdomain"
    - Copy the public URL: `https://pub-xxxxxxxxxxxx.r2.dev/`
-4. R2 -> Manage R2 API Tokens -> Create token:
+4. Create a second bucket -> name: `waybound-private`
+   - Leave Public Access **disabled** — this one is served via presigned URLs only
+5. R2 -> Manage R2 API Tokens -> Create token:
    - Permissions: Object Read & Write
-   - Bucket: `waybound-media` only
+   - Buckets: `waybound-media` **and** `waybound-private`
    - Copy Access Key ID + Secret Access Key
-5. Note your Account ID from the R2 overview page
+6. Note your Account ID from the R2 overview page
    - Endpoint URL: `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`
 
 **Env vars to set:**
 ```
-R2_ACCESS_KEY_ID     = (from step 4)
-R2_SECRET_ACCESS_KEY = (from step 4)
+R2_ACCESS_KEY_ID     = (from step 5)
+R2_SECRET_ACCESS_KEY = (from step 5)
 R2_BUCKET_NAME       = waybound-media
 R2_ENDPOINT_URL      = https://<ACCOUNT_ID>.r2.cloudflarestorage.com
 R2_PUBLIC_URL        = https://pub-xxxxxxxxxxxx.r2.dev/
+R2_PRIVATE_BUCKET    = waybound-private
+```
+
+**Migrating an existing single-bucket setup:** objects already under `verification/` in
+`waybound-media` stay where they are — the DB stores only the key, so after switching they
+will be looked up in the private bucket and 404. Copy them across before making the media
+bucket public:
+```bash
+# rclone or aws-cli against the R2 endpoint
+aws s3 sync s3://waybound-media/verification/ s3://waybound-private/verification/ \
+  --endpoint-url https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+# then delete the originals so they aren't exposed by the public bucket
+aws s3 rm s3://waybound-media/verification/ --recursive \
+  --endpoint-url https://<ACCOUNT_ID>.r2.cloudflarestorage.com
 ```
 
 ### 2. Brevo (Transactional Email)
@@ -338,7 +368,8 @@ Your frontend gets a free `*.pages.dev` domain. You can add a custom domain late
 |----------|---------|
 | `BREVO_API_KEY` | All email sending |
 | `YOOKASSA_SHOP_ID` + `YOOKASSA_SECRET_KEY` | Payment processing |
-| `R2_ACCESS_KEY_ID` + `R2_SECRET_ACCESS_KEY` + `R2_BUCKET_NAME` + `R2_ENDPOINT_URL` + `R2_PUBLIC_URL` | Photo/file uploads |
+| `R2_ACCESS_KEY_ID` + `R2_SECRET_ACCESS_KEY` + `R2_BUCKET_NAME` + `R2_ENDPOINT_URL` + `R2_PUBLIC_URL` | Photo/file uploads (public bucket, cacheable URLs) |
+| `R2_PRIVATE_BUCKET` | Keeps ID / guide-credential uploads out of the public bucket |
 | `CORS_ALLOWED_ORIGINS` | Frontend accessing API (set to frontend domain) |
 | `FRONTEND_URL` | Email links back to frontend |
 
