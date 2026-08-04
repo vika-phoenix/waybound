@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Complete booking · Waybound</title>
+<title>Complete booking · Kavkazland</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Space+Grotesk:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 
@@ -593,7 +593,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 </head>
 <body class="ocean">
 <nav class="nav">
-  <a class="logo" href="waybound.html"><div class="logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound</a>
+  <a class="logo" href="waybound.html"><div class="logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>kavkazland</a>
   <div class="nav-search">🔍 Where to go?</div>
   <div class="nav-links"><a class="nav-link" href="adventures.html">Adventures</a><a class="nav-link" href="how-it-works.html">How it works</a><a class="nav-link" href="about.html">About</a><a class="nav-link" href="help.html">Help</a><a class="nav-link" href="contact.html">Contact</a></div>
       <div class="nav-r nav-r-wrap">
@@ -764,7 +764,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
       <button class="bk-back" onclick="goStep(1)">← Back</button>
       <button class="bk-next pay" id="payBtn" onclick="submitBooking()">🔒 Pay deposit now</button>
     </div>
-    <div class="secure-row">🛡️ Protected by the <a href="trust-safety.html" style="color:var(--ac);text-decoration:none;margin-left:3px">Waybound Guarantee</a></div>
+    <div class="secure-row">🛡️ Protected by the <a href="trust-safety.html" style="color:var(--ac);text-decoration:none;margin-left:3px">Kavkazland Guarantee</a></div>
   </div>
 
 </div><!-- /left -->
@@ -795,7 +795,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
     <div class="sum-div"></div>
     <div class="sum-badges">
       <div class="sum-badge" id="sumCancelBadge">🔄 Cancellation policy applies</div>
-      <div class="sum-badge">🛡️ Waybound Guarantee included</div>
+      <div class="sum-badge">🛡️ Kavkazland Guarantee included</div>
       <div class="sum-badge">📧 Instant confirmation by email</div>
       <div class="sum-badge">💬 Guide contact within 24 hours</div>
     </div>
@@ -818,7 +818,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   <div class="foot-grid">
     <div>
       <div class="foot-logo">
-        <div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>waybound
+        <div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>kavkazland
       </div>
       <div class="foot-desc">Connecting bold travelers with local experts. Central Asia &amp; Caucasus specialists, small groups always.</div>
     </div>
@@ -844,7 +844,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
     </div>
   </div>
   <div class="foot-bottom">
-    <div class="foot-copy">© 2026 Waybound.com</div>
+    <div class="foot-copy">© 2026 Kavkazland.com</div>
     <div class="foot-soc">
       <div class="soc-btn">𝕏</div><div class="soc-btn">◎</div><div class="soc-btn">𝔽</div>
     </div>
@@ -1126,7 +1126,7 @@ var currentStep = 1;
           }).join('');
         }
       } else {
-        // No operator policy — show Waybound standard policy
+        // No operator policy — show Kavkazland standard policy
         if (cancelBadge) cancelBadge.textContent = '\uD83D\uDD04 Free cancellation 30+ days before';
         if (cpBox && cpRows) {
           cpBox.style.display = 'block';
@@ -1137,7 +1137,7 @@ var currentStep = 1;
             + '<span>⚠️ 14–29 days before departure</span><span style="font-weight:700;color:#9a6030">50% refund</span></div>'
             + '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln)">'
             + '<span>❌ Under 14 days before departure</span><span style="font-weight:700;color:#c0392b">No refund</span></div>'
-            + '<div style="font-size:11px;font-style:italic;margin-top:6px;color:var(--mu)">(Waybound standard policy)</div>'
+            + '<div style="font-size:11px;font-style:italic;margin-top:6px;color:var(--mu)">(Kavkazland standard policy)</div>'
             + '</div>';
         }
       }

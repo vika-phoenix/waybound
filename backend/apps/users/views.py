@@ -333,7 +333,7 @@ def otp_verify(request):
     if not user:
         # New user — create a minimal account
         # They can add email/name later in /me PATCH
-        placeholder_email = f'phone_{phone.lstrip("+")}@placeholder.waybound.com'
+        placeholder_email = f'phone_{phone.lstrip("+")}@placeholder.kavkazland.com'
         user = User.objects.create(
             email         = placeholder_email,
             phone         = phone,
@@ -416,14 +416,14 @@ def password_reset_request(request):
     frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
     reset_link   = f'{frontend_url}/reset-password.html?uid={uid}&token={token}'
 
-    subject = 'Reset your Waybound password'
+    subject = 'Reset your Kavkazland password'
     message = (
         f'Hi {user.first_name or user.email},\n\n'
-        f'You requested a password reset for your Waybound account.\n\n'
+        f'You requested a password reset for your Kavkazland account.\n\n'
         f'Click the link below to set a new password:\n{reset_link}\n\n'
         f'This link expires in 24 hours and can only be used once.\n\n'
         f'If you did not request this, you can safely ignore this email.\n\n'
-        f'The Waybound team'
+        f'The Kavkazland team'
     )
 
     if settings.DEBUG:

@@ -131,7 +131,7 @@ def auto_complete_bookings():
     import zoneinfo
 
     now     = timezone.now()
-    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@waybound.com')
+    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
     site    = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
 
     # Find confirmed bookings whose tour has ended (departure_date + days - 1 < today)
@@ -180,7 +180,7 @@ def auto_complete_bookings():
                         f'It only takes a minute.\n\n'
                         f'Leave a review: {review_url}\n\n'
                         f'Ref: {bk.reference}\n\n'
-                        f'Thanks,\nWaybound',
+                        f'Thanks,\nKavkazland',
                         from_em, [bk.email], fail_silently=True,
                     )
                     logger.info('Sent review request email for %s', bk.reference)
@@ -198,7 +198,7 @@ def send_review_reminders():
     from django.conf import settings
 
     now     = timezone.now()
-    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@waybound.com')
+    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
     site    = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
 
     # Bookings completed ~5 days ago (window: 5-6 days to avoid duplicates with daily runs)
@@ -228,7 +228,7 @@ def send_review_reminders():
                 f'Your review helps other travellers discover great experiences '
                 f'and means a lot to your guide.\n\n'
                 f'Leave a review: {review_url}\n\n'
-                f'Thanks,\nWaybound',
+                f'Thanks,\nKavkazland',
                 from_em, [bk.email], fail_silently=True,
             )
             logger.info('Sent review reminder for %s', bk.reference)
@@ -247,7 +247,7 @@ def send_deposit_reminders():
     from django.conf import settings
 
     now     = timezone.now()
-    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@waybound.com')
+    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
     site    = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
 
     for hours, label in [(12, 'Reminder'), (22, 'Final reminder — act now')]:
@@ -267,7 +267,7 @@ def send_deposit_reminders():
                 f'Your booking for "{bk.tour.title}" is waiting for your deposit payment.\n'
                 f'Ref: {bk.reference}\n\n'
                 f'Your spot will be released in {24 - hours} hour(s) if payment is not received.\n\n'
-                f'Pay now: {site}/my-bookings.html\n\nWaybound'
+                f'Pay now: {site}/my-bookings.html\n\nKavkazland'
             )
             try:
                 send_mail(subject, message, from_em, [bk.email], fail_silently=True)
@@ -288,7 +288,7 @@ def send_balance_reminders():
     from django.conf import settings
 
     today   = timezone.now().date()
-    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@waybound.com')
+    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
     site    = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
 
     for days, label in [(14, '14 days'), (7, '7 days'), (3, '3 days')]:
@@ -310,7 +310,7 @@ def send_balance_reminders():
                 f'Your balance of {bk.currency} {balance:,.2f} for "{bk.tour.title}" '
                 f'is due in {label} ({due_str}).\n'
                 f'Ref: {bk.reference}\n\n'
-                f'Pay now: {site}/my-bookings.html\n\nWaybound'
+                f'Pay now: {site}/my-bookings.html\n\nKavkazland'
             )
             try:
                 send_mail(subject, message, from_em, [bk.email], fail_silently=True)
@@ -338,7 +338,7 @@ def send_operator_balance_reminders():
 
     now     = timezone.now()
     today_utc = now.date()
-    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@waybound.com')
+    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
     site    = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
 
     # Query with a 1-day buffer to account for timezone differences
@@ -449,7 +449,7 @@ def send_operator_balance_reminders():
             f'{escalation_warning}{overdue_note}\n'
             f'You can cancel the booking or message the tourist from your dashboard:\n'
             f'{site}/operator-dashboard.html#bookings\n\n'
-            f'Waybound'
+            f'Kavkazland'
         )
 
         try:

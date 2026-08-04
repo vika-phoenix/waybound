@@ -58,9 +58,9 @@ class VerificationDocumentAdmin(admin.ModelAdmin):
             vdoc.operator.is_verified = True
             vdoc.operator.save(update_fields=['is_verified'])
             send_mail(
-                'Waybound: Verification approved',
-                f'Hi {vdoc.operator.first_name},\n\nYour operator account has been verified. You can now submit tours for review.\n\nThe Waybound Team',
-                getattr(s, 'DEFAULT_FROM_EMAIL', 'noreply@waybound.com'),
+                'Kavkazland: Verification approved',
+                f'Hi {vdoc.operator.first_name},\n\nYour operator account has been verified. You can now submit tours for review.\n\nThe Kavkazland Team',
+                getattr(s, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com'),
                 [vdoc.operator.email], fail_silently=True,
             )
         self.message_user(request, f'{queryset.count()} operator(s) approved.', messages.SUCCESS)
@@ -74,9 +74,9 @@ class VerificationDocumentAdmin(admin.ModelAdmin):
             vdoc.reviewed_at = timezone.now()
             vdoc.save()
             send_mail(
-                'Waybound: Verification rejected',
-                f'Hi {vdoc.operator.first_name},\n\nYour verification document was not accepted.\nReason: {vdoc.admin_notes or "Please resubmit a clearer document."}\n\nThe Waybound Team',
-                getattr(s, 'DEFAULT_FROM_EMAIL', 'noreply@waybound.com'),
+                'Kavkazland: Verification rejected',
+                f'Hi {vdoc.operator.first_name},\n\nYour verification document was not accepted.\nReason: {vdoc.admin_notes or "Please resubmit a clearer document."}\n\nThe Kavkazland Team',
+                getattr(s, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com'),
                 [vdoc.operator.email], fail_silently=True,
             )
         self.message_user(request, f'{queryset.count()} verification(s) rejected.', messages.WARNING)

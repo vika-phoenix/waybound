@@ -1,4 +1,4 @@
-// Waybound toast notification system
+// Kavkazland toast notification system
 (function() {
   var container;
   function getContainer() {

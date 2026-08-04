@@ -100,7 +100,7 @@ def _notify_operator_new_review(review):
         tourist_name = ((review.tourist.first_name or '') + ' ' + (review.tourist.last_name or '')).strip() or review.tourist.email
         stars = '\u2605' * review.rating + '\u2606' * (5 - review.rating)
         site = getattr(settings, 'SITE_URL', 'http://127.0.0.1:5500')
-        from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@waybound.com')
+        from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
 
         body = (
             f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'

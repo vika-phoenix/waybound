@@ -4,11 +4,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title id="pageTitle">Loading tour... — Waybound</title>
+<title id="pageTitle">Loading tour... — Кавказленд</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&amp;family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Outfit:wght@300;400;500;600&amp;family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&amp;family=Space+Grotesk:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
 <style>
 /* ══════════════════════════════════════════════
-   WAYBOUND THEME SYSTEM — synced with all pages
+   КАВКАЗЛЕНД THEME SYSTEM — synced with all pages
 ══════════════════════════════════════════════ */
 body {
   /* Default: Deep Ocean */
@@ -1368,7 +1368,7 @@ body,body.ocean,body.warm,body.ivory,body.gold,body.forest,body.terra {
 <div style="width:28px;height:28px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0">
 <svg fill="none" height="16" viewbox="0 0 18 18" width="16"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg>
 </div>
-<span style="font-family:var(--font-display);font-size:19px;color:var(--accent)">waybound</span>
+<span style="font-family:var(--font-display);font-size:19px;color:var(--accent)">кавказленд</span>
 </a>
 <div class="nav-links" style="display:flex">
 <a href="adventures_ru.html" style="color:rgba(255,255,255,.5);font-size:12.5px;text-decoration:none;padding:6px 10px;font-family:var(--font-body)">Приключения</a>
@@ -1837,7 +1837,7 @@ body,body.ocean,body.warm,body.ivory,body.gold,body.forest,body.terra {
 </div>
 </div>
 <div class="footer-bottom" style="display:flex;justify-content:space-between;align-items:center;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)">
-<div>© 2026 Waybound.com</div>
+<div>© 2026 Kavkazland.com</div>
 <div class="footer-social">
 <a class="social-btn" href="#">𝕏</a><a class="social-btn" href="#">◎</a><a class="social-btn" href="#">𝔽</a>
 </div>
@@ -2489,7 +2489,7 @@ function downloadPDF() {
   // Print-to-PDF using browser's native print dialog
   var title = document.getElementById('tourTitle');
   var orig = document.title;
-  if (title) document.title = title.textContent + '— Waybound';
+  if (title) document.title = title.textContent + '— Кавказленд';
   window.print();
   document.title = orig;
 }
@@ -3197,7 +3197,7 @@ async function loadTour(slug) {
       ] : t.cancel_policy;
       var cpHtml = '';
       if (usingDefault) {
-        cpHtml += '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-style:italic">(стандартная политика Waybound)</div>';
+        cpHtml += '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-style:italic">(стандартная политика Кавказленд)</div>';
       }
       policy.forEach(function(cp) {
         var pct    = parseFloat(cp.penalty_pct);
@@ -3475,7 +3475,7 @@ function patchPage(t) {
 
   // Page meta
   var titleEl = document.getElementById('pageTitle');
-  if (titleEl) titleEl.textContent = t.title + '— Waybound';
+  if (titleEl) titleEl.textContent = t.title + '— Кавказленд';
 
   setText('bcTitle',        t.title.length > 45 ? t.title.slice(0,43) + '…' : t.title);
   setText('tourTitle',      t.title);

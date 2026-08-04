@@ -60,7 +60,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if not user.email:
             provider = sociallogin.account.provider
             uid      = sociallogin.account.uid
-            user.email = f'{provider}_{uid}_{uuid.uuid4().hex[:8]}@placeholder.waybound.com'
+            user.email = f'{provider}_{uid}_{uuid.uuid4().hex[:8]}@placeholder.kavkazland.com'
         return user
 
     def pre_social_login(self, request, sociallogin):

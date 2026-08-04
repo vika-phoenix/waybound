@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>All Adventures — Waybound</title>
+<title>All Adventures — Кавказленд</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&amp;family=DM+Sans:wght@300;400;500;600&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Outfit:wght@300;400;500;600&amp;family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&amp;family=Space+Grotesk:wght@400;500;600&amp;display=swap"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -531,7 +531,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 <!-- RESULTS -->
 <div class="results">
 <div class="results-bar">
-<span class="results-count"><strong id="resultCount">18 приключений</strong> найдено</span>
+<span class="results-count" id="resultCountLine" hidden><strong id="resultCount"></strong> найдено</span>
 <div class="sort-wrap">
 <span class="sort-lbl">Сортировать по</span>
 <select class="sort-select" id="sortSelect" onchange="applySort()">
@@ -557,7 +557,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 <div class="foot-grid">
 <div>
 <div class="foot-logo">
-<div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>waybound
+<div class="logo-mark" style="width:22px;height:22px;border-radius:5px"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>кавказленд
       </div>
 <div class="foot-desc">Соединяем смелых путешественников с местными экспертами. Специалисты по Центральной Азии и Кавказу, всегда в маленьких группах.</div>
 </div>
@@ -584,7 +584,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 </div>
 </div>
 <div class="foot-bottom">
-<div class="foot-copy">© 2026 Waybound.com</div>
+<div class="foot-copy">© 2026 Kavkazland.com</div>
 <div class="foot-soc">
 <div class="soc-btn">𝕏</div><div class="soc-btn">◎</div><div class="soc-btn">𝔽</div>
 </div>
@@ -735,6 +735,27 @@ function clearFilters() {
   currentPage = 1;
   applyFilters();
 }
+// Счётчик результатов: скрыт до ответа API, чтобы не показывать
+// число-заглушку.
+function ruAdventures(n) {
+  var d = n % 10, h = n % 100;
+  if (d === 1 && h !== 11) return 'приключение';
+  if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return 'приключения';
+  return 'приключений';
+}
+
+function setResultCount(n) {
+  var el = document.getElementById('resultCount');
+  if (el) el.textContent = n + ' ' + ruAdventures(n);
+  var line = document.getElementById('resultCountLine');
+  if (line) line.hidden = false;
+}
+
+function hideResultCount() {
+  var line = document.getElementById('resultCountLine');
+  if (line) line.hidden = true;
+}
+
 function applyFilters() {
   var today = new Date(); today.setHours(0,0,0,0);
   var in30  = new Date(today); in30.setDate(today.getDate() + 30);
@@ -821,8 +842,7 @@ function applyFilters() {
   currentPage = 1;
 
   // Update count
-  var countEl = document.getElementById('resultCount');
-  if (countEl) countEl.textContent = filtered.length + ' adventure' + (filtered.length !== 1 ? 's' : '');
+  setResultCount(filtered.length);
 
   renderPage();
 }
@@ -949,12 +969,13 @@ async function loadTours() {
     applyFilters();
   } catch(e) {
     console.warn('Tours API недоступен:', e.message);
+    hideResultCount();
     if (grid) {
       grid.innerHTML =
         '<div style="grid-column:1/-1;text-align:center;padding:60px 20px">' +
         '<div style="font-size:40px;margin-bottom:12px">⚠️</div>' +
         '<div style="font-size:16px;font-weight:600;color:var(--ink)">Не удалось загрузить приключения</div>' +
-        '<div style="font-size:13px;color:var(--mu);margin-top:8px;font-family:var(--bf)">Убедитесь, что бэкенд запущен: python manage.py runserver</div>' +
+        '<div style="font-size:13px;color:var(--mu);margin-top:8px;font-family:var(--bf)">Проверьте соединение и попробуйте снова.</div>' +
         '</div>';
     }
   }
@@ -1067,8 +1088,7 @@ function renderCards(list) {
     html += '</div></div></div>';
   }
   grid.innerHTML = html;
-  var countEl = document.getElementById('resultCount');
-  if (countEl) countEl.textContent = list.length + ' adventure' + (list.length !== 1 ? 's' : '') + ' found';
+  setResultCount(list.length);
 }
 
 loadTours();

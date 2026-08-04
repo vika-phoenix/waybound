@@ -21,7 +21,7 @@ def contact(request):
     if not name or not email or not message:
         return Response({'detail': 'name, email and message are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    subject = f'Waybound contact: {topic or "General enquiry"} — from {name}'
+    subject = f'Kavkazland contact: {topic or "General enquiry"} — from {name}'
     body    = (
         f'From: {name} <{email}>\n'
         f'Topic: {topic or "—"}\n\n'
@@ -32,7 +32,7 @@ def contact(request):
         send_mail(
             subject=subject,
             message=body,
-            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@waybound.com'),
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com'),
             recipient_list=['pul_khanna@yahoo.co.in'],
             fail_silently=False,
         )

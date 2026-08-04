@@ -106,7 +106,7 @@ def notify_tourists_of_tour_change(tour, changed_fields: list) -> int:
             f'View your booking: {site}/my-bookings.html\n\n'
             f'If you have any questions, reply to this email or contact us at {from_email}.\n\n'
             f'Kind regards,\n'
-            f'The Waybound Team'
+            f'The Kavkazland Team'
         )
         try:
             send_mail(subject, body, from_email, [recipient], fail_silently=False)
@@ -180,7 +180,7 @@ def send_waitlist_confirmation(tour, entry, departure=None):
         f"If a spot becomes available we'll notify you within 24–48 hours.\n"
         f'Spots are allocated on a first-come, first-served basis.\n\n'
         f'View tour: {site}/tour_detail_page.html?slug={tour.slug}\n\n'
-        f'Kind regards,\nThe Waybound Team'
+        f'Kind regards,\nThe Kavkazland Team'
     )
     try:
         send_mail(tourist_subject, tourist_body, from_email, [entry.email], fail_silently=True)
@@ -199,7 +199,7 @@ def send_waitlist_confirmation(tour, entry, departure=None):
         f'This indicates demand for this date. If you can free up a spot\n'
         f'(e.g. by following up on unpaid balances), the waitlisted traveller\n'
         f'will be notified automatically.\n\n'
-        f'The Waybound Team'
+        f'The Kavkazland Team'
     )
     try:
         send_mail(op_subject, op_body, from_email, [op_email], fail_silently=True)
@@ -242,7 +242,7 @@ def notify_waitlist_for_departure(departure):
             f'  Departure:  {dep_label}\n\n'
             f'Spots are filled on a first-come, first-served basis — book now:\n'
             f'{site}/tour_detail_page.html?slug={departure.tour.slug}\n\n'
-            f'Kind regards,\nThe Waybound Team'
+            f'Kind regards,\nThe Kavkazland Team'
         )
         try:
             send_mail(subject, body, from_email, [entry.email], fail_silently=False)

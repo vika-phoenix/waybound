@@ -1,5 +1,5 @@
 /**
- * nav.js — shared navigation for all Waybound pages.
+ * nav.js — shared navigation for all Kavkazland pages.
  *
  * Handles:
  *   - Avatar display (photo or initials)
@@ -342,7 +342,7 @@ function _navInjectLangBtn() {
 
   // Drawer markup.
   var parts = ['<div class="wb-drawer-head">'
-    + '<span class="wb-drawer-brand">waybound</span>'
+    + '<span class="wb-drawer-brand">kavkazland</span>'
     + '<button class="wb-drawer-close" id="wbDrawerClose" aria-label="Close menu">&times;</button>'
     + '</div>'];
 

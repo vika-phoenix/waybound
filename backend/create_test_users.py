@@ -8,14 +8,14 @@ from apps.users.models import User
 if not User.objects.filter(pk=1).exists():
     u = User(
         pk=1,
-        email='operator@waybound.com',
+        email='operator@kavkazland.com',
         first_name='Sandro',
         last_name='Beridze',
         role='operator',
         is_staff=True,
         is_superuser=True,
     )
-    u.set_password('Waybound2026!')
+    u.set_password('Kavkazland2026!')
     u.save()
     print(f"Operator created: {u.email} pk={u.pk}")
 else:
@@ -25,12 +25,12 @@ else:
 if not User.objects.filter(pk=2).exists():
     u = User(
         pk=2,
-        email='test@waybound.com',
+        email='test@kavkazland.com',
         first_name='Alex',
         last_name='Petrov',
         role='tourist',
     )
-    u.set_password('Waybound2026!')
+    u.set_password('Kavkazland2026!')
     u.save()
     print(f"Tourist created: {u.email} pk={u.pk}")
 else:

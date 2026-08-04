@@ -42,7 +42,7 @@ def _site_url():
     return getattr(django_settings, 'FRONTEND_URL', 'http://localhost:8080')
 
 def _from_email():
-    return getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'noreply@waybound.com')
+    return getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
 
 def _tourist_email(enquiry):
     """Best available email for the tourist — form field first, sender account second."""
@@ -60,7 +60,7 @@ def _html_email(title, body_html, cta_label, cta_url):
              style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;
                     overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.10)">
         <tr><td style="background:#1a2535;padding:22px 32px">
-          <span style="font-family:Georgia,serif;font-size:22px;color:#4fa8d4;font-weight:400;letter-spacing:.03em">waybound</span>
+          <span style="font-family:Georgia,serif;font-size:22px;color:#4fa8d4;font-weight:400;letter-spacing:.03em">kavkazland</span>
         </td></tr>
         <tr><td style="padding:32px 32px 20px">
           <h2 style="margin:0 0 16px;font-size:20px;color:#0d1f2d;font-weight:700;line-height:1.3">{title}</h2>
@@ -74,9 +74,9 @@ def _html_email(title, body_html, cta_label, cta_url):
         </td></tr>
         <tr><td style="background:#f4f8fb;padding:18px 32px;border-top:1px solid #e0eaf0">
           <p style="margin:0;font-size:12px;color:#8a9aaa;line-height:1.65">
-            This is an automated notification from Waybound.
+            This is an automated notification from Kavkazland.
             <strong style="color:#607080">Please do not reply to this email</strong> —
-            replies are not monitored. Use the button above to continue your conversation on Waybound.
+            replies are not monitored. Use the button above to continue your conversation on Kavkazland.
           </p>
         </td></tr>
       </table>
@@ -352,9 +352,9 @@ def send_enquiry_notifications(enquiry):
     try:
         send_mail(
             subject=f'New enquiry: {title}',
-            message=f'New enquiry for "{title}" from {name}.\n\nMessage: {msg_preview}\n\nReply on Waybound: {op_url}',
+            message=f'New enquiry for "{title}" from {name}.\n\nMessage: {msg_preview}\n\nReply on Kavkazland: {op_url}',
             from_email=from_em,
-            html_message=_html_email(f'New enquiry for {title}', op_body, 'Reply on Waybound', op_url),
+            html_message=_html_email(f'New enquiry for {title}', op_body, 'Reply on Kavkazland', op_url),
             recipient_list=[enquiry.tour.operator.email],
             fail_silently=True,
         )
@@ -410,7 +410,7 @@ def send_enquiry_reply_notification(enquiry):
             subject=f'Reply to your enquiry: {title}',
             message=f'Hi {name},\n\nThe operator replied to your enquiry about "{title}":\n\n"{reply_preview}"\n\nView and reply: {url}',
             from_email=_from_email(),
-            html_message=_html_email(f'Operator replied: {title}', body, 'View & reply on Waybound', url),
+            html_message=_html_email(f'Operator replied: {title}', body, 'View & reply on Kavkazland', url),
             recipient_list=[tourist_em],
             fail_silently=True,
         )
@@ -438,7 +438,7 @@ def send_tourist_reply_notification(enquiry):
     try:
         send_mail(
             subject=f'Tourist replied: {title}',
-            message=f'{name} replied to the enquiry about "{title}".\n\nMessage: {preview}\n\nView on Waybound: {op_url}',
+            message=f'{name} replied to the enquiry about "{title}".\n\nMessage: {preview}\n\nView on Kavkazland: {op_url}',
             from_email=_from_email(),
             html_message=_html_email(f'New reply from {name}', body, 'View conversation', op_url),
             recipient_list=[enquiry.tour.operator.email],

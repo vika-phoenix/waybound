@@ -86,7 +86,7 @@ def send_sms(phone: str, code: str) -> bool:
       - MessageBird:   pip install messagebird
       - SMS.ru:        simple HTTP API, no package needed
     """
-    message = f'Your Waybound code: {code}. Valid for {OTP_EXPIRY_MINUTES} minutes.'
+    message = f'Your Kavkazland code: {code}. Valid for {OTP_EXPIRY_MINUTES} minutes.'
 
     if getattr(settings, 'DEBUG', False):
         # ── Dev: print to console ──────────────────────────

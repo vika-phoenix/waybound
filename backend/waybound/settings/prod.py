@@ -37,7 +37,7 @@ EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
 ANYMAIL = {
     'BREVO_API_KEY': config('BREVO_API_KEY', default=''),
 }
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='Waybound <noreply@waybound.com>')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='Kavkazland <noreply@kavkazland.com>')
 
 # ── Static files: WhiteNoise (serves CSS/JS directly from Railway) ─
 MIDDLEWARE = ['whitenoise.middleware.WhiteNoiseMiddleware'] + MIDDLEWARE  # noqa
@@ -61,7 +61,7 @@ AWS_DEFAULT_ACL          = None   # R2 doesn't support ACLs — public access vi
 # Set R2_PUBLIC_URL to the bucket's public base URL to switch to stable,
 # cacheable URLs. That URL is either:
 #   • the R2 managed domain   → https://pub-<hash>.r2.dev
-#   • a custom domain bound to the bucket → https://images.waybound.com
+#   • a custom domain bound to the bucket → https://images.kavkazland.com
 # (enable one in the Cloudflare R2 bucket → Settings → Public access).
 #
 # When R2_PUBLIC_URL is unset we keep the old presigned behaviour, so
