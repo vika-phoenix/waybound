@@ -1,15 +1,17 @@
 /**
- * Waybound frontend configuration.
+ * Kavkazland frontend configuration.
  * Change API_BASE here once — all pages pick it up.
  *
  * For local dev:  http://127.0.0.1:8000
- * For production: https://api.waybound.com  (or wherever your Django server lives)
+ * For production: https://api.kavkazland.com  (or wherever your Django server lives)
  */
 // DEV: http://127.0.0.1:8000
-// PRODUCTION: replace with your Railway backend URL e.g. https://YOUR-APP.up.railway.app
+// PRODUCTION: api.kavkazland.com — a Cloudflare-proxied CNAME to the Railway
+// service. Prefer this over the raw *.up.railway.app host: some ISPs refuse to
+// resolve that domain, which makes the site look down to their customers.
 var _API_BASE = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
   ? 'http://127.0.0.1:8000'
-  : 'https://waybound-production.up.railway.app';
+  : 'https://api.kavkazland.com';
 
 window.WAYBOUND_CONFIG = {
   API_BASE: _API_BASE,
