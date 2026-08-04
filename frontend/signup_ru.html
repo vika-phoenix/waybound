@@ -510,7 +510,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 </head>
 <body class="ocean">
 <nav class="nav">
-<a class="logo" href="waybound_ru.html"><div class="logo-mark"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>кавказленд</a>
+<a class="logo" href="/index_ru"><div class="logo-mark"><svg fill="none" viewbox="0 0 18 18"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>кавказленд</a>
 <div class="nav-search">🔍 Куда отправиться?</div>
 <div class="nav-links"><a class="nav-link" href="adventures_ru.html">Путешествия</a><a class="nav-link" href="how-it-works_ru.html">Как это работает</a><a class="nav-link" href="about_ru.html">О нас</a><a class="nav-link" href="help_ru.html">Помощь</a><a class="nav-link" href="contact_ru.html">Контакты</a></div>
 <div class="nav-r nav-r-wrap">
@@ -523,7 +523,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 <div class="auth-wrap">
 <div class="auth-panel">
 <div class="auth-card" style="max-width:460px">
-<a class="auth-logo" href="waybound_ru.html">
+<a class="auth-logo" href="/index_ru">
 <div class="auth-logo-mark"><svg fill="none" height="16" viewbox="0 0 18 18" width="16"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-linecap="round" stroke-width="1.8"></path><circle cx="9" cy="7.5" fill="white" opacity=".75" r="2"></circle></svg></div>
 <div class="auth-logo-text">путешествие<em>боковая панель</em></div>
 </a>
@@ -721,7 +721,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var success = document.getElementById('step2');
         if (form) form.style.display = 'none';
         if (success) success.style.display = 'block';
-        setTimeout(function() { window.location.href = 'waybound_ru.html'; }, 1800);
+        setTimeout(function() { window.location.href = '/index_ru'; }, 1800);
       } else {
         showSignupError(res.data.error || 'Ошибка социального входа. Пожалуйста, попробуйте еще раз.');
       }
@@ -890,7 +890,7 @@ async function submitSignup() {
     var success = document.getElementById('step2');
     if (form) form.style.display = 'none';
     if (success) success.style.display = 'block';
-    setTimeout(function() { window.location.href = 'waybound_ru.html'; }, 1800);
+    setTimeout(function() { window.location.href = '/index_ru'; }, 1800);
 
   } catch(e) {
     showSignupError('Невозможно подключиться к серверу. Убедитесь, что серверная часть работает.');

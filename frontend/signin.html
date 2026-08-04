@@ -478,7 +478,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 <body class="ocean">
 
 <nav class="nav">
-  <a class="logo" href="waybound.html"><div class="logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>kavkazland</a>
+  <a class="logo" href="/"><div class="logo-mark"><svg viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>kavkazland</a>
   <div class="nav-search">🔍 Where to go?</div>
   <div class="nav-links"><a class="nav-link" href="adventures.html">Adventures</a><a class="nav-link" href="how-it-works.html">How it works</a><a class="nav-link" href="about.html">About</a><a class="nav-link" href="help.html">Help</a><a class="nav-link" href="contact.html">Contact</a></div>
       <div class="nav-r nav-r-wrap">
@@ -493,7 +493,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
   <!-- FORM PANEL -->
   <div class="auth-panel">
     <div class="auth-card">
-      <a class="auth-logo" href="waybound.html">
+      <a class="auth-logo" href="/">
   <div class="auth-logo-mark"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M5 15C5 9 9 6 9 6s4 3 4 9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7.5" r="2" fill="white" opacity=".75"/></svg></div>
   <div class="auth-logo-text">way<em>bound</em></div>
 </a>
@@ -713,13 +713,13 @@ function saveAndRedirect(data, fromOAuth) {
   // After OAuth, never use document.referrer — it points to the OAuth callback URL
   // which causes an infinite redirect loop (allauth starts a new OAuth flow on each visit).
   if (fromOAuth) {
-    window.location.href = isRu ? 'waybound_ru.html' : 'waybound.html';
+    window.location.href = isRu ? '/index_ru' : '/';
     return;
   }
   var ref = document.referrer;
   var noReturn = ['signin.html','signup.html','signup-operator.html','reset-password.html'];
   var canReturn = ref && !noReturn.some(function(p){ return ref.indexOf(p) >= 0; });
-  window.location.href = canReturn ? ref : 'waybound.html';
+  window.location.href = canReturn ? ref : '/';
 }
 
 function socialLogin(provider) {

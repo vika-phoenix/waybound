@@ -36,7 +36,7 @@ function navSignOut() {
   localStorage.removeItem('waybound_access');
   localStorage.removeItem('waybound_refresh');
   localStorage.removeItem('waybound_user');
-  window.location.href = 'waybound.html';
+  window.location.href = '/';
 }
 
 // ── Language switcher ─────────────────────────────────────────────────────────
@@ -52,40 +52,43 @@ function _navIsRuPage() {
 }
 
 // Strip _ru suffix and .html extension to get the bare page base path
-// e.g. /waybound_ru.html → /waybound  |  /waybound_ru → /waybound  |  /waybound.html → /waybound
+// e.g. /about_ru.html → /about  |  /about_ru → /about  |  /about.html → /about
+// The homepage is the exception: it is served at "/" (index.html) with its
+// Russian twin at /index_ru, so every spelling of it normalises to "/index".
 function _navPageBase(path) {
-  return path.replace(/_ru\.html$/, '').replace(/_ru$/, '').replace(/\.html$/, '');
+  var base = path.replace(/_ru\.html$/, '').replace(/_ru$/, '').replace(/\.html$/, '');
+  return (base === '' || base === '/' || base === '/index') ? '/index' : base;
+}
+
+// Turn a base path back into a real URL for the given language.
+function _navLangUrl(base, lang) {
+  if (base === '/index') return (lang === 'ru') ? '/index_ru' : '/';
+  return base + ((lang === 'ru') ? '_ru.html' : '.html');
 }
 
 function navSwitchLang(lang) {
   localStorage.setItem('waybound_lang', lang);
-  var path   = window.location.pathname;
-  var search = window.location.search;
-  var isRu   = _navIsRuPage();
-
-  if ((lang === 'ru') === isRu) return; // already on correct variant
-
-  var base   = _navPageBase(path);
-  var target = (lang === 'ru') ? base + '_ru.html' : base + '.html';
-  window.location.href = target + search;
+  if ((lang === 'ru') === _navIsRuPage()) return; // already on correct variant
+  var target = _navLangUrl(_navPageBase(window.location.pathname), lang);
+  window.location.href = target + window.location.search;
 }
 
-// Auto-redirect on page load if saved language doesn't match current page variant.
+// Auto-redirect on page load if the saved language doesn't match this page.
+// Pages are authored in English, so in practice only a saved 'ru' preference
+// moves you off the URL you asked for. The homepage takes part in this now —
+// the old "skip index" rule left Russian visitors on the English home page.
 (function () {
   var savedLang = localStorage.getItem('waybound_lang');
   if (!savedLang) return;
-  var path  = window.location.pathname;
-  var isRu  = _navIsRuPage();
+  if ((savedLang === 'ru') === _navIsRuPage()) return; // already on correct variant
 
-  if ((savedLang === 'ru') === isRu) return; // already on correct variant
+  var base = _navPageBase(window.location.pathname);
+  if (base.split('/').pop() === '404') return;
 
-  // Skip root, index, 404
-  var base = _navPageBase(path);
-  var leaf = base.split('/').pop();
-  if (!leaf || leaf === 'index' || leaf === '404') return;
-
-  var target = (savedLang === 'ru') ? base + '_ru.html' : base + '.html';
-  if (target !== path) window.location.replace(target + window.location.search);
+  var target = _navLangUrl(base, savedLang);
+  if (target !== window.location.pathname) {
+    window.location.replace(target + window.location.search);
+  }
 })();
 
 // Called by operator-dashboard renderMessages() to sync badge after loading enquiries.
