@@ -1,0 +1,18 @@
+# Cloudflare Pages response headers.
+#
+# Pages defaults static assets to a 4-hour cache. That is wrong for the files
+# below: config.js carries the API hostname, and nav.js drives routing and the
+# language redirect. When either changes, a stale copy points the browser at
+# the wrong backend — which surfaces as "Failed to fetch", not as an error the
+# page can report. Revalidate every time instead; a 304 is cheap.
+/config.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/nav.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/toast.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/mobile.css
+  Cache-Control: public, max-age=0, must-revalidate
