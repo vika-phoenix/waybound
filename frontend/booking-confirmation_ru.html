@@ -578,7 +578,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <div class="conf-hero">
 <div class="conf-hero-pattern"></div>
 <div class="conf-check">✓</div>
-<div class="conf-ref">Номер бронирования: <strong id="heroRef" style="color:rgba(255,255,255,.7)">TRP-20260315</strong></div>
+<div class="conf-ref">Номер бронирования: <strong id="heroRef" style="color:rgba(255,255,255,.7)">VZ-20260315</strong></div>
 <h1 class="conf-title">Вы отправляетесь <em id="heroDestination">в Грузию!</em></h1>
 <p class="conf-sub" id="heroSub">Ваш депозит получен и место подтверждено. Гид свяжется с вами в течение 24 часов.</p>
 </div>
@@ -618,7 +618,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 </div>
 <div class="conf-detail">
 <div class="conf-detail-label">Номер бронирования</div>
-<div class="conf-detail-val" id="detRef" style="color:var(--ac);font-family:monospace">TRP-20260315</div>
+<div class="conf-detail-val" id="detRef" style="color:var(--ac);font-family:monospace">VZ-20260315</div>
 </div>
 </div>
 <div class="conf-divider"></div>
@@ -724,7 +724,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 </div>
 <div class="ep-body">
       Привет <strong id="epName">Алекс</strong>,<br/><br/>
-      Ваше бронирование подтверждено. Номер: <span class="ep-ref" id="epRef">TRP-20260315</span><br/><br/>
+      Ваше бронирование подтверждено. Номер: <span class="ep-ref" id="epRef">VZ-20260315</span><br/><br/>
 <strong>Тур:</strong> <span id="epTour">Грузия: треккинг в горах Казбеги и Сванети</span><br/>
 <strong>Дата:</strong> <span id="epDate">15 марта 2026 · 8 дней</span><br/>
 <strong>Гид:</strong> <span id="epGuide">Sandro Beridze</span><br/>
@@ -848,7 +848,7 @@ function applyPending(){current=pending;localStorage.setItem('waybound-theme',cu
 
 
 function shareVia(method) {
-  var ref = document.getElementById('bookingRef') ? document.getElementById('bookingRef').textContent : 'TRP-XXXXXX';
+  var ref = document.getElementById('bookingRef') ? document.getElementById('bookingRef').textContent : 'VZ-XXXXXX';
   var text = 'Я только что забронировал приключение с Кавказленд! Номер бронирования:' + ref;
   var url = window.location.href;
   if (method === 'whatsapp') {

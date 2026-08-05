@@ -15,8 +15,8 @@ import uuid
 
 
 def booking_ref():
-    """Short human-readable reference: TRP-XXXXXX"""
-    return 'TRP-' + uuid.uuid4().hex[:6].upper()
+    """Short human-readable reference: VZ-XXXXXX"""
+    return 'VZ-' + uuid.uuid4().hex[:6].upper()
 
 
 class Booking(models.Model):
