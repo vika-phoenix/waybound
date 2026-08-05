@@ -250,3 +250,26 @@
     grid-template-rows: 64px !important; height: 64px !important;
   }
 }
+
+/* ============================================================
+   OPERATOR "CREATE TOUR" (≤ 800px)
+   Deliberately 800px, not 768px: that is the breakpoint the page's own
+   stylesheet uses, and between the two the sidebar would otherwise stay
+   hidden with nothing putting it back.
+   ============================================================ */
+@media (max-width: 800px) {
+  /* The page hid .form-sidebar wholesale on mobile — but that sidebar holds
+     the ONLY "Submit for review" button, the "Save draft" button, and the
+     verification / profile banners that explain why submitting might fail.
+     A tour could be written on a phone and then never submitted, with no
+     visible reason. Restore the card as a normal block after the form; only
+     the section-jump nav stays hidden, since scrolling already covers it. */
+  .form-sidebar {
+    display: block !important;
+    position: static !important;
+    top: auto !important;
+    order: 2;
+  }
+  .form-content { order: 1; }
+  .form-nav { display: none !important; }
+}
