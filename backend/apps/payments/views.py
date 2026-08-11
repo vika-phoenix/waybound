@@ -226,6 +226,53 @@ def initiate_payment(request):
                         status=status.HTTP_502_BAD_GATEWAY)
 
 
+def _client_ip(request):
+    """Real client IP behind the Cloudflare -> Railway proxy chain."""
+    cf = request.META.get('HTTP_CF_CONNECTING_IP')
+    if cf:
+        return cf.strip()
+    fwd = request.META.get('HTTP_X_FORWARDED_FOR', '')
+    if fwd:
+        return fwd.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', '')
+
+
+def _yookassa_ip_allowed(request):
+    """
+    YooKassa does not sign its webhooks — it authenticates by source IP.
+
+    Without this the endpoint accepts a `payment.succeeded` from anyone who
+    knows a payment id, and the person most likely to know one is the customer
+    who just started the payment and can read it from their own redirect. They
+    could abandon the payment and confirm the booking themselves.
+
+    An empty YOOKASSA_WEBHOOK_IPS keeps the old permissive behaviour so this
+    can't break a live deploy the moment it ships; set it in production.
+    Networks are listed at https://yookassa.ru/developers/using-api/webhooks
+    """
+    allowed = getattr(settings, 'YOOKASSA_WEBHOOK_IPS', [])
+    if not allowed:
+        logger.warning('YOOKASSA_WEBHOOK_IPS is unset — webhook is unauthenticated.')
+        return True
+
+    import ipaddress
+    raw = _client_ip(request)
+    try:
+        ip = ipaddress.ip_address(raw)
+    except ValueError:
+        logger.warning('Webhook from unparseable IP %r — rejected.', raw)
+        return False
+
+    for net in allowed:
+        try:
+            if ip in ipaddress.ip_network(net.strip(), strict=False):
+                return True
+        except ValueError:
+            logger.error('Bad network %r in YOOKASSA_WEBHOOK_IPS — skipped.', net)
+    logger.warning('Webhook from disallowed IP %s — rejected.', raw)
+    return False
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def yookassa_webhook(request):
@@ -233,6 +280,8 @@ def yookassa_webhook(request):
     POST /api/v1/payments/webhook/
     YooKassa sends event notifications here.
     """
+    if not _yookassa_ip_allowed(request):
+        return Response({'status': 'forbidden'}, status=status.HTTP_403_FORBIDDEN)
     try:
         event      = request.data
         event_type = event.get('event', '')
@@ -305,3 +354,19 @@ def yookassa_webhook(request):
     except Exception as exc:
         logger.error('YooKassa webhook error: %s', exc, exc_info=True)
         return Response({'status': 'error'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def payment_methods(request):
+    """
+    GET /api/v1/payments/methods/?lang=ru
+
+    The checkout renders whatever this returns, so enabling or hiding a rail is
+    a PAYMENT_METHODS_ENABLED env change rather than a frontend edit. A method
+    only appears if it is both switched on and actually configured, so the UI
+    can never show a button that 500s for want of credentials.
+    """
+    from . import providers
+    lang = 'ru' if request.GET.get('lang') == 'ru' else 'en'
+    return Response({'methods': providers.available_methods(lang)})

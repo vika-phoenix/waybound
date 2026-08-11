@@ -223,6 +223,36 @@ ADMIN_NOTIFICATION_EMAIL  = config('ADMIN_NOTIFICATION_EMAIL',  default='viktori
 YOOKASSA_SHOP_ID    = config('YOOKASSA_SHOP_ID', default='')
 YOOKASSA_SECRET_KEY = config('YOOKASSA_SECRET_KEY', default='')
 
+# ── Payment rails ─────────────────────────────────────────────
+# Two independent rails settling to two different bank accounts:
+#   * Russian      — YooKassa / SBP, charges RUB, settles to the Russian account
+#   * International— Stripe / PayPal, charges USD, settles to the other account
+# Each provider carries its own credentials, so the money routes itself; the
+# provider used is recorded on Booking.payment_method for reconciliation.
+#
+# PAYMENT_METHODS_ENABLED is what the checkout actually offers. The frontend
+# renders whatever GET /api/v1/payments/methods/ returns, so turning the
+# Russian rail back on is this one env var — no code change, no redeploy.
+# A method is only offered if it is BOTH listed here and configured.
+PAYMENT_METHODS_ENABLED = config(
+    'PAYMENT_METHODS_ENABLED', cast=Csv(), default='stripe,paypal',
+)
+
+STRIPE_SECRET_KEY      = config('STRIPE_SECRET_KEY',      default='')
+STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='')
+STRIPE_WEBHOOK_SECRET  = config('STRIPE_WEBHOOK_SECRET',  default='')
+
+PAYPAL_CLIENT_ID     = config('PAYPAL_CLIENT_ID',     default='')
+PAYPAL_CLIENT_SECRET = config('PAYPAL_CLIENT_SECRET', default='')
+PAYPAL_WEBHOOK_ID    = config('PAYPAL_WEBHOOK_ID',    default='')
+# 'sandbox' until a live PayPal business account exists.
+PAYPAL_ENV           = config('PAYPAL_ENV', default='sandbox')
+
+# YooKassa does not sign webhooks — it authenticates by source IP. Empty means
+# "don't check", which is the current (insecure) behaviour; set it in prod.
+# Published list: https://yookassa.ru/developers/using-api/webhooks
+YOOKASSA_WEBHOOK_IPS = config('YOOKASSA_WEBHOOK_IPS', cast=Csv(), default='')
+
 # ── Telegram ──────────────────────────────────────────────────
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
 

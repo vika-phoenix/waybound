@@ -94,9 +94,17 @@ class Booking(models.Model):
     currency        = models.CharField(max_length=3, default='USD')
 
     # ── Payment ────────────────────────────────────────────
+    # Which rail took the money. The two rails settle to different bank
+    # accounts, so this is what reconciliation keys off.
     payment_method  = models.CharField(
         max_length=20, blank=True,
-        choices=[('yookassa','YooKassa'),('sbp','СБП'),('bank','Bank transfer')],
+        choices=[
+            ('stripe',  'Stripe (card)'),      # international rail, USD
+            ('paypal',  'PayPal'),             # international rail, USD
+            ('yookassa','YooKassa'),           # Russian rail, RUB
+            ('sbp',     'СБП'),                # Russian rail, RUB
+            ('bank',    'Bank transfer'),
+        ],
     )
     yookassa_payment_id = models.CharField(max_length=60, blank=True, default='',
                                             help_text='YooKassa payment UUID')
