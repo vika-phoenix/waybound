@@ -1,4 +1,4 @@
-# Waybound - Production Setup & Roadmap
+# Kavkazland - Production Setup & Roadmap
 
 > Everything needed to go live, plus what to tackle next.
 
@@ -21,7 +21,14 @@
 
 ## Production Architecture
 
+All three public hostnames sit behind Cloudflare:
+
 ```
+  kavkazland.com          api.kavkazland.com        images.kavkazland.com
+  (Cloudflare Pages)      (proxied -> Railway)      (R2 waybound-media)
+         |                        |                          |
+         +------------------------+--------------------------+
+                                  v
                   Cloudflare Pages
                   (frontend HTML)
                         |
@@ -48,7 +55,7 @@ Users  ------>   Railway (backend)
 | Cloudflare R2 | Media storage (tour photos, avatars, docs) | Free (10GB + 10M reads/mo) |
 | Brevo | Transactional email | Free (300 emails/day) |
 | YooKassa | Payment processing (RUB) | Per-transaction fees |
-| Domain (optional) | Custom domain | ~$10-15/year |
+| Namecheap | Domain `kavkazland.com` (DNS delegated to Cloudflare) | ~$10-15/year |
 
 ---
 
@@ -120,6 +127,25 @@ These are real issues encountered during deployment. **Read this before debuggin
 
 14. **allauth provider names are title-cased in DB** — allauth stores `'Yandex'` and `'Google'` (capitalized) in `SocialAccount.provider`. The frontend passes lowercase. Always use `provider__iexact` in backend queries and `.toLowerCase()` when building the frontend providers map.
 
+15. **Some ISPs refuse to resolve `*.up.railway.app`** — the site looks dead while Railway reports healthy and the deployment badge is green. A JioFiber (India) resolver answered `Query refused` for `waybound-production.up.railway.app` while resolving `google.com` and `waybound.pages.dev` normally. The static frontend loads fine (different host), so pages render but every API call fails and `/admin/` won't open — which looks exactly like a backend outage.
+
+    Diagnose by comparing the local resolver against a public one:
+    ```bash
+    nslookup api.kavkazland.com            # your ISP
+    nslookup api.kavkazland.com 8.8.8.8    # public
+    ```
+    If only the first fails, it's the ISP. Confirm the server is fine by bypassing DNS entirely:
+    ```bash
+    curl -i --resolve api.kavkazland.com:443:<ip> https://api.kavkazland.com/api/v1/health/
+    ```
+    **The fix is the Cloudflare-proxied custom domain**, which is why `api.kavkazland.com`
+    must be orange-clouded. Proxied, clients resolve a Cloudflare IP and the Railway
+    hostname is never looked up. DNS-only (grey) does **not** help: the record is still
+    a CNAME to `*.up.railway.app`, so the resolver must follow the chain and fails the
+    same way.
+
+16. **`/api/v1/health/` never touches the database** — ([`waybound/urls.py`](backend/waybound/urls.py)) it returns static JSON, which makes it a clean discriminator. Health 200 + a real endpoint 500 means the app is up and the DB is broken; both failing means gunicorn isn't running; both 400 means the hostname is missing from `DJANGO_ALLOWED_HOSTS`.
+
 ### Troubleshooting Quick Reference
 
 | Symptom | Cause | Fix |
@@ -132,6 +158,9 @@ These are real issues encountered during deployment. **Read this before debuggin
 | App crash on startup | Missing env var with no default | Add `default=''` or set the variable |
 | Duplicate scheduler warnings | Multiple workers starting scheduler | Use `--preload` in gunicorn command |
 | Nothing loads at all | Wrong target port in domain settings | Set to `8080` (check deploy logs) |
+| Site dead for you, Railway healthy, DB up | ISP won't resolve `*.up.railway.app` | Use the proxied `api.kavkazland.com`; see gotcha 15 |
+| API 400 on a new hostname | Hostname missing from `DJANGO_ALLOWED_HOSTS` | Add it (keep `localhost` for the healthcheck) |
+| Frontend calls the old backend after a switch | Pages cached `config.js` for 4h | `frontend/_headers` revalidates it; hard-refresh once |
 | Local admin form clears on submit | `SESSION_COOKIE_SECURE=True` in `.env`, HTTP locally | `dev.py` sets `SESSION_COOKIE_SECURE=False` — restart server |
 | Local admin CSRF 403 "cookie not set" | `CSRF_COOKIE_SAMESITE=None` without Secure, Chrome drops it | `dev.py` sets `CSRF_COOKIE_SAMESITE='Lax'` |
 | Local admin 404 at `/accounts/profile/` | `LOGIN_REDIRECT_URL` defaults to allauth path | `dev.py` sets `LOGIN_REDIRECT_URL='/admin/'` |
@@ -213,7 +242,7 @@ Sends booking confirmations, deposit reminders, balance reminders, review reques
 **Env vars to set:**
 ```
 BREVO_API_KEY      = xkeysib-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-DEFAULT_FROM_EMAIL = Waybound <noreply@yourdomain.com>
+DEFAULT_FROM_EMAIL = Kavkazland <noreply@kavkazland.com>
 ```
 
 **Emails the platform sends:**
@@ -323,7 +352,7 @@ VK_CLIENT_SECRET = (from VK)
 
 **Setup:**
 1. Message @BotFather on Telegram -> `/newbot`
-2. Name it "Waybound Notifications" (or similar)
+2. Name it "Kavkazland Notifications" (or similar)
 3. Copy the bot token
 
 **Env vars:**
@@ -344,9 +373,45 @@ TELEGRAM_BOT_TOKEN = (from BotFather)
    - Output directory: `frontend`
 4. Deploy
 
-Your frontend gets a free `*.pages.dev` domain. You can add a custom domain later.
+Your frontend gets a free `*.pages.dev` domain (`waybound.pages.dev` — the Pages
+project name predates the rebrand and still works). The live site is the custom
+domain below.
 
-**`config.js` auto-detects the environment** — no manual update needed. It uses `window.location.hostname` to switch between local (`http://127.0.0.1:8000`) and production (`https://waybound-production.up.railway.app`). If your Railway URL changes, update `config.js`.
+**`config.js` auto-detects the environment** — no manual update needed. It uses `window.location.hostname` to switch between local (`http://127.0.0.1:8000`) and production (`https://api.kavkazland.com`). If your Railway URL changes, update `config.js`.
+
+**Two control files live in `frontend/`:**
+
+- **`_redirects`** — 301s the pre-rebrand homepage URLs (`/waybound`, `/waybound_ru`)
+  to `/` and `/index_ru`. The homepage used to be `waybound.html`, so `/waybound`
+  is in bookmarks and search results.
+- **`_headers`** — drops the Pages default 4-hour cache to revalidate-every-request
+  for `config.js`, `nav.js`, `toast.js` and `mobile.css`. `config.js` carries the API
+  hostname; a stale copy points browsers at the wrong backend, which surfaces as
+  "Failed to fetch" with no HTTP status to report.
+
+---
+
+### 10. Custom Domains (Cloudflare DNS)
+
+The domain is registered at Namecheap but its nameservers point at Cloudflare, so
+all DNS records are managed in the Cloudflare dashboard.
+
+| Hostname | Points at | Proxy | Purpose |
+|----------|-----------|-------|---------|
+| `kavkazland.com`, `www.` | Cloudflare Pages | — | The site (added under Pages → Custom domains) |
+| `api.kavkazland.com` | CNAME → Railway | **Proxied (orange)** | Django API, `/admin/`, OAuth callbacks |
+| `images.kavkazland.com` | R2 bucket `waybound-media` | — | Public media, set as `R2_PUBLIC_URL` |
+
+**`api.kavkazland.com` must stay proxied (orange cloud), with SSL/TLS mode
+Full (strict).** See gotcha 15 below for why. Create the record as DNS-only first
+so Railway can validate and issue its certificate, then switch it to proxied.
+
+Adding the API domain also means updating `DJANGO_ALLOWED_HOSTS`,
+`CSRF_TRUSTED_ORIGINS`, `CORS_ALLOWED_ORIGINS` and `FRONTEND_URL`, adding the three
+OAuth callback URLs in the Google / Yandex / VK consoles, and setting the
+`django.contrib.sites` record at `/admin/sites/site/1/` to `api.kavkazland.com`
+(allauth builds password-reset and email-confirmation links from it, and Django
+seeds it with `example.com`).
 
 ---
 
@@ -359,7 +424,7 @@ Your frontend gets a free `*.pages.dev` domain. You can add a custom domain late
 | `DJANGO_SETTINGS_MODULE` | `waybound.settings.prod` | Always this value |
 | `DJANGO_SECRET_KEY` | `a8f3k...long-random-string` | Generate with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
 | `DJANGO_ALLOWED_HOSTS` | `.railway.app,localhost` | **Must include `localhost`** for Railway healthcheck |
-| `CSRF_TRUSTED_ORIGINS` | `https://waybound-production.up.railway.app` | Full URL with protocol, comma-separated if multiple |
+| `CSRF_TRUSTED_ORIGINS` | `https://api.kavkazland.com` | Full URL with protocol, comma-separated if multiple |
 | `DATABASE_URL` | (auto-injected by Railway) | Do NOT set manually |
 
 ### Required for features to work
@@ -383,7 +448,7 @@ Your frontend gets a free `*.pages.dev` domain. You can add a custom domain late
 | `VK_CLIENT_ID` + `VK_CLIENT_SECRET` | VK login |
 | `TELEGRAM_BOT_TOKEN` | Telegram notifications |
 | `ANTHROPIC_API_KEY` | AI features (if any) |
-| `DEFAULT_FROM_EMAIL` | Defaults to `noreply@waybound.com` |
+| `DEFAULT_FROM_EMAIL` | Defaults to `noreply@kavkazland.com` |
 | `ADMIN_NOTIFICATION_EMAIL` | Admin alert recipient |
 
 ---
@@ -502,7 +567,7 @@ These are features that make sense only once you have real traffic and data. Bui
 - [ ] **Referral program** - Tourist refers friend, both get discount (rewards.html exists but isn't wired to backend)
 - [ ] **Loyalty points / credits** - Earn points per booking, redeem on future tours
 - [ ] **Promo codes** - Operator or platform-wide discount codes
-- [ ] **Gift cards** - Buy a Waybound gift card for someone
+- [ ] **Gift cards** - Buy a Kavkazland gift card for someone
 - [ ] **Push notifications** - Browser push for booking updates, new tours in saved destinations
 - [ ] **Newsletter** - Weekly "new tours" email digest to opted-in tourists
 

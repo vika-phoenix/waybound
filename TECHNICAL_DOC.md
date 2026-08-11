@@ -1,4 +1,4 @@
-# Waybound - Technical Documentation
+# Kavkazland - Technical Documentation
 
 > Small-group adventure tour booking platform. Django REST API backend + vanilla HTML/JS frontend.
 
@@ -44,10 +44,10 @@ Frontend (vanilla HTML/JS)          Backend (Django REST)
 
 - **Backend**: Django 4.2 REST API on Railway, PostgreSQL, WhiteNoise for static, Cloudflare R2 for media uploads
 - **Frontend**: Plain HTML/CSS/JS (no React/Vue), served separately (Cloudflare Pages or any static host)
-- **Payments**: YooKassa (Russian + international cards), with CBR exchange rate conversion
+- **Payments**: YooKassa + SBP, with CBR exchange rate conversion. **Russian rails only** — YooKassa settles to a Russian bank account and, since Visa and Mastercard suspended Russian operations in 2022, it cannot charge foreign-issued cards. Taking payment from customers outside Russia needs a second processor and a non-Russian entity; nothing for that exists yet. (`stripe` is in `requirements.txt` and `STRIPE_*` sits in `.env`, but no code imports it — dead weight, not a working integration.)
 - **Email**: Brevo (production), console output (local dev)
 - **Scheduler**: APScheduler with DjangoJobStore for recurring background jobs
-- **Live URL**: `https://waybound-production.up.railway.app`
+- **Live URL**: `https://api.kavkazland.com`
 
 ---
 
@@ -97,7 +97,7 @@ main/
 |   +-- .env.example
 |
 +-- frontend/
-|   +-- waybound.html              # Landing page
+|   +-- index.html              # Landing page
 |   +-- adventures.html            # Tour browsing + filters
 |   +-- tour_detail_page.html      # Single tour page + booking
 |   +-- booking.html               # Checkout
@@ -280,7 +280,7 @@ Every page has an English version and a Russian (`_ru.html`) counterpart. The Ru
 
 | English | Russian | Purpose |
 |---------|---------|---------|
-| `waybound.html` | `waybound_ru.html` | Landing page - hero, featured tours, trust badges, CTA |
+| `index.html` | `index_ru.html` | Landing page - hero, featured tours, trust badges, CTA |
 | `adventures.html` | `adventures_ru.html` | Tour search + filter (destination, category, difficulty, price, duration, guaranteed, dates) |
 | `tour_detail_page.html` | `tour_detail_page_ru.html` | Tour detail: itinerary, stays, photos, map, reviews, departure picker, booking form |
 | `about.html` | `about_ru.html` | Company story + photo gallery (lightbox on click) |
@@ -406,7 +406,7 @@ WaitlistEntry      (tour, email, departure_label)
 ```
 Booking
   - tourist -> User (nullable for guest), tour -> Tour, departure -> DepartureDate
-  - reference: TRP-XXXXXX (auto-generated)
+  - reference: VZ-XXXXXX (auto-generated)
   - status: pending | confirmed | completed | cancelled | refunded
   - adults, children, infants
   - first_name, last_name, email, phone, country
@@ -477,7 +477,7 @@ Uses `provider__iexact` (case-insensitive) for the DB lookup because allauth sto
 4. Browser lands on `signin.html?social_access=...` — frontend reads tokens from URL, stores in `localStorage`, cleans up URL
 5. No cookie exchange needed — works cross-origin without `SameSite=None` cookies
 
-**Language routing after OAuth:** `signin_ru.html` and `signup_ru.html` store `sessionStorage.waybound_oauth_lang = 'ru'` before the OAuth redirect. `signin.html` reads this on landing and routes to Russian pages (`waybound_ru.html`, `settings_ru.html`, etc.).
+**Language routing after OAuth:** `signin_ru.html` and `signup_ru.html` store `sessionStorage.waybound_oauth_lang = 'ru'` before the OAuth redirect. `signin.html` reads this on landing and routes to Russian pages (`index_ru.html`, `settings_ru.html`, etc.).
 
 **Connecting a provider to an existing account:** Uses `connect=1` param. `pre_social_login` stores `wb_connect=1` in the session; `get_login_redirect_url` detects this and redirects back to `settings.html?social_access=...` instead of `signin.html`.
 
@@ -675,7 +675,7 @@ python manage.py runserver
 # From project root
 cd frontend
 
-# Option 1: VS Code Live Server (right-click waybound.html -> Open with Live Server)
+# Option 1: VS Code Live Server (right-click index.html -> Open with Live Server)
 # Option 2: Python HTTP server
 python -m http.server 5500
 
@@ -738,7 +738,7 @@ If you run `git add` from inside `backend/`, you need paths relative to `backend
 Since Railway shell doesn't always have Python available, add these **Variables** in Railway temporarily:
 
 ```
-DJANGO_SUPERUSER_EMAIL    = admin@waybound.com
+DJANGO_SUPERUSER_EMAIL    = admin@kavkazland.com
 DJANGO_SUPERUSER_PASSWORD = your-secure-password
 ```
 
@@ -808,7 +808,7 @@ SECURE_SSL_REDIRECT = False  # in prod.py
 ### 3. CSRF_TRUSTED_ORIGINS is required
 Without it, Django admin login returns 403 Forbidden. Must include the full Railway URL with protocol:
 ```python
-CSRF_TRUSTED_ORIGINS = ['https://waybound-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://api.kavkazland.com']
 ```
 
 ### 4. SECURE_PROXY_SSL_HEADER is required
@@ -851,6 +851,14 @@ The `|| true` ensures the deploy continues even if the command fails (e.g., supe
 ### 12. Deploy logs vs Database logs
 In Railway, make sure you're looking at the **Django service** logs, not the **PostgreSQL service** logs. PostgreSQL logs show checkpoint and replication info, not your app errors.
 
+### 13. Some ISPs refuse to resolve `*.up.railway.app`
+The site looks dead while Railway reports healthy. A JioFiber resolver answered `Query refused` for `waybound-production.up.railway.app` while resolving other hosts normally — the static frontend still loaded (different host), so pages rendered but every API call failed and `/admin/` wouldn't open.
+
+Compare `nslookup <host>` against `nslookup <host> 8.8.8.8`; if only the local one fails it's the ISP, not you. The fix is the Cloudflare-**proxied** `api.kavkazland.com`, so clients resolve a Cloudflare IP and never look up the Railway hostname. Grey-cloud (DNS-only) does not help — the CNAME still chains to `*.up.railway.app`. Full detail in `PROD_SETUP.md` gotcha 15.
+
+### 14. Cloudflare Pages caches static assets for 4 hours
+Pages defaults to `max-age=14400`. `config.js` carries the API hostname, so after a backend move browsers keep calling the old host for up to four hours — and if that host is the one being refused (gotcha 13), the request fails before leaving the machine and reports `Failed to fetch` with no HTTP status. `frontend/_headers` sets `config.js`, `nav.js`, `toast.js` and `mobile.css` to revalidate on every request.
+
 ---
 
 ## Russian Localisation
@@ -866,11 +874,22 @@ In Railway, make sure you're looking at the **Django service** logs, not the **P
 
 `nav.js` exports `_navIsRuPage()` which checks if the current page filename ends in `_ru.html`. The shared `buildDropdown()` function uses this to render menu labels (Дашборд / Dashboard, etc.) and route all hrefs to the correct `_ru.html` or `.html` file.
 
+### Homepage URL + language auto-redirect
+
+The homepage is `index.html`, served at `/`, with `index_ru.html` at `/index_ru`. It used to be `waybound.html` behind a meta-refresh stub in `index.html`, so every visit bounced to `/waybound`; `frontend/_redirects` keeps the old paths alive as 301s.
+
+Two helpers in `nav.js` handle the pairing:
+
+- `_navPageBase(path)` strips `_ru` and `.html`, and normalises `/`, `/index` and `/index.html` to the single base `/index`.
+- `_navLangUrl(base, lang)` maps a base back to a URL, special-casing `/index` → `/` (EN) or `/index_ru` (RU).
+
+The auto-redirect on load only fires when the saved language doesn't match the current page. Since pages are authored in English, in practice **only a saved `ru` preference moves you off the URL you asked for**. The homepage takes part in this: the old guard skipped anything whose leaf was `index`, so a Russian visitor landing on the homepage stayed on the English one while every other page switched.
+
 ### Mobile navigation (responsive)
 
 `nav.js` injects a hamburger button (`.wb-burger`) and a slide-in drawer (`.wb-drawer`) on every page. The drawer is built by **cloning the page's existing `.nav-links` anchors**, so EN/RU labels and hrefs carry over automatically with no hardcoding. The burger is `display:none` above 768px (see `mobile.css`), so desktop is unaffected. Styling for the drawer/overlay and all responsive grid collapses live in `mobile.css`, scoped to `@media (max-width: 768px)` / `(max-width: 480px)`.
 
-On mobile the desktop nav's right cluster (`.nav-r` / `.nav-r-wrap` — Sign in, List a tour, language toggle, avatar) is hidden because all of it is reachable from the drawer; this leaves a clean `[☰] waybound` header. `mobile.css` also stacks the adventures hero search (`.search-bar`), wraps filter `.pills`, and stacks the tour-detail photo gallery (`.photo-mosaic`).
+On mobile the desktop nav's right cluster (`.nav-r` / `.nav-r-wrap` — Sign in, List a tour, language toggle, avatar) is hidden because all of it is reachable from the drawer; this leaves a clean `[☰] kavkazland` header. `mobile.css` also stacks the adventures hero search (`.search-bar`), wraps filter `.pills`, and stacks the tour-detail photo gallery (`.photo-mosaic`).
 
 ### Mobile QA pipeline (local-only)
 
@@ -946,7 +965,7 @@ Plurals in Russian follow three forms (1 / 2-4 / 5+). Key patterns used across p
 - `buildDropdown()` is language-aware — renders Russian labels and `_ru.html` hrefs on Russian pages
 - Bell notification click routes to `operator-dashboard_ru.html` on Russian pages
 
-**`frontend/waybound_ru.html`**
+**`frontend/index_ru.html`**
 - Fixed `'style-card' + s.cls` → `'style-card ' + s.cls` (missing space broke homepage layout)
 - Fixed style card clicks to route to `adventures_ru.html?cat=`
 
