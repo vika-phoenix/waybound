@@ -666,7 +666,7 @@ function updatePriceRange() {
   filters.maxPrice = parseInt(maxEl.value) || 200000;
   filters.minPrice = 0;
   var rub = '&#8381;';
-  if (dispEl) dispEl.textContent = filters.maxPrice >= 200000 ? 'Any price' : '₽' + filters.maxPrice.toLocaleString('ru-RU');
+  if (dispEl) dispEl.textContent = filters.maxPrice >= 200000 ? 'Any price' : '$' + filters.maxPrice.toLocaleString('ru-RU');
   applyFilters();
 }
 function toggleChk(el) {
@@ -916,7 +916,7 @@ async function loadTours() {
         difficulty:  t.difficulty,
         days:        t.days,
         price:       t.price,
-        currency:    '₽',
+        currency:    '$',
         rating:      parseFloat(t.rating),
         reviews:     t.review_count,
         spots:       t.spots_left,

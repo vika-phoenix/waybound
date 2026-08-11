@@ -110,7 +110,7 @@ class Tour(models.Model):
     price_adult = models.DecimalField(max_digits=10, decimal_places=2)
     price_child = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,
                                        help_text='Leave blank to default to 85% of adult price')
-    currency    = models.CharField(max_length=3, default='RUB')
+    currency    = models.CharField(max_length=3, default='USD')
     max_group   = models.PositiveSmallIntegerField(default=12)
     min_group   = models.PositiveSmallIntegerField(default=1)
 

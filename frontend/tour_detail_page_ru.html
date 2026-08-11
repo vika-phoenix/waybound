@@ -1620,7 +1620,7 @@ body,body.ocean,body.warm,body.ivory,body.gold,body.forest,body.terra {
 <div class="sidebar-col">
 <div class="booking-card" id="bookingCard">
 <!-- PRICE -->
-<div class="booking-price-main" id="bookingPrice">₽89,000</div>
+<div class="booking-price-main" id="bookingPrice">$89,000</div>
 <div class="booking-price-sub"><b>с человека</b>  ·  <span id="bookingDays" style="color:var(--muted)">8 дней</span>  · <span id="minGroupWrap" style="display:none">мин <span id="bookingMinGroup" style="color:var(--muted)">2</span> · </span>макс <span id="bookingGroup" style="color:var(--muted)">15</span> человек</div>
 <!-- TOUR TYPE FLAG (multi-day = departure dropdown / single-day = calendar) -->
 <!-- data-tour-type="multi" means operator has set fixed departure windows -->
@@ -1708,7 +1708,7 @@ body,body.ocean,body.warm,body.ivory,body.gold,body.forest,body.terra {
 </div>
 <!-- PRICE PREVIEW -->
 <div class="price-preview" id="pricePreview" style="display:none">
-<div class="pp-row"><span>Базовый пакет (взрослые)</span><span id="ppSubtotal">₽89,000</span></div>
+<div class="pp-row"><span>Базовый пакет (взрослые)</span><span id="ppSubtotal">$89,000</span></div>
 <div class="pp-row" id="ppChildRow" style="display:none"><span>Дети</span><span id="ppChildTotal"></span></div>
 <div class="pp-row" id="ppRoomRow" style="display:none"><span id="ppRoomLabel">Доплата за номер</span><span id="ppRoomTotal"></span></div>
 <div class="pp-row" id="ppExtrasRow" style="display:none"><span>Дополнительные услуги</span><span id="ppExtrasTotal"></span></div>
@@ -1717,7 +1717,7 @@ body,body.ocean,body.warm,body.ivory,body.gold,body.forest,body.terra {
 <div id="totalPriceBox" style="background:var(--accent-light);border:1.5px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:10px">
 <div style="display:flex;justify-content:space-between;align-items:center">
 <span style="font-size:14px;font-weight:600;color:var(--ink)">Итого</span>
-<span id="totalPriceDisplay" style="font-size:18px;font-weight:700;color:var(--ink)">₽89,000</span>
+<span id="totalPriceDisplay" style="font-size:18px;font-weight:700;color:var(--ink)">$89,000</span>
 </div>
 <div id="totalPriceNote" style="font-size:11.5px;color:var(--muted);margin-top:4px">Выберите дату вылета, чтобы продолжить.</div>
 <div id="depositLine" style="display:none;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:12px;font-family:var(--font-body);color:var(--accent-dark)">
@@ -1867,7 +1867,7 @@ var TOUR_DATA = {
   type: 'multi',
   priceAdult: 89000,
   priceChild: 75650,
-  currency: '₽',
+  currency: '$',
   maxGroup: 15,
   availDays: [2, 6]
 };
@@ -2975,7 +2975,7 @@ async function loadTour(slug) {
     var extrasCard = document.getElementById('extrasCard');
     var extrasList = document.getElementById('extrasListDetail');
     if (extrasCard && extrasList && t.extras && t.extras.length) {
-      var currSym = TOUR_DATA.currency || '₽';
+      var currSym = TOUR_DATA.currency || '$';
       extrasList.innerHTML = t.extras.map(function(ex) {
         var isFlat = ex.pricing_type === 'flat';
         var priceStr = ex.price_per_person > 0
@@ -3461,7 +3461,7 @@ async function submitTdReview() {
 
 function patchPage(t) {
   var _cm  = { RUB:'₽', USD:'$', EUR:'€', GBP:'£', GEL:'₾', TRY:'₺', KZT:'₸', AMD:'֏' };
-  var _sym = t.currency_symbol || (t.currency && _cm[t.currency]) || t.currency || '₽';
+  var _sym = t.currency_symbol || (t.currency && _cm[t.currency]) || t.currency || '$';
   var price    = _sym + parseInt(t.price_adult || t.price || 0).toLocaleString('ru-RU');
   var days     = t.days;
   var dayLabel = days + 'день' + (days !== 1 ? 's' : '');
@@ -3520,7 +3520,7 @@ function patchPage(t) {
 
   // 1.3 — Update currency symbol from tour data
   var _currMap = { RUB:'₽', USD:'$', EUR:'€', GBP:'£', GEL:'₾', TRY:'₺', KZT:'₸', AMD:'֏' };
-  TOUR_DATA.currency = t.currency_symbol || (t.currency && _currMap[t.currency]) || t.currency || '₽';
+  TOUR_DATA.currency = t.currency_symbol || (t.currency && _currMap[t.currency]) || t.currency || '$';
 
   // Refresh total price display with real prices
   updateTotalDisplay();

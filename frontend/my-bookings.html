@@ -803,7 +803,7 @@ async function loadFeaturedTours() {
     for (var i = 0; i < tours.length; i++) {
       var t = tours[i];
       var dayLabel = t.days === 1 ? '1 day' : t.days + ' days';
-      var price = '₽' + parseInt(t.price).toLocaleString('ru-RU');
+      var price = '$' + parseInt(t.price).toLocaleString('ru-RU');
       var spots = t.spots_left <= 3
         ? '<div class="feat-spots-low">🔥 Only ' + t.spots_left + ' spots left</div>'
         : '';
@@ -859,7 +859,7 @@ async function fetchAuth(url, opts) {
 }
 
 function fmtPrice(n, b) {
-  var sym = b ? (symMap[b.currency || 'RUB'] || (b.currency + ' ')) : '₽';
+  var sym = b ? (symMap[b.currency || 'RUB'] || (b.currency + ' ')) : '$';
   return sym + parseInt(parseFloat(n)||0).toLocaleString('ru-RU');
 }
 
@@ -1285,7 +1285,7 @@ async function cancelBooking(bookingId) {
 
     // Use RUB for YooKassa/SBP (actual refund currency), tour currency for bank
     var useRub = (d.payment_method === 'yookassa' || d.payment_method === 'sbp') && d.refund_rub !== undefined;
-    var sym    = useRub ? '₽' : (symMap[d.currency || 'RUB'] || (d.currency + ' '));
+    var sym    = useRub ? '$' : (symMap[d.currency || 'RUB'] || (d.currency + ' '));
     var fmtN   = function(n) { return sym + parseFloat(n||0).toLocaleString('ru-RU', {minimumFractionDigits:0, maximumFractionDigits:0}); };
     var totalPaidShow  = useRub ? d.total_paid_rub  : d.total_paid;
     var refundAmtShow  = useRub ? d.refund_rub       : d.refund_amount;

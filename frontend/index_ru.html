@@ -688,7 +688,7 @@ async function loadFeaturedTours() {
       // Hide tours with no upcoming departure (same logic as adventures page)
       if (!t.next_departure) continue;
       var dayLabel = t.days === 1 ? '1 день' : t.days + 'дней';
-      var price = '₽' + parseInt(t.price).toLocaleString('ru-RU');
+      var price = '$' + parseInt(t.price).toLocaleString('ru-RU');
       var spots = t.spots_left <= 3
         ? '<div class="feat-spots-low">🔥 Осталось только' + t.spots_left + 'мест</div>'
         : '';

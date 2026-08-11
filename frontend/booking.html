@@ -783,7 +783,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
     <div class="sum-row"><span class="sum-lbl">👥 Travelers</span><span class="sum-val" id="sumPax">—</span></div>
     <div class="sum-row"><span class="sum-lbl">⏱ Duration</span><span class="sum-val" id="sumDays">—</span></div>
     <div class="sum-div"></div>
-    <div class="sum-row"><span class="sum-lbl" id="sumPriceLabel">Adults × ₽89,000</span><span class="sum-val" id="sumSub">—</span></div>
+    <div class="sum-row"><span class="sum-lbl" id="sumPriceLabel">Adults × $89,000</span><span class="sum-val" id="sumSub">—</span></div>
     <div class="sum-row" id="sumChildRow" style="display:none"><span class="sum-lbl" id="sumChildLbl">Children</span><span class="sum-val" id="sumChildVal">—</span></div>
     <div class="sum-row" id="sumInfantRow" style="display:none"><span class="sum-lbl" id="sumInfantLbl">Infants</span><span class="sum-val" style="color:#1a7a40;font-weight:600">Free</span></div>
     <div class="sum-row" id="sumRoomRow" style="display:none"><span class="sum-lbl" id="sumRoomLbl">Room supplement</span><span class="sum-val" id="sumRoomVal">—</span></div>
@@ -892,7 +892,7 @@ async function fetchAuth(url, opts) {
   return await fetch(url, opts);
 }
 
-var PRICES = { adult: 0, child: 0, currency: '₽' };
+var PRICES = { adult: 0, child: 0, currency: '$' };
 var currentStep = 1;
 
 // Read URL params passed from tour detail page

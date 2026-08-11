@@ -498,7 +498,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 </div>
 <input id="priceMax" max="200000" min="0" oninput="updatePriceRange()" step="5000" style="width:100%;accent-color:var(--ac);margin:4px 0" type="range" value="200000">
 <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--mu);font-family:var(--bf);margin-top:4px">
-<span>₽0</span><span>₽200,000</span>
+<span>$0</span><span>$200,000</span>
 </div>
 </input></div>
 <!-- Duration -->
@@ -651,7 +651,7 @@ function updatePriceRange() {
   filters.maxPrice = parseInt(maxEl.value) || 200000;
   filters.minPrice = 0;
   var rub = '&#8381;';
-  if (dispEl) dispEl.textContent = filters.maxPrice >= 200000 ? 'Любая цена' : '₽' + filters.maxPrice.toLocaleString('ru-RU');
+  if (dispEl) dispEl.textContent = filters.maxPrice >= 200000 ? 'Любая цена' : '$' + filters.maxPrice.toLocaleString('ru-RU');
   applyFilters();
 }
 function toggleChk(el) {
@@ -908,7 +908,7 @@ async function loadTours() {
         difficulty:  t.difficulty,
         days:        t.days,
         price:       t.price,
-        currency:    '₽',
+        currency:    '$',
         rating:      parseFloat(t.rating),
         reviews:     t.review_count,
         spots:       t.spots_left,

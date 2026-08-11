@@ -91,7 +91,7 @@ class Booking(models.Model):
     room_supplement_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0,
                                                 help_text='Room type supplement (or discount) at booking time')
     deposit_paid    = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    currency        = models.CharField(max_length=3, default='RUB')
+    currency        = models.CharField(max_length=3, default='USD')
 
     # ── Payment ────────────────────────────────────────────
     payment_method  = models.CharField(

@@ -1038,7 +1038,7 @@ async function loadFeaturedTours() {
     for (var i = 0; i < tours.length; i++) {
       var t = tours[i];
       var dayLabel = t.days === 1 ? '1 день' : t.days + 'дней';
-      var price = '₽' + parseInt(t.price).toLocaleString('ru-RU');
+      var price = '$' + parseInt(t.price).toLocaleString('ru-RU');
       var spots = t.spots_left <= 3
         ? '<div class="feat-spots-low">🔥 Осталось всего' + t.spots_left + 'мест</div>'
         : '';
@@ -1070,7 +1070,7 @@ var _autoOpenCard = parseInt(new URLSearchParams(window.location.search).get('op
 
 var _symMap = { RUB:'₽', USD:'$', EUR:'€', GBP:'£', CNY:'¥', TRY:'₺', KZT:'₸' };
 function fmtP(n, cur) {
-  var sym = cur ? (_symMap[cur] || (cur + ' ')) : '₽';
+  var sym = cur ? (_symMap[cur] || (cur + ' ')) : '$';
   return sym + parseInt(parseFloat(n)||0).toLocaleString('ru-RU');
 }
 function fmtD(s) {
@@ -2252,7 +2252,7 @@ async function cancelBooking(id) {
     if (pr.ok) {
       var pd = await pr.json();
       var useRub = (pd.payment_method === 'yookassa' || pd.payment_method === 'sbp') && pd.refund_rub !== undefined;
-      var sym = useRub ? '₽' : (_symMap[pd.currency || 'RUB'] || (pd.currency + ' '));
+      var sym = useRub ? '$' : (_symMap[pd.currency || 'RUB'] || (pd.currency + ' '));
       var fN  = function(n) { return sym + parseFloat(n||0).toLocaleString('ru-RU', {minimumFractionDigits:0, maximumFractionDigits:0}); };
       var refundShow = useRub ? pd.refund_rub : pd.refund_amount;
       if (parseFloat(pd.refund_amount || 0) > 0) {

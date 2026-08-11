@@ -826,7 +826,7 @@ async function loadFeaturedTours() {
     for (var i = 0; i < tours.length; i++) {
       var t = tours[i];
       var dayLabel = t.days === 1 ? '1 день' : t.days + 'дней';
-      var price = '₽' + parseInt(t.price).toLocaleString('ru-RU');
+      var price = '$' + parseInt(t.price).toLocaleString('ru-RU');
       var spots = t.spots_left <= 3
         ? '<div class="feat-spots-low">🔥 Осталось всего' + t.spots_left + 'мест</div>'
         : '';
@@ -859,7 +859,7 @@ function authHeaders() {
   return h;
 }
 
-function fmtPrice(n) { return '₽' + parseInt(n).toLocaleString('ru-RU'); }
+function fmtPrice(n) { return '$' + parseInt(n).toLocaleString('ru-RU'); }
 
 function fmtDate(d) {
   if (!d) return 'TBC';
