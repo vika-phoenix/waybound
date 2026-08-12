@@ -716,38 +716,9 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <div class="bk-panel" id="bkStep2">
 <div class="bk-title">Завершите вашу <em>оплату</em></div>
 <p class="bk-sub" id="paySubLine">Депозит зарезервирует место. Остаток оплачивается перед отправлением.</p>
-<div class="pay-methods">
-<!-- YooKassa -->
-<div class="pay-method sel" id="pm-yoo" onclick="selPay('yoo')">
-<div class="pm-head">
-<div class="pm-radio"><div class="pm-dot"></div></div>
-<div class="pm-ico">💳</div>
-<div><div class="pm-name">YooKassa · Российские карты</div><div class="pm-desc">МИР, Visa RU, Mastercard RU, Яндекс Пей</div></div>
-<div class="pm-logos"><span class="pm-logo">МИР</span><span class="pm-logo">Visa</span><span class="pm-logo">MC</span></div>
-</div>
-<div class="pm-body">
-<div class="redirect-note">
-            🔒 Вы будете перенаправлены на защищённую страницу платежей YooKassa. Данные карты не попадают на наши серверы.
-          </div>
-</div>
-</div>
-<!-- SBP -->
-<div class="pay-method" id="pm-sbp" onclick="selPay('sbp')">
-<div class="pm-head">
-<div class="pm-radio"><div class="pm-dot"></div></div>
-<div class="pm-ico">📱</div>
-<div><div class="pm-name">СБП — Система быстрых платежей</div><div class="pm-desc">Мгновенно · любой российский банк · без комиссии</div></div>
-<div class="pm-logos"><span class="pm-logo">СБП</span></div>
-</div>
-<div class="pm-body">
-<div class="redirect-note">
-            📱 Вы будете перенаправлены для завершения платежа через СБП. Откройте приложение своего банка и подтвердите за секунды.
-          </div>
-</div>
-</div>
-<!-- Bank transfer removed — all payments go through YooKassa (card or SBP) -->
-</div>
-<div class="bk-nav">
+<div class="pay-methods" id="payMethods"></div>
+
+    <div class="bk-nav">
 <button class="bk-back" onclick="goStep(1)">← Назад</button>
 <button class="bk-next pay" id="payBtn" onclick="submitBooking()">🔒 Оплатить депозит</button>
 </div>
@@ -1160,14 +1131,61 @@ function goStep(n) {
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-var _selectedPayMethod = 'yoo';
-function selPay(id) {
-  _selectedPayMethod = id;
-  ['yoo','sbp','bank'].forEach(function(m){
-    var el = document.getElementById('pm-'+m);
-    if (el) el.classList.toggle('sel', m===id);
-  });
+var PAY_NONE_MSG = '\u041e\u043d\u043b\u0430\u0439\u043d-\u043e\u043f\u043b\u0430\u0442\u0430 \u0432\u0440\u0435\u043c\u0435\u043d\u043d\u043e \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0430. \u0421\u0432\u044f\u0436\u0438\u0442\u0435\u0441\u044c \u0441 \u043d\u0430\u043c\u0438.';
+var PAY_REDIRECT_MSG = '\uD83D\uDD12 \u0412\u044b \u0431\u0443\u0434\u0435\u0442\u0435 \u043f\u0435\u0440\u0435\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u044b \u043d\u0430 \u0437\u0430\u0449\u0438\u0449\u0451\u043d\u043d\u0443\u044e \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443 \u043e\u043f\u043b\u0430\u0442\u044b.';
+
+// ── Payment methods (server-driven) ──────────────────────────────────────────
+// Rendered from GET /payments/methods/ rather than hardcoded, so which rails
+// appear is a backend config question. A method only comes back when it is both
+// enabled and actually configured, so we never draw a button that cannot charge.
+var _selectedPayMethod = null;
+
+function selPay(code) {
+  _selectedPayMethod = code;
+  var cards = document.querySelectorAll('#payMethods .pay-method');
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].classList.toggle('sel', cards[i].getAttribute('data-code') === code);
+  }
 }
+
+function renderPayMethods(methods) {
+  var box = document.getElementById('payMethods');
+  if (!box) return;
+  if (!methods || !methods.length) {
+    box.innerHTML = '<div class="redirect-note">' + PAY_NONE_MSG + '</div>';
+    var pb = document.getElementById('payBtn');
+    if (pb) { pb.disabled = true; pb.style.opacity = '.5'; pb.style.cursor = 'not-allowed'; }
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < methods.length; i++) {
+    var m = methods[i];
+    html += '<div class="pay-method' + (i === 0 ? ' sel' : '') + '" data-code="' + m.code +
+            '" onclick="selPay(\'' + m.code + '\')">' +
+              '<div class="pm-head">' +
+                '<div class="pm-radio"><div class="pm-dot"></div></div>' +
+                '<div class="pm-ico">' + (m.icon || '') + '</div>' +
+                '<div><div class="pm-name">' + m.label + '</div>' +
+                     '<div class="pm-desc">' + m.description + '</div></div>' +
+              '</div>' +
+              '<div class="pm-body"><div class="redirect-note">' +
+                PAY_REDIRECT_MSG +
+              '</div></div>' +
+            '</div>';
+  }
+  box.innerHTML = html;
+  selPay(methods[0].code);
+}
+
+function loadPayMethods() {
+  var lang = (location.pathname.indexOf('_ru') !== -1) ? 'ru' : 'en';
+  fetch(window.API_V1 + '/payments/methods/?lang=' + lang)
+    .then(function (r) { return r.json(); })
+    .then(function (d) { renderPayMethods(d.methods || []); })
+    .catch(function () { renderPayMethods([]); });
+}
+loadPayMethods();
+
 
 function fmtCard(el) {
   var v = el.value.replace(/[^0-9]/g,'').substring(0,16);
@@ -1354,7 +1372,7 @@ async function submitBooking() {
     localStorage.setItem('waybound_last_booking', JSON.stringify(data));
     localStorage.removeItem('_cache_bookings');
 
-    var payMethod = (_selectedPayMethod === 'yoo' ? 'yookassa' : _selectedPayMethod) || 'yookassa';
+    var payMethod = _selectedPayMethod;
 
     // Bank transfer — no gateway redirect needed
     if (payMethod === 'bank') {

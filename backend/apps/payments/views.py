@@ -95,9 +95,14 @@ def initiate_payment(request):
     payment_method = request.data.get('payment_method', 'yookassa')
     payment_type   = request.data.get('payment_type', 'deposit')
 
-    if payment_method not in ('yookassa', 'sbp'):
-        return Response({'detail': 'Invalid payment method. Use yookassa or sbp.'},
-                        status=status.HTTP_400_BAD_REQUEST)
+    # Validate against what is actually switched on and configured, so a method
+    # can never be charged through a rail the operator has turned off.
+    from . import providers
+    allowed = providers.enabled_codes()
+    if payment_method not in allowed:
+        return Response(
+            {'detail': f'Payment method unavailable. Enabled: {", ".join(allowed) or "none"}.'},
+            status=status.HTTP_400_BAD_REQUEST)
 
     if not booking_id:
         return Response({'detail': 'booking_id required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -108,6 +113,10 @@ def initiate_payment(request):
         return Response({'detail': 'Not your booking.'}, status=status.HTTP_403_FORBIDDEN)
 
     currency = booking.currency or 'RUB'
+
+    # ── International rail (USD, separate bank account) ────────
+    if providers.rail_for(payment_method) == providers.RAIL_INTL:
+        return _initiate_international(booking, payment_method, payment_type, currency)
 
     # ── Balance payment ────────────────────────────────────────
     if payment_type == 'balance':
@@ -370,3 +379,229 @@ def payment_methods(request):
     from . import providers
     lang = 'ru' if request.GET.get('lang') == 'ru' else 'en'
     return Response({'methods': providers.available_methods(lang)})
+
+
+# ══════════════════════════════════════════════════════════════
+#  International rail — Stripe / PayPal (USD)
+# ══════════════════════════════════════════════════════════════
+
+def _frontend(path):
+    return getattr(settings, 'FRONTEND_URL', 'http://localhost:8080').rstrip('/') + path
+
+
+def _initiate_international(booking, method, payment_type, currency):
+    """
+    Create a hosted checkout on Stripe or PayPal and hand back the redirect.
+
+    Both charge USD. Tours still priced in RUB are converted here using the same
+    cached CBR rates the Russian rail uses, so there is one FX source and
+    nothing to re-price by hand. The converted amount comes back in the response
+    so the UI can show what the customer will actually be charged.
+    """
+    from .international import (PaymentError, convert_to_usd,
+                                create_paypal_order, create_stripe_checkout)
+    from apps.bookings.views import compute_dynamic_deposit_pct
+
+    balance_due_date = None
+    if payment_type == 'balance':
+        if booking.status != Booking.Status.CONFIRMED:
+            return Response({'detail': 'Only confirmed bookings can pay the balance.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if booking.balance_status == 'paid':
+            return Response({'detail': 'Balance already paid.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        amount = round(float(booking.total_price) - float(booking.deposit_paid), 2)
+        if amount <= 0:
+            return Response({'detail': 'No balance due.'}, status=status.HTTP_400_BAD_REQUEST)
+        deposit_pct = None
+        description = 'Balance - {} ({})'.format(booking.tour.title, booking.reference)
+    else:
+        deposit_pct = compute_dynamic_deposit_pct(booking)
+        amount = round(float(booking.total_price) * deposit_pct / 100, 2)
+        description = 'Deposit {}% - {} ({})'.format(
+            deposit_pct, booking.tour.title, booking.reference)
+        balance_due_days = getattr(booking.tour, 'balance_due_days', 30)
+        if booking.departure_date:
+            from datetime import timedelta, date as _date
+            balance_due_date = max(
+                booking.departure_date - timedelta(days=balance_due_days), _date.today())
+
+    try:
+        usd_amount, rate = convert_to_usd(amount, currency)
+    except (PaymentError, ValueError) as exc:
+        return Response({'detail': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+
+    success = _frontend('/booking-confirmation.html?ref={}&paid={}'.format(
+        booking.reference, payment_type))
+    cancel = _frontend('/booking.html?ref={}&cancelled=1'.format(booking.reference))
+
+    try:
+        if method == 'stripe':
+            payment_id, redirect_url = create_stripe_checkout(
+                booking, usd_amount, description, success, cancel, payment_type)
+        else:
+            payment_id, redirect_url = create_paypal_order(
+                booking, usd_amount, description, success, cancel, payment_type)
+    except PaymentError as exc:
+        return Response({'detail': str(exc)}, status=status.HTTP_502_BAD_GATEWAY)
+
+    fields = ['payment_method']
+    booking.payment_method = method
+    if payment_type == 'balance':
+        booking.balance_payment_id = payment_id
+        fields.append('balance_payment_id')
+    else:
+        # Column is named for YooKassa but holds whichever provider charged it;
+        # payment_method records which rail, and that is what reconciliation
+        # against the two bank accounts keys off.
+        booking.yookassa_payment_id = payment_id
+        fields.append('yookassa_payment_id')
+        if balance_due_date:
+            booking.balance_due_date = balance_due_date
+            fields.append('balance_due_date')
+    booking.save(update_fields=fields)
+
+    resp = {'confirmation_url': redirect_url, 'usd_amount': usd_amount, 'currency': 'USD'}
+    if deposit_pct is not None:
+        resp['deposit_pct'] = deposit_pct
+    if currency != 'USD':
+        resp['original_currency'] = currency
+        resp['exchange_rate'] = round(rate, 6)
+    return Response(resp)
+
+
+def _find_booking(payment_id, payment_type):
+    if not payment_id:
+        return None
+    field = 'balance_payment_id' if payment_type == 'balance' else 'yookassa_payment_id'
+    return Booking.objects.filter(**{field: payment_id}).first()
+
+
+def _settle(booking, payment_type, amount_usd):
+    """
+    Mark a booking paid. Idempotent on purpose — both providers retry webhooks,
+    and a duplicate delivery must not double-count or re-send emails.
+    """
+    from apps.bookings.views import compute_dynamic_deposit_pct
+
+    if payment_type == 'balance':
+        if booking.balance_status == 'paid':
+            return False
+        if amount_usd:
+            booking.balance_paid = amount_usd
+        booking.balance_status = 'paid'
+        booking.save(update_fields=['balance_paid', 'balance_status'])
+        logger.info('Balance paid for %s via %s', booking.reference, booking.payment_method)
+        return True
+
+    if booking.deposit_status == 'paid':
+        return False
+    pct = compute_dynamic_deposit_pct(booking)
+    # Store the deposit in the tour's own currency so balance_due stays correct
+    # even though the customer was charged a converted USD amount.
+    booking.deposit_paid = round(float(booking.total_price) * pct / 100, 2)
+    booking.deposit_status = 'paid'
+    if booking.status == Booking.Status.PENDING:
+        booking.status = Booking.Status.CONFIRMED
+    booking.save(update_fields=['deposit_paid', 'deposit_status', 'status'])
+    logger.info('Deposit paid for %s via %s', booking.reference, booking.payment_method)
+
+    try:
+        from apps.bookings.views import send_booking_confirmed_emails
+        send_booking_confirmed_emails(booking)
+    except Exception as exc:
+        logger.error('Confirmation email failed for %s: %s', booking.reference, exc)
+    return True
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def stripe_webhook(request):
+    """
+    POST /api/v1/payments/stripe/webhook/
+
+    Only a signature-verified checkout.session.completed settles a booking. The
+    browser redirect proves nothing, because the customer controls it.
+    """
+    from .international import verify_stripe_event
+
+    event = verify_stripe_event(request)
+    if event is None:
+        return Response({'status': 'invalid signature'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if event.get('type') != 'checkout.session.completed':
+        return Response({'status': 'ignored'})
+
+    session = event['data']['object']
+    if session.get('payment_status') != 'paid':
+        return Response({'status': 'unpaid'})
+
+    meta = session.get('metadata') or {}
+    payment_type = meta.get('payment_type', 'deposit')
+    booking = _find_booking(session.get('id', ''), payment_type)
+    if not booking:
+        logger.warning('Stripe webhook: no booking for session %s', session.get('id'))
+        return Response({'status': 'unknown booking'})
+
+    _settle(booking, payment_type, round((session.get('amount_total') or 0) / 100, 2))
+    return Response({'status': 'ok'})
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def paypal_webhook(request):
+    """
+    POST /api/v1/payments/paypal/webhook/
+
+    ORDER.APPROVED only means the customer clicked pay — the money does not move
+    until capture, so we capture here and settle on the result.
+    """
+    import json as _json
+    from .international import PaymentError, capture_paypal_order, verify_paypal_event
+
+    event = verify_paypal_event(request)
+    if event is None:
+        return Response({'status': 'invalid signature'}, status=status.HTTP_400_BAD_REQUEST)
+
+    etype = event.get('event_type', '')
+    resource = event.get('resource', {}) or {}
+
+    if etype == 'CHECKOUT.ORDER.APPROVED':
+        order_id = resource.get('id', '')
+        units = resource.get('purchase_units') or [{}]
+    elif etype == 'PAYMENT.CAPTURE.COMPLETED':
+        order_id = ((resource.get('supplementary_data') or {})
+                    .get('related_ids') or {}).get('order_id', '')
+        units = [resource]
+    else:
+        return Response({'status': 'ignored'})
+
+    payment_type = 'deposit'
+    try:
+        custom = units[0].get('custom_id') or ''
+        if custom:
+            payment_type = _json.loads(custom).get('payment_type', 'deposit')
+    except (ValueError, AttributeError, IndexError):
+        pass
+
+    booking = _find_booking(order_id, payment_type)
+    if not booking:
+        logger.warning('PayPal webhook: no booking for order %s', order_id)
+        return Response({'status': 'unknown booking'})
+
+    amount = None
+    if etype == 'CHECKOUT.ORDER.APPROVED':
+        try:
+            amount = capture_paypal_order(order_id)
+        except PaymentError as exc:
+            logger.error('PayPal capture failed for %s: %s', booking.reference, exc)
+            return Response({'status': 'capture failed'},
+                            status=status.HTTP_502_BAD_GATEWAY)
+    else:
+        try:
+            amount = float((resource.get('amount') or {}).get('value', 0))
+        except (TypeError, ValueError):
+            amount = None
+
+    _settle(booking, payment_type, amount)
+    return Response({'status': 'ok'})
