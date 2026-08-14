@@ -217,7 +217,14 @@ EMAIL_USE_TLS      = config('EMAIL_USE_TLS',       default=True, cast=bool)
 EMAIL_HOST_USER    = config('EMAIL_HOST_USER',     default='')
 EMAIL_HOST_PASSWORD= config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL        = config('DEFAULT_FROM_EMAIL',        default='noreply@kavkazland.com')
-ADMIN_NOTIFICATION_EMAIL  = config('ADMIN_NOTIFICATION_EMAIL',  default='viktoriia.strazhnikova@gmail.com')
+# Where verification uploads, tour submissions and tour-change alerts land.
+# Deliberately empty rather than a real address: a working default is the worst
+# kind, because forgetting to set it looks identical to having set it — the
+# moderation queue just quietly goes to whoever is baked in here. Empty makes
+# the helpers fall back to DEFAULT_FROM_EMAIL and log a warning, so the
+# misconfiguration is visible. Set a role address (admin@kavkazland.com), not a
+# personal inbox, so it survives one person being away or leaving.
+ADMIN_NOTIFICATION_EMAIL  = config('ADMIN_NOTIFICATION_EMAIL',  default='')
 
 # ── YooKassa ─────────────────────────────────────────────────
 YOOKASSA_SHOP_ID    = config('YOOKASSA_SHOP_ID', default='')
