@@ -500,3 +500,126 @@ def stay_photo_delete(request, slug, photo_id):
     photo.image.delete(save=False)
     photo.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def departure_cancel(request, slug, dep_id):
+    """
+    POST /api/v1/tours/<slug>/departures/<dep_id>/cancel/
+    Body: { reason?: str, confirm: true }
+
+    The trip is not running. Cancels the departure and every live booking on
+    it, refunding each in full.
+
+    Without this a guide cancels bookings one at a time: eight travellers means
+    eight operations, eight refunds and eight emails that never say they are
+    the same event — and if one is missed, that person still turns up.
+
+    Refunds use the operator path, so travellers get 100% back regardless of
+    how close to departure it is. A trip the guide cancelled is never the
+    traveller's fault.
+
+    Partial failures do not abort. A refund that a provider rejects is flagged
+    for a human, but the booking is still cancelled and the traveller still
+    told — leaving someone believing their trip is on is far worse than a
+    refund that needs chasing.
+    """
+    from apps.bookings.models import Booking
+    from apps.bookings.views import _compute_refund, _issue_refund
+    from .models import DepartureDate
+
+    tour = get_object_or_404(Tour, slug=slug)
+    if tour.operator != request.user and not request.user.is_staff:
+        return Response({'detail': 'Not your tour.'}, status=status.HTTP_403_FORBIDDEN)
+
+    dep = get_object_or_404(DepartureDate, pk=dep_id, tour=tour)
+    if dep.status == DepartureDate.Status.CANCELLED:
+        return Response({'detail': 'This departure is already cancelled.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    live = list(Booking.objects.filter(
+        departure=dep,
+        status__in=[Booking.Status.PENDING, Booking.Status.CONFIRMED],
+    ).select_related('tour'))
+
+    # Preview so the UI can say "this cancels 3 bookings and refunds $5,240"
+    # before anyone commits to it.
+    if not request.data.get('confirm'):
+        total = sum(float(b.deposit_paid) + float(b.balance_paid) for b in live)
+        return Response({
+            'preview': True,
+            'departure': str(dep.start_date),
+            'bookings_affected': len(live),
+            'travellers': sum((b.adults or 0) + (b.children or 0) for b in live),
+            'refund_total': round(total, 2),
+            'currency': tour.currency,
+        })
+
+    reason = (request.data.get('reason') or '').strip()
+
+    dep.status = DepartureDate.Status.CANCELLED
+    dep.save(update_fields=['status'])
+
+    cancelled, refunded, manual = 0, 0, []
+    for b in live:
+        try:
+            amount, _pct, _tier = _compute_refund(b, 'operator')
+            b.status = Booking.Status.CANCELLED
+            b.cancelled_at = timezone.now()
+            if amount > 0:
+                b.refund_amount = amount
+                ok, msg = _issue_refund(b, amount)
+                if ok:
+                    b.refund_status = 'issued'
+                    refunded += 1
+                else:
+                    b.refund_status = 'manual' if msg == 'bank' else 'pending'
+                    manual.append(b.reference)
+            else:
+                b.refund_status = 'none'
+            b.save(update_fields=['status', 'cancelled_at',
+                                  'refund_amount', 'refund_status'])
+            cancelled += 1
+            _email_departure_cancelled(b, reason)
+        except Exception as exc:
+            # Keep going: one bad booking must not strand the rest.
+            logger.error('Departure cancel failed for booking %s: %s',
+                         getattr(b, 'reference', '?'), exc)
+
+    logger.info('Departure %s of %s cancelled: %d bookings, %d auto-refunded',
+                dep.start_date, tour.slug, cancelled, refunded)
+
+    return Response({
+        'departure': str(dep.start_date),
+        'cancelled_bookings': cancelled,
+        'auto_refunded': refunded,
+        'needs_manual_refund': manual,
+    })
+
+
+def _email_departure_cancelled(booking, reason):
+    """One clear message: the trip is off, here is your money back."""
+    from django.core.mail import send_mail
+    from django.conf import settings as _s
+
+    to = booking.email or (booking.tourist.email if booking.tourist else '')
+    if not to:
+        return
+    why = f'\n\nReason given: {reason}' if reason else ''
+    try:
+        send_mail(
+            f'Cancelled: {booking.tour.title} on {booking.departure_date}',
+            (f'We are sorry — the {booking.departure_date} departure of '
+             f'"{booking.tour.title}" has been cancelled by the guide.{why}\n\n'
+             f'You are being refunded in full: '
+             f'{booking.currency} {booking.refund_amount}.\n'
+             f'Booking reference: {booking.reference}\n\n'
+             f'Refunds normally reach your account within 5-10 working days. '
+             f'You do not need to do anything.\n\n'
+             f'{getattr(_s, "FRONTEND_URL", "")}/adventures.html\n'),
+            getattr(_s, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com'),
+            [to], fail_silently=True,
+        )
+    except Exception as exc:
+        logger.error('Cancellation email failed for %s: %s', booking.reference, exc)

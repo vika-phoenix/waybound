@@ -29,6 +29,7 @@ urlpatterns = [
     # ── Publish / submit for review ───────────────────────
     # PATCH /api/v1/tours/<slug>/publish/
     path('<slug:slug>/publish/', views.tour_publish, name='tour-publish'),
+    path('<slug:slug>/departures/<int:dep_id>/cancel/', views.departure_cancel, name='departure-cancel'),
 
     # ── Save / unsave ─────────────────────────────────────
     # POST   /api/v1/tours/<slug>/save/
