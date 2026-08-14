@@ -2,7 +2,15 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "export DJANGO_SETTINGS_MODULE=waybound.settings.prod && python manage.py migrate --no-input && python manage.py collectstatic --no-input && python manage.py create_staff_roles && gunicorn waybound.wsgi --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 --preload"
+# generate_thumbnails backfills any TourPhoto that has no thumbnail. Without it
+# a card falls back to the full-resolution original — one tour was shipping a
+# 2.37 MB image where a thumbnailed one is 218 KB.
+#
+# It runs on every deploy on purpose. Without --all it only touches photos that
+# are missing a thumb, so after the first pass it is a no-op costing one query,
+# and it self-heals any upload where generation failed. `|| true` keeps a
+# failure from blocking the deploy (see gotcha 11 in TECHNICAL_DOC).
+startCommand = "export DJANGO_SETTINGS_MODULE=waybound.settings.prod && python manage.py migrate --no-input && python manage.py collectstatic --no-input && python manage.py create_staff_roles && (python manage.py generate_thumbnails || true) && gunicorn waybound.wsgi --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 --preload"
 healthcheckPath = "/api/v1/health/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
