@@ -255,14 +255,18 @@ def _yookassa_ip_allowed(request):
     who just started the payment and can read it from their own redirect. They
     could abandon the payment and confirm the booking themselves.
 
-    An empty YOOKASSA_WEBHOOK_IPS keeps the old permissive behaviour so this
-    can't break a live deploy the moment it ships; set it in production.
+    This used to return True on an empty allowlist, to avoid breaking a live
+    deploy the moment it shipped. That left the endpoint fully open in
+    production for as long as the env var went unset, so it now fails closed:
+    refusing to settle is recoverable, settling for free is not.
+
     Networks are listed at https://yookassa.ru/developers/using-api/webhooks
     """
     allowed = getattr(settings, 'YOOKASSA_WEBHOOK_IPS', [])
     if not allowed:
-        logger.warning('YOOKASSA_WEBHOOK_IPS is unset — webhook is unauthenticated.')
-        return True
+        logger.error('YOOKASSA_WEBHOOK_IPS is unset — refusing to settle. Set it to '
+                     'YooKassa\'s published networks before enabling the Russian rail.')
+        return False
 
     import ipaddress
     raw = _client_ip(request)
@@ -282,13 +286,56 @@ def _yookassa_ip_allowed(request):
     return False
 
 
+# The two methods that actually settle through YooKassa. A booking charged on
+# any other rail must never be settled by this webhook.
+YOOKASSA_RAIL_METHODS = ('yookassa', 'sbp')
+
+
+def _yookassa_rail_enabled():
+    """A settlement endpoint for a rail that is switched off cannot be telling
+    the truth, whoever is calling it."""
+    from .providers import enabled_codes
+    return bool(set(YOOKASSA_RAIL_METHODS) & set(enabled_codes()))
+
+
+def _yookassa_booking(payment_id, field):
+    """
+    Look the booking up by payment id *and* rail.
+
+    Without the rail filter this reads a column that also stores Stripe and
+    PayPal ids — see the note on yookassa_webhook.
+    """
+    return Booking.objects.filter(**{
+        field: payment_id,
+        'payment_method__in': YOOKASSA_RAIL_METHODS,
+    }).first()
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def yookassa_webhook(request):
     """
     POST /api/v1/payments/webhook/
     YooKassa sends event notifications here.
+
+    This settles one rail, and it is the only payment endpoint with no
+    signature to check — YooKassa authenticates by source IP instead. So it is
+    fenced three ways, and each fence closes the hole on its own:
+
+      1. the rail has to be switched on at all;
+      2. the caller has to be inside YooKassa's networks;
+      3. the booking it names has to have been charged through this rail.
+
+    (3) matters more than it looks. `yookassa_payment_id` is named for YooKassa
+    but holds whichever provider took the deposit, including Stripe and PayPal,
+    so an unfenced lookup on that column would let a forged `payment.succeeded`
+    settle a *card* booking. The id is not even secret: the traveller reads
+    their own Stripe session id out of the checkout redirect, which means they
+    could abandon the payment and confirm the booking themselves.
     """
+    if not _yookassa_rail_enabled():
+        logger.warning('YooKassa webhook called while the rail is disabled — rejected.')
+        return Response({'status': 'forbidden'}, status=status.HTTP_403_FORBIDDEN)
     if not _yookassa_ip_allowed(request):
         return Response({'status': 'forbidden'}, status=status.HTTP_403_FORBIDDEN)
     try:
@@ -308,21 +355,20 @@ def yookassa_webhook(request):
 
             if payment_type == 'balance':
                 # Balance payment succeeded
-                try:
-                    booking = Booking.objects.get(balance_payment_id=payment_id)
+                booking = _yookassa_booking(payment_id, 'balance_payment_id')
+                if booking is None:
+                    logger.warning('Webhook: no YooKassa booking for balance payment %s', payment_id)
+                else:
                     booking.balance_paid   = amount
                     booking.balance_status = 'paid'
                     booking.save(update_fields=['balance_paid', 'balance_status'])
                     logger.info('Balance paid for booking %s via YooKassa', booking.reference)
-                    # Send confirmation email to tourist
-                    from apps.bookings.views import send_booking_confirmed_emails
-                    # Reuse confirmed email as "fully paid" notification (balance settled)
-                except Booking.DoesNotExist:
-                    logger.warning('Webhook: no booking for balance payment %s', payment_id)
             else:
                 # Deposit payment succeeded
-                try:
-                    booking = Booking.objects.get(yookassa_payment_id=payment_id)
+                booking = _yookassa_booking(payment_id, 'yookassa_payment_id')
+                if booking is None:
+                    logger.warning('Webhook: no YooKassa booking for deposit payment %s', payment_id)
+                else:
                     # Store deposit in tour's own currency so balance_due stays correct.
                     # Use dynamic deposit % (matches what was charged at initiation).
                     from apps.bookings.views import compute_dynamic_deposit_pct
@@ -338,25 +384,19 @@ def yookassa_webhook(request):
                         update_fields.append('balance_status')
                     booking.save(update_fields=update_fields)
                     logger.info('Deposit paid for booking %s, awaiting operator confirmation', booking.reference)
-                except Booking.DoesNotExist:
-                    logger.warning('Webhook: no booking for deposit payment %s', payment_id)
 
         elif event_type == 'payment.canceled':
             if payment_type == 'balance':
-                try:
-                    booking = Booking.objects.get(balance_payment_id=payment_id)
+                booking = _yookassa_booking(payment_id, 'balance_payment_id')
+                if booking is not None:
                     booking.balance_status = 'failed'
                     booking.save(update_fields=['balance_status'])
-                except Booking.DoesNotExist:
-                    pass
             else:
-                try:
-                    booking = Booking.objects.get(yookassa_payment_id=payment_id)
+                booking = _yookassa_booking(payment_id, 'yookassa_payment_id')
+                if booking is not None:
                     booking.deposit_status = 'failed'
                     booking.save(update_fields=['deposit_status'])
                     logger.info('Deposit payment cancelled for booking %s', booking.reference)
-                except Booking.DoesNotExist:
-                    pass
 
         return Response({'status': 'ok'})
 
