@@ -13,6 +13,8 @@ Endpoints:
   POST /api/v1/bookings/enquiries/       — create private tour enquiry
   GET  /api/v1/bookings/enquiries/       — operator: see enquiries for own tours
 """
+import logging
+
 import zoneinfo
 from datetime import timedelta
 
@@ -34,6 +36,8 @@ from .serializers import (
     EnquiryCreateSerializer,
     EnquiryDetailSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 # ── Email helpers ─────────────────────────────────────────────────────────────
@@ -626,6 +630,42 @@ def _compute_refund(booking, cancelled_by='tourist'):
     return refund, penalty_pct, tier_label
 
 
+def _issue_refund(booking, refund_amount_tour_currency):
+    """
+    Refund through whichever rail took the money. Returns (success, message).
+
+    Dispatches on booking.payment_method, which is the only record of which of
+    the two rails — and so which bank account — the charge went through.
+    Anything unrecognised falls back to 'bank', meaning a human has to move the
+    money and refund_status is set to 'manual'.
+    """
+    method = booking.payment_method
+
+    if method in ('stripe', 'paypal'):
+        # Everything here is wrapped: a cancellation must never fail because a
+        # payment provider is misconfigured or unreachable. Worst case the
+        # booking still cancels and refund_status lands on 'pending' for
+        # someone to settle by hand — losing the refund is recoverable, leaving
+        # a traveller unable to cancel is not.
+        try:
+            from apps.payments.international import (convert_to_usd, refund_paypal,
+                                                     refund_stripe)
+            # Both charged USD, but the stored amount is in the tour's
+            # currency — convert back, or a RUB-priced tour refunds ~90x.
+            usd, _ = convert_to_usd(refund_amount_tour_currency,
+                                    booking.currency or 'USD')
+            payment_id = booking.yookassa_payment_id or booking.balance_payment_id
+            if method == 'stripe':
+                return refund_stripe(payment_id, usd)
+            return refund_paypal(payment_id, usd)
+        except Exception as exc:
+            logger.error('Refund failed for %s via %s: %s',
+                         booking.reference, method, exc)
+            return False, 'error'
+
+    return _issue_yookassa_refund(booking, refund_amount_tour_currency)
+
+
 def _issue_yookassa_refund(booking, refund_amount_tour_currency):
     """
     Create a YooKassa refund for the given amount (in tour currency).
@@ -735,7 +775,7 @@ def booking_cancel(request, pk):
 
     if refund_amount > 0:
         booking.refund_amount = refund_amount
-        ok, msg = _issue_yookassa_refund(booking, refund_amount)
+        ok, msg = _issue_refund(booking, refund_amount)
         if ok:
             booking.refund_status = 'issued'
         elif msg == 'bank':

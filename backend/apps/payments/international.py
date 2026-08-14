@@ -272,3 +272,81 @@ def verify_paypal_event(request):
         return None
 
     return body
+
+
+# ── Refunds ───────────────────────────────────────────────────
+#
+# Neither id stored on the booking is directly refundable. Checkout hands back
+# a Stripe *session* (cs_...) and a PayPal *order*, but Stripe refunds a
+# payment_intent and PayPal refunds a capture. Both need one lookup first,
+# which is why these are not one-liners.
+
+def refund_stripe(session_id, amount_usd=None):
+    """
+    Refund a Stripe Checkout payment. Returns (ok, message).
+
+    amount_usd=None refunds the full charge; pass a value for a partial.
+    """
+    _stripe_ready()
+    if not session_id:
+        return False, 'no_payment_id'
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        intent = session.get('payment_intent')
+        if not intent:
+            logger.error('Stripe session %s has no payment_intent', session_id)
+            return False, 'no_payment_intent'
+        kwargs = {'payment_intent': intent}
+        if amount_usd is not None:
+            kwargs['amount'] = int(round(float(amount_usd) * 100))
+        stripe.Refund.create(**kwargs)
+        logger.info('Stripe refund issued for %s', session_id)
+        return True, 'issued'
+    except stripe.error.StripeError as exc:
+        logger.error('Stripe refund failed for %s: %s', session_id, exc)
+        return False, 'error'
+
+
+def refund_paypal(order_id, amount_usd=None):
+    """
+    Refund a PayPal payment. Returns (ok, message).
+
+    The order carries the capture; the capture is what can actually be
+    refunded, so resolve it before asking.
+    """
+    if not order_id:
+        return False, 'no_payment_id'
+    try:
+        token = _paypal_token()
+        r = requests.get(
+            f'{_paypal_base()}/v2/checkout/orders/{order_id}',
+            headers={'Authorization': f'Bearer {token}'}, timeout=20,
+        )
+        r.raise_for_status()
+        data = r.json()
+        captures = (data.get('purchase_units') or [{}])[0].get('payments', {}).get('captures') or []
+        completed = [c for c in captures if c.get('status') in ('COMPLETED', 'PARTIALLY_REFUNDED')]
+        if not completed:
+            logger.error('PayPal order %s has no completed capture to refund', order_id)
+            return False, 'no_capture'
+        capture_id = completed[0]['id']
+
+        body = {}
+        if amount_usd is not None:
+            body['amount'] = {'currency_code': 'USD', 'value': f'{float(amount_usd):.2f}'}
+
+        rr = requests.post(
+            f'{_paypal_base()}/v2/payments/captures/{capture_id}/refund',
+            headers={'Authorization': f'Bearer {token}',
+                     'Content-Type': 'application/json'},
+            json=body, timeout=20,
+        )
+        rr.raise_for_status()
+        logger.info('PayPal refund issued for order %s (capture %s)', order_id, capture_id)
+        return True, 'issued'
+    except PaymentError as exc:
+        logger.error('PayPal refund could not authenticate for %s: %s', order_id, exc)
+        return False, 'error'
+    except Exception as exc:
+        logger.error('PayPal refund failed for %s: %s', order_id, exc)
+        return False, 'error'
