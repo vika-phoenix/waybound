@@ -505,7 +505,15 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .tour-status.draft{background:var(--paper);color:var(--mu);border:1px solid var(--ln)}
 .tour-status.pending{background:#fff4e0;color:#9a6000}
 .tour-card-actions{padding:0;display:flex;gap:8px;flex-shrink:0;min-width:210px}
-@media(max-width:560px){.tour-card-actions{display:none}}
+/* These used to be display:none below 560px, which made the whole tour list
+   read-only on a phone: no edit, no pause, no cancelling a departure. Stack
+   them under the card body instead. display:contents flattens the two inner
+   groups so every button wraps in one row; !important because tourCard()
+   writes the desktop column layout inline. */
+@media(max-width:560px){
+.tour-card-actions{flex-direction:row!important;flex-wrap:wrap;align-items:stretch!important;justify-content:flex-start;width:100%;min-width:0;gap:6px;border-left:none!important;border-top:1px solid var(--ln);padding:10px 0 0!important;margin:8px 0 0!important}
+.tour-card-actions>div{display:contents!important}
+}
 .btn-sm{font-size:12px;font-weight:600;font-family:var(--bf);padding:6px 14px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s;border:1.5px solid var(--ln);background:none;color:var(--ink);min-width:72px;text-align:center;box-sizing:border-box}
 .btn-sm:hover{border-color:var(--ac);color:var(--ac)}
 .btn-sm.filled{background:var(--ac);border-color:var(--ac);color:var(--ink)}
@@ -768,7 +776,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
   </div>
 
   <!-- Custom confirm dialog (replaces browser confirm()) -->
-  <div id="confirmDialog" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
+  <div id="confirmDialog" style="display:none;position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
     <div style="background:var(--white);border-radius:14px;padding:28px 28px 22px;max-width:380px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)">
       <div id="confirmDialogIcon" style="font-size:28px;margin-bottom:12px;text-align:center"></div>
       <div id="confirmDialogTitle" style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:8px;text-align:center"></div>
@@ -777,6 +785,18 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
         <button onclick="confirmDialogResolve(false)" style="background:none;border:1.5px solid var(--ln);border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--bf);color:var(--ink)">Cancel</button>
         <button id="confirmDialogOk" onclick="confirmDialogResolve(true)" style="border:none;border-radius:7px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--bf)">Confirm</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Departures: manage the individual dates of one tour -->
+  <div id="depModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto">
+    <div style="background:var(--white);border-radius:16px;padding:24px;max-width:520px;width:92%;box-shadow:0 8px 40px rgba(0,0,0,.18);margin-bottom:40px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+        <div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf)">Departures</div>
+        <button onclick="closeDepModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--mu);padding:0;line-height:1">&times;</button>
+      </div>
+      <div id="depModalTour" style="font-size:12.5px;color:var(--mu);font-family:var(--bf);margin-bottom:14px"></div>
+      <div id="depModalList"></div>
     </div>
   </div>
 
@@ -1947,6 +1967,7 @@ function tourCard(t) {
     + '<div style="display:flex;gap:6px">'
     + (t.status === 'draft' ? '<button class="btn-sm" style="border-color:var(--ac);color:var(--ac)" onclick="publishTour(\'' + slug + '\')">Submit for review</button>' : '')
     + (t.status === 'review' ? '<button class="btn-sm" style="border-color:#9a9a9a;color:#9a9a9a;cursor:default;opacity:.6" disabled title="Already submitted — under admin review">In review…</button>' : '')
+    + (t.status === 'live' || t.status === 'paused' ? '<button class="btn-sm" onclick="manageDepartures(\'' + slug + '\')">Departures</button>' : '')
     + (t.status === 'live' ? '<button class="btn-sm" style="border-color:#9a6000;color:#9a6000" onclick="pauseTour(\'' + slug + '\')">Pause</button>' : '')
     + (t.status === 'paused' ? '<button class="btn-sm" style="border-color:var(--ac);color:var(--ac)" onclick="unpauseTour(\'' + slug + '\')">Unpause</button>' : '')
     + (t.status === 'draft' || t.status === 'review' ? '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="deleteDraftTour(\'' + slug + '\')">Delete</button>' : '')
@@ -2068,16 +2089,39 @@ async function deleteDraftTour(slug) {
   if (r.ok || r.status === 204) { showToast('Draft deleted.','success'); loadTours(); }
   else showToast('Could not delete draft.','error');
 }
-async function pauseTour(slug) {
+async function pauseTour(slug, confirmed) {
   var t = _tours.find(function(x){ return x.slug === slug; });
   var name = t ? (t.title || 'this tour') : 'this tour';
-  var ok = await showConfirm({ icon:'⏸️', title:'Pause "' + name + '"?', msg:'It will be hidden from public listings. Existing bookings remain valid.', ok:'Pause tour' });
-  if (!ok) return;
+  if (!confirmed) {
+    var ok = await showConfirm({ icon:'\u23F8\uFE0F', title:'Pause "' + name + '"?', msg:'It will be hidden from public listings and stop taking new bookings.', ok:'Pause tour' });
+    if (!ok) return;
+  }
+  var body = confirmed ? { status:'paused', confirm:true } : { status:'paused' };
   const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', {
-    method:'PATCH', headers:ah(), body:JSON.stringify({status:'paused'})
+    method:'PATCH', headers:ah(), body:JSON.stringify(body)
   });
-  if (r.ok) { showToast('Tour paused.','success'); loadTours(); }
-  else showToast('Could not pause tour.','error');
+  if (r.ok) { showToast('Tour paused.','success'); loadTours(); return; }
+  // 409 means travellers are already booked. Pausing is still allowed — it just
+  // must not be mistaken for calling the trip off, because it is not.
+  if (r.status === 409) {
+    const d = await r.json().catch(function(){ return {}; });
+    if (d.requires_confirmation) {
+      var who = d.travellers + ' traveller' + (d.travellers !== 1 ? 's' : '')
+              + ' across ' + d.active_bookings + ' booking' + (d.active_bookings !== 1 ? 's' : '');
+      var proceed = await showConfirm({
+        icon:'\u26A0\uFE0F', title:'You still have to run this tour',
+        msg: who + ' already booked' + (d.next_departure ? ', the next departing ' + fmtD(d.next_departure) : '')
+           + '. Pausing hides the tour and stops new bookings, but it does not cancel the trips already sold. '
+           + 'To call a date off and refund everyone on it, cancel that departure instead.',
+        ok:'Pause anyway', danger:true
+      });
+      if (proceed) return pauseTour(slug, true);
+      return;
+    }
+    showToast(d.detail || 'Could not pause tour.','error');
+    return;
+  }
+  showToast('Could not pause tour.','error');
 }
 async function unpauseTour(slug) {
   var t = _tours.find(function(x){ return x.slug === slug; });
@@ -2089,6 +2133,118 @@ async function unpauseTour(slug) {
   });
   if (r.ok) { showToast('Tour is now live.','success'); loadTours(); }
   else showToast('Could not unpause.','error');
+}
+
+
+// -- Departures ---------------------------------------------------------------
+// A guide calling off a date otherwise cancels each booking by hand: eight
+// travellers means eight refunds and eight emails that never say they are the
+// same event, and whoever gets missed still turns up at the trailhead.
+// Cancelling the departure does all of it once.
+var _depSlug = null;
+
+function manageDepartures(slug) {
+  var t = _tours.find(function(x){ return x.slug === slug; });
+  if (!t) return;
+  _depSlug = slug;
+  document.getElementById('depModalTour').textContent = t.title || 'Tour';
+  renderDepList();
+  document.getElementById('depModal').style.display = 'flex';
+}
+function closeDepModal() {
+  document.getElementById('depModal').style.display = 'none';
+  _depSlug = null;
+}
+function renderDepList() {
+  var t    = _tours.find(function(x){ return x.slug === _depSlug; });
+  var box  = document.getElementById('depModalList');
+  var deps = (t && t.departures) || [];
+  if (!deps.length) {
+    box.innerHTML = '<div style="font-size:13px;color:var(--mu);font-family:var(--bf);padding:14px 0;'
+      + 'border-top:1px solid var(--ln)">No upcoming departures. Add dates from the tour editor.</div>';
+    return;
+  }
+  box.innerHTML = deps.map(function(d) {
+    var off    = d.status === 'cancelled';
+    var booked = Math.max(0, (d.spots_total || 0) - (d.spots_left || 0));
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--ln)">'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:13.5px;font-weight:600;font-family:var(--bf);color:' + (off ? 'var(--mu)' : 'var(--ink)') + (off ? ';text-decoration:line-through' : '') + '">'
+      + fmtD(d.start_date) + '</div>'
+      + '<div style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:2px">'
+      + booked + ' of ' + (d.spots_total || 0) + ' spots booked</div>'
+      + '</div>'
+      + (off
+        ? '<span style="font-size:11px;background:#f2f2f2;color:var(--mu);padding:3px 9px;border-radius:10px;font-family:var(--bf);font-weight:600;flex-shrink:0">Cancelled</span>'
+        : '<button class="btn-sm" style="border-color:#e0a898;color:#c03020;flex-shrink:0" onclick="cancelDeparture(' + d.id + ')">Cancel departure</button>')
+      + '</div>';
+  }).join('');
+}
+
+async function cancelDeparture(depId) {
+  var slug = _depSlug;
+  var url  = ACCT_API + '/tours/' + slug + '/departures/' + depId + '/cancel/';
+
+  // No confirm in the body means preview: the server reports what this would
+  // cost and changes nothing. Never quote a refund total the guide has not seen.
+  var pv;
+  try {
+    var pr = await fetchAuth(url, { method:'POST', headers:ah(), body:JSON.stringify({}) });
+    pv = await pr.json().catch(function(){ return {}; });
+    if (!pr.ok) { showToast(pv.detail || 'Could not load this departure.', 'error'); return; }
+  } catch(e) { showToast('Could not reach server.', 'error'); return; }
+
+  var msg = pv.bookings_affected
+    ? 'This cancels ' + pv.bookings_affected + ' booking' + (pv.bookings_affected !== 1 ? 's' : '')
+      + ' covering ' + pv.travellers + ' traveller' + (pv.travellers !== 1 ? 's' : '') + '. '
+      + 'They are refunded ' + fmtP(pv.refund_total, pv.currency) + ' in full and emailed straight away. '
+      + 'This cannot be undone.'
+    : 'Nobody has booked this date, so there is nothing to refund. The date stops accepting bookings.';
+
+  var p = showConfirm({
+    icon:  '\u26D4',
+    title: 'Cancel the ' + fmtD(pv.departure) + ' departure?',
+    msg:   msg,
+    ok:    pv.bookings_affected ? 'Cancel and refund' : 'Cancel departure',
+    danger:true
+  });
+  // showConfirm sets textContent; swap in the reason field behind it.
+  document.getElementById('confirmDialogMsg').innerHTML =
+    '<div style="text-align:left">' + msg
+    + '<div style="margin-top:14px;font-size:12px;color:var(--ink);font-weight:600">Reason (optional)</div>'
+    + '<div style="font-size:11.5px;color:var(--mu);margin-top:2px">Travellers see this in their cancellation email.</div>'
+    + '<textarea id="depReason" rows="2" placeholder="e.g. not enough sign-ups to run the trip safely" '
+    + 'style="width:100%;margin-top:6px;border:1.5px solid var(--ln);border-radius:8px;padding:8px 10px;'
+    + 'font-size:12.5px;font-family:var(--bf);resize:vertical;outline:none;box-sizing:border-box"></textarea>'
+    + '</div>';
+  var ok = await p;
+  if (!ok) return;
+  var reasonEl = document.getElementById('depReason');
+  var reason   = reasonEl ? reasonEl.value.trim() : '';
+
+  var r, d;
+  try {
+    r = await fetchAuth(url, { method:'POST', headers:ah(), body:JSON.stringify({ confirm:true, reason:reason }) });
+    d = await r.json().catch(function(){ return {}; });
+  } catch(e) { showToast('Could not reach server.', 'error'); return; }
+  if (!r.ok) { showToast(d.detail || 'Could not cancel this departure.', 'error'); return; }
+
+  var done = 'Departure cancelled.';
+  if (d.cancelled_bookings) {
+    done += ' ' + d.cancelled_bookings + ' booking' + (d.cancelled_bookings !== 1 ? 's' : '')
+          + ' cancelled, ' + d.auto_refunded + ' refunded automatically.';
+  }
+  showToast(done, 'success');
+  // A refund the provider rejected is the one thing here that needs a human.
+  // Say so loudly rather than burying it in a success message.
+  if (d.needs_manual_refund && d.needs_manual_refund.length) {
+    showToast(d.needs_manual_refund.length + ' refund' + (d.needs_manual_refund.length !== 1 ? 's' : '')
+      + ' could not be issued automatically and must be sent by hand: ' + d.needs_manual_refund.join(', '), 'error');
+  }
+  await loadTours();
+  if (_depSlug) renderDepList();
+  await loadBookings();
+  renderOverview(); renderEarnings();
 }
 
 function renderBookings() { filterBookings(); }

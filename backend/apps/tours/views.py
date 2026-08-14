@@ -163,7 +163,8 @@ def tour_detail(request, slug):
 
     if request.method == 'PATCH':
         # Status-only PATCH: pause ↔ unpause (serializer doesn't expose status field)
-        if set(request.data.keys()) == {'status'}:
+        # `confirm` rides along on the same request — see the pause guard below.
+        if 'status' in request.data and set(request.data.keys()) <= {'status', 'confirm'}:
             new_status = request.data['status']
             OPERATOR_STATUS_TRANSITIONS = {
                 'paused': (Tour.Status.LIVE,   Tour.Status.PAUSED),
@@ -177,6 +178,33 @@ def tour_detail(request, slug):
                     {'detail': f'Tour must be {required_current} to change to {new_status}.'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            # Pausing only delists the tour — every booking already taken still
+            # has to run. Guides read "paused" as "off", so name the people who
+            # are still owed a trip before the switch flips.
+            #
+            # Archive refuses outright (409, no way through); pause only asks,
+            # because pausing a tour you are still running is legitimate — it
+            # stops new bookings without stranding the travellers already on it.
+            # To actually call the trip off, cancel the departure instead.
+            if target == Tour.Status.PAUSED and not request.data.get('confirm'):
+                from apps.bookings.models import Booking
+                active = list(Booking.objects.filter(
+                    tour=tour,
+                    status__in=[Booking.Status.PENDING, Booking.Status.CONFIRMED],
+                ).only('adults', 'children', 'departure_date'))
+                if active:
+                    dated = sorted(b.departure_date for b in active if b.departure_date)
+                    return Response({
+                        'detail': 'This tour has active bookings. Pausing hides it from '
+                                  'travellers and stops new bookings, but it does not '
+                                  'cancel the trips already booked — you still have to '
+                                  'run them.',
+                        'requires_confirmation': True,
+                        'active_bookings': len(active),
+                        'travellers': sum((b.adults or 0) + (b.children or 0) for b in active),
+                        'next_departure': str(dated[0]) if dated else None,
+                    }, status=status.HTTP_409_CONFLICT)
+
             tour.status = target
             tour.save(update_fields=['status'])
             return Response(TourDetailSerializer(tour, context={'request': request}).data)

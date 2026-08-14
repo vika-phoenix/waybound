@@ -506,7 +506,15 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .tour-status.draft{background:var(--paper);color:var(--mu);border:1px solid var(--ln)}
 .tour-status.pending{background:#fff4e0;color:#9a6000}
 .tour-card-actions{padding:0;display:flex;gap:8px;flex-shrink:0;min-width:210px}
-@media(max-width:560px){.tour-card-actions{display:none}}
+/* These used to be display:none below 560px, which made the whole tour list
+   read-only on a phone: no edit, no pause, no cancelling a departure. Stack
+   them under the card body instead. display:contents flattens the two inner
+   groups so every button wraps in one row; !important because tourCard()
+   writes the desktop column layout inline. */
+@media(max-width:560px){
+.tour-card-actions{flex-direction:row!important;flex-wrap:wrap;align-items:stretch!important;justify-content:flex-start;width:100%;min-width:0;gap:6px;border-left:none!important;border-top:1px solid var(--ln);padding:10px 0 0!important;margin:8px 0 0!important}
+.tour-card-actions>div{display:contents!important}
+}
 .btn-sm{font-size:12px;font-weight:600;font-family:var(--bf);padding:6px 14px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s;border:1.5px solid var(--ln);background:none;color:var(--ink);min-width:72px;text-align:center;box-sizing:border-box}
 .btn-sm:hover{border-color:var(--ac);color:var(--ac)}
 .btn-sm.filled{background:var(--ac);border-color:var(--ac);color:var(--ink)}
@@ -759,7 +767,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 </div>
 </div>
 <!-- Custom confirm dialog (replaces browser confirm()) -->
-<div id="confirmDialog" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
+<div id="confirmDialog" style="display:none;position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,.45);align-items:center;justify-content:center">
 <div style="background:var(--white);border-radius:14px;padding:28px 28px 22px;max-width:380px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)">
 <div id="confirmDialogIcon" style="font-size:28px;margin-bottom:12px;text-align:center"></div>
 <div id="confirmDialogTitle" style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf);margin-bottom:8px;text-align:center"></div>
@@ -770,6 +778,18 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 </div>
 </div>
 </div>
+<!-- Departures: manage the individual dates of one tour -->
+<div id="depModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto">
+<div style="background:var(--white);border-radius:16px;padding:24px;max-width:520px;width:92%;box-shadow:0 8px 40px rgba(0,0,0,.18);margin-bottom:40px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+<div style="font-size:16px;font-weight:700;color:var(--ink);font-family:var(--bf)">Даты отправления</div>
+<button onclick="closeDepModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--mu);padding:0;line-height:1">&times;</button>
+</div>
+<div id="depModalTour" style="font-size:12.5px;color:var(--mu);font-family:var(--bf);margin-bottom:14px"></div>
+<div id="depModalList"></div>
+</div>
+</div>
+
 <!-- Copy tour modal -->
 <div id="copyTourModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto">
 <div style="background:var(--white);border-radius:16px;padding:24px;max-width:560px;width:92%;box-shadow:0 8px 40px rgba(0,0,0,.18);margin-bottom:40px">
@@ -1920,6 +1940,7 @@ function tourCard(t) {
     + '<div style="display:flex;gap:6px">'
     + (t.status === 'draft' ? '<button class="btn-sm" style="border-color:var(--ac);color:var(--ac)" onclick="publishTour(\'' + slug + '\')">Отправить на проверку</button>' : '')
     + (t.status === 'review' ? '<button class="btn-sm" style="border-color:#9a9a9a;color:#9a9a9a;cursor:default;opacity:.6" disabled title="Already submitted — under admin review">На проверке…</button>' : '')
+    + (t.status === 'live' || t.status === 'paused' ? '<button class="btn-sm" onclick="manageDepartures(\'' + slug + '\')">Даты</button>' : '')
     + (t.status === 'live' ? '<button class="btn-sm" style="border-color:#9a6000;color:#9a6000" onclick="pauseTour(\'' + slug + '\')">Пауза</button>' : '')
     + (t.status === 'paused' ? '<button class="btn-sm" style="border-color:var(--ac);color:var(--ac)" onclick="unpauseTour(\'' + slug + '\')">Возобновить</button>' : '')
     + (t.status === 'draft' || t.status === 'review' ? '<button class="btn-sm" style="border-color:#e0a898;color:#c03020" onclick="deleteDraftTour(\'' + slug + '\')">Удалить</button>' : '')
@@ -2041,16 +2062,38 @@ async function deleteDraftTour(slug) {
   if (r.ok || r.status === 204) { showToast('Черновик удалён.','success'); loadTours(); }
   else showToast('Не удалось удалить черновик.','error');
 }
-async function pauseTour(slug) {
+async function pauseTour(slug, confirmed) {
   var t = _tours.find(function(x){ return x.slug === slug; });
   var name = t ? (t.title || 'этот тур') : 'этот тур';
-  var ok = await showConfirm({ icon:'⏸️', title:'Пауза "' + name + '"?', msg:'Он будет скрыт из публичного списка. Существующие бронирования остаются действительными.', ok:'Поставить тур на паузу' });
-  if (!ok) return;
+  if (!confirmed) {
+    var ok = await showConfirm({ icon:'\u23F8\uFE0F', title:'Пауза "' + name + '"?', msg:'Он будет скрыт из публичного списка и перестанет принимать новые бронирования.', ok:'Поставить тур на паузу' });
+    if (!ok) return;
+  }
+  var body = confirmed ? { status:'paused', confirm:true } : { status:'paused' };
   const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', {
-    method:'PATCH', headers:ah(), body:JSON.stringify({status:'paused'})
+    method:'PATCH', headers:ah(), body:JSON.stringify(body)
   });
-  if (r.ok) { showToast('Тур поставлен на паузу.','success'); loadTours(); }
-  else showToast('Не удалось поставить тур на паузу.','error');
+  if (r.ok) { showToast('Тур поставлен на паузу.','success'); loadTours(); return; }
+  // 409 означает, что путешественники уже забронированы. Пауза по-прежнему
+  // разрешена — важно лишь не спутать её с отменой тура, потому что это не она.
+  if (r.status === 409) {
+    const d = await r.json().catch(function(){ return {}; });
+    if (d.requires_confirmation) {
+      var who = 'Путешественников: ' + d.travellers + ', бронирований: ' + d.active_bookings;
+      var proceed = await showConfirm({
+        icon:'\u26A0\uFE0F', title:'Этот тур всё равно придётся провести',
+        msg: who + (d.next_departure ? '. Ближайшая дата — ' + fmtD(d.next_departure) : '')
+           + '. Пауза скрывает тур и останавливает новые бронирования, но не отменяет уже проданные поездки. '
+           + 'Чтобы отменить дату и вернуть всем деньги, отмените саму дату отправления.',
+        ok:'Всё равно поставить на паузу', danger:true
+      });
+      if (proceed) return pauseTour(slug, true);
+      return;
+    }
+    showToast(d.detail || 'Не удалось поставить тур на паузу.','error');
+    return;
+  }
+  showToast('Не удалось поставить тур на паузу.','error');
 }
 async function unpauseTour(slug) {
   var t = _tours.find(function(x){ return x.slug === slug; });
@@ -2058,16 +2101,127 @@ async function unpauseTour(slug) {
   var ok = await showConfirm({ icon:'▶️', title:'Возобновить "' + name + '"?', msg:'Тур вернётся в статус «Активный» и будет виден путешественникам.', ok:'Возобновить' });
   if (!ok) return;
   const r = await fetchAuth(ACCT_API + '/tours/' + slug + '/', {
-    method:'PATCH', headers:ah(), body:JSON.stringify({status:'активный'})
+    method:'PATCH', headers:ah(), body:JSON.stringify({status:'live'})
   });
   if (r.ok) { showToast('Тур теперь активен.','success'); loadTours(); }
   else showToast('Не удалось возобновить.','error');
 }
 
+
+// -- Даты отправления ---------------------------------------------------------
+// Иначе гид отменяет каждое бронирование вручную: восемь путешественников —
+// восемь возвратов и восемь писем, из которых не видно, что это одно и то же
+// событие, а тот, кого пропустили, всё равно придёт на старт.
+var _depSlug = null;
+
+function manageDepartures(slug) {
+  var t = _tours.find(function(x){ return x.slug === slug; });
+  if (!t) return;
+  _depSlug = slug;
+  document.getElementById('depModalTour').textContent = t.title || 'Тур';
+  renderDepList();
+  document.getElementById('depModal').style.display = 'flex';
+}
+function closeDepModal() {
+  document.getElementById('depModal').style.display = 'none';
+  _depSlug = null;
+}
+function renderDepList() {
+  var t    = _tours.find(function(x){ return x.slug === _depSlug; });
+  var box  = document.getElementById('depModalList');
+  var deps = (t && t.departures) || [];
+  if (!deps.length) {
+    box.innerHTML = '<div style="font-size:13px;color:var(--mu);font-family:var(--bf);padding:14px 0;'
+      + 'border-top:1px solid var(--ln)">Нет предстоящих дат. Добавьте их в редакторе тура.</div>';
+    return;
+  }
+  box.innerHTML = deps.map(function(d) {
+    var off    = d.status === 'cancelled';
+    var booked = Math.max(0, (d.spots_total || 0) - (d.spots_left || 0));
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--ln)">'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:13.5px;font-weight:600;font-family:var(--bf);color:' + (off ? 'var(--mu)' : 'var(--ink)') + (off ? ';text-decoration:line-through' : '') + '">'
+      + fmtD(d.start_date) + '</div>'
+      + '<div style="font-size:12px;color:var(--mu);font-family:var(--bf);margin-top:2px">'
+      + 'Забронировано мест: ' + booked + ' из ' + (d.spots_total || 0) + '</div>'
+      + '</div>'
+      + (off
+        ? '<span style="font-size:11px;background:#f2f2f2;color:var(--mu);padding:3px 9px;border-radius:10px;font-family:var(--bf);font-weight:600;flex-shrink:0">Отменена</span>'
+        : '<button class="btn-sm" style="border-color:#e0a898;color:#c03020;flex-shrink:0" onclick="cancelDeparture(' + d.id + ')">Отменить дату</button>')
+      + '</div>';
+  }).join('');
+}
+
+async function cancelDeparture(depId) {
+  var slug = _depSlug;
+  var url  = ACCT_API + '/tours/' + slug + '/departures/' + depId + '/cancel/';
+
+  // Без confirm в теле запроса это предпросмотр: сервер сообщает последствия и
+  // ничего не меняет. Нельзя называть сумму возврата, которую гид не видел.
+  var pv;
+  try {
+    var pr = await fetchAuth(url, { method:'POST', headers:ah(), body:JSON.stringify({}) });
+    pv = await pr.json().catch(function(){ return {}; });
+    if (!pr.ok) { showToast(pv.detail || 'Не удалось загрузить эту дату.', 'error'); return; }
+  } catch(e) { showToast('Не удалось связаться с сервером.', 'error'); return; }
+
+  var msg = pv.bookings_affected
+    ? 'Будет отменено бронирований: ' + pv.bookings_affected
+      + ', путешественников: ' + pv.travellers + '. '
+      + 'Им вернётся ' + fmtP(pv.refund_total, pv.currency) + ' в полном объёме, письма уйдут сразу. '
+      + 'Это действие необратимо.'
+    : 'На эту дату никто не забронирован, возвращать нечего. Дата перестанет принимать бронирования.';
+
+  var p = showConfirm({
+    icon:  '\u26D4',
+    title: 'Отменить дату ' + fmtD(pv.departure) + '?',
+    msg:   msg,
+    ok:    pv.bookings_affected ? 'Отменить и вернуть деньги' : 'Отменить дату',
+    danger:true
+  });
+  // showConfirm ставит textContent; подставляем поле причины поверх него.
+  document.getElementById('confirmDialogMsg').innerHTML =
+    '<div style="text-align:left">' + msg
+    + '<div style="margin-top:14px;font-size:12px;color:var(--ink);font-weight:600">Причина (необязательно)</div>'
+    + '<div style="font-size:11.5px;color:var(--mu);margin-top:2px">Путешественники увидят её в письме об отмене.</div>'
+    + '<textarea id="depReason" rows="2" placeholder="например: слишком мало участников, чтобы провести тур безопасно" '
+    + 'style="width:100%;margin-top:6px;border:1.5px solid var(--ln);border-radius:8px;padding:8px 10px;'
+    + 'font-size:12.5px;font-family:var(--bf);resize:vertical;outline:none;box-sizing:border-box"></textarea>'
+    + '</div>';
+  var ok = await p;
+  if (!ok) return;
+  var reasonEl = document.getElementById('depReason');
+  var reason   = reasonEl ? reasonEl.value.trim() : '';
+
+  var r, d;
+  try {
+    r = await fetchAuth(url, { method:'POST', headers:ah(), body:JSON.stringify({ confirm:true, reason:reason }) });
+    d = await r.json().catch(function(){ return {}; });
+  } catch(e) { showToast('Не удалось связаться с сервером.', 'error'); return; }
+  if (!r.ok) { showToast(d.detail || 'Не удалось отменить эту дату.', 'error'); return; }
+
+  var done = 'Дата отменена.';
+  if (d.cancelled_bookings) {
+    done += ' Отменено бронирований: ' + d.cancelled_bookings
+          + ', возвращено автоматически: ' + d.auto_refunded + '.';
+  }
+  showToast(done, 'success');
+  // Возврат, который отклонил провайдер, — единственное, что требует человека.
+  // Об этом надо сказать громко, а не прятать в сообщении об успехе.
+  if (d.needs_manual_refund && d.needs_manual_refund.length) {
+    showToast('Возвраты, которые не прошли автоматически и требуют ручной отправки ('
+      + d.needs_manual_refund.length + '): ' + d.needs_manual_refund.join(', '), 'error');
+  }
+  await loadTours();
+  if (_depSlug) renderDepList();
+  await loadBookings();
+  renderOverview(); renderEarnings();
+}
+
 function renderBookings() { filterBookings(); }
 function filterBookings() {
   var f = document.getElementById('bkFilter').value;
-  var list = f === 'все' ? _bookings : _bookings.filter(function(b){ return b.status===f; });
+  var list = f === 'all' ? _bookings : _bookings.filter(function(b){ return b.status===f; });
   document.getElementById('bkList').innerHTML = list.length ? list.map(function(b){ return bkCard(b, false); }).join('') : emptyState('&#x1F4CB;','Нет бронирований','Бронирования от путешественников будут отображаться здесь.','','');
   // Restore previously open cards after re-render
   Object.keys(_bkExpanded).forEach(function(id) {
@@ -2342,7 +2496,7 @@ async function cancelBooking(id) {
       if (parseFloat(pd.refund_amount || 0) > 0) {
         refundHtml = '<div style="background:#e8f5e9;border-radius:7px;padding:10px 13px;font-size:12px;font-family:var(--bf);margin-top:8px;margin-bottom:0;color:#1a7a40">'
           + '&#x21A9; Полный возврат будет выдан путешественнику: <strong>' + fN(refundShow) + '</strong>'
-          + (pd.payment_method === 'банк' ? '(ручной банковский перевод)' : '(автоматически, в RUB)')
+          + (pd.payment_method === 'bank' ? '(ручной банковский перевод)' : '(автоматически, в RUB)')
           + '</div>';
       } else if (parseFloat(pd.total_paid || 0) <= 0) {
         refundHtml = '<div style="font-size:12px;font-family:var(--bf);color:var(--mu);margin-top:6px">Платёж не произведён — возврат не требуется.</div>';
@@ -2544,7 +2698,7 @@ function renderEarnings() {
   var groupList = Object.values(groups);
 
   // Sort
-  if (_earnSort === 'тур') {
+  if (_earnSort === 'tour') {
     groupList.sort(function(a,b){ return a.title.localeCompare(b.title) || (b.dep||'').localeCompare(a.dep||''); });
   } else {
     groupList.sort(function(a,b){ return (b.dep||'').localeCompare(a.dep||'') || a.title.localeCompare(b.title); });

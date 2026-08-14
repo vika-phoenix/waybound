@@ -394,6 +394,7 @@ class OperatorTourListSerializer(serializers.ModelSerializer):
     booking_count   = serializers.ReadOnlyField()
     next_departure  = serializers.SerializerMethodField()
     hero_photo_url  = serializers.SerializerMethodField()
+    departures      = serializers.SerializerMethodField()
 
     class Meta:
         model  = Tour
@@ -401,8 +402,31 @@ class OperatorTourListSerializer(serializers.ModelSerializer):
             'slug', 'title', 'status', 'category', 'categories', 'days',
             'price_adult', 'currency', 'max_group',
             'rating', 'review_count', 'booking_count',
-            'is_private', 'hero_photo_url', 'next_departure',
+            'is_private', 'hero_photo_url', 'next_departure', 'departures',
             'created_at', 'updated_at',
+        ]
+
+    def get_departures(self, obj):
+        """
+        The dates the operator can still act on, so the dashboard can offer a
+        per-departure cancel without a second round trip.
+
+        Past dates are dropped: cancelling a trip that has already run would
+        refund people who went on it. Sorting happens in Python so the
+        prefetched rows are reused instead of issuing a query per tour.
+        """
+        today = timezone.now().date()
+        return [
+            {
+                'id':          d.id,
+                'start_date':  str(d.start_date),
+                'end_date':    str(d.end_date) if d.end_date else None,
+                'spots_total': d.spots_total,
+                'spots_left':  d.spots_left,
+                'status':      d.status,
+            }
+            for d in sorted(obj.departures.all(), key=lambda x: x.start_date)
+            if d.start_date >= today
         ]
 
     def get_next_departure(self, obj):
