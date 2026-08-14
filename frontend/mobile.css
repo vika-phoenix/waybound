@@ -281,12 +281,38 @@
    a real column, where sticky is what you want.
    ============================================================ */
 @media (max-width: 680px) {
-  /* Once the grid is one column the sidebar sits on top of the panel, and
-     position:sticky pins all twelve rows to the top of the screen — so the
-     section you actually opened gets whatever height is left underneath and
-     scrolls inside it. Let the nav scroll away instead. */
+  /* Stacking the nav above the panel wasted the width and pushed the content
+     you came for below the fold. Keep the two columns instead, collapsing the
+     sidebar to an icon rail — every row already carries an icon, so the labels
+     are the only thing that has to go.
+
+     The rail is ~52px, leaving roughly 330px of content on a 390px phone, and
+     it stays sticky: it is short enough not to steal vertical space, and a
+     fixed rail means switching section never involves scrolling back up. */
+  .settings-wrap {
+    grid-template-columns: 52px 1fr !important;
+    gap: 12px !important;
+  }
   .settings-nav {
-    position: static !important;
-    top: auto !important;
+    position: sticky !important;
+    top: 68px !important;
+    border-radius: 10px !important;
+  }
+  /* Group headings ("Account", "Preferences") cannot fit in a 52px rail. The
+     section borders still separate the groups. */
+  .settings-nav-label { display: none !important; }
+
+  /* font-size:0 hides the label text node without needing markup changes;
+     .sn-ico sets its own size back. */
+  .settings-nav-item {
+    font-size: 0 !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    padding: 13px 0 !important;
+  }
+  .sn-ico { font-size: 18px !important; width: auto !important; }
+
+  .settings-nav-section + .settings-nav-section {
+    border-top: 1px solid var(--ln, rgba(0,0,0,.1)) !important;
   }
 }
