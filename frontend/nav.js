@@ -284,7 +284,25 @@ function _navInjectLangBtn() {
     // only the operator links, so a tour they had booked themselves was
     // unreachable from the menu. Messages is deliberately not repeated here —
     // opLinks already has one, pointing at the operator inbox.
-    var operatorMenu = opLinks + '<div class="nav-dd-sep"></div>' + myBookingsLink + travellerRest;
+    // A guide holds two roles at once, and the menu never said which half a
+    // link belonged to — "My bookings" next to a Bookings dashboard tab meant
+    // opposite things. Name the halves, and give the guiding side its own
+    // bookings shortcut so the pair reads as a contrast rather than a clash.
+    function ddLabel(txt) {
+      return '<div style="font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;'
+           + 'opacity:.45;padding:10px 14px 3px;font-weight:700">' + txt + '</div>';
+    }
+    var tourBookingsLink =
+      '<a class="nav-dd-item" href="operator-dashboard' + sfx + '?tab=bookings">'
+      + '<span class="dd-ico">&#x1F4C5;</span>'
+      + (isRu ? 'Брони на туры' : 'Tour bookings') + '</a>';
+
+    var operatorMenu =
+      ddLabel(isRu ? 'Как гид' : 'Guiding')
+      + opLinks + tourBookingsLink
+      + '<div class="nav-dd-sep"></div>'
+      + ddLabel(isRu ? 'Как путешественник' : 'Travelling')
+      + myBookingsLink + travellerRest;
 
     dropdown.innerHTML =
       '<div class="nav-dropdown-head">'

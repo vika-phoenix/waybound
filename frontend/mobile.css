@@ -321,6 +321,19 @@
   }
   .sn-ico { font-size: 17px !important; width: auto !important; }
 
+  /* .settings-wrap uses align-items:start, so each column sizes to its own
+     content and the two boxes end at different heights. A short section
+     (Language, Appearance) leaves the rail jutting out below it.
+
+     Stretching the columns would even them up but kill the sticky rail —
+     a stretched grid item fills the row and has nothing to stick within, and
+     the sticky rail is the point. Giving the panel a floor instead matches the
+     two on short sections; long ones simply grow past it, which is the case
+     where you want the rail pinned anyway. */
+  .settings-panels {
+    min-height: 430px;
+  }
+
   .settings-nav-section + .settings-nav-section {
     border-top: 1px solid var(--ln, rgba(0,0,0,.1)) !important;
   }
