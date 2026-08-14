@@ -312,15 +312,6 @@ footer a:hover{color:rgba(255,255,255,.75)}
 <span class="sn-ico">🌐</span>Язык
       </button>
 </div>
-<div class="settings-nav-section" id="navOperatorLinks" style="display:none">
-<div class="settings-nav-label">Оператор</div>
-<a class="settings-nav-item" href="operator-dashboard_ru.html" style="text-decoration:none">
-<span class="sn-ico">🏠</span>Мой панель управления
-      </a>
-<a class="settings-nav-item" href="operator-tour-create_ru.html" style="text-decoration:none">
-<span class="sn-ico">➕</span>Создать новый тур
-      </a>
-</div>
 <div class="settings-nav-section">
 <div class="settings-nav-label">Опасная зона</div>
 <button class="settings-nav-item danger" onclick="showPanel('danger',this)">
@@ -785,8 +776,6 @@ function showPanel(name, btn) {
     if (credNav) credNav.style.display = '';
     var payNav = document.getElementById('navPayout');
     if (payNav) payNav.style.display = '';
-    var opLinks = document.getElementById('navOperatorLinks');
-    if (opLinks) opLinks.style.display = '';
     if (user.verification_status) {
       updateVerifyStatus(user.verification_status);
     } else if (user.is_verified) {
@@ -866,8 +855,6 @@ function showPanel(name, btn) {
       if (credNav) credNav.style.display = '';
       var payNav = document.getElementById('navPayout');
       if (payNav) payNav.style.display = '';
-      var opLinks = document.getElementById('navOperatorLinks');
-      if (opLinks) opLinks.style.display = '';
       updateVerifyStatus(data.verification_status || (data.is_verified ? 'approved' : null));
       // Load payout details
       if (data.payout_name) document.getElementById('payoutName').value = data.payout_name;
