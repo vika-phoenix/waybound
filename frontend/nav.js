@@ -262,19 +262,31 @@ function _navInjectLangBtn() {
           + '<span class="dd-ico">&#x1F4AC;</span>' + t.messages + badge + '</a>'
       + '<a class="nav-dd-item" href="operator-tour-create' + sfx + '"><span class="dd-ico">&#x2795;</span>' + t.newTour + '</a>';
 
-    var touristLinks =
-      '<a class="nav-dd-item" href="my-bookings' + sfx + '"><span class="dd-ico">&#x1F9ED;</span>' + t.myBookings + '</a>'
-      + '<a class="nav-dd-item" href="my-messages' + sfx + '"><span class="dd-ico">&#x1F4AC;</span>' + t.messages + '</a>'
-      + '<a class="nav-dd-item" href="saved-tours' + sfx + '"><span class="dd-ico">&#x2764;&#xFE0F;</span>' + t.savedTours + '</a>'
+    var myBookingsLink =
+      '<a class="nav-dd-item" href="my-bookings' + sfx + '"><span class="dd-ico">&#x1F9ED;</span>' + t.myBookings + '</a>';
+    var travellerRest =
+      '<a class="nav-dd-item" href="saved-tours' + sfx + '"><span class="dd-ico">&#x2764;&#xFE0F;</span>' + t.savedTours + '</a>'
       + '<a class="nav-dd-item" href="my-reviews' + sfx + '"><span class="dd-ico">&#x2B50;</span>' + t.myReviews + '</a>'
       + '<a class="nav-dd-item" href="rewards' + sfx + '"><span class="dd-ico">&#x1F3C6;</span>' + t.rewards + '</a>';
+
+    var touristLinks =
+      myBookingsLink
+      + '<a class="nav-dd-item" href="my-messages' + sfx + '"><span class="dd-ico">&#x1F4AC;</span>' + t.messages + '</a>'
+      + travellerRest;
+
+    // A guide is a traveller too: booking is not role-gated, and none of the
+    // traveller pages check for role === 'tourist'. Operators previously got
+    // only the operator links, so a tour they had booked themselves was
+    // unreachable from the menu. Messages is deliberately not repeated here —
+    // opLinks already has one, pointing at the operator inbox.
+    var operatorMenu = opLinks + '<div class="nav-dd-sep"></div>' + myBookingsLink + travellerRest;
 
     dropdown.innerHTML =
       '<div class="nav-dropdown-head">'
         + '<div class="nav-dropdown-name">' + fullName + '</div>'
         + '<div class="nav-dropdown-email">' + (user.email || '') + '</div>'
       + '</div>'
-      + (isOp ? opLinks : touristLinks)
+      + (isOp ? operatorMenu : touristLinks)
       + '<div class="nav-dd-sep"></div>'
       + '<a class="nav-dd-item" href="settings' + sfx + '"><span class="dd-ico">&#x2699;&#xFE0F;</span>' + t.settings + '</a>'
       + '<div class="nav-dd-sep"></div>'

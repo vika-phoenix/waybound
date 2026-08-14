@@ -41,6 +41,18 @@ class BookingCreateSerializer(serializers.ModelSerializer):
         tour = data['tour_slug']  # already a Tour instance after validate_tour_slug
         adults = data.get('adults', 1)
         children = data.get('children', 0)
+
+        # Operators may book other people's tours — booking is not role-gated,
+        # and a guide is a traveller too. Booking their OWN tour is a different
+        # thing: it takes a real seat off the departure, emails them their own
+        # "new booking" notification, and inflates their booking stats.
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if user is not None and user.is_authenticated and tour.operator_id == user.id:
+            raise serializers.ValidationError(
+                'You cannot book your own tour. To hold seats, reduce the '
+                'available spots on the departure instead.'
+            )
         if adults + children > tour.max_group:
             raise serializers.ValidationError(
                 f'Group size exceeds tour maximum of {tour.max_group}.'
