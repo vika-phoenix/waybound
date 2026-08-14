@@ -338,3 +338,35 @@
     border-top: 1px solid var(--ln, rgba(0,0,0,.1)) !important;
   }
 }
+
+/* ============================================================
+   TOUR DETAIL — photo mosaic + lightbox (≤ 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+  /* The "+N more" badge is 18px, sized for the desktop mosaic. On mobile the
+     right-hand slots collapse to 64px-tall quarter-width thumbnails, so the
+     text no longer fits its box and reads as off-centre. It is already
+     flex-centred; it just needs to be small enough to sit inside. */
+  .mosaic-more {
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+    padding: 2px !important;
+  }
+
+  /* Opening a photo left the page scrolling behind the lightbox. JS sets
+     body.overflow='hidden', which iOS Safari ignores, so the backdrop has to
+     hold the viewport itself: fixed to the screen, and overscroll-behavior
+     stopping the scroll chaining through to the page underneath. */
+  .photo-modal-bg.open {
+    position: fixed !important;
+    inset: 0 !important;
+    overscroll-behavior: contain !important;
+    touch-action: none;
+  }
+  .photo-modal-bg.open .photo-modal-content,
+  .photo-modal-bg.open .photo-modal-inner {
+    overscroll-behavior: contain !important;
+    touch-action: pan-y;
+  }
+}
