@@ -1422,7 +1422,7 @@ body,body.ocean,body.warm,body.ivory,body.gold,body.forest,body.terra {
   <div class="photo-mosaic" id="photoMosaic">
     <!-- Left: large hero image (index 0) -->
     <div class="mosaic-left mosaic-slot" id="mosaicSlot0" onclick="openPhotoModal(0)" style="display:none">
-      <img id="mosaicImg0" src="" alt="">
+      <img id="mosaicImg0" src="" alt="" fetchpriority="high" decoding="async">
       <button class="save-btn" title="Save" onclick="event.stopPropagation();toggleSave(this)" style="position:absolute;top:14px;right:14px;display:none">♡</button>
     </div>
     <!-- Left placeholder (when no photos) -->
@@ -3068,7 +3068,7 @@ async function loadTour(slug) {
           staysHtml += '<div style="display:flex;gap:8px;overflow-x:auto;margin-top:10px;padding-bottom:4px">';
           stay.photos.forEach(function(ph) {
             if (ph.url) {
-              staysHtml += '<img src="' + ph.url + '" alt="' + (ph.caption || stay.property_name) + '" style="width:100px;height:68px;object-fit:cover;border-radius:6px;flex-shrink:0;cursor:zoom-in" onclick="window.open(\'' + ph.url + '\',\'_blank\')">';
+              staysHtml += '<img loading="lazy" decoding="async" src="' + ph.url + '" alt="' + (ph.caption || stay.property_name) + '" style="width:100px;height:68px;object-fit:cover;border-radius:6px;flex-shrink:0;cursor:zoom-in" onclick="window.open(\'' + ph.url + '\',\'_blank\')">';
             }
           });
           staysHtml += '</div>';
@@ -3541,7 +3541,7 @@ function patchPage(t) {
   var guideAvEl = document.getElementById('guideInitial');
   if (guideAvEl) {
     if (t.operator_photo_url) {
-      guideAvEl.innerHTML = '<img src="' + t.operator_photo_url + '" alt="' + initial + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+      guideAvEl.innerHTML = '<img loading="lazy" decoding="async" src="' + t.operator_photo_url + '" alt="' + initial + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
     } else {
       guideAvEl.textContent = initial;
     }
@@ -3814,6 +3814,8 @@ function openPhotoModal(idx) {
   buildPhotoSlots();
   if (!PHOTO_SLOTS.length) return;
   currentPhoto = idx || 0;
+  _photoGridOpen = false;
+  _syncPhotoChrome();
   renderPhotoModal();
   document.getElementById('photoModalBg').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -3849,6 +3851,65 @@ function buildPhotoSlots() {
     var img = slot.querySelector('img');
     return img ? img.src : '';
   });
+}
+
+
+// ── Photo grid ───────────────────────────────────────────────────────────────
+// Paging one-by-one through 28 photos gives no sense of what is there, so most
+// people give up early. This adds an overview: switch to a grid, pick the shot
+// you want, and the lightbox opens on it. Thumbnails are the small variants and
+// are lazy — a 28-image grid is exactly where that matters.
+var _photoGridOpen = false;
+
+function _photoThumb(i) {
+  var ph = (ALL_PHOTOS && ALL_PHOTOS[i]) || null;
+  if (ph && typeof ph === 'object') return ph.thumb_url || ph.url || '';
+  return PHOTO_SLOTS[i] || '';
+}
+
+function renderPhotoGrid() {
+  var content = document.getElementById('photoModalContent');
+  if (!content) return;
+  var html = '<div style="width:100%;height:100%;overflow-y:auto;padding:8px;'
+           + 'display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px">';
+  for (var i = 0; i < PHOTO_SLOTS.length; i++) {
+    html += '<img src="' + _photoThumb(i) + '" loading="lazy" decoding="async" alt="" '
+          + 'onclick="openFromGrid(' + i + ')" '
+          + 'style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:7px;'
+          + 'cursor:pointer;background:rgba(255,255,255,.08)'
+          + (i === currentPhoto ? ';outline:2.5px solid #4fa8d4;outline-offset:-2px' : '')
+          + '">';
+  }
+  content.innerHTML = html + '</div>';
+}
+
+function openFromGrid(i) {
+  currentPhoto = i;
+  _photoGridOpen = false;
+  _syncPhotoChrome();
+  renderPhotoModal();
+}
+
+function togglePhotoGrid() {
+  _photoGridOpen = !_photoGridOpen;
+  _syncPhotoChrome();
+  if (_photoGridOpen) renderPhotoGrid(); else renderPhotoModal();
+}
+
+// Prev/next and the counter are meaningless over a grid, so hide them there.
+function _syncPhotoChrome() {
+  var btn = document.getElementById('photoGridBtn');
+  if (btn) btn.innerHTML = _photoGridOpen ? 'Back to grid' : '\u2637 Grid';
+  ['photoModalPrev', 'photoModalNext'].forEach(function (id) {
+    var e = document.querySelector('.' + id.replace('photoModal', 'photo-modal-').toLowerCase());
+    if (e) e.style.display = _photoGridOpen ? 'none' : '';
+  });
+  var p = document.querySelector('.photo-modal-prev');
+  var n = document.querySelector('.photo-modal-next');
+  var c = document.getElementById('photoModalCounter');
+  if (p) p.style.display = _photoGridOpen ? 'none' : '';
+  if (n) n.style.display = _photoGridOpen ? 'none' : '';
+  if (c) c.style.display = _photoGridOpen ? 'none' : '';
 }
 
 function renderPhotoModal() {
@@ -4397,6 +4458,7 @@ document.addEventListener('keydown', function(e) {
 <div class="photo-modal-bg" id="photoModalBg" onclick="closePhotoModal(event)">
   <div class="photo-modal-inner" onclick="event.stopPropagation()">
     <button class="photo-modal-close" onclick="closePhotoModal()">✕</button>
+    <button id="photoGridBtn" onclick="togglePhotoGrid()" style="position:absolute;top:10px;left:10px;z-index:3;border:none;border-radius:8px;background:rgba(0,0,0,.55);color:#fff;font:inherit;font-size:12.5px;font-weight:600;padding:7px 13px;cursor:pointer">☷ Grid</button>
     <button class="photo-modal-nav photo-modal-prev" onclick="photoNav(-1)">‹</button>
     <div class="photo-modal-content" id="photoModalContent"></div>
     <button class="photo-modal-nav photo-modal-next" onclick="photoNav(1)">›</button>
