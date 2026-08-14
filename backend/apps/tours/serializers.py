@@ -395,6 +395,8 @@ class OperatorTourListSerializer(serializers.ModelSerializer):
     next_departure  = serializers.SerializerMethodField()
     hero_photo_url  = serializers.SerializerMethodField()
     departures      = serializers.SerializerMethodField()
+    commission_rate = serializers.SerializerMethodField()
+    payout_per_adult = serializers.SerializerMethodField()
 
     class Meta:
         model  = Tour
@@ -403,8 +405,29 @@ class OperatorTourListSerializer(serializers.ModelSerializer):
             'price_adult', 'currency', 'max_group',
             'rating', 'review_count', 'booking_count',
             'is_private', 'hero_photo_url', 'next_departure', 'departures',
+            'commission_rate', 'payout_per_adult',
             'created_at', 'updated_at',
         ]
+
+    def _rate(self, obj):
+        from django.conf import settings as _s
+        rate = obj.operator.commission_pct_override
+        return float(rate) if rate is not None else float(
+            getattr(_s, 'PLATFORM_COMMISSION_PCT', 15))
+
+    def get_commission_rate(self, obj):
+        return self._rate(obj)
+
+    def get_payout_per_adult(self, obj):
+        """
+        What the guide keeps per adult at the current list price, so the price
+        they set and the money they get are on the same line. Operator-only
+        serializer — this must never reach a traveller.
+
+        An estimate at today's rate: the binding number is snapshotted onto each
+        booking when it is paid.
+        """
+        return round(float(obj.price_adult or 0) * (100 - self._rate(obj)) / 100, 2)
 
     def get_departures(self, obj):
         """

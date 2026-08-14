@@ -361,7 +361,8 @@ def yookassa_webhook(request):
                 else:
                     booking.balance_paid   = amount
                     booking.balance_status = 'paid'
-                    booking.save(update_fields=['balance_paid', 'balance_status'])
+                    booking.snapshot_commission(save=False)
+                    booking.save(update_fields=['balance_paid', 'balance_status', 'commission_pct'])
                     logger.info('Balance paid for booking %s via YooKassa', booking.reference)
             else:
                 # Deposit payment succeeded
@@ -378,10 +379,11 @@ def yookassa_webhook(request):
                     booking.deposit_status = 'paid'
                     # If deposit covers the full price (100% deposit policy), mark
                     # balance as paid too so balance-reminder jobs skip this booking.
-                    update_fields = ['deposit_paid', 'deposit_status']
+                    update_fields = ['deposit_paid', 'deposit_status', 'commission_pct']
                     if deposit_in_tour_currency >= float(booking.total_price):
                         booking.balance_status = 'paid'
                         update_fields.append('balance_status')
+                    booking.snapshot_commission(save=False)
                     booking.save(update_fields=update_fields)
                     logger.info('Deposit paid for booking %s, awaiting operator confirmation', booking.reference)
 
@@ -530,7 +532,8 @@ def _settle(booking, payment_type, amount_usd):
         if amount_usd:
             booking.balance_paid = amount_usd
         booking.balance_status = 'paid'
-        booking.save(update_fields=['balance_paid', 'balance_status'])
+        booking.snapshot_commission(save=False)
+        booking.save(update_fields=['balance_paid', 'balance_status', 'commission_pct'])
         logger.info('Balance paid for %s via %s', booking.reference, booking.payment_method)
         return True
 
@@ -543,7 +546,10 @@ def _settle(booking, payment_type, amount_usd):
     booking.deposit_status = 'paid'
     if booking.status == Booking.Status.PENDING:
         booking.status = Booking.Status.CONFIRMED
-    booking.save(update_fields=['deposit_paid', 'deposit_status', 'status'])
+    # Freeze the commission rate the moment real money lands, so a later rate
+    # change cannot rewrite what this guide was owed.
+    booking.snapshot_commission(save=False)
+    booking.save(update_fields=['deposit_paid', 'deposit_status', 'status', 'commission_pct'])
     logger.info('Deposit paid for %s via %s', booking.reference, booking.payment_method)
 
     try:

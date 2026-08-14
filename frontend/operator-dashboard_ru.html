@@ -571,15 +571,25 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .rv-reply-text{font-size:13px;color:var(--ink);font-family:var(--bf);line-height:1.5}
 .rv-reply-input{width:100%;border:1.5px solid var(--ln);border-radius:8px;padding:10px 12px;font-size:13px;font-family:var(--bf);color:var(--ink);background:var(--white);resize:vertical;min-height:70px;transition:border-color .15s}
 .rv-reply-input:focus{outline:none;border-color:var(--ac)}
-.earnings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.earnings-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:900px){.earnings-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.earnings-grid{grid-template-columns:1fr}}
 .earnings-card{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:20px}
 .earnings-card-label{font-size:12px;color:var(--mu);font-family:var(--bf);margin-bottom:6px}
 .earnings-card-val{font-family:var(--df);font-size:30px;color:var(--ink)}
 .earnings-card-note{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:4px}
-.earnings-table{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;overflow:hidden}
-.et-head{display:grid;grid-template-columns:2.5fr .7fr .7fr 1fr 1fr;padding:11px 16px;background:var(--paper);border-bottom:1px solid var(--ln);font-size:11px;font-weight:700;color:var(--mu);font-family:var(--bf);text-transform:uppercase;letter-spacing:.06em}
-.et-row{display:grid;grid-template-columns:2.5fr .7fr .7fr 1fr 1fr;padding:12px 16px;border-bottom:1px solid var(--ln);font-size:13px;font-family:var(--bf);color:var(--ink)}
+/* Seven money columns will not fit a phone, and squeezing them makes the
+   figures unreadable. Scroll the table inside its own box instead — the page
+   itself must never scroll sideways. */
+.earnings-table{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;overflow-x:auto}
+.et-head,.et-row{min-width:720px}
+.et-head{display:grid;grid-template-columns:2.2fr .9fr 1fr 1fr 1fr 1fr .9fr;padding:11px 16px;background:var(--paper);border-bottom:1px solid var(--ln);font-size:11px;font-weight:700;color:var(--mu);font-family:var(--bf);text-transform:uppercase;letter-spacing:.06em}
+.et-row{display:grid;grid-template-columns:2.2fr .9fr 1fr 1fr 1fr 1fr .9fr;padding:12px 16px;border-bottom:1px solid var(--ln);font-size:13px;font-family:var(--bf);color:var(--ink)}
+.et-num{font-variant-numeric:tabular-nums}
+.et-pay{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;font-family:var(--bf);white-space:nowrap}
+.et-pay.paid{background:#e3f4e3;color:#1a7030}
+.et-pay.due{background:#fff4e0;color:#9a6000}
+.et-pay.later{background:var(--paper);color:var(--mu)}
 .et-row:last-child{border-bottom:none}
 .et-row:hover{background:var(--paper)}
 .dash-empty{text-align:center;padding:50px 20px}
@@ -919,7 +929,8 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 <div class="dash-panel" id="panel-earnings">
 <div class="panel-head"><div class="panel-title">Доход</div></div>
 <div class="earnings-grid">
-<div class="earnings-card"><div class="earnings-card-label">Всего заработано (за все время)</div><div class="earnings-card-val" id="earnTotal">—</div><div class="earnings-card-note">из завершенных бронирований</div></div>
+<div class="earnings-card"><div class="earnings-card-label">Ваш доход (за всё время)</div><div class="earnings-card-val" id="earnTotal">—</div><div class="earnings-card-note" id="earnGross">после комиссии Kavkazland</div></div>
+<div class="earnings-card"><div class="earnings-card-label">Ожидает выплаты</div><div class="earnings-card-val" id="earnDue">—</div><div class="earnings-card-note" id="earnDueNote">выплата в течение 5 рабочих дней после тура</div></div>
 <div class="earnings-card"><div class="earnings-card-label">В этом месяце</div><div class="earnings-card-val" id="earnMonth">—</div><div class="earnings-card-note" id="earnNote">завершено в этом месяце</div></div>
 </div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -930,7 +941,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 </div>
 </div>
 <div class="earnings-table">
-<div class="et-head"><div>Тур</div><div>Бронирования</div><div>Гости</div><div>Отправление</div><div>Сумма</div></div>
+<div class="et-head"><div>Тур</div><div>Бронирований</div><div>Отправление</div><div>Оплатили</div><div>Комиссия</div><div>Вы получите</div><div>Выплата</div></div>
 <div id="earnRows"><div style="text-align:center;padding:30px;color:var(--mu);font-family:var(--bf);font-size:13px">Загрузка…</div></div>
 </div>
 </div>
@@ -1886,6 +1897,12 @@ function tourCard(t) {
     priceStr += '&middot; Дети ' + fmtP(childP);
   }
   subParts.push(priceStr);
+  // Цена в объявлении и то, что реально дойдёт до гида, рядом. Только в
+  // кабинете гида — путешественник этого не видит.
+  if (price > 0 && t.payout_per_adult != null) {
+    subParts.push('<span style="color:#1a7a40">Вы получите ' + fmtP(t.payout_per_adult, t.currency)
+      + '</span> <span style="color:var(--mu)">после комиссии ' + t.commission_rate + '%</span>');
+  }
   if (t.days && parseInt(t.days) > 0) { var d = parseInt(t.days); subParts.push(d + ' ' + (d===1?'день':d<5?'дня':'дней')); }
   var subtitle = subParts.join('&middot;');
   // Last edited relative time
@@ -2655,24 +2672,46 @@ function renderEarnings() {
   var primCur = 'RUB'; var maxCnt = 0;
   for (var c in curCounts) { if (curCounts[c] > maxCnt) { maxCnt = curCounts[c]; primCur = c; } }
 
-  // Totals for summary cards
-  var primComp = comp.filter(function(b){ return (b.currency||'RUB') === primCur; });
-  var total    = primComp.reduce(function(s,b){ return s+parseFloat(b.total_price||0); }, 0);
-  var primPen  = withPenalty.filter(function(b){ return (b.currency||'RUB') === primCur; });
-  var penKept  = primPen.reduce(function(s,b){
-    return s + Math.max(0, parseFloat(b.deposit_paid||0) + parseFloat(b.balance_paid||0) - parseFloat(b.refund_amount||0));
-  }, 0);
-  var thisM = primComp.filter(function(b){
+  // Итоги для карточек.
+  //
+  // Раньше здесь показывалась валовая сумма — цена для путешественника, — хотя
+  // settings.html обещает гиду «цена тура минус 15% комиссии». Гид, которому
+  // причиталось 4 250, видел 5 000. Теперь в заголовке то, что он реально
+  // получит, а валовая сумма — ниже: видны обе цифры, и ни одна не станет
+  // сюрпризом. Все значения приходят из API и здесь не пересчитываются, чтобы
+  // дашборд не разошёлся с реестром, по которому идёт выплата.
+  var earners  = comp.concat(withPenalty).filter(function(b){ return (b.currency||'RUB') === primCur; });
+  var kept     = earners.reduce(function(s,b){ return s + _num(b.amount_kept); }, 0);
+  var fees     = earners.reduce(function(s,b){ return s + _num(b.commission_amount); }, 0);
+  var netTotal = earners.reduce(function(s,b){ return s + _num(b.payout_amount); }, 0);
+
+  var dueList  = earners.filter(function(b){ return b.payout_status === 'due'; });
+  var netDue   = dueList.reduce(function(s,b){ return s + _num(b.payout_amount); }, 0);
+  var paidList = earners.filter(function(b){ return b.payout_status === 'paid'; });
+  var netPaid  = paidList.reduce(function(s,b){ return s + _num(b.payout_amount); }, 0);
+
+  var thisM = earners.filter(function(b){
     if (!b.departure_date) return false;
     var d = new Date(b.departure_date);
     return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
   });
-  var mTotal = thisM.reduce(function(s,b){ return s+parseFloat(b.total_price||0); }, 0);
+  var mTotal = thisM.reduce(function(s,b){ return s + _num(b.payout_amount); }, 0);
 
-  document.getElementById('earnTotal').textContent = fmtP(total + penKept, primCur);
+  var rate = earners.length ? _num(earners[0].commission_rate) : null;
+  document.getElementById('earnTotal').textContent = fmtP(netTotal, primCur);
+  document.getElementById('earnGross').textContent = kept > 0
+    ? 'Оплачено путешественниками: ' + fmtP(kept, primCur) + ' · комиссия '
+      + fmtP(fees, primCur) + (rate ? ' (' + rate + '%)' : '')
+    : 'после комиссии Kavkazland';
+  document.getElementById('earnDue').textContent = fmtP(netDue, primCur);
+  document.getElementById('earnDueNote').textContent = dueList.length
+    ? 'Готово к выплате: ' + dueList.length
+      + (netPaid > 0 ? ' · уже выплачено ' + fmtP(netPaid, primCur) : '')
+    : (netPaid > 0 ? 'Выплачено на сегодня: ' + fmtP(netPaid, primCur)
+                   : 'выплата в течение 5 рабочих дней после тура');
   document.getElementById('earnMonth').textContent = fmtP(mTotal, primCur);
-  document.getElementById('earnNote').textContent  = thisM.length + 'завершённое бронирование' + (thisM.length!==1?'s':'') + 'в этом месяце'
-    + (withPenalty.length ? ' · ' + withPenalty.length + 'штраф за отмену' + (withPenalty.length!==1?'ies':'y') : '');
+  document.getElementById('earnNote').textContent  = 'Завершено в этом месяце: ' + thisM.length
+    + (withPenalty.length ? ' · штрафов за отмену: ' + withPenalty.length : '');
 
   // ── Group by tour + departure date ──────────────────────
   var groups = {};
@@ -2680,17 +2719,18 @@ function renderEarnings() {
     var title = (b.tour_detail||{}).title || b.tour_title || 'Туры';
     var dep   = b.departure_date || '';
     var key   = title + '|' + dep + '|' + type;
-    if (!groups[key]) groups[key] = { title:title, dep:dep, type:type, cur:b.currency||'RUB', bookings:[], guests:0, amount:0 };
+    if (!groups[key]) groups[key] = { title:title, dep:dep, type:type, cur:b.currency||'RUB',
+                                      bookings:[], guests:0, amount:0, fee:0, net:0, payouts:{} };
     var g = groups[key];
     var guests = (b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0));
     g.bookings.push(b);
     g.guests += guests;
-    if (type === 'completed') {
-      g.amount += parseFloat(b.total_price||0);
-    } else {
-      var paid = parseFloat(b.deposit_paid||0) + parseFloat(b.balance_paid||0);
-      g.amount += Math.max(0, paid - parseFloat(b.refund_amount||0));
-    }
+    // Столько путешественники реально отдали за вычетом возвратов — та же
+    // база, на которую начисляется комиссия, поэтому три колонки всегда сходятся.
+    g.amount += _num(b.amount_kept);
+    g.fee    += _num(b.commission_amount);
+    g.net    += _num(b.payout_amount);
+    g.payouts[b.payout_status || 'not_due'] = true;
   }
   comp.forEach(function(b){ addToGroup(b, 'completed'); });
   withPenalty.forEach(function(b){ addToGroup(b, 'penalty'); });
@@ -2713,18 +2753,29 @@ function renderEarnings() {
   rows.innerHTML = groupList.map(function(g){
     var bkCount = g.bookings.length;
     var isPenalty = g.type === 'penalty';
-    var bg = isPenalty ? 'style="background:#fffdf5"' : '';
-    var badge = isPenalty ? '<span style="font-size:10px;background:#fff4e0;color:#9a6000;padding:1px 7px;border-radius:10px;font-family:var(--bf);font-weight:700;vertical-align:middle">Отменено</span>' : '';
-    var amtStyle = isPenalty ? 'font-weight:600;color:#9a6000' : 'font-weight:600';
-    var amtSuffix = isPenalty ? '<span style="font-size:10px;font-weight:400;color:var(--mu)">штраф</span>' : '';
+    var bg = isPenalty ? ' style="background:#fffdf5"' : '';
+    var badge = isPenalty ? ' <span style="font-size:10px;background:#fff4e0;color:#9a6000;padding:1px 7px;border-radius:10px;font-family:var(--bf);font-weight:700;vertical-align:middle">Отменено</span>' : '';
+    var suffix = isPenalty ? ' <span style="font-size:10px;font-weight:400;color:var(--mu)">штраф</span>' : '';
     return '<div class="et-row"' + bg + '>'
       + '<div>' + g.title + badge + '</div>'
-      + '<div>' + bkCount + '</div>'
-      + '<div>' + g.guests + ' guest' + (g.guests!==1?'s':'') + '</div>'
+      + '<div>' + bkCount + ' &middot; ' + g.guests + ' гост.</div>'
       + '<div>' + fmtD(g.dep) + '</div>'
-      + '<div style="' + amtStyle + '">' + fmtP(g.amount, g.cur) + amtSuffix + '</div>'
+      + '<div class="et-num">' + fmtP(g.amount, g.cur) + suffix + '</div>'
+      + '<div class="et-num" style="color:var(--mu)">&minus;' + fmtP(g.fee, g.cur) + '</div>'
+      + '<div class="et-num" style="font-weight:700">' + fmtP(g.net, g.cur) + '</div>'
+      + '<div>' + _payoutChip(g.payouts) + '</div>'
       + '</div>';
   }).join('');
+}
+
+function _num(v) { return parseFloat(v || 0) || 0; }
+
+// Один статус на всю дату. Если часть уже выплачена, а часть нет, показываем
+// «К выплате»: гиду важно именно то, что ему ещё должны.
+function _payoutChip(states) {
+  if (states.due)  return '<span class="et-pay due">К выплате</span>';
+  if (states.paid) return '<span class="et-pay paid">Выплачено</span>';
+  return '<span class="et-pay later">После тура</span>';
 }
 
 function emptyState(ico, title, sub, ctaLabel, ctaHref) {

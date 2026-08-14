@@ -159,8 +159,17 @@ def auto_complete_bookings():
         # Complete if 24h+ past end date (in tour timezone)
         if today > end_date:
             bk.status = Booking.Status.COMPLETED
-            bk.save(update_fields=['status'])
-            logger.info('Auto-completed booking %s (tour ended %s)', bk.reference, end_date)
+            # The trip has run, so the guide is now owed their share. This is
+            # what settings.html promises them: paid within 5 working days of
+            # completion. Nothing here moves money — it puts the booking on the
+            # admin's "who am I paying this week" list.
+            fields = ['status']
+            if bk.payout_status == 'not_due' and bk.payout_amount > 0:
+                bk.payout_status = 'due'
+                fields.append('payout_status')
+            bk.save(update_fields=fields)
+            logger.info('Auto-completed booking %s (tour ended %s), payout %s',
+                        bk.reference, end_date, bk.payout_status)
 
             # Send review request email (skip if tourist already reviewed while still confirmed)
             from apps.reviews.models import TourReview

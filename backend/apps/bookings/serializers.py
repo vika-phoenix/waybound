@@ -143,7 +143,13 @@ class BookingDetailSerializer(serializers.ModelSerializer):
 
 
 class OperatorBookingSerializer(serializers.ModelSerializer):
-    """Bookings on the operator dashboard — includes traveller contact."""
+    """
+    Bookings on the operator dashboard — includes traveller contact.
+
+    This is also the only serializer that exposes the commission split. A guide
+    has to be able to see what they are actually paid; a traveller must never
+    see it, so these fields live here and in no tourist-facing serializer.
+    """
     tour_slug        = serializers.CharField(source='tour.slug', read_only=True)
     tour_title       = serializers.CharField(source='tour.title', read_only=True)
     guests           = serializers.ReadOnlyField()
@@ -151,6 +157,11 @@ class OperatorBookingSerializer(serializers.ModelSerializer):
     balance_due      = serializers.ReadOnlyField()
     enquiry_id       = serializers.SerializerMethodField()
     msg_unread       = serializers.SerializerMethodField()
+    amount_collected  = serializers.ReadOnlyField()
+    amount_kept       = serializers.ReadOnlyField()
+    commission_rate   = serializers.ReadOnlyField(source='effective_commission_pct')
+    commission_amount = serializers.ReadOnlyField()
+    payout_amount     = serializers.ReadOnlyField()
 
     class Meta:
         model  = Booking
@@ -169,6 +180,9 @@ class OperatorBookingSerializer(serializers.ModelSerializer):
             'refund_amount', 'refund_status',
             'created_at',
             'enquiry_id', 'msg_unread',
+            'amount_collected', 'amount_kept', 'commission_rate',
+            'commission_amount', 'payout_amount',
+            'payout_status', 'payout_sent_at', 'payout_reference',
         ]
 
     def get_enquiry_id(self, obj):

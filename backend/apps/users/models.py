@@ -63,6 +63,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     payout_account      = models.CharField(max_length=30, blank=True, default='')
     payout_bik          = models.CharField(max_length=12, blank=True, default='')
     payout_corr_account = models.CharField(max_length=30, blank=True, default='')
+    # Left null for everyone on the standard rate. Set it only where a guide
+    # has actually negotiated something different, so the platform rate stays
+    # one number in settings rather than a value copied onto every account.
+    commission_pct_override = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True,
+        help_text='Overrides the platform commission % for this guide. Leave blank for the standard rate.',
+    )
 
     # ── Timestamps ─────────────────────────────────────────
     date_joined  = models.DateTimeField(default=timezone.now)

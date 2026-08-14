@@ -245,6 +245,13 @@ PAYMENT_METHODS_ENABLED = config(
     'PAYMENT_METHODS_ENABLED', cast=Csv(), default='stripe,paypal',
 )
 
+# Platform commission, as advertised on help.html and operator.html. Changing
+# it only affects bookings paid from that point on: the rate is snapshotted
+# onto each Booking when the first payment lands, so past bookings keep the
+# deal they were sold under. A guide who negotiated a different rate gets it
+# via User.commission_pct_override rather than a change here.
+PLATFORM_COMMISSION_PCT = config('PLATFORM_COMMISSION_PCT', cast=float, default=15.0)
+
 STRIPE_SECRET_KEY      = config('STRIPE_SECRET_KEY',      default='')
 STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='')
 STRIPE_WEBHOOK_SECRET  = config('STRIPE_WEBHOOK_SECRET',  default='')

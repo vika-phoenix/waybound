@@ -1,0 +1,110 @@
+{% extends "admin/base_site.html" %}
+{% comment %}
+Grouped by guide and currency, because that is how the money actually leaves:
+one bank transfer per guide, not one per booking. The per-booking rows stay the
+source of truth — this only adds them up.
+{% endcomment %}
+
+{% block content %}
+<style>
+  .po-wrap { max-width: 1000px; }
+  .po-total { display:flex; gap:24px; flex-wrap:wrap; margin:0 0 24px; }
+  .po-total div { background:#f6f7f9; border:1px solid #e0e3e8; border-radius:8px; padding:12px 18px; }
+  .po-total b { font-size:20px; display:block; }
+  .po-card { border:1px solid #e0e3e8; border-radius:8px; margin-bottom:16px; overflow:hidden; }
+  .po-head { background:#f6f7f9; padding:12px 16px; display:flex; justify-content:space-between;
+             align-items:center; gap:16px; flex-wrap:wrap; }
+  .po-who { font-weight:700; }
+  .po-owed { font-size:18px; font-weight:700; }
+  .po-bank { font-size:12px; color:#555; margin-top:3px; }
+  .po-warn { color:#c0392b; font-weight:600; }
+  .po-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .po-table th, .po-table td { text-align:left; padding:7px 16px; border-top:1px solid #eef0f3; }
+  .po-table th { color:#666; font-weight:600; }
+  .po-num { text-align:right !important; font-variant-numeric:tabular-nums; }
+  .po-empty { padding:40px; text-align:center; color:#666; }
+  .po-recent { margin-top:36px; }
+</style>
+
+<div class="po-wrap">
+  <h1>Payouts due</h1>
+
+  {% if grand_total %}
+    <div class="po-total">
+      {% for cur, t in grand_total.items %}
+        <div>
+          <span>Owed to guides ({{ cur }})</span>
+          <b>{{ t.owed|floatformat:2 }} {{ cur }}</b>
+          <span>{{ t.count }} booking{{ t.count|pluralize }} &middot;
+                commission {{ t.commission|floatformat:2 }} {{ cur }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% for g in groups %}
+    <div class="po-card">
+      <div class="po-head">
+        <div>
+          <div class="po-who">{{ g.operator.full_name|default:g.operator.email }}</div>
+          <div class="po-bank">
+            {% if g.has_bank_details %}
+              {{ g.operator.payout_name }} &middot; {{ g.operator.payout_bank }}
+              &middot; {{ g.operator.payout_account }}
+              {% if g.operator.payout_bik %}&middot; BIK {{ g.operator.payout_bik }}{% endif %}
+            {% else %}
+              <span class="po-warn">No bank details on file — this guide cannot be paid yet.</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="po-owed">{{ g.owed|floatformat:2 }} {{ g.currency }}</div>
+      </div>
+      <table class="po-table">
+        <tr>
+          <th>Booking</th><th>Tour</th><th>Departed</th>
+          <th class="po-num">Kept</th><th class="po-num">Commission</th><th class="po-num">Payout</th>
+        </tr>
+        {% for b in g.bookings %}
+          <tr>
+            <td><a href="{% url 'admin:bookings_booking_change' b.pk %}">{{ b.reference }}</a></td>
+            <td>{{ b.tour.title }}</td>
+            <td>{{ b.departure_date|date:"j M Y" }}</td>
+            <td class="po-num">{{ b.amount_kept|floatformat:2 }}</td>
+            <td class="po-num">{{ b.commission_amount|floatformat:2 }}
+                ({{ b.effective_commission_pct|floatformat:"-2" }}%)</td>
+            <td class="po-num"><b>{{ b.payout_amount|floatformat:2 }}</b></td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% empty %}
+    <div class="po-card"><div class="po-empty">
+      Nothing owed right now. A payout becomes due when a trip finishes.
+    </div></div>
+  {% endfor %}
+
+  <p style="font-size:13px;color:#555">
+    To record a transfer: open
+    <a href="{% url 'admin:bookings_booking_changelist' %}?payout_status__exact=due">the booking list filtered to Due</a>,
+    select the rows the transfer covers, and choose <em>Mark payout sent</em>.
+  </p>
+
+  {% if paid_recently %}
+    <div class="po-recent">
+      <h2>Recently paid</h2>
+      <table class="po-table">
+        <tr><th>Booking</th><th>Guide</th><th>Sent</th><th>Reference</th><th class="po-num">Amount</th></tr>
+        {% for b in paid_recently %}
+          <tr>
+            <td><a href="{% url 'admin:bookings_booking_change' b.pk %}">{{ b.reference }}</a></td>
+            <td>{{ b.tour.operator.full_name|default:b.tour.operator.email }}</td>
+            <td>{{ b.payout_sent_at|date:"j M Y" }}</td>
+            <td>{{ b.payout_reference|default:"—" }}</td>
+            <td class="po-num">{{ b.payout_amount|floatformat:2 }} {{ b.currency }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

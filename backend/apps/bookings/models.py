@@ -8,6 +8,8 @@ Status flow:  pending → confirmed → completed  (or → cancelled)
 EnquiryMessage handles tour enquiries. Reply threading is supported
 via EnquiryReply (tourist and operator can exchange follow-up messages).
 """
+from decimal import Decimal
+
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
@@ -138,6 +140,29 @@ class Booking(models.Model):
     last_balance_reminder_sent = models.DateTimeField(null=True, blank=True,
         help_text='Last time an operator balance reminder was sent for this booking')
 
+    # ── Commission and payout ──────────────────────────────
+    # The rate is snapshotted the first time money is taken, never read live
+    # from settings. If the platform rate changes, every booking already sold
+    # must keep the deal it was sold under — a live lookup would silently
+    # rewrite what past guides were owed.
+    commission_pct  = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True,
+        help_text='Platform commission % agreed at the time this booking was paid',
+    )
+    payout_status   = models.CharField(
+        max_length=12, default='not_due',
+        choices=[
+            ('not_due', 'Not due yet'),   # trip has not run
+            ('due',     'Due'),           # trip completed, guide is owed
+            ('paid',    'Paid'),          # transfer sent
+        ],
+    )
+    payout_sent_at   = models.DateTimeField(null=True, blank=True)
+    payout_reference = models.CharField(
+        max_length=80, blank=True, default='',
+        help_text='Bank transfer reference, so a guide asking "was I paid?" has an answer',
+    )
+
     # ── Cooling-off window ──────────────────────────────
     cooling_off_until = models.DateTimeField(
         null=True, blank=True,
@@ -165,6 +190,67 @@ class Booking(models.Model):
     @property
     def balance_due(self):
         return max(0, float(self.total_price) - float(self.deposit_paid) - float(self.balance_paid))
+
+    # ── The ledger ─────────────────────────────────────────
+    # Everything keys off what was actually collected and kept, not off
+    # total_price. A deposit-only booking, a late cancellation that kept a
+    # penalty, and a full refund all fall out of the same three lines — and a
+    # fully refunded booking correctly owes nobody anything.
+
+    @property
+    def amount_collected(self):
+        """Every payment taken on this booking, in the tour's currency."""
+        return round(float(self.deposit_paid) + float(self.balance_paid), 2)
+
+    @property
+    def amount_kept(self):
+        """What the platform is still holding after any refund."""
+        return round(max(0.0, self.amount_collected - float(self.refund_amount or 0)), 2)
+
+    @property
+    def effective_commission_pct(self):
+        """
+        The snapshot if there is one, otherwise today's rate.
+
+        The fallback covers bookings taken before commission existed and
+        bookings not yet paid — it is a display estimate, and the moment money
+        is taken `snapshot_commission()` freezes the real number.
+        """
+        if self.commission_pct is not None:
+            return float(self.commission_pct)
+        from django.conf import settings as _s
+        return float(getattr(_s, 'PLATFORM_COMMISSION_PCT', 15))
+
+    @property
+    def commission_amount(self):
+        """
+        Platform cut, charged on what was kept — including a cancellation
+        penalty, because the payment processor keeps its fee on the original
+        charge whether or not the trip ran, and the acquisition and support
+        already happened.
+        """
+        return round(self.amount_kept * self.effective_commission_pct / 100, 2)
+
+    @property
+    def payout_amount(self):
+        """What the guide is owed for this booking."""
+        return round(self.amount_kept - self.commission_amount, 2)
+
+    def snapshot_commission(self, save=True):
+        """
+        Freeze the rate on first payment. Idempotent: once set it is never
+        touched again, so a later rate change cannot rewrite this booking.
+        """
+        if self.commission_pct is not None:
+            return False
+        from django.conf import settings as _s
+        rate = getattr(self.tour.operator, 'commission_pct_override', None)
+        if rate is None:
+            rate = getattr(_s, 'PLATFORM_COMMISSION_PCT', 15)
+        self.commission_pct = Decimal(str(rate))
+        if save:
+            self.save(update_fields=['commission_pct'])
+        return True
 
 
 class EnquiryMessage(models.Model):

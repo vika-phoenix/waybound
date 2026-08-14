@@ -570,15 +570,25 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .rv-reply-text{font-size:13px;color:var(--ink);font-family:var(--bf);line-height:1.5}
 .rv-reply-input{width:100%;border:1.5px solid var(--ln);border-radius:8px;padding:10px 12px;font-size:13px;font-family:var(--bf);color:var(--ink);background:var(--white);resize:vertical;min-height:70px;transition:border-color .15s}
 .rv-reply-input:focus{outline:none;border-color:var(--ac)}
-.earnings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.earnings-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:900px){.earnings-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.earnings-grid{grid-template-columns:1fr}}
 .earnings-card{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:20px}
 .earnings-card-label{font-size:12px;color:var(--mu);font-family:var(--bf);margin-bottom:6px}
 .earnings-card-val{font-family:var(--df);font-size:30px;color:var(--ink)}
 .earnings-card-note{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:4px}
-.earnings-table{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;overflow:hidden}
-.et-head{display:grid;grid-template-columns:2.5fr .7fr .7fr 1fr 1fr;padding:11px 16px;background:var(--paper);border-bottom:1px solid var(--ln);font-size:11px;font-weight:700;color:var(--mu);font-family:var(--bf);text-transform:uppercase;letter-spacing:.06em}
-.et-row{display:grid;grid-template-columns:2.5fr .7fr .7fr 1fr 1fr;padding:12px 16px;border-bottom:1px solid var(--ln);font-size:13px;font-family:var(--bf);color:var(--ink)}
+/* Seven money columns will not fit a phone, and squeezing them makes the
+   figures unreadable. Scroll the table inside its own box instead — the page
+   itself must never scroll sideways. */
+.earnings-table{background:var(--white);border:1.5px solid var(--ln);border-radius:12px;overflow-x:auto}
+.et-head,.et-row{min-width:720px}
+.et-head{display:grid;grid-template-columns:2.2fr .9fr 1fr 1fr 1fr 1fr .9fr;padding:11px 16px;background:var(--paper);border-bottom:1px solid var(--ln);font-size:11px;font-weight:700;color:var(--mu);font-family:var(--bf);text-transform:uppercase;letter-spacing:.06em}
+.et-row{display:grid;grid-template-columns:2.2fr .9fr 1fr 1fr 1fr 1fr .9fr;padding:12px 16px;border-bottom:1px solid var(--ln);font-size:13px;font-family:var(--bf);color:var(--ink)}
+.et-num{font-variant-numeric:tabular-nums}
+.et-pay{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;font-family:var(--bf);white-space:nowrap}
+.et-pay.paid{background:#e3f4e3;color:#1a7030}
+.et-pay.due{background:#fff4e0;color:#9a6000}
+.et-pay.later{background:var(--paper);color:var(--mu)}
 .et-row:last-child{border-bottom:none}
 .et-row:hover{background:var(--paper)}
 .dash-empty{text-align:center;padding:50px 20px}
@@ -942,7 +952,8 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
   <div class="dash-panel" id="panel-earnings">
     <div class="panel-head"><div class="panel-title">Earnings</div></div>
     <div class="earnings-grid">
-      <div class="earnings-card"><div class="earnings-card-label">Total earned (all time)</div><div class="earnings-card-val" id="earnTotal">&#x2014;</div><div class="earnings-card-note">from completed bookings</div></div>
+      <div class="earnings-card"><div class="earnings-card-label">Your earnings (all time)</div><div class="earnings-card-val" id="earnTotal">&#x2014;</div><div class="earnings-card-note" id="earnGross">after Kavkazland commission</div></div>
+      <div class="earnings-card"><div class="earnings-card-label">Awaiting payout</div><div class="earnings-card-val" id="earnDue">&#x2014;</div><div class="earnings-card-note" id="earnDueNote">paid within 5 working days of each trip</div></div>
       <div class="earnings-card"><div class="earnings-card-label">This month</div><div class="earnings-card-val" id="earnMonth">&#x2014;</div><div class="earnings-card-note" id="earnNote">completed this month</div></div>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -953,7 +964,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
       </div>
     </div>
     <div class="earnings-table">
-      <div class="et-head"><div>Tour</div><div>Bookings</div><div>Guests</div><div>Departure</div><div>Amount</div></div>
+      <div class="et-head"><div>Tour</div><div>Bookings</div><div>Departure</div><div>Travellers paid</div><div>Commission</div><div>You receive</div><div>Payout</div></div>
       <div id="earnRows"><div style="text-align:center;padding:30px;color:var(--mu);font-family:var(--bf);font-size:13px">Loading&hellip;</div></div>
     </div>
   </div>
@@ -1913,6 +1924,12 @@ function tourCard(t) {
     priceStr += ' &middot; Child ' + fmtP(childP);
   }
   subParts.push(priceStr);
+  // The listing price and the money that actually reaches the guide, side by
+  // side. Operator dashboard only — a traveller never sees this.
+  if (price > 0 && t.payout_per_adult != null) {
+    subParts.push('<span style="color:#1a7a40">You receive ' + fmtP(t.payout_per_adult, t.currency)
+      + '</span> <span style="color:var(--mu)">after ' + t.commission_rate + '% commission</span>');
+  }
   if (t.days && parseInt(t.days) > 0) subParts.push(parseInt(t.days) + ' day' + (parseInt(t.days)!==1?'s':''));
   var subtitle = subParts.join(' &middot; ');
   // Last edited relative time
@@ -2684,21 +2701,43 @@ function renderEarnings() {
   var primCur = 'RUB'; var maxCnt = 0;
   for (var c in curCounts) { if (curCounts[c] > maxCnt) { maxCnt = curCounts[c]; primCur = c; } }
 
-  // Totals for summary cards
-  var primComp = comp.filter(function(b){ return (b.currency||'RUB') === primCur; });
-  var total    = primComp.reduce(function(s,b){ return s+parseFloat(b.total_price||0); }, 0);
-  var primPen  = withPenalty.filter(function(b){ return (b.currency||'RUB') === primCur; });
-  var penKept  = primPen.reduce(function(s,b){
-    return s + Math.max(0, parseFloat(b.deposit_paid||0) + parseFloat(b.balance_paid||0) - parseFloat(b.refund_amount||0));
-  }, 0);
-  var thisM = primComp.filter(function(b){
+  // Totals for summary cards.
+  //
+  // These used to show gross — the traveller's price — while settings.html told
+  // the guide their earnings were "tour price minus 15% commission". A guide
+  // owed 4,250 was shown 5,000. The headline is now what actually reaches them
+  // and the gross sits underneath, so both numbers are visible and neither is
+  // a surprise. Every figure comes from the API, never recomputed here, so the
+  // dashboard cannot drift from the ledger the payout is made against.
+  var earners  = comp.concat(withPenalty).filter(function(b){ return (b.currency||'RUB') === primCur; });
+  var kept     = earners.reduce(function(s,b){ return s + _num(b.amount_kept); }, 0);
+  var fees     = earners.reduce(function(s,b){ return s + _num(b.commission_amount); }, 0);
+  var netTotal = earners.reduce(function(s,b){ return s + _num(b.payout_amount); }, 0);
+
+  var dueList  = earners.filter(function(b){ return b.payout_status === 'due'; });
+  var netDue   = dueList.reduce(function(s,b){ return s + _num(b.payout_amount); }, 0);
+  var paidList = earners.filter(function(b){ return b.payout_status === 'paid'; });
+  var netPaid  = paidList.reduce(function(s,b){ return s + _num(b.payout_amount); }, 0);
+
+  var thisM = earners.filter(function(b){
     if (!b.departure_date) return false;
     var d = new Date(b.departure_date);
     return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
   });
-  var mTotal = thisM.reduce(function(s,b){ return s+parseFloat(b.total_price||0); }, 0);
+  var mTotal = thisM.reduce(function(s,b){ return s + _num(b.payout_amount); }, 0);
 
-  document.getElementById('earnTotal').textContent = fmtP(total + penKept, primCur);
+  var rate = earners.length ? _num(earners[0].commission_rate) : null;
+  document.getElementById('earnTotal').textContent = fmtP(netTotal, primCur);
+  document.getElementById('earnGross').textContent = kept > 0
+    ? 'Travellers paid ' + fmtP(kept, primCur) + ' · commission '
+      + fmtP(fees, primCur) + (rate ? ' (' + rate + '%)' : '')
+    : 'after Kavkazland commission';
+  document.getElementById('earnDue').textContent = fmtP(netDue, primCur);
+  document.getElementById('earnDueNote').textContent = dueList.length
+    ? dueList.length + ' booking' + (dueList.length!==1?'s':'') + ' ready to pay'
+      + (netPaid > 0 ? ' · ' + fmtP(netPaid, primCur) + ' paid so far' : '')
+    : (netPaid > 0 ? fmtP(netPaid, primCur) + ' paid out to date'
+                   : 'paid within 5 working days of each trip');
   document.getElementById('earnMonth').textContent = fmtP(mTotal, primCur);
   document.getElementById('earnNote').textContent  = thisM.length + ' completed booking' + (thisM.length!==1?'s':'') + ' this month'
     + (withPenalty.length ? ' · ' + withPenalty.length + ' cancellation penalt' + (withPenalty.length!==1?'ies':'y') : '');
@@ -2709,17 +2748,18 @@ function renderEarnings() {
     var title = (b.tour_detail||{}).title || b.tour_title || 'Tour';
     var dep   = b.departure_date || '';
     var key   = title + '|' + dep + '|' + type;
-    if (!groups[key]) groups[key] = { title:title, dep:dep, type:type, cur:b.currency||'RUB', bookings:[], guests:0, amount:0 };
+    if (!groups[key]) groups[key] = { title:title, dep:dep, type:type, cur:b.currency||'RUB',
+                                      bookings:[], guests:0, amount:0, fee:0, net:0, payouts:{} };
     var g = groups[key];
     var guests = (b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0));
     g.bookings.push(b);
     g.guests += guests;
-    if (type === 'completed') {
-      g.amount += parseFloat(b.total_price||0);
-    } else {
-      var paid = parseFloat(b.deposit_paid||0) + parseFloat(b.balance_paid||0);
-      g.amount += Math.max(0, paid - parseFloat(b.refund_amount||0));
-    }
+    // What the travellers actually parted with, net of any refund — the same
+    // base the commission is charged on, so the three columns always add up.
+    g.amount += _num(b.amount_kept);
+    g.fee    += _num(b.commission_amount);
+    g.net    += _num(b.payout_amount);
+    g.payouts[b.payout_status || 'not_due'] = true;
   }
   comp.forEach(function(b){ addToGroup(b, 'completed'); });
   withPenalty.forEach(function(b){ addToGroup(b, 'penalty'); });
@@ -2744,16 +2784,28 @@ function renderEarnings() {
     var isPenalty = g.type === 'penalty';
     var bg = isPenalty ? ' style="background:#fffdf5"' : '';
     var badge = isPenalty ? ' <span style="font-size:10px;background:#fff4e0;color:#9a6000;padding:1px 7px;border-radius:10px;font-family:var(--bf);font-weight:700;vertical-align:middle">Cancelled</span>' : '';
-    var amtStyle = isPenalty ? 'font-weight:600;color:#9a6000' : 'font-weight:600';
-    var amtSuffix = isPenalty ? ' <span style="font-size:10px;font-weight:400;color:var(--mu)">penalty</span>' : '';
+    var suffix = isPenalty ? ' <span style="font-size:10px;font-weight:400;color:var(--mu)">penalty</span>' : '';
     return '<div class="et-row"' + bg + '>'
       + '<div>' + g.title + badge + '</div>'
-      + '<div>' + bkCount + '</div>'
-      + '<div>' + g.guests + ' guest' + (g.guests!==1?'s':'') + '</div>'
+      + '<div>' + bkCount + ' &middot; ' + g.guests + ' guest' + (g.guests!==1?'s':'') + '</div>'
       + '<div>' + fmtD(g.dep) + '</div>'
-      + '<div style="' + amtStyle + '">' + fmtP(g.amount, g.cur) + amtSuffix + '</div>'
+      + '<div class="et-num">' + fmtP(g.amount, g.cur) + suffix + '</div>'
+      + '<div class="et-num" style="color:var(--mu)">&minus;' + fmtP(g.fee, g.cur) + '</div>'
+      + '<div class="et-num" style="font-weight:700">' + fmtP(g.net, g.cur) + '</div>'
+      + '<div>' + _payoutChip(g.payouts) + '</div>'
       + '</div>';
   }).join('');
+}
+
+function _num(v) { return parseFloat(v || 0) || 0; }
+
+// One chip for a whole departure. "Due" wins over "Paid" when a group is
+// half-settled: the guide is still owed something, and that is the fact that
+// matters to them.
+function _payoutChip(states) {
+  if (states.due)  return '<span class="et-pay due">Due</span>';
+  if (states.paid) return '<span class="et-pay paid">Paid</span>';
+  return '<span class="et-pay later">After the trip</span>';
 }
 
 function emptyState(ico, title, sub, ctaLabel, ctaHref) {
