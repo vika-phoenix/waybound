@@ -6,3 +6,9 @@
 /waybound.html     /           301
 /waybound_ru       /index_ru   301
 /waybound_ru.html  /index_ru   301
+
+# The Django admin lives on the backend host, not here — this domain is Pages
+# serving static files, so /admin 404s. Easy habit to trip over, so send it on
+# instead of dead-ending. 302 because it crosses to a different service.
+/admin      https://api.kavkazland.com/admin/    302
+/admin/*    https://api.kavkazland.com/admin/:splat  302
