@@ -1,10 +1,27 @@
 # Cloudflare Pages response headers.
 #
-# Pages defaults static assets to a 4-hour cache. That is wrong for the files
-# below: config.js carries the API hostname, and nav.js drives routing and the
-# language redirect. When either changes, a stale copy points the browser at
-# the wrong backend — which surfaces as "Failed to fetch", not as an error the
-# page can report. Revalidate every time instead; a 304 is cheap.
+# NOTE: these rules currently change nothing. Pages already serves every asset
+# as `public, max-age=0, must-revalidate`, so this only restates the default.
+# Verified by comparing a listed file against an unlisted one on
+# waybound.pages.dev — both identical.
+#
+# The 4-hour cache people actually hit comes from the ZONE, not from Pages:
+# Cloudflare rewrites Cache-Control at the edge for static extensions (.css,
+# .js) according to Caching -> Configuration -> Browser Cache TTL. HTML passes
+# through untouched, which is why only assets go stale. No _headers rule can
+# override that, because the rewrite happens downstream of the origin.
+#
+#   kavkazland.com/mobile.css      -> max-age=14400   (zone rewrote it)
+#   waybound.pages.dev/mobile.css  -> max-age=0       (what Pages sent)
+#
+# Fix is one dropdown: Browser Cache TTL -> "Respect Existing Headers".
+# Until that is set, assume any change to the files below takes up to 4 hours
+# to reach a returning visitor. It matters most for config.js, which carries
+# the API hostname — a stale copy points the browser at the old backend and
+# fails before the request leaves the machine.
+#
+# These stay as documentation of intent, and become load-bearing the moment
+# Pages' default changes or a rule below diverges from it.
 /config.js
   Cache-Control: public, max-age=0, must-revalidate
 
