@@ -8,9 +8,13 @@ social OAuth via allauth (Google, Yandex, VK), phone OTP verification,
 profile updates, password reset, operator document upload, and social
 account connection/disconnection.
 """
+import logging
+
 from django.conf import settings
 from django.contrib.auth import update_session_auth_hash
 from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, parser_classes
@@ -514,6 +518,14 @@ def verify_document(request):
         doc_type='identity',
         original_name=doc_file.name,
     )
+    # The operator is now blocked from submitting tours until someone approves
+    # them, so the admin has to hear about it. Never let a mail failure fail the
+    # upload — the document is saved either way.
+    try:
+        from .emails import notify_admin_verification_submitted
+        notify_admin_verification_submitted(request.user, 'identity')
+    except Exception as exc:
+        logger.error('Verification notice failed for %s: %s', request.user.email, exc)
     return Response(
         {'status': 'pending', 'message': 'Document submitted. We will review within 48 hours.'},
         status=status.HTTP_201_CREATED,

@@ -141,7 +141,7 @@ def notify_admin_of_tour_change(tour, changed_fields: list) -> None:
     body = (
         f'An operator has made material changes to a tour that has active bookings.\n\n'
         f'Tour:             {tour.title} (/{tour.slug})\n'
-        f'Operator:         {tour.operator.get_full_name() or tour.operator.email} ({operator_email})\n'
+        f'Operator:         {tour.operator.full_name or tour.operator.email} ({operator_email})\n'
         f'Active bookings:  {active_count}\n'
         f'Tourist window:   {window_hours} hours penalty-free cancel granted\n\n'
         f'Fields changed:\n{change_summary}\n\n'
@@ -251,3 +251,39 @@ def notify_waitlist_for_departure(departure):
             logger.error('Failed to send waitlist open notification to %s: %s', entry.email, exc)
 
     return sent
+
+
+def notify_admin_tour_submitted(tour) -> bool:
+    """
+    Tell the admin a tour is waiting for approval.
+
+    Only an admin can move review -> live, so without this the tour sits in the
+    queue unseen while the operator waits on a decision nobody knows to make.
+    """
+    admin_email = (getattr(settings, 'ADMIN_NOTIFICATION_EMAIL', None)
+                   or getattr(settings, 'DEFAULT_FROM_EMAIL', None))
+    if not admin_email:
+        logger.warning('No ADMIN_NOTIFICATION_EMAIL — tour submission not announced.')
+        return False
+
+    op = tour.operator
+    who = op.full_name or op.email
+    subject = f'[Admin] Tour awaiting approval — {tour.title}'
+    body = (
+        f'An operator has submitted a tour for review.\n\n'
+        f'Tour:      {tour.title} (/{tour.slug})\n'
+        f'Operator:  {who} ({op.email})\n'
+        f'Verified:  {"yes" if getattr(op, "is_verified", False) else "NO"}\n'
+        f'Duration:  {getattr(tour, "days", "-")} days\n'
+        f'Price:     {getattr(tour, "price", "-")} {getattr(tour, "currency", "")}\n\n'
+        f'It stays invisible to travellers until you publish it.\n'
+        f'Review: /admin/tours/tour/?q={tour.slug}\n'
+    )
+    try:
+        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [admin_email],
+                  fail_silently=False)
+        logger.info('Tour-submitted notice sent for %s', tour.slug)
+        return True
+    except Exception as exc:
+        logger.error('Could not send tour-submitted notice for %s: %s', tour.slug, exc)
+        return False

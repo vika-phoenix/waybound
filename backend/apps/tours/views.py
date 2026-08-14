@@ -18,8 +18,12 @@ Endpoints:
   GET    /api/v1/tours/operator/        — operator: own tour list (dashboard)
 """
 import django_filters
+import logging
+
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
+
+logger = logging.getLogger(__name__)
 
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, parser_classes
@@ -442,6 +446,16 @@ def tour_publish(request, slug):
         tour.status = Tour.Status.REVIEW
 
     tour.save(update_fields=['status', 'published_at'])
+
+    # Only an admin can move review -> live, so a submission that nobody is told
+    # about sits invisible until someone opens the admin by chance.
+    if tour.status == Tour.Status.REVIEW:
+        try:
+            from .emails import notify_admin_tour_submitted
+            notify_admin_tour_submitted(tour)
+        except Exception as exc:
+            logger.error('Tour-submitted notice failed for %s: %s', tour.slug, exc)
+
     return Response({'status': tour.status})
 
 
