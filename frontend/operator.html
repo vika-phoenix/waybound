@@ -541,9 +541,66 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       var finalSub = document.getElementById('finalCtaSub');
       if (finalSub) finalSub.style.display = 'none';
+    } else if (user && user.role === 'tourist') {
+      // Signed in as a traveller. Registering again is impossible — email is
+      // the login field and is unique — so offer the upgrade instead of a
+      // signup form they can never submit.
+      var tName = (user.first_name || '').trim();
+      var t1 = document.getElementById('scTitle');
+      var t2 = document.getElementById('scSub');
+      var t3 = document.getElementById('scFields');
+      var t4 = document.getElementById('scDivider');
+      var t5 = document.getElementById('scNote');
+      if (t1) t1.textContent = tName ? ('Hi ' + tName + ' \u2014 ready to host?') : 'Ready to host?';
+      if (t2) t2.textContent = 'Your traveller account can become a guide account. You keep your bookings, saved tours and reviews.';
+      if (t3) t3.innerHTML = '<button class="sc-btn" id="scUpgradeBtn" onclick="upgradeToGuide()">Become a guide \u2192</button>'
+                           + '<div id="scUpgradeErr" style="display:none;margin-top:10px;font-size:12.5px;color:#b03030"></div>';
+      if (t4) t4.style.display = 'none';
+      if (t5) { t5.style.display = ''; t5.textContent = 'You will still need to verify your ID before a tour can go live.'; }
+
+      var hb = document.getElementById('heroApplyBtn');
+      if (hb) { hb.textContent = 'Become a guide \u2192'; hb.href = '#apply'; }
+      var fb = document.getElementById('finalCtaBtns');
+      if (fb) fb.innerHTML = '<a class="btn-white" href="#apply" style="text-decoration:none">Become a guide \u2192</a>';
     }
   } catch(e) {}
 });
+
+// Convert this traveller account into a guide account. role is a single field,
+// so the backend overwrites it; nothing traveller-side is gated on
+// role === 'tourist', so bookings, saved tours and reviews all survive.
+// Verification is NOT granted here — a tour still cannot go live until an
+// admin approves their ID.
+function upgradeToGuide() {
+  var btn = document.getElementById('scUpgradeBtn');
+  var err = document.getElementById('scUpgradeErr');
+  var tok = localStorage.getItem('waybound_access');
+  if (!tok) { window.location.href = 'signin.html'; return; }
+  if (err) err.style.display = 'none';
+  if (btn) { btn.disabled = true; btn.textContent = 'Upgrading\u2026'; }
+
+  fetch(window.API_V1 + '/auth/upgrade-to-operator/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
+    body: JSON.stringify({})
+  })
+  .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+  .then(function (res) {
+    if (!res.ok) throw new Error((res.d && res.d.detail) || 'failed');
+    // Refresh the cached profile so nav.js renders the guide menu immediately.
+    try {
+      var u = JSON.parse(localStorage.getItem('waybound_user') || '{}');
+      u.role = 'operator';
+      if (res.d && typeof res.d === 'object') { u = Object.assign(u, res.d); }
+      localStorage.setItem('waybound_user', JSON.stringify(u));
+    } catch (e) {}
+    window.location.href = 'operator-tour-create.html';
+  })
+  .catch(function () {
+    if (btn) { btn.disabled = false; btn.textContent = 'Become a guide \u2192'; }
+    if (err) { err.style.display = ''; err.textContent = 'Could not upgrade the account. Please try again.'; }
+  });
+}
 </script>
 <script src="nav.js"></script>
 </body>

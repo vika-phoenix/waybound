@@ -29,6 +29,7 @@ urlpatterns = [
     path('otp/verify/',  views.otp_verify,  name='otp-verify'),
 
     # Operator verification & documents
+    path('upgrade-to-operator/', views.upgrade_to_operator, name='upgrade-to-operator'),
     path('verify/', views.verify_document, name='verify-document'),
     path('me/documents/', views.user_documents, name='user-documents'),
 

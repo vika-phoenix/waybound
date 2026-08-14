@@ -532,9 +532,66 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       var finalSub = document.getElementById('finalCtaSub');
       if (finalSub) finalSub.style.display = 'none';
+    } else if (user && user.role === 'tourist') {
+      // Вошёл как путешественник. Зарегистрироваться заново нельзя — e-mail
+      // это логин и он уникален, — поэтому предлагаем апгрейд.
+      var tName = (user.first_name || '').trim();
+      var t1 = document.getElementById('scTitle');
+      var t2 = document.getElementById('scSub');
+      var t3 = document.getElementById('scFields');
+      var t4 = document.getElementById('scDivider');
+      var t5 = document.getElementById('scNote');
+      if (t1) t1.textContent = tName ? ('\u041f\u0440\u0438\u0432\u0435\u0442, ' + tName + '!') : '\u0413\u043e\u0442\u043e\u0432\u044b \u0441\u0442\u0430\u0442\u044c \u0433\u0438\u0434\u043e\u043c?';
+      if (t2) t2.textContent = '\u0412\u0430\u0448 \u0430\u043a\u043a\u0430\u0443\u043d\u0442 \u043c\u043e\u0436\u043d\u043e \u043f\u0435\u0440\u0435\u0432\u0435\u0441\u0442\u0438 \u0432 \u0430\u043a\u043a\u0430\u0443\u043d\u0442 \u0433\u0438\u0434\u0430. \u0411\u0440\u043e\u043d\u0438, \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u043e\u0435 \u0438 \u043e\u0442\u0437\u044b\u0432\u044b \u0441\u043e\u0445\u0440\u0430\u043d\u044f\u0442\u0441\u044f.';
+      if (t3) t3.innerHTML = '<button class="sc-btn" id="scUpgradeBtn" onclick="upgradeToGuide()">\u0421\u0442\u0430\u0442\u044c \u0433\u0438\u0434\u043e\u043c \u2192</button>'
+                           + '<div id="scUpgradeErr" style="display:none;margin-top:10px;font-size:12.5px;color:#b03030"></div>';
+      if (t4) t4.style.display = 'none';
+      if (t5) { t5.style.display = ''; t5.textContent = '\u041f\u0435\u0440\u0435\u0434 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0435\u0439 \u0442\u0443\u0440\u0430 \u043f\u043e\u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u043b\u0438\u0447\u043d\u043e\u0441\u0442\u0438.';
+      }
+
+      var hb = document.getElementById('heroApplyBtn');
+      if (hb) { hb.textContent = '\u0421\u0442\u0430\u0442\u044c \u0433\u0438\u0434\u043e\u043c \u2192'; hb.href = '#apply'; }
+      var fb = document.getElementById('finalCtaBtns');
+      if (fb) fb.innerHTML = '<a class="btn-white" href="#apply" style="text-decoration:none">\u0421\u0442\u0430\u0442\u044c \u0433\u0438\u0434\u043e\u043c \u2192</a>';
     }
   } catch(e) {}
 });
+
+// Convert this traveller account into a guide account. role is a single field,
+// so the backend overwrites it; nothing traveller-side is gated on
+// role === 'tourist', so bookings, saved tours and reviews all survive.
+// Verification is NOT granted here — a tour still cannot go live until an
+// admin approves their ID.
+function upgradeToGuide() {
+  var btn = document.getElementById('scUpgradeBtn');
+  var err = document.getElementById('scUpgradeErr');
+  var tok = localStorage.getItem('waybound_access');
+  if (!tok) { window.location.href = 'signin_ru.html'; return; }
+  if (err) err.style.display = 'none';
+  if (btn) { btn.disabled = true; btn.textContent = '\u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435\u2026'; }
+
+  fetch(window.API_V1 + '/auth/upgrade-to-operator/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
+    body: JSON.stringify({})
+  })
+  .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+  .then(function (res) {
+    if (!res.ok) throw new Error((res.d && res.d.detail) || 'failed');
+    // Refresh the cached profile so nav.js renders the guide menu immediately.
+    try {
+      var u = JSON.parse(localStorage.getItem('waybound_user') || '{}');
+      u.role = 'operator';
+      if (res.d && typeof res.d === 'object') { u = Object.assign(u, res.d); }
+      localStorage.setItem('waybound_user', JSON.stringify(u));
+    } catch (e) {}
+    window.location.href = 'operator-tour-create_ru.html';
+  })
+  .catch(function () {
+    if (btn) { btn.disabled = false; btn.textContent = '\u0421\u0442\u0430\u0442\u044c \u0433\u0438\u0434\u043e\u043c \u2192'; }
+    if (err) { err.style.display = ''; err.textContent = '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0430\u043a\u043a\u0430\u0443\u043d\u0442.'; }
+  });
+}
 </script>
 <script src="nav.js"></script>
 </body>

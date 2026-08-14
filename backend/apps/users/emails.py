@@ -84,3 +84,33 @@ def notify_operator_verification_result(user, approved):
     except Exception as exc:
         logger.error('Could not send verification result to %s: %s', user.email, exc)
         return False
+
+def notify_admin_operator_upgrade(user):
+    """
+    Tell the admin an existing traveller has converted to a guide account.
+
+    They arrive able to build drafts but unverified, so they will be stopped at
+    submission until someone approves their ID.
+    """
+    admin_email = _admin_recipient()
+    if not admin_email:
+        logger.warning('No ADMIN_NOTIFICATION_EMAIL - operator upgrade not announced.')
+        return False
+
+    who = user.full_name or user.email
+    subject = f'[Admin] Traveller upgraded to guide - {who}'
+    body = (
+        f'{who} ({user.email}) converted their traveller account into a guide '
+        f'account.\n\n'
+        f'They are NOT verified yet, so they cannot submit any tour until you '
+        f'approve them.\n\n'
+        f'/admin/users/user/{user.pk}/change/\n'
+    )
+    try:
+        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [admin_email],
+                  fail_silently=False)
+        logger.info('Operator-upgrade notice sent for %s', user.email)
+        return True
+    except Exception as exc:
+        logger.error('Could not send upgrade notice for %s: %s', user.email, exc)
+        return False

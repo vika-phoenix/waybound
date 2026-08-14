@@ -634,3 +634,66 @@ def social_disconnect(request, provider):
 
     accounts.delete()
     return Response({'detail': f'{provider} disconnected.'})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upgrade_to_operator(request):
+    """
+    POST /api/v1/auth/upgrade-to-operator/
+
+    Turn a traveller account into a guide account.
+
+    email is unique and is the login field, so someone who already books tours
+    cannot simply register again as a guide — they hit "User with this email
+    already exists" and have nowhere to go. This is that missing path.
+
+    role is a single field, so this overwrites it. That is safe: nothing gates
+    a traveller feature on role == 'tourist' (booking checks authentication
+    only), so they keep bookings, saved tours, reviews and rewards and simply
+    gain the operator pages. apps/bookings/tests.py locks that invariant down.
+
+    Verification is deliberately NOT granted here. is_verified stays False, so
+    they still cannot submit a tour until an admin approves their ID — the
+    upgrade only unlocks the guide UI and the draft flow.
+    """
+    user = request.user
+
+    if user.role == User.Role.OPERATOR:
+        return Response({'detail': 'This is already a guide account.',
+                         'role': user.role})
+    if user.role != User.Role.TOURIST:
+        return Response({'detail': 'Only traveller accounts can be upgraded.'},
+                        status=status.HTTP_403_FORBIDDEN)
+
+    company = (request.data.get('company_name') or '').strip()
+    bio     = (request.data.get('bio') or '').strip()
+    country = (request.data.get('country') or '').strip()
+    phone   = (request.data.get('phone') or '').strip()
+
+    fields = ['role']
+    user.role = User.Role.OPERATOR
+
+    # Mirror OperatorRegisterSerializer: company_name is not a column, it is
+    # folded into bio. Only fill blanks — never overwrite what they already set.
+    combined = f'{company}\n\n{bio}' if (company and bio) else (bio or company)
+    if combined and not user.bio:
+        user.bio = combined
+        fields.append('bio')
+    if country and not user.country:
+        user.country = country
+        fields.append('country')
+    if phone and not user.phone:
+        user.phone = phone
+        fields.append('phone')
+
+    user.save(update_fields=fields)
+    logger.info('Upgraded %s from tourist to operator', user.email)
+
+    try:
+        from .emails import notify_admin_operator_upgrade
+        notify_admin_operator_upgrade(user)
+    except Exception as exc:
+        logger.error('Upgrade notice failed for %s: %s', user.email, exc)
+
+    return Response(UserMeSerializer(user, context={'request': request}).data)
