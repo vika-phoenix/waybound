@@ -290,27 +290,36 @@
      it stays sticky: it is short enough not to steal vertical space, and a
      fixed rail means switching section never involves scrolling back up. */
   .settings-wrap {
-    grid-template-columns: 52px 1fr !important;
-    gap: 12px !important;
+    grid-template-columns: 72px 1fr !important;
+    gap: 11px !important;
   }
   .settings-nav {
     position: sticky !important;
     top: 68px !important;
     border-radius: 10px !important;
   }
-  /* Group headings ("Account", "Preferences") cannot fit in a 52px rail. The
+  /* Group headings ("Account", "Preferences") cannot fit in the rail. The
      section borders still separate the groups. */
   .settings-nav-label { display: none !important; }
 
-  /* font-size:0 hides the label text node without needing markup changes;
-     .sn-ico sets its own size back. */
+  /* Icon over a small label rather than icon alone. Ten unlabelled emoji is
+     too many to tell apart — verification, credentials and payout are all the
+     same document-ish idea. An expand toggle would be worse: a control to
+     discover, and if you open it every time to find anything then collapsing
+     bought nothing. 9px costs ~20px of rail width and removes the guessing.
+     The label is a bare text node after .sn-ico, so column direction puts it
+     on its own line with no markup change. */
   .settings-nav-item {
-    font-size: 0 !important;
-    justify-content: center !important;
-    gap: 0 !important;
-    padding: 13px 0 !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 3px !important;
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    padding: 9px 3px !important;
+    word-break: break-word;
   }
-  .sn-ico { font-size: 18px !important; width: auto !important; }
+  .sn-ico { font-size: 17px !important; width: auto !important; }
 
   .settings-nav-section + .settings-nav-section {
     border-top: 1px solid var(--ln, rgba(0,0,0,.1)) !important;
