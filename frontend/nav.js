@@ -262,8 +262,13 @@ function _navInjectLangBtn() {
           + '<span class="dd-ico">&#x1F4AC;</span>' + t.messages + badge + '</a>'
       + '<a class="nav-dd-item" href="operator-tour-create' + sfx + '"><span class="dd-ico">&#x2795;</span>' + t.newTour + '</a>';
 
+    // For a guide, "My bookings" collides head-on with the dashboard's
+    // "Bookings" tab, which means the opposite thing — customers who booked
+    // them. Same destination, but call it trips so the two are distinguishable.
+    var myBookingsLabel = isOp ? (isRu ? 'Мои поездки' : 'My trips')
+                               : t.myBookings;
     var myBookingsLink =
-      '<a class="nav-dd-item" href="my-bookings' + sfx + '"><span class="dd-ico">&#x1F9ED;</span>' + t.myBookings + '</a>';
+      '<a class="nav-dd-item" href="my-bookings' + sfx + '"><span class="dd-ico">&#x1F9ED;</span>' + myBookingsLabel + '</a>';
     var travellerRest =
       '<a class="nav-dd-item" href="saved-tours' + sfx + '"><span class="dd-ico">&#x2764;&#xFE0F;</span>' + t.savedTours + '</a>'
       + '<a class="nav-dd-item" href="my-reviews' + sfx + '"><span class="dd-ico">&#x2B50;</span>' + t.myReviews + '</a>'
