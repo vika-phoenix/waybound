@@ -234,8 +234,25 @@
   }
   .photo-modal-prev { left: 8px !important; }
   .photo-modal-next { right: 8px !important; }
-  .photo-modal-close { top: 10px !important; right: 10px !important; }
-  .photo-modal-counter { bottom: 10px !important; }
+  /* On desktop these sit outside the photo, on the near-black backdrop, so
+     white-on-nothing is fine. Mobile moves them onto the image itself, where a
+     bright photo swallows them. Give them the dark chip the nav arrows and the
+     Grid button already use: legibility then comes from the control, not from
+     whatever the photo happens to look like — which no choice of white or dark
+     text can guarantee on its own. */
+  .photo-modal-close {
+    top: 10px !important; right: 10px !important;
+    width: 36px !important; height: 36px !important; padding: 0 !important;
+    border-radius: 50% !important; background: rgba(0,0,0,.55) !important;
+    font-size: 18px !important; line-height: 1 !important;
+    display: flex !important; align-items: center !important;
+    justify-content: center !important; z-index: 3;
+  }
+  .photo-modal-counter {
+    bottom: 10px !important;
+    background: rgba(0,0,0,.55) !important; color: #fff !important;
+    padding: 4px 12px !important; border-radius: 100px !important; z-index: 3;
+  }
 
   /* Tour-detail photo gallery — stack the mosaic: big image on top,
      thumbnails in a single row underneath. */
@@ -354,19 +371,18 @@
     padding: 2px !important;
   }
 
-  /* Opening a photo left the page scrolling behind the lightbox. JS sets
-     body.overflow='hidden', which iOS Safari ignores, so the backdrop has to
-     hold the viewport itself: fixed to the screen, and overscroll-behavior
-     stopping the scroll chaining through to the page underneath. */
+  /* The page behind is now pinned in JS (_lockPageScroll), because iOS Safari
+     ignores body{overflow:hidden}. This block used to add touch-action:none
+     here instead, which stopped the page but also stopped the photo grid from
+     scrolling — touch-action on an ancestor constrains every touch that starts
+     inside it, so the grid's own pan-y could not win it back. */
   .photo-modal-bg.open {
     position: fixed !important;
     inset: 0 !important;
     overscroll-behavior: contain !important;
-    touch-action: none;
   }
-  .photo-modal-bg.open .photo-modal-content,
-  .photo-modal-bg.open .photo-modal-inner {
-    overscroll-behavior: contain !important;
-    touch-action: pan-y;
-  }
+
+  /* The grid container is height:auto on mobile, so pin the scroller to the
+     viewport or it grows past the modal and gets clipped. */
+  .photo-modal-content.is-grid { height: 72vh !important; }
 }

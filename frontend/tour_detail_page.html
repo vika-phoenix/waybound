@@ -1215,6 +1215,16 @@ body,body.ocean,body.warm,body.ivory,body.gold,body.forest,body.terra {
   color:rgba(255,255,255,.6); font-size:13px; font-family:var(--font-body);
   white-space:nowrap;
 }
+/* The single-photo view sizes itself to the image, so .photo-modal-content has
+   no definite height on mobile. A grid inside it had nothing to scroll against
+   and simply got clipped. Give the container a height only while the grid is
+   up, and let the grid itself be the scroller. */
+.photo-modal-content.is-grid { height:min(500px,80vh); }
+.photo-grid-scroll {
+  width:100%; height:100%; overflow-y:auto; padding:8px;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:8px;
+  overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+}
 
 /* Recommendations carousels */
 .rec-section { margin-bottom: 44px; }
@@ -3818,13 +3828,32 @@ function openPhotoModal(idx) {
   _syncPhotoChrome();
   renderPhotoModal();
   document.getElementById('photoModalBg').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  _lockPageScroll();
+}
+
+// iOS Safari ignores body{overflow:hidden}, so the page has to be pinned: fix
+// the body at its current offset and put it back on close.
+//
+// The previous fix for this was touch-action:none on the backdrop, which did
+// stop the page — and took the photo grid's own scrolling with it, because an
+// ancestor's touch-action constrains every touch that starts inside it.
+var _photoScrollY = 0;
+function _lockPageScroll() {
+  _photoScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+  var b = document.body.style;
+  b.position = 'fixed'; b.top = -_photoScrollY + 'px';
+  b.left = '0'; b.right = '0'; b.width = '100%';
+}
+function _unlockPageScroll() {
+  var b = document.body.style;
+  b.position = ''; b.top = ''; b.left = ''; b.right = ''; b.width = '';
+  window.scrollTo(0, _photoScrollY);
 }
 
 function closePhotoModal(e) {
   if (e && e.target !== document.getElementById('photoModalBg') && e.type === 'click') return;
   document.getElementById('photoModalBg').classList.remove('open');
-  document.body.style.overflow = '';
+  _unlockPageScroll();
 }
 
 function photoNav(dir) {
@@ -3870,8 +3899,8 @@ function _photoThumb(i) {
 function renderPhotoGrid() {
   var content = document.getElementById('photoModalContent');
   if (!content) return;
-  var html = '<div style="width:100%;height:100%;overflow-y:auto;padding:8px;'
-           + 'display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px">';
+  content.classList.add('is-grid');
+  var html = '<div class="photo-grid-scroll">';
   for (var i = 0; i < PHOTO_SLOTS.length; i++) {
     html += '<img src="' + _photoThumb(i) + '" loading="lazy" decoding="async" alt="" '
           + 'onclick="openFromGrid(' + i + ')" '
@@ -3917,6 +3946,7 @@ function renderPhotoModal() {
   var counter = document.getElementById('photoModalCounter');
   if (!content) return;
   if (!PHOTO_SLOTS.length) return;
+  content.classList.remove('is-grid');
   var src = PHOTO_SLOTS[currentPhoto];
   if (src) {
     content.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:contain" alt="">';
