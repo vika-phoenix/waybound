@@ -1142,6 +1142,20 @@ async function submitOperator() {
     var data = await res.json();
 
     if (!res.ok) {
+      // A duplicate email here is almost never "someone else took it" — email
+      // is the login field, so it means this person already has an account,
+      // most likely a traveller one. Say that, and give them the way forward.
+      var _emailErr = (data.email && data.email[0]) ? String(data.email[0]) : '';
+      if (/already exists/i.test(_emailErr)) {
+        showErr('errEmail', 'op-email',
+          'This email is already registered. If it is your traveller account, ' +
+          'sign in first and contact us to switch it to a guide account \u2014 ' +
+          'or sign up here with a different email.');
+        var _ee = document.getElementById('op-email');
+        if (_ee && _ee.scrollIntoView) _ee.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit application \u2713'; }
+        return;
+      }
       // Show field errors from API
       var errMsg = '';
       if (data.email)     errMsg += 'Email: '    + data.email[0]    + '\n';

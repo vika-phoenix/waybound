@@ -1122,6 +1122,19 @@ async function submitOperator() {
     var data = await res.json();
 
     if (!res.ok) {
+      // Дубликат e-mail почти никогда не означает, что адрес занят кем-то
+      // другим: e-mail — это логин, значит аккаунт уже есть у этого человека.
+      var _emailErr = (data.email && data.email[0]) ? String(data.email[0]) : '';
+      if (/already exists|уже существует/i.test(_emailErr)) {
+        showErr('errEmail', 'op-email',
+          'Этот e-mail уже зарегистрирован. Если это ваш аккаунт путешественника, ' +
+          'войдите и свяжитесь с нами, чтобы перевести его в аккаунт гида, ' +
+          'либо зарегистрируйтесь с другим e-mail.');
+        var _ee = document.getElementById('op-email');
+        if (_ee && _ee.scrollIntoView) _ee.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (btn) { btn.disabled = false; btn.textContent = 'Отправить заявку \u2713'; }
+        return;
+      }
       // Show field errors from API
       var errMsg = '';
       if (data.email)     errMsg += 'Электронная почта:'    + data.email[0]    + '\n';
