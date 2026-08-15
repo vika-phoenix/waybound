@@ -1187,6 +1187,9 @@ async function submitOperator() {
   var country = (document.getElementById('op-country')   || {}).value || '';
   var pw      = (document.getElementById('op-pw')        || {}).value || '';
   var biz     = (document.getElementById('op-biz')       || {}).value || '';
+  // Shown on every tour page this guide lists. The form has asked for it since
+  // it was written and nothing ever sent it, so the line sat empty.
+  var years   = (document.getElementById('op-years')     || {}).value || '';
   var bio     = (document.getElementById('op-bio')       || {}).value || '';
 
   if (!email || (!UPGRADE && !pw)) {
@@ -1211,6 +1214,7 @@ async function submitOperator() {
       country:      country.trim(),
       company_name: biz.trim(),
       bio:          bio.trim(),
+      experience_years: years.trim(),
       // The tick above has always been required to submit, but the answer
       // stayed in the browser. The server records it now, so who agreed and
       // when is a fact about the account.

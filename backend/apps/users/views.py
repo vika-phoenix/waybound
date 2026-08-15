@@ -684,6 +684,11 @@ def upgrade_to_operator(request):
     phone   = (request.data.get('phone') or '').strip()
     first   = (request.data.get('first_name') or '').strip()
     last    = (request.data.get('last_name') or '').strip()
+    # Already displayed on every tour page this guide lists, via
+    # TourDetailSerializer.operator_experience_years. The signup form has asked
+    # for it since it was written and dropped the answer on the floor, so the
+    # line sat empty unless someone happened to open their settings page.
+    years   = (request.data.get('experience_years') or '').strip()
 
     fields = ['role', 'guide_terms_accepted_at']
     user.role = User.Role.OPERATOR
@@ -712,6 +717,9 @@ def upgrade_to_operator(request):
     if last:
         user.last_name = last
         fields.append('last_name')
+    if years:
+        user.experience_years = years
+        fields.append('experience_years')
 
     user.save(update_fields=fields)
     logger.info('Upgraded %s from tourist to operator', user.email)

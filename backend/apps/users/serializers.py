@@ -50,7 +50,7 @@ class OperatorRegisterSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'password', 'password2',
             'first_name', 'last_name', 'phone',
-            'company_name', 'country', 'bio', 'accept_terms',
+            'company_name', 'country', 'bio', 'experience_years', 'accept_terms',
         )
 
     def validate(self, data):

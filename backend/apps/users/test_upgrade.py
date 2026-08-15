@@ -160,3 +160,12 @@ class UpgradeNameFieldsTest(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name, 'Nino')
         self.assertEqual(self.user.last_name, 'K')
+
+    def test_years_of_experience_is_kept(self):
+        """The tour page has a line for it; the form used to drop the answer."""
+        self.client.post(reverse('upgrade-to-operator'), {
+            'country': 'Georgia', 'experience_years': '5-10 years',
+            'accept_terms': True,
+        }, format='json')
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.experience_years, '5-10 years')
