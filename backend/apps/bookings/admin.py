@@ -48,6 +48,14 @@ class BookingAdmin(admin.ModelAdmin):
     )
 
     actions = ['confirm_bookings', 'mark_completed', 'mark_payout_sent']
+    change_list_template = 'admin/bookings/booking/change_list.html'
+
+    def changelist_view(self, request, extra_context=None):
+        """Surface the payout count on the list itself — an admin should not
+        have to go looking to find out someone is waiting to be paid."""
+        extra_context = extra_context or {}
+        extra_context['payouts_due_count'] = Booking.objects.filter(payout_status='due').count()
+        return super().changelist_view(request, extra_context)
 
     # ── Money columns ────────────────────────────────────────────────────────
 

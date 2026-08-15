@@ -7,7 +7,7 @@ from .models import User, OTPCode, VerificationDocument
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display  = ('email', 'full_name', 'role', 'is_active', 'email_verified', 'marketing_emails', 'date_joined')
+    list_display  = ('email', 'full_name', 'role', 'col_commission', 'is_active', 'email_verified', 'marketing_emails', 'date_joined')
     list_filter   = ('role', 'is_active', 'is_staff', 'email_verified', 'marketing_emails')
     search_fields = ('email', 'first_name', 'last_name', 'phone')
     ordering      = ('-date_joined',)
@@ -15,8 +15,15 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None,           {'fields': ('email', 'password')}),
         ('Personal',     {'fields': ('first_name', 'last_name', 'phone', 'avatar', 'bio', 'country')}),
-        ('Payout',       {'fields': ('payout_name', 'payout_bank', 'payout_account', 'payout_bik', 'payout_corr_account'),
-                          'classes': ('collapse',)}),
+        ('Payout & commission', {
+            'fields': ('commission_pct_override', 'payout_name', 'payout_bank',
+                       'payout_account', 'payout_bik', 'payout_corr_account'),
+            'description': (
+                'Leave the commission blank for the standard platform rate. Set it only where '
+                'this guide has negotiated something different — it applies to bookings paid '
+                'from that point on, never to bookings already taken.'
+            ),
+        }),
         ('Role & flags', {'fields': ('role', 'is_active', 'is_staff', 'is_superuser',
                                      'email_verified', 'phone_verified', 'marketing_emails')}),
         ('Permissions',  {'fields': ('groups', 'user_permissions')}),
@@ -29,6 +36,16 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
     readonly_fields = ('date_joined', 'last_login')
+
+    @admin.display(description='Commission', ordering='commission_pct_override')
+    def col_commission(self, obj):
+        """Scannable at a glance: who is on the standard rate and who is not."""
+        if obj.role != 'operator':
+            return '—'
+        if obj.commission_pct_override is None:
+            from django.conf import settings as _s
+            return f'{getattr(_s, "PLATFORM_COMMISSION_PCT", 15):g}% (standard)'
+        return format_html('<b>{}%</b>', f'{obj.commission_pct_override:g}')
 
 
 @admin.register(VerificationDocument)

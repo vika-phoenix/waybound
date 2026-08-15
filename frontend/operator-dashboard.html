@@ -953,7 +953,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
     <div class="panel-head"><div class="panel-title">Earnings</div></div>
     <div class="earnings-grid">
       <div class="earnings-card"><div class="earnings-card-label">Your earnings (all time)</div><div class="earnings-card-val" id="earnTotal">&#x2014;</div><div class="earnings-card-note" id="earnGross">after Kavkazland commission</div></div>
-      <div class="earnings-card"><div class="earnings-card-label">Awaiting payout</div><div class="earnings-card-val" id="earnDue">&#x2014;</div><div class="earnings-card-note" id="earnDueNote">paid within 5 working days of each trip</div></div>
+      <div class="earnings-card"><div class="earnings-card-label">Awaiting payout</div><div class="earnings-card-val" id="earnDue">&#x2014;</div><div class="earnings-card-note" id="earnDueNote">paid within 5 working days after a trip ends</div></div>
       <div class="earnings-card"><div class="earnings-card-label">This month</div><div class="earnings-card-val" id="earnMonth">&#x2014;</div><div class="earnings-card-note" id="earnNote">completed this month</div></div>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -2734,10 +2734,10 @@ function renderEarnings() {
     : 'after Kavkazland commission';
   document.getElementById('earnDue').textContent = fmtP(netDue, primCur);
   document.getElementById('earnDueNote').textContent = dueList.length
-    ? dueList.length + ' booking' + (dueList.length!==1?'s':'') + ' ready to pay'
+    ? dueList.length + ' finished trip' + (dueList.length!==1?'s':'') + ' ready to pay'
       + (netPaid > 0 ? ' · ' + fmtP(netPaid, primCur) + ' paid so far' : '')
     : (netPaid > 0 ? fmtP(netPaid, primCur) + ' paid out to date'
-                   : 'paid within 5 working days of each trip');
+                   : 'paid within 5 working days after a trip ends');
   document.getElementById('earnMonth').textContent = fmtP(mTotal, primCur);
   document.getElementById('earnNote').textContent  = thisM.length + ' completed booking' + (thisM.length!==1?'s':'') + ' this month'
     + (withPenalty.length ? ' · ' + withPenalty.length + ' cancellation penalt' + (withPenalty.length!==1?'ies':'y') : '');
@@ -2803,9 +2803,9 @@ function _num(v) { return parseFloat(v || 0) || 0; }
 // half-settled: the guide is still owed something, and that is the fact that
 // matters to them.
 function _payoutChip(states) {
-  if (states.due)  return '<span class="et-pay due">Due</span>';
+  if (states.due)  return '<span class="et-pay due">Due now</span>';
   if (states.paid) return '<span class="et-pay paid">Paid</span>';
-  return '<span class="et-pay later">After the trip</span>';
+  return '<span class="et-pay later">After trip ends</span>';
 }
 
 function emptyState(ico, title, sub, ctaLabel, ctaHref) {

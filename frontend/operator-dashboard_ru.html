@@ -930,7 +930,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 <div class="panel-head"><div class="panel-title">Доход</div></div>
 <div class="earnings-grid">
 <div class="earnings-card"><div class="earnings-card-label">Ваш доход (за всё время)</div><div class="earnings-card-val" id="earnTotal">—</div><div class="earnings-card-note" id="earnGross">после комиссии Kavkazland</div></div>
-<div class="earnings-card"><div class="earnings-card-label">Ожидает выплаты</div><div class="earnings-card-val" id="earnDue">—</div><div class="earnings-card-note" id="earnDueNote">выплата в течение 5 рабочих дней после тура</div></div>
+<div class="earnings-card"><div class="earnings-card-label">Ожидает выплаты</div><div class="earnings-card-val" id="earnDue">—</div><div class="earnings-card-note" id="earnDueNote">выплата в течение 5 рабочих дней после окончания тура</div></div>
 <div class="earnings-card"><div class="earnings-card-label">В этом месяце</div><div class="earnings-card-val" id="earnMonth">—</div><div class="earnings-card-note" id="earnNote">завершено в этом месяце</div></div>
 </div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -2705,10 +2705,10 @@ function renderEarnings() {
     : 'после комиссии Kavkazland';
   document.getElementById('earnDue').textContent = fmtP(netDue, primCur);
   document.getElementById('earnDueNote').textContent = dueList.length
-    ? 'Готово к выплате: ' + dueList.length
+    ? 'Завершённых туров к выплате: ' + dueList.length
       + (netPaid > 0 ? ' · уже выплачено ' + fmtP(netPaid, primCur) : '')
     : (netPaid > 0 ? 'Выплачено на сегодня: ' + fmtP(netPaid, primCur)
-                   : 'выплата в течение 5 рабочих дней после тура');
+                   : 'выплата в течение 5 рабочих дней после окончания тура');
   document.getElementById('earnMonth').textContent = fmtP(mTotal, primCur);
   document.getElementById('earnNote').textContent  = 'Завершено в этом месяце: ' + thisM.length
     + (withPenalty.length ? ' · штрафов за отмену: ' + withPenalty.length : '');
@@ -2775,7 +2775,7 @@ function _num(v) { return parseFloat(v || 0) || 0; }
 function _payoutChip(states) {
   if (states.due)  return '<span class="et-pay due">К выплате</span>';
   if (states.paid) return '<span class="et-pay paid">Выплачено</span>';
-  return '<span class="et-pay later">После тура</span>';
+  return '<span class="et-pay later">После окончания тура</span>';
 }
 
 function emptyState(ico, title, sub, ctaLabel, ctaHref) {

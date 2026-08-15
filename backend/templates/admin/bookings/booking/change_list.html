@@ -1,0 +1,31 @@
+{% extends "admin/change_list.html" %}
+{% comment %}
+The payouts page and the "Mark payout sent" action are both reachable from the
+booking list, but neither announces itself — an admin action is buried in a
+dropdown and a custom view has no link at all. This banner is the signpost.
+{% endcomment %}
+
+{% block content %}
+<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+            background:#f6f7f9;border:1px solid #e0e3e8;border-radius:8px;
+            padding:12px 16px;margin-bottom:16px">
+  <div style="flex:1;min-width:260px;font-size:13px;color:#333">
+    <b>Paying guides:</b> open <b>Payouts due</b> for what is owed and to whom.
+    To record a transfer, tick the bookings it covers below, then choose
+    <b>Mark payout sent</b> from the Action dropdown — it asks for a bank reference.
+    {% if payouts_due_count %}
+      <div style="margin-top:4px;color:#c0392b">
+        {{ payouts_due_count }} booking{{ payouts_due_count|pluralize }} awaiting payout.
+      </div>
+    {% else %}
+      <div style="margin-top:4px;color:#666">
+        Nothing is due right now — a payout falls due when a trip finishes.
+      </div>
+    {% endif %}
+  </div>
+  <a class="button" style="background:#417690;color:#fff;padding:8px 16px;border-radius:6px;
+                           text-decoration:none;white-space:nowrap"
+     href="{% url 'admin:bookings_booking_payouts' %}">Payouts due &rarr;</a>
+</div>
+{{ block.super }}
+{% endblock %}
