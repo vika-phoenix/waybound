@@ -218,3 +218,56 @@ class InternationalPayoutTest(TestCase):
         g = self._guide(payout_type='intl', payout_name='Moved', payout_bank='B',
                         payout_account='40817810099910004312', payout_bik='044525225')
         self.assertFalse(g.payout_ready)
+
+
+class ContactGatingTest(TestCase):
+    """
+    The guide used to see a traveller's email and phone from the moment a
+    booking row existed — before any payment. The side with the incentive to
+    take the trip off-platform got the contact details first, and for free.
+    """
+
+    def _booking(self, **kw):
+        from datetime import date, timedelta
+        from apps.tours.models import Tour
+        guide = User.objects.create_user(
+            email=f'cg{User.objects.count()}@example.com', password='x',
+            role=User.Role.OPERATOR)
+        tour = Tour.objects.create(
+            operator=guide, title='T', country='Georgia', destination='K',
+            price_adult=Decimal('300'), currency='USD',
+            status=Tour.Status.LIVE, max_group=6)
+        defaults = dict(
+            tour=tour, adults=1, first_name='Nino', last_name='T',
+            email='nino.tsereteli@example.com', phone='+995555123456',
+            currency='USD', price_adult=Decimal('300'), total_price=Decimal('300'),
+            departure_date=date.today() + timedelta(days=30),
+            status=Booking.Status.PENDING, deposit_status='pending')
+        defaults.update(kw)
+        return Booking.objects.create(**defaults)
+
+    def _serialized(self, bk):
+        from apps.bookings.serializers import OperatorBookingSerializer
+        return OperatorBookingSerializer(bk).data
+
+    def test_an_unpaid_booking_hides_the_contact_details(self):
+        d = self._serialized(self._booking())
+        self.assertNotIn('nino.tsereteli', d['email'])
+        self.assertNotIn('995555123456', d['phone'])
+        self.assertFalse(d['contact_unlocked'])
+        self.assertEqual(d['first_name'], 'Nino', 'the guide can still address them')
+
+    def test_paying_the_deposit_reveals_them(self):
+        d = self._serialized(self._booking(deposit_status='paid'))
+        self.assertEqual(d['email'], 'nino.tsereteli@example.com')
+        self.assertEqual(d['phone'], '+995555123456')
+        self.assertTrue(d['contact_unlocked'])
+
+    def test_a_confirmed_booking_reveals_them_even_if_paid_offline(self):
+        d = self._serialized(self._booking(status=Booking.Status.CONFIRMED))
+        self.assertTrue(d['contact_unlocked'])
+
+    def test_a_masked_value_is_never_the_real_one(self):
+        """A partial mask that leaks the domain would defeat the point."""
+        d = self._serialized(self._booking())
+        self.assertNotIn('example.com', d['email'])

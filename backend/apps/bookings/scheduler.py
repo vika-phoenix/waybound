@@ -547,7 +547,11 @@ def start_scheduler():
 
     scheduler.add_job(
         purge_verification_documents,
-        trigger=IntervalTrigger(hours=24),
+        # Weekly, not daily. The frequency is not the retention period, it is
+        # the lag past it: weekly means a scan lives at most 97 days against a
+        # published promise of 90. Monthly would stretch that to 120 and make
+        # the privacy policy inaccurate.
+        trigger=IntervalTrigger(hours=168),
         id='purge_verification_documents',
         name='Delete verification scans past the retention period',
         replace_existing=True,

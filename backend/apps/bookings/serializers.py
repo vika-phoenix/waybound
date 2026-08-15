@@ -157,6 +157,9 @@ class OperatorBookingSerializer(serializers.ModelSerializer):
     balance_due      = serializers.ReadOnlyField()
     enquiry_id       = serializers.SerializerMethodField()
     msg_unread       = serializers.SerializerMethodField()
+    email            = serializers.SerializerMethodField()
+    phone            = serializers.SerializerMethodField()
+    contact_unlocked = serializers.SerializerMethodField()
     amount_collected  = serializers.ReadOnlyField()
     amount_kept       = serializers.ReadOnlyField()
     commission_rate   = serializers.ReadOnlyField(source='effective_commission_pct')
@@ -180,10 +183,42 @@ class OperatorBookingSerializer(serializers.ModelSerializer):
             'refund_amount', 'refund_status',
             'created_at',
             'enquiry_id', 'msg_unread',
+            'contact_unlocked',
             'amount_collected', 'amount_kept', 'commission_rate',
             'commission_amount', 'payout_amount',
             'payout_status', 'payout_sent_at', 'payout_reference',
         ]
+
+    # ── Contact details are held back until money has moved ─────────────────
+    #
+    # The guide used to see a traveller's email and phone the moment a booking
+    # row existed — before any payment. That is the wrong way round: the side
+    # with the incentive to take the trip off-platform got the contact details
+    # first, and for free.
+    #
+    # Everything needed to answer a question is still here: first name, party
+    # size, dates, and the in-app thread. Only the means to leave with them is
+    # withheld, and only until the traveller has committed.
+
+    def _unlocked(self, obj):
+        return obj.deposit_status == 'paid' or obj.status in (
+            Booking.Status.CONFIRMED, Booking.Status.COMPLETED)
+
+    def get_contact_unlocked(self, obj):
+        return self._unlocked(obj)
+
+    def get_email(self, obj):
+        if self._unlocked(obj):
+            return obj.email
+        # Keep the shape recognisable so the row does not look broken.
+        local, _, _domain = (obj.email or '').partition('@')
+        return (local[:2] + '•••@•••') if local else ''
+
+    def get_phone(self, obj):
+        if self._unlocked(obj):
+            return obj.phone
+        tail = (obj.phone or '')[-2:]
+        return ('••• ' + tail) if tail else ''
 
     def get_enquiry_id(self, obj):
         return getattr(obj, '_enquiry_id', None)

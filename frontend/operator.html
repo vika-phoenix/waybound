@@ -596,9 +596,15 @@ function upgradeToGuide() {
     } catch (e) {}
     window.location.href = 'operator-tour-create.html';
   })
-  .catch(function () {
+  .catch(function (e) {
     if (btn) { btn.disabled = false; btn.textContent = 'Become a guide \u2192'; }
-    if (err) { err.style.display = ''; err.textContent = 'Could not upgrade the account. Please try again.'; }
+    // Show what the server actually said. It knows why \u2014 most often that this
+    // is an admin account, which cannot be upgraded \u2014 and "please try again"
+    // sends someone round the same loop forever.
+    var why = (e && e.message && e.message !== 'failed')
+      ? e.message
+      : 'Could not upgrade the account. Please try again.';
+    if (err) { err.style.display = ''; err.textContent = why; }
   });
 }
 </script>
