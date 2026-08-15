@@ -474,6 +474,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .bk-price-sub{font-size:11px;color:var(--mu);font-family:var(--bf);text-align:right;margin-top:1px}
 .bk-card-actions{padding:10px 18px 14px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--ln);flex-wrap:wrap}
 .bk-cooling{margin:0 18px 14px;padding:10px 13px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:7px;font-size:12.5px;line-height:1.6;color:#1a5c38;font-family:var(--bf)}
+.bk-capfail{margin:0 18px 14px;padding:10px 13px;background:#fdf3ec;border:1px solid #f0d3bd;border-radius:7px;font-size:12.5px;line-height:1.6;color:#8a4b1a;font-family:var(--bf)}
 .bk-actions-divider{width:1px;height:22px;background:#b0bec8;flex-shrink:0;border-radius:1px}
 .bk-btn{font-size:12px;font-weight:600;font-family:var(--bf);padding:7px 16px;border-radius:7px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s;border:none}
 .bk-btn.primary{background:var(--ac);color:var(--ink)}
@@ -1054,6 +1055,11 @@ function renderBookings(list) {
     if (b.status === 'pending' && b.deposit_status !== 'paid') {
       actions += '<a class="bk-btn primary" href="booking.html?slug=' + slug + '">Оплатить депозит</a>';
     }
+    // Неудачное списание — единственный случай, когда подтверждённая бронь
+    // всё ещё должна деньги.
+    if (b.capture_status === 'failed') {
+      actions += '<button class="bk-btn primary" onclick="payRetry(' + b.id + ')">Оплатить сейчас</button>';
+    }
     if (b.status === 'confirmed' && b.balance_status !== 'paid' && balanceDue > 0) {
       actions += '<button class="bk-btn primary" onclick="payBalance(' + b.id + ')">Оплатить остаток:' + fmtAmt(balanceDue, b) + '</button>';
     }
@@ -1155,6 +1161,18 @@ function renderBookings(list) {
             + coolingLeft(coolUntil) + '.</b> Передумаете до этого момента — вернём '
             + 'всё, включая комиссию, независимо от условий ниже.</div>';
     }
+    // Без этого письмо просит исправить карту, а на странице нечего нажать.
+    if (b.capture_status === 'failed') {
+      var esc = function (s) { return String(s || '').replace(/[&<>"]/g, function (c) {
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); };
+      var graceAt = b.capture_grace_until ? new Date(b.capture_grace_until) : null;
+      var byWhen  = (graceAt && !isNaN(graceAt.getTime()) && graceAt > new Date())
+        ? ' Оплатите ' + coolingLeft(graceAt) + ', чтобы сохранить место — можно другой картой.'
+        : ' Оплатите сейчас, чтобы сохранить место — можно другой картой.';
+      html += '<div class="bk-capfail">\u26A0\uFE0F <b>Платёж по карте не прошёл.</b> '
+            + esc(b.capture_last_error || 'Банк отклонил списание.') + byWhen
+            + ' После этого место вернётся в продажу.</div>';
+    }
     html += '<div class="bk-card-actions">' + actions + '</div>';
     html += '</div>';
   }
@@ -1202,6 +1220,32 @@ async function payBalance(bookingId) {
   } catch(e) {
     showToast('Ошибка сети. Пожалуйста, попробуйте снова.');
     if (btn) { btn.disabled = false; }
+  }
+}
+
+// Оплата после неудачного списания. Отдельная функция, а не ссылка на
+// booking.html: бронь уже существует, нужно оплатить именно её, а не создать
+// новую.
+async function payRetry(bookingId) {
+  var btn = event && event.target;
+  var _label = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Перенаправление…'; }
+  try {
+    var res = await fetchAuth(window.API_V1 + '/payments/initiate/', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ booking_id: bookingId, payment_type: 'deposit', payment_method: 'yookassa' })
+    });
+    var data = await res.json();
+    if (res.ok && data.confirmation_url) {
+      window.location.href = data.confirmation_url;
+    } else {
+      showToast(data.detail || 'Не удалось инициировать платёж. Пожалуйста, попробуйте снова.');
+      if (btn) { btn.disabled = false; btn.textContent = _label; }
+    }
+  } catch(e) {
+    showToast('Ошибка сети. Пожалуйста, попробуйте снова.');
+    if (btn) { btn.disabled = false; btn.textContent = _label; }
   }
 }
 

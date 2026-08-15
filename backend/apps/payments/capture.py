@@ -27,11 +27,22 @@ logger = logging.getLogger(__name__)
 
 
 class CaptureError(Exception):
-    """A capture that failed for a reason the traveller may be able to fix."""
+    """
+    A capture that failed for a reason the traveller may be able to fix.
+
+    The message reaches them, in an email and on their bookings page, so it
+    must read as a decline reason and never as an exception.
+    """
 
     def __init__(self, message, retryable=True):
         super().__init__(message)
         self.retryable = retryable
+
+
+# What a traveller is told when the real reason is ours, not their bank's.
+# Raw exception text is logged, never stored: capture_last_error is shown to
+# whoever made the booking, so internals must not reach it.
+GENERIC_FAILURE = 'The payment could not be completed. Please try again.'
 
 
 # Rails whose authorisations outlive our longest cooling-off window. Anything
@@ -100,7 +111,7 @@ def capture_booking(booking):
         # the money is real and sitting on someone's card.
         logger.error('No capture handler for %s on booking %s',
                      booking.payment_method, booking.reference)
-        booking.mark_capture_failed('No handler for this payment method')
+        booking.mark_capture_failed(GENERIC_FAILURE)
         return False
 
     try:
@@ -114,7 +125,7 @@ def capture_booking(booking):
         # this must not cancel anything on its own. It lands in FAILED like any
         # other, and the grace period gives a human time to look.
         logger.exception('Capture blew up for %s', booking.reference)
-        booking.mark_capture_failed(f'Unexpected error: {exc}'[:200])
+        booking.mark_capture_failed(GENERIC_FAILURE)
         return False
 
     booking.capture_attempts = (booking.capture_attempts or 0) + 1

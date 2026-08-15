@@ -138,6 +138,26 @@ class CaptureSeamTest(CaptureBase):
         self.assertEqual(bk.capture_status, Booking.Capture.FAILED)
         self.assertEqual(bk.status, Booking.Status.CONFIRMED)
 
+    def test_an_exception_never_reaches_the_traveller(self):
+        """
+        capture_last_error is shown on their bookings page and emailed to them,
+        so a stack-trace string landing in it would be leaked, not just ugly.
+        """
+        self._rail(capture_raises=RuntimeError('psycopg2 OperationalError at 10.0.0.4:5432'))
+        bk = self._booking()
+        cap.capture_booking(bk)
+        bk.refresh_from_db()
+        self.assertEqual(bk.capture_last_error, cap.GENERIC_FAILURE)
+        self.assertNotIn('psycopg2', bk.capture_last_error)
+
+    def test_a_real_decline_reason_is_kept(self):
+        """A bank's own words are the useful ones — those must survive."""
+        self._rail(capture_raises=cap.CaptureError('Insufficient funds'))
+        bk = self._booking()
+        cap.capture_booking(bk)
+        bk.refresh_from_db()
+        self.assertEqual(bk.capture_last_error, 'Insufficient funds')
+
     def test_a_rail_we_cannot_claim_fails_loudly(self):
         bk = self._booking(payment_method='some_new_wallet')
         self.assertFalse(cap.capture_booking(bk))

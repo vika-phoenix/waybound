@@ -473,6 +473,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .bk-price-sub{font-size:11px;color:var(--mu);font-family:var(--bf);text-align:right;margin-top:1px}
 .bk-card-actions{padding:10px 18px 14px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--ln);flex-wrap:wrap}
 .bk-cooling{margin:0 18px 14px;padding:10px 13px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:7px;font-size:12.5px;line-height:1.6;color:#1a5c38;font-family:var(--bf)}
+.bk-capfail{margin:0 18px 14px;padding:10px 13px;background:#fdf3ec;border:1px solid #f0d3bd;border-radius:7px;font-size:12.5px;line-height:1.6;color:#8a4b1a;font-family:var(--bf)}
 .bk-actions-divider{width:1px;height:22px;background:#b0bec8;flex-shrink:0;border-radius:1px}
 .bk-btn{font-size:12px;font-weight:600;font-family:var(--bf);padding:7px 16px;border-radius:7px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s;border:none}
 .bk-btn.primary{background:var(--ac);color:var(--ink)}
@@ -1061,6 +1062,11 @@ function renderBookings(list) {
     if (b.status === 'pending' && b.deposit_status !== 'paid') {
       actions += '<button class="bk-btn primary" onclick="payDeposit(' + b.id + ', this)">Pay deposit</button>';
     }
+    // A capture that failed leaves a confirmed booking with nothing behind
+    // it, so this is the one case where a confirmed booking still owes money.
+    if (b.capture_status === 'failed') {
+      actions += '<button class="bk-btn primary" onclick="payDeposit(' + b.id + ', this)">Pay now</button>';
+    }
     if (b.status === 'confirmed' && b.balance_status !== 'paid' && balanceDue > 0) {
       actions += '<button class="bk-btn primary" onclick="payBalance(' + b.id + ')">Pay balance: ' + fmtAmt(balanceDue, b) + '</button>';
     }
@@ -1163,6 +1169,19 @@ function renderBookings(list) {
             + coolingLeft(coolUntil) + '.</b> Change your mind before then and you get '
             + 'everything back, card fee included \u2014 whatever the policy below says.</div>';
     }
+    // Without this the email says 'fix your card' and the page it links to
+    // shows a healthy booking with nothing to press.
+    if (b.capture_status === 'failed') {
+      var esc = function (s) { return String(s || '').replace(/[&<>"]/g, function (c) {
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); };
+      var graceAt = b.capture_grace_until ? new Date(b.capture_grace_until) : null;
+      var byWhen  = (graceAt && !isNaN(graceAt.getTime()) && graceAt > new Date())
+        ? ' Pay ' + coolingLeft(graceAt) + ' to keep your place \u2014 a different card is fine.'
+        : ' Pay now to keep your place \u2014 a different card is fine.';
+      html += '<div class="bk-capfail">\u26A0\uFE0F <b>Your card did not go through.</b> '
+            + esc(b.capture_last_error || 'Your bank declined the charge.') + byWhen
+            + ' After that the seat goes back on sale.</div>';
+    }
     html += '<div class="bk-card-actions">' + actions + '</div>';
     html += '</div>';
   }
@@ -1193,6 +1212,9 @@ function toggleAcc(i) {
 
 // ── Deposit payment ──────────────────────────────────────────────────────────
 async function payDeposit(bookingId, btn) {
+  // Two buttons share this now, so put back the label it had rather
+  // than a hardcoded one.
+  var _label = btn ? btn.textContent : '';
   if (btn) { btn.disabled = true; btn.textContent = 'Redirecting\u2026'; }
   try {
     var res = await fetchAuth(window.API_V1 + '/payments/initiate/', {

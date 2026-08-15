@@ -130,6 +130,7 @@ class BookingDetailSerializer(serializers.ModelSerializer):
             'emergency_name', 'emergency_phone', 'notes',
             'room_preference', 'selected_extras',
             'cancel_policy_snapshot', 'cooling_off_until',
+            'capture_status', 'capture_grace_until', 'capture_last_error',
             'departure_date',
             'price_adult', 'price_child', 'total_price',
             'extras_cost', 'room_supplement_cost',
