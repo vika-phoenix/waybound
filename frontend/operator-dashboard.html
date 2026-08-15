@@ -2159,7 +2159,20 @@ async function publishTour(slug) {
   try {
     var r = await fetchAuth(ACCT_API + '/tours/' + slug + '/publish/', { method:'PATCH', headers:ah() });
     var d = await r.json();
-    if (!r.ok) { showToast('Error: ' + (d.detail || r.status), 'error'); return; }
+    if (!r.ok) {
+      // The server runs the same completeness list. If it disagrees with the
+      // check above — a stale page, a field cleared in another tab — show what
+      // it actually objected to rather than a bare status code.
+      if (d.missing && d.missing.length) {
+        await showConfirm({
+          icon:'⚠️', title:'This tour cannot be submitted yet',
+          msg: 'Still missing: ' + d.missing.join(', '), ok:'OK'
+        });
+        return;
+      }
+      showToast('Error: ' + (d.detail || r.status), 'error');
+      return;
+    }
     showToast('Tour submitted for review!', 'success');
     loadTours();
   } catch(e) { showToast('Could not reach server.', 'error'); }

@@ -19,6 +19,7 @@ Endpoints:
 """
 import django_filters
 import logging
+import re
 
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
@@ -444,6 +445,48 @@ def operator_tour_list(request):
     return Response({'count': qs.count(), 'results': serializer.data})
 
 
+def incomplete_tour_fields(tour):
+    """
+    What is still missing before a tour can go to review.
+
+    The same list ran only in the dashboard's JavaScript, so it was advice
+    rather than a rule: a direct API call, or a page whose script failed to
+    load, could push a half-empty tour into the review queue for a human to
+    reject by hand. Nothing could be *published* that way — that still needs an
+    admin — but the queue is the thing being protected here.
+
+    Wording matches the dashboard so a guide reading the API error and a guide
+    reading the modal are told the same thing.
+    """
+    missing = []
+    if not (tour.title or '').strip() or tour.title.startswith('Untitled tour'):
+        missing.append('Tour name')
+    if not tour.categories:
+        missing.append('Category (select at least one)')
+    if not (tour.difficulty or '').strip():
+        missing.append('Difficulty')
+    if not (tour.country or '').strip():
+        missing.append('Country')
+    if not (tour.destination or '').strip():
+        missing.append('Destination / city')
+    if not tour.price_adult or float(tour.price_adult) <= 0:
+        missing.append('Price per person (must be greater than 0)')
+    if not tour.max_group or tour.max_group <= 0:
+        missing.append('Max group size')
+    # Strip tags before measuring: the editor leaves an empty <p> behind, which
+    # is not a description but is not an empty string either.
+    if not re.sub(r'<[^>]*>', '', tour.description or '').strip():
+        missing.append('Full tour description')
+    if not tour.departures.exists():
+        missing.append('At least 1 departure date')
+    if not tour.itinerary.exclude(title='').exists():
+        missing.append('At least 1 itinerary day with a title')
+    photos = tour.photos.count()
+    if photos < 3:
+        missing.append(f'At least 3 photos (currently: {photos})')
+    return missing
+
+
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
 def tour_publish(request, slug):
@@ -471,6 +514,14 @@ def tour_publish(request, slug):
         if tour.status not in [Tour.Status.DRAFT, Tour.Status.PAUSED]:
             return Response({'detail': f'Cannot submit from status: {tour.status}'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+        missing = incomplete_tour_fields(tour)
+        if missing:
+            return Response({
+                'detail': 'This tour is not complete enough to submit yet.',
+                'missing': missing,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         tour.status = Tour.Status.REVIEW
 
     tour.save(update_fields=['status', 'published_at'])

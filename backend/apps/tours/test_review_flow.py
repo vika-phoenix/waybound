@@ -116,3 +116,109 @@ class TourReviewNoticesTest(TestCase):
         self.assertEqual(self.tour.status, Tour.Status.LIVE)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('is live', mail.outbox[0].subject)
+
+class PublishValidationTest(TestCase):
+    """
+    The completeness rules ran only in the dashboard's JavaScript, so they were
+    advice. A direct API call — or a page whose script failed to load — could
+    push a half-empty tour into the review queue for a human to reject by hand.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.guide = User.objects.create_user(
+            email='pub@example.com', password='x', role=User.Role.OPERATOR,
+            is_verified=True)
+
+    def setUp(self):
+        from rest_framework.test import APIClient
+        self.client = APIClient()
+        self.client.force_authenticate(self.guide)
+
+    def _bare_tour(self):
+        return Tour.objects.create(
+            operator=self.guide, title='Untitled tour', status=Tour.Status.DRAFT,
+            price_adult=Decimal('0'), max_group=0)
+
+    def _complete_tour(self):
+        from datetime import date, timedelta
+        from apps.tours.models import DayItinerary, DepartureDate, TourPhoto
+        t = Tour.objects.create(
+            operator=self.guide, title='Kazbegi Traverse', country='Georgia',
+            destination='Stepantsminda', difficulty='moderate',
+            categories=['Trekking'], price_adult=Decimal('500'), max_group=8,
+            description='<p>Six days across the Kazbegi massif.</p>',
+            status=Tour.Status.DRAFT)
+        start = date.today() + timedelta(days=40)
+        DepartureDate.objects.create(tour=t, start_date=start,
+                                     end_date=start + timedelta(days=5),
+                                     spots_total=8, spots_left=8)
+        DayItinerary.objects.create(tour=t, day_number=1, title='Arrive in Stepantsminda')
+        for i in range(3):
+            TourPhoto.objects.create(tour=t, image=f'tours/x{i}.jpg')
+        return t
+
+    def test_an_empty_tour_cannot_reach_the_review_queue(self):
+        t = self._bare_tour()
+        r = self.client.patch(f'/api/v1/tours/{t.slug}/publish/')
+        self.assertEqual(r.status_code, 400)
+        t.refresh_from_db()
+        self.assertEqual(t.status, Tour.Status.DRAFT)
+
+    def test_the_response_names_every_missing_piece(self):
+        r = self.client.patch(f'/api/v1/tours/{self._bare_tour().slug}/publish/')
+        missing = r.data['missing']
+        # Difficulty is deliberately absent: the model defaults it to
+        # 'moderate', so it can never be blank. The dashboard checks for it too
+        # and that check is equally unreachable.
+        for expected in ['Tour name', 'Category (select at least one)',
+                         'Country', 'Destination / city', 'Max group size',
+                         'Full tour description', 'At least 1 departure date',
+                         'At least 1 itinerary day with a title']:
+            self.assertIn(expected, missing)
+        self.assertTrue(any('At least 3 photos' in m for m in missing))
+
+    def test_a_complete_tour_still_submits(self):
+        t = self._complete_tour()
+        r = self.client.patch(f'/api/v1/tours/{t.slug}/publish/')
+        self.assertEqual(r.status_code, 200, getattr(r, 'data', None))
+        t.refresh_from_db()
+        self.assertEqual(t.status, Tour.Status.REVIEW)
+
+    def test_two_photos_is_not_three(self):
+        t = self._complete_tour()
+        t.photos.first().delete()
+        r = self.client.patch(f'/api/v1/tours/{t.slug}/publish/')
+        self.assertEqual(r.status_code, 400)
+        self.assertTrue(any('currently: 2' in m for m in r.data['missing']))
+
+    def test_an_editor_leftover_is_not_a_description(self):
+        """The rich-text editor leaves <p></p> behind, which is not empty."""
+        t = self._complete_tour()
+        t.description = '<p><br></p>'
+        t.save(update_fields=['description'])
+        r = self.client.patch(f'/api/v1/tours/{t.slug}/publish/')
+        self.assertEqual(r.status_code, 400)
+        self.assertIn('Full tour description', r.data['missing'])
+
+    def test_an_untitled_itinerary_day_does_not_count(self):
+        t = self._complete_tour()
+        t.itinerary.update(title='')
+        r = self.client.patch(f'/api/v1/tours/{t.slug}/publish/')
+        self.assertEqual(r.status_code, 400)
+        self.assertIn('At least 1 itinerary day with a title', r.data['missing'])
+
+    def test_an_admin_publishing_is_not_blocked_by_this(self):
+        """
+        The gate is on submission, not approval. An admin looking at a tour has
+        already judged it; the rules exist to keep the queue clean.
+        """
+        admin = User.objects.create_superuser(email='adm2@example.com', password='x')
+        t = self._bare_tour()
+        t.status = Tour.Status.REVIEW
+        t.save(update_fields=['status'])
+        self.client.force_authenticate(admin)
+        r = self.client.patch(f'/api/v1/tours/{t.slug}/publish/')
+        self.assertEqual(r.status_code, 200)
+        t.refresh_from_db()
+        self.assertEqual(t.status, Tour.Status.LIVE)

@@ -2132,7 +2132,20 @@ async function publishTour(slug) {
   try {
     var r = await fetchAuth(ACCT_API + '/tours/' + slug + '/publish/', { method:'PATCH', headers:ah() });
     var d = await r.json();
-    if (!r.ok) { showToast('Ошибка:' + (d.detail || r.status), 'error'); return; }
+    if (!r.ok) {
+      // Сервер проверяет ту же полноту. Если он не согласен с проверкой выше —
+      // устаревшая страница, поле очищено в другой вкладке — покажем именно
+      // его замечания, а не голый код ответа.
+      if (d.missing && d.missing.length) {
+        await showConfirm({
+          icon:'⚠️', title:'Этот тур пока нельзя отправить',
+          msg: 'Не хватает: ' + d.missing.join(', '), ok:'Понятно'
+        });
+        return;
+      }
+      showToast('Ошибка: ' + (d.detail || r.status), 'error');
+      return;
+    }
     showToast('Тур отправлен на проверку!', 'success');
     loadTours();
   } catch(e) { showToast('Не удалось связаться с сервером.', 'error'); }
