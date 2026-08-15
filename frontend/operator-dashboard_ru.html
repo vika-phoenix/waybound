@@ -552,6 +552,12 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .checklist-ico.done{background:#e3f4e3}
 .checklist-ico.pending{background:#fff4e0}
 .checklist-ico.required{background:#fdecea}
+/* An optional step that is not done is not a problem, so it must not wear the
+   same warning triangle as the one thing that actually blocks publishing. */
+.checklist-ico.optional{background:var(--paper);color:var(--mu)}
+.chk-tag{font-size:9.5px;font-weight:700;font-family:var(--bf);text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:10px;margin-left:7px;vertical-align:middle;white-space:nowrap}
+.chk-tag.req{background:#fdecea;color:#c0392b}
+.chk-tag.opt{background:var(--paper);color:var(--mu)}
 .checklist-label{flex:1;font-size:13px;color:var(--ink);font-family:var(--bf)}
 .checklist-sub{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:1px}
 .checklist-action{font-size:12px;font-weight:600;color:var(--ac);font-family:var(--bf);cursor:pointer;white-space:nowrap;text-decoration:none}
@@ -930,7 +936,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 <div style="background:var(--white);border:1.5px solid var(--ln);border-radius:12px;padding:20px;margin-bottom:20px">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
 <div style="font-family:var(--df);font-size:16px;color:var(--ink)">Настройка аккаунта</div>
-<div id="setupProgress" style="font-size:12px;color:var(--mu);font-family:var(--bf)">0 / 5 завершено</div>
+<div id="setupProgress" style="font-size:12px;color:var(--mu);font-family:var(--bf)">Проверяем настройки&hellip;</div>
 </div>
 <div id="checklistItems"></div>
 </div>
@@ -1858,27 +1864,45 @@ function renderOverview() {
   // Verification checklist
   var u = null;
   try { u = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch(e) {}
+  // Публикацию блокирует только проверка личности — tour_publish смотрит
+  // на is_verified и больше ни на что. Пять предупреждающих значков и
+  // «0 / 5 завершено» делали обязательными все пять: гид либо ждёт, хотя уже
+  // может публиковать, либо не замечает единственный пункт, который его
+  // действительно останавливает. Блокирующий пункт стоит первым.
   var checks = [
-    { label:'Фото профиля и био', sub:'Путешественники доверяют гидам, которых они видят', done: !!(u && u.avatar && u.bio), action:'settings_ru.html' },
-    { label:'Проверка личности', sub:'Загрузите паспорт или национальное удостоверение личности', done: !!(u && u.is_verified), action:'settings_ru.html#verification', id:'identity' },
+    { label:'Проверка личности', sub:'Загрузите паспорт или удостоверение личности — без одобрения мы не сможем опубликовать ваши туры', done: !!(u && u.is_verified), action:'settings_ru.html#verification', id:'identity', required:true },
+    { label:'Способ получения выплат', sub:'Банковские реквизиты, чтобы мы могли заплатить вам после тура', done: !!(u && u.payout_ready), action:'settings_ru.html#payout' },
+    { label:'Фото профиля и био', sub:'Путешественники доверяют гидам, которых видят', done: !!(u && u.avatar && u.bio), action:'settings_ru.html' },
     { label:'Квалификация гида', sub:'Сертификаты, подтверждение проведённых туров', done: !!(u && u.credentials_files && u.credentials_files.length), action:'settings_ru.html#credentials' },
-    { label:'Способ получения платежей', sub:'Реквизиты банка для ваших доходов', done: !!(u && u.payout_account), action:'settings_ru.html#payout' },
-    { label:'Номер телефона', sub:'Для проверки и срочного контакта', done: !!(u && u.phone), action:'settings_ru.html' }
+    { label:'Номер телефона', sub:'Для проверки и срочной связи', done: !!(u && u.phone), action:'settings_ru.html' }
   ];
-  var done = checks.filter(function(c){ return c.done; }).length;
+  function tag(c) {
+    if (c.done) return '';
+    return c.required ? '<span class="chk-tag req">Обязательно</span>'
+                      : '<span class="chk-tag opt">Необязательно</span>';
+  }
+  var blocked  = checks.filter(function(c){ return c.required && !c.done; }).length;
+  var optional = checks.filter(function(c){ return !c.required; });
+  var optDone  = optional.filter(function(c){ return c.done; }).length;
   var prog = document.getElementById('setupProgress');
-  if (prog) prog.textContent = done + ' / ' + checks.length + ' complete';
+  if (prog) {
+    prog.textContent = blocked
+      ? 'Пройдите проверку личности, чтобы публиковать туры'
+      : 'Вы можете публиковать туры \u00b7 необязательных шагов: ' + optDone + ' из ' + optional.length;
+    prog.style.color = blocked ? '#c0392b' : '#1a7a40';
+    prog.style.fontWeight = blocked ? '700' : '600';
+  }
   var cl = document.getElementById('checklistItems');
   if (cl) {
     cl.innerHTML = checks.map(function(c) {
-      var cls  = c.done ? 'done' : 'required';
-      var ico  = c.done ? '\u2713' : '\u26A0';
+      var cls  = c.done ? 'done' : (c.required ? 'required' : 'optional');
+      var ico  = c.done ? '\u2713' : (c.required ? '\u26A0' : '\u25CB');
       var doneAttr   = c.id ? ' id="checklist' + c.id.charAt(0).toUpperCase() + c.id.slice(1) + 'Done"'   : '';
       var actionAttr = c.id ? ' id="checklist' + c.id.charAt(0).toUpperCase() + c.id.slice(1) + 'Action"' : '';
       var icoAttr    = c.id ? ' id="checklist' + c.id.charAt(0).toUpperCase() + c.id.slice(1) + 'Ico"'    : '';
       return '<div class="checklist-item">'
         + '<div' + icoAttr + ' class="checklist-ico ' + cls + '">' + ico + '</div>'
-        + '<div style="flex:1"><div class="checklist-label">' + c.label + '</div>'
+        + '<div style="flex:1"><div class="checklist-label">' + c.label + tag(c) + '</div>'
         + '<div class="checklist-sub">' + c.sub + '</div></div>'
         + (c.done ? '<span' + doneAttr + ' style="font-size:12px;color:#2a8a40;font-family:var(--bf)">&#x2714; Выполнено</span>'
                   : '<span' + doneAttr + ' style="font-size:12px;color:#2a8a40;font-family:var(--bf);display:none">&#x2714; Выполнено</span>'
