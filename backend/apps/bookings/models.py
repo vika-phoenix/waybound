@@ -253,7 +253,31 @@ class Booking(models.Model):
         return True
 
 
-class EnquiryMessage(models.Model):
+class _ScrubbedText:
+    """
+    Mixin: strip contact details from a text field before it is stored.
+
+    Done at the model rather than the serializer so every route is covered —
+    the API, the admin, anything added later. Storing the clean version means
+    the address never sits in the database waiting for a different view to
+    expose it.
+    """
+    SCRUB_FIELD = None
+
+    def save(self, *args, **kwargs):
+        from .contact_filter import scrub
+        field = self.SCRUB_FIELD
+        if field:
+            cleaned, changed = scrub(getattr(self, field, ''))
+            if changed:
+                setattr(self, field, cleaned)
+                uf = kwargs.get('update_fields')
+                if uf is not None and field not in uf:
+                    kwargs['update_fields'] = list(uf) + [field]
+        return super().save(*args, **kwargs)
+
+
+class EnquiryMessage(_ScrubbedText, models.Model):
     """
     Private tour enquiry — from the 'Request private dates' modal.
     Stores structured data from the form.
@@ -274,6 +298,7 @@ class EnquiryMessage(models.Model):
     children        = models.PositiveSmallIntegerField(default=0)
     infants         = models.PositiveSmallIntegerField(default=0)
     message         = models.TextField(blank=True)
+    SCRUB_FIELD     = 'message'
 
     read_by_operator = models.BooleanField(default=False)
     operator_reply   = models.TextField(blank=True, default='')
@@ -287,13 +312,14 @@ class EnquiryMessage(models.Model):
         return f'Enquiry: {self.tour.slug} from {self.email or (self.sender.email if self.sender else "guest")}'
 
 
-class EnquiryReply(models.Model):
+class EnquiryReply(_ScrubbedText, models.Model):
     """Individual message in an enquiry thread (operator or tourist follow-up)."""
     enquiry     = models.ForeignKey(EnquiryMessage, on_delete=models.CASCADE, related_name='replies')
     sender      = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
                                      null=True, blank=True, related_name='enquiry_replies')
     is_operator = models.BooleanField(default=False)
     body        = models.TextField()
+    SCRUB_FIELD = 'body'
     created_at  = models.DateTimeField(auto_now_add=True)
 
     class Meta:

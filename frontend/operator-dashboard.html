@@ -1941,11 +1941,32 @@ function renderOverview() {
   // Upcoming departures (next 30 days)
   var today = new Date(); today.setHours(0,0,0,0);
   var in30  = new Date(today); in30.setDate(today.getDate() + 30);
-  var upcoming = _bookings.filter(function(b) {
-    if (!b.departure_date || b.status === 'cancelled') return false;
-    var d = new Date(b.departure_date);
-    return d >= today && d <= in30;
-  }).sort(function(a,b){ return new Date(a.departure_date) - new Date(b.departure_date); });
+  // This used to list bookings, so a departure with nobody on it never
+  // appeared — a panel called "Upcoming departures" silently showing only the
+  // ones that sold. A guide needs to see the empty ones most of all: those are
+  // the trips that still need filling or calling off. Departures come from the
+  // tour list; bookings are counted onto them.
+  var upcoming = [];
+  _tours.forEach(function(t) {
+    if (t.status === 'archived' || t.status === 'draft') return;
+    (t.departures || []).forEach(function(d) {
+      if (d.status === 'cancelled' || !d.start_date) return;
+      var dt = new Date(d.start_date + 'T00:00:00');
+      if (dt < today || dt > in30) return;
+      var onIt = _bookings.filter(function(b) {
+        return b.status !== 'cancelled' && b.departure_date === d.start_date
+          && (b.tour_slug === t.slug || (b.tour_detail && b.tour_detail.slug === t.slug));
+      });
+      upcoming.push({
+        tour: t, dep: d, date: d.start_date, bookings: onIt.length,
+        guests: onIt.reduce(function(s, b) {
+          return s + (b.guests !== undefined ? b.guests
+                     : (b.adults || 1) + (b.children || 0) + (b.infants || 0));
+        }, 0),
+      });
+    });
+  });
+  upcoming.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
   var upEl   = document.getElementById('upcomingList');
   var upNote = document.getElementById('upcomingNote');
   if (upNote) upNote.textContent = upcoming.length ? upcoming.length + ' departure' + (upcoming.length!==1?'s':'') + ' in the next 30 days' : '';
@@ -1953,12 +1974,17 @@ function renderOverview() {
     if (!upcoming.length) {
       upEl.innerHTML = '<div style="font-size:13px;color:var(--mu);font-family:var(--bf);padding:8px 0">No departures in the next 30 days.</div>';
     } else {
-      upEl.innerHTML = upcoming.map(function(b) {
-        var t = b.tour_detail || {};
+      upEl.innerHTML = upcoming.map(function(u) {
+        var spots = (u.dep.spots_total || 0) - (u.dep.spots_left || 0);
+        var meta  = u.bookings
+          ? '&#x1F465; ' + u.guests + ' guest' + (u.guests !== 1 ? 's' : '')
+            + ' &nbsp;&middot;&nbsp; ' + u.bookings + ' booking' + (u.bookings !== 1 ? 's' : '')
+          : '<span style="color:#9a6000">Nobody booked yet</span>';
         return '<div class="upcoming-item">'
-          + '<div><div class="upcoming-tour">' + (t.title||'Tour') + '</div>'
-          + '<div class="upcoming-meta">&#x1F465; ' + ((b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0))) + ' guest' + (((b.guests !== undefined ? b.guests : (b.adults||1)+(b.children||0)+(b.infants||0)))!==1?'s':'') + ' &nbsp;&middot;&nbsp; Ref: ' + (b.reference||('#'+b.id)) + '</div></div>'
-          + '<div class="upcoming-date">&#x1F4C5; ' + fmtD(b.departure_date) + '</div>'
+          + '<div><div class="upcoming-tour">' + (u.tour.title || 'Tour') + '</div>'
+          + '<div class="upcoming-meta">' + meta
+          + ' &nbsp;&middot;&nbsp; ' + spots + '/' + (u.dep.spots_total || 0) + ' spots taken</div></div>'
+          + '<div class="upcoming-date">&#x1F4C5; ' + fmtD(u.date) + '</div>'
           + '</div>';
       }).join('');
     }

@@ -271,3 +271,53 @@ class ContactGatingTest(TestCase):
         """A partial mask that leaks the domain would defeat the point."""
         d = self._serialized(self._booking())
         self.assertNotIn('example.com', d['email'])
+
+
+class MessageScrubbingTest(TestCase):
+    """
+    One message carrying a phone number is the usual first step off-platform.
+    This does not stop two determined people — they meet in person anyway — but
+    it stops the casual exchange, which is most of it.
+    """
+
+    def _enquiry(self, message):
+        from apps.tours.models import Tour
+        guide = User.objects.create_user(
+            email=f'ms{User.objects.count()}@example.com', password='x',
+            role=User.Role.OPERATOR)
+        tour = Tour.objects.create(
+            operator=guide, title='T', country='Georgia', destination='K',
+            price_adult=Decimal('300'), status=Tour.Status.LIVE, max_group=6)
+        from apps.bookings.models import EnquiryMessage
+        return EnquiryMessage.objects.create(
+            tour=tour, name='Nino', email='nino@example.com', message=message)
+
+    def test_a_phone_number_does_not_survive(self):
+        e = self._enquiry('Call me on +995 555 123 456')
+        e.refresh_from_db()
+        self.assertNotIn('555 123 456', e.message)
+        self.assertIn('Kavkazland', e.message)
+
+    def test_an_email_address_does_not_survive(self):
+        e = self._enquiry('write to nino.t@gmail.com please')
+        e.refresh_from_db()
+        self.assertNotIn('gmail.com', e.message)
+
+    def test_a_telegram_handle_does_not_survive(self):
+        e = self._enquiry('my telegram is @ninoguide')
+        e.refresh_from_db()
+        self.assertNotIn('ninoguide', e.message)
+
+    def test_ordinary_numbers_are_left_alone(self):
+        """A guide must be able to say when the walk starts and how high it goes."""
+        text = 'We start at 07:30 and climb to 2400m. Price is 1,250 USD.'
+        e = self._enquiry(text)
+        e.refresh_from_db()
+        self.assertEqual(e.message, text)
+
+    def test_the_enquirer_email_is_masked_until_they_book(self):
+        from apps.bookings.serializers import EnquiryDetailSerializer
+        e = self._enquiry('Hello, are dates in June possible?')
+        data = EnquiryDetailSerializer(e).data
+        self.assertNotIn('example.com', data['email'])
+        self.assertEqual(data['name'], 'Nino', 'the guide can still address them')

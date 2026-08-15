@@ -1926,12 +1926,16 @@ function renderOverview() {
     if (!upcoming.length) {
       upEl.innerHTML = '<div style="font-size:13px;color:var(--mu);font-family:var(--bf);padding:8px 0">Нет отправлений в течение 30 дней.</div>';
     } else {
-      upEl.innerHTML = upcoming.map(function(b) {
-        var t = b.tour_detail || {};
+      upEl.innerHTML = upcoming.map(function(u) {
+        var spots = (u.dep.spots_total || 0) - (u.dep.spots_left || 0);
+        var meta  = u.bookings
+          ? '&#x1F465; гостей: ' + u.guests + ' &nbsp;&middot;&nbsp; бронирований: ' + u.bookings
+          : '<span style="color:#9a6000">Пока никто не забронировал</span>';
         return '<div class="upcoming-item">'
-          + '<div><div class="upcoming-tour">' + (t.title||'Тур') + '</div>'
-          + (function(){ var g=(b.guests!==undefined?b.guests:(b.adults||1)+(b.children||0)+(b.infants||0)); return '<div class="upcoming-meta">&#x1F465;' + g + ' ' + (g===1?'гость':g<5?'гостя':'гостей') + '&nbsp;&middot;&nbsp; Ref:' + (b.reference||('#'+b.id)) + '</div></div>'; })()
-          + '<div class="upcoming-date">&#x1F4C5;' + fmtD(b.departure_date) + '</div>'
+          + '<div><div class="upcoming-tour">' + (u.tour.title || 'Тур') + '</div>'
+          + '<div class="upcoming-meta">' + meta
+          + ' &nbsp;&middot;&nbsp; занято мест: ' + spots + ' из ' + (u.dep.spots_total || 0) + '</div></div>'
+          + '<div class="upcoming-date">&#x1F4C5; ' + fmtD(u.date) + '</div>'
           + '</div>';
       }).join('');
     }

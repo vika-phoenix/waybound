@@ -286,6 +286,18 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     operator_name = serializers.SerializerMethodField()
     replies       = EnquiryReplySerializer(many=True, read_only=True)
     booking_ref   = serializers.SerializerMethodField()
+    email         = serializers.SerializerMethodField()
+
+    def get_email(self, obj):
+        """
+        An enquiry involves no booking and no money, so this handed a guide a
+        working address for nothing. Replies go through the thread; the address
+        appears once the enquirer becomes a paying traveller.
+        """
+        if self.get_booking_ref(obj):
+            return obj.email
+        local, _, _domain = (obj.email or '').partition('@')
+        return (local[:2] + '•••@•••') if local else ''
 
     class Meta:
         model  = EnquiryMessage
