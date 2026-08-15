@@ -982,10 +982,14 @@ function validateStep1() {
   }
   var country = (document.getElementById('op-country') || {}).value || '';
   if (!country) { showErr('errCountry', 'op-country', 'Please select your country of operation.'); ok = false; }
-  if (!pw) {
-    showErr('errPw', 'op-pw', 'Password is required.'); ok = false;
-  } else if (pw.length < 8) {
-    showErr('errPw', 'op-pw', 'Password must be at least 8 characters.'); ok = false;
+  // Someone upgrading already has an account, so there is no password here to
+  // validate — the field is hidden rather than left blank and complained about.
+  if (!UPGRADE) {
+    if (!pw) {
+      showErr('errPw', 'op-pw', 'Password is required.'); ok = false;
+    } else if (pw.length < 8) {
+      showErr('errPw', 'op-pw', 'Password must be at least 8 characters.'); ok = false;
+    }
   }
   return ok;
 }
@@ -1115,6 +1119,67 @@ function siClick(n) {
   showStep(n);
 }
 
+// ── Upgrading a traveller account ──────────────────────────────────
+//
+// A traveller becoming a guide answers exactly what a new guide answers — same
+// three steps, same terms, same ticks. Keeping a separate short form for them
+// meant an upgraded guide was structurally a lesser guide, with no business
+// name, no tour types and one consent instead of four.
+//
+// Only two things differ, and both follow from already having an account:
+// there is no password to choose, and the email is the login field so it is
+// shown but locked. Everything else is prefilled and stays editable.
+var UPGRADE = false;
+
+(function setUpgradeMode() {
+  if (new URLSearchParams(window.location.search).get('upgrade') !== '1') return;
+
+  var tok = localStorage.getItem('waybound_access');
+  var u = null;
+  try { u = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch (e) {}
+  if (!tok || !u) { window.location.href = 'signin.html?next=operator.html'; return; }
+  if (u.role === 'operator') { window.location.href = 'operator-dashboard.html'; return; }
+  UPGRADE = true;
+
+  document.addEventListener('DOMContentLoaded', function () {
+    function put(id, val) {
+      var el = document.getElementById(id);
+      if (el && val) el.value = val;
+    }
+    put('op-fname', u.first_name);
+    put('op-lname', u.last_name);
+    put('op-email', u.email);
+    put('op-phone', u.phone);
+    put('op-country', u.country);
+    put('op-bio', u.bio);
+
+    var em = document.getElementById('op-email');
+    if (em) {
+      em.readOnly = true;
+      em.style.background = '#f2f3f5';
+      em.style.color = '#6a7280';
+      em.style.cursor = 'not-allowed';
+      var note = document.createElement('span');
+      note.className = 'form-hint';
+      note.textContent = 'This is your login email and cannot be changed.';
+      if (em.parentNode) em.parentNode.appendChild(note);
+    }
+
+    // No password field: they are already signed in.
+    var pw = document.getElementById('op-pw');
+    if (pw) {
+      var grp = pw.closest ? pw.closest('.form-group') : null;
+      if (grp) grp.style.display = 'none';
+    }
+
+    var h = document.querySelector('#step1 .auth-title');
+    if (h) h.innerHTML = 'Become a <em>guide</em>';
+
+    var sub = document.querySelector('#step1 .auth-sub');
+    if (sub) sub.textContent = 'Your bookings, saved tours and reviews stay exactly where they are. We have filled in what we already know — change anything that is out of date.';
+  });
+})();
+
 var AUTH_API = window.API_V1;
 
 async function submitOperator() {
@@ -1144,7 +1209,7 @@ async function submitOperator() {
   var biz     = (document.getElementById('op-biz')       || {}).value || '';
   var bio     = (document.getElementById('op-bio')       || {}).value || '';
 
-  if (!email || !pw) {
+  if (!email || (!UPGRADE && !pw)) {
     showStep(1);
     validateStep1();
     return;
@@ -1156,24 +1221,34 @@ async function submitOperator() {
 
   try {
     // ── Register operator account via API ──────────────────
-    var res = await fetch(AUTH_API + '/auth/register/operator/', {
+    // Same answers either way. A new guide creates an account; a traveller
+    // upgrading has one already, so the row is updated instead and the email
+    // and password are not theirs to set here.
+    var _payload = {
+      first_name:   fname.trim(),
+      last_name:    lname.trim(),
+      phone:        phone.trim(),
+      country:      country.trim(),
+      company_name: biz.trim(),
+      bio:          bio.trim(),
+      // The tick above has always been required to submit, but the answer
+      // stayed in the browser. The server records it now, so who agreed and
+      // when is a fact about the account.
+      accept_terms: true
+    };
+    var _headers = { 'Content-Type': 'application/json' };
+    if (UPGRADE) {
+      _headers['Authorization'] = 'Bearer ' + localStorage.getItem('waybound_access');
+    } else {
+      _payload.email = email.trim();
+      _payload.password = pw;
+      _payload.password2 = pw;
+    }
+    var res = await fetch(AUTH_API + (UPGRADE ? '/auth/upgrade-to-operator/'
+                                              : '/auth/register/operator/'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        first_name:   fname.trim(),
-        last_name:    lname.trim(),
-        email:        email.trim(),
-        phone:        phone.trim(),
-        country:      country.trim(),
-        password:     pw,
-        password2:    pw,
-        company_name: biz.trim(),
-        bio:          bio.trim(),
-        // The tick above has always been required to submit, but the answer
-        // stayed in the browser. The server records it now, so who agreed and
-        // when is a fact about the account.
-        accept_terms: true
-      })
+      headers: _headers,
+      body: JSON.stringify(_payload)
     });
 
     var data = await res.json();
@@ -1212,17 +1287,28 @@ async function submitOperator() {
     if (data.user) {
       localStorage.setItem('waybound_user', JSON.stringify(data.user));
     }
+    // An upgrade returns the profile itself, not a token pair — the session is
+    // already open. Fold it into the cached user so nav.js draws the guide menu
+    // straight away rather than after the next reload.
+    if (UPGRADE) {
+      try {
+        var _cu = JSON.parse(localStorage.getItem('waybound_user') || '{}');
+        localStorage.setItem('waybound_user',
+          JSON.stringify(Object.assign(_cu, data, { role: 'operator' })));
+      } catch (_e) {}
+    }
 
     // The photo goes up separately: register/operator/ takes JSON, /auth/me/
     // takes multipart. Not worth blocking the success screen on — the account
     // exists either way, and the dashboard checklist asks again.
-    if (_opPhotoFile && data.access) {
+    var _atok = data.access || localStorage.getItem('waybound_access');
+    if (_opPhotoFile && _atok) {
       try {
         var _fd = new FormData();
         _fd.append('avatar', _opPhotoFile);
         var _pr = await fetch(AUTH_API + '/auth/me/', {
           method:  'PATCH',
-          headers: { 'Authorization': 'Bearer ' + data.access },
+          headers: { 'Authorization': 'Bearer ' + _atok },
           body:    _fd
         });
         if (_pr.ok) {

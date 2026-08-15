@@ -127,3 +127,36 @@ class OperatorRegistrationTermsTests(TestCase):
         res = self.client.post(self.url, payload, format='json')
         self.assertEqual(res.status_code, 400)
         self.assertFalse(User.objects.filter(email='guide@example.com').exists())
+
+
+class UpgradeNameFieldsTest(TestCase):
+    """
+    The upgrade runs through the guide signup wizard, which asks for a name.
+    Dropping it on the way through would let a guide correct their name on a
+    form that silently ignored the correction.
+    """
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='n@example.com', password='pw-for-testing-1',
+            first_name='Nino', last_name='K', role=User.Role.TOURIST)
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+    def test_name_changes_are_kept(self):
+        self.client.post(reverse('upgrade-to-operator'), {
+            'first_name': 'Nino', 'last_name': 'Kvaratskhelia',
+            'country': 'Georgia', 'phone': '+995 555 1',
+            'bio': 'Guide.', 'accept_terms': True,
+        }, format='json')
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.last_name, 'Kvaratskhelia')
+
+    def test_a_blank_name_does_not_wipe_the_existing_one(self):
+        self.client.post(reverse('upgrade-to-operator'), {
+            'first_name': '', 'last_name': '',
+            'country': 'Georgia', 'accept_terms': True,
+        }, format='json')
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'Nino')
+        self.assertEqual(self.user.last_name, 'K')

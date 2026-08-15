@@ -682,6 +682,8 @@ def upgrade_to_operator(request):
     bio     = (request.data.get('bio') or '').strip()
     country = (request.data.get('country') or '').strip()
     phone   = (request.data.get('phone') or '').strip()
+    first   = (request.data.get('first_name') or '').strip()
+    last    = (request.data.get('last_name') or '').strip()
 
     fields = ['role', 'guide_terms_accepted_at']
     user.role = User.Role.OPERATOR
@@ -704,6 +706,12 @@ def upgrade_to_operator(request):
     if phone:
         user.phone = phone
         fields.append('phone')
+    if first:
+        user.first_name = first
+        fields.append('first_name')
+    if last:
+        user.last_name = last
+        fields.append('last_name')
 
     user.save(update_fields=fields)
     logger.info('Upgraded %s from tourist to operator', user.email)
