@@ -32,7 +32,14 @@ def tour_photo_path(instance, filename):
 
 
 def tour_thumb_path(instance, filename):
-    return f'tours/{instance.tour.slug}/photos/thumbs/{uuid.uuid4().hex[:8]}.jpg'
+    # The extension used to be hardcoded to .jpg, which was harmless while a
+    # thumbnail was the only thing stored here. It is not harmless now: object
+    # storage serves a content type off the extension, so a WebP written as
+    # .jpg reaches the browser labelled as a JPEG.
+    ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else 'jpg'
+    if ext not in ('jpg', 'jpeg', 'png', 'webp'):
+        ext = 'jpg'
+    return f'tours/{instance.tour.slug}/photos/thumbs/{uuid.uuid4().hex[:8]}.{ext}'
 
 
 def stay_photo_path(instance, filename):
@@ -352,6 +359,13 @@ class TourPhoto(models.Model):
     # Small, fast-loading version for cards/gallery grid. The full-resolution
     # `image` is kept untouched and used for the lightbox (no quality loss).
     thumbnail = models.ImageField(upload_to=tour_thumb_path, blank=True, null=True)
+    # WebP twins of both of the above. A guide uploads whatever their phone
+    # produced; these are written for them at the same moment, so nothing about
+    # this is a step anyone has to remember. The JPEGs stay exactly as they are
+    # — a browser that cannot read WebP is served the original, not a broken
+    # image, and nothing depends on a conversion having succeeded.
+    image_webp     = models.ImageField(upload_to=tour_photo_path, blank=True, null=True)
+    thumbnail_webp = models.ImageField(upload_to=tour_thumb_path, blank=True, null=True)
     order     = models.PositiveSmallIntegerField(default=0, help_text='0 = hero image')
     caption   = models.CharField(max_length=200, blank=True)
 
@@ -364,27 +378,69 @@ class TourPhoto(models.Model):
     # Max thumbnail dimension (px) — covers retina cards + the detail mosaic.
     THUMB_MAX = 800
 
-    def make_thumbnail(self, save=True):
-        """Generate a compressed JPEG thumbnail from `image`. Idempotent-ish:
-        always regenerates. Safe to call from upload + a backfill command."""
-        if not self.image:
-            return
+    # Full-size cap for the lightbox copy. The original is left untouched; this
+    # is only how large the WebP twin is allowed to be. Phone cameras produce
+    # 4000px files and no screen shows them.
+    FULL_MAX = 2000
+
+    def _load(self):
+        """Open `image` as an upright RGB Pillow image, or None."""
         try:
             from PIL import Image, ImageOps
         except ImportError:
-            return  # Pillow missing — skip silently rather than break uploads
-
+            return None  # Pillow missing — skip silently rather than break uploads
+        if not self.image:
+            return None
         self.image.open()
         img = Image.open(self.image)
         img = ImageOps.exif_transpose(img)        # honour camera orientation
-        if img.mode != 'RGB':
-            img = img.convert('RGB')
+        return img.convert('RGB') if img.mode != 'RGB' else img
+
+    def make_thumbnail(self, save=True):
+        """Generate the JPEG thumbnail and its WebP twin from `image`.
+        Idempotent-ish: always regenerates. Safe to call from upload + a
+        backfill command."""
+        img = self._load()
+        if img is None:
+            return
+        from PIL import Image
         img.thumbnail((self.THUMB_MAX, self.THUMB_MAX), Image.LANCZOS)
 
         buf = BytesIO()
         img.save(buf, format='JPEG', quality=80, optimize=True, progressive=True)
         buf.seek(0)
         self.thumbnail.save(f'{uuid.uuid4().hex[:8]}.jpg', ContentFile(buf.read()), save=save)
+
+        # WebP at the same visual quality lands roughly a third smaller. It is
+        # written after the JPEG on purpose: if this raises, the page still has
+        # a thumbnail to serve.
+        buf = BytesIO()
+        img.save(buf, format='WEBP', quality=80, method=4)
+        buf.seek(0)
+        self.thumbnail_webp.save(f'{uuid.uuid4().hex[:8]}.webp',
+                                 ContentFile(buf.read()), save=save)
+
+    def make_webp(self, save=True):
+        """
+        A WebP copy of the full-size image, for the lightbox.
+
+        This is where the bytes actually are: cards were fixed by thumbnails,
+        but opening a photo still fetched whatever came off the guide's phone —
+        one tour was serving 2.37 MB. Capped at FULL_MAX and re-encoded, that is
+        usually a few hundred kilobytes.
+        """
+        img = self._load()
+        if img is None:
+            return
+        from PIL import Image
+        if max(img.size) > self.FULL_MAX:
+            img.thumbnail((self.FULL_MAX, self.FULL_MAX), Image.LANCZOS)
+
+        buf = BytesIO()
+        img.save(buf, format='WEBP', quality=82, method=4)
+        buf.seek(0)
+        self.image_webp.save(f'{uuid.uuid4().hex[:8]}.webp',
+                             ContentFile(buf.read()), save=save)
 
 
 # ── FAQ ───────────────────────────────────────────────────────────────────────

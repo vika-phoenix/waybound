@@ -25,7 +25,9 @@ class Command(BaseCommand):
     def handle(self, *args, **opts):
         qs = TourPhoto.objects.all()
         if not opts['all']:
-            qs = qs.filter(Q(thumbnail='') | Q(thumbnail__isnull=True))
+            qs = qs.filter(Q(thumbnail='') | Q(thumbnail__isnull=True)
+                           | Q(thumbnail_webp='') | Q(thumbnail_webp__isnull=True)
+                           | Q(image_webp='') | Q(image_webp__isnull=True))
 
         total = qs.count()
         self.stdout.write(f'Generating thumbnails for {total} photo(s)…')
@@ -33,6 +35,7 @@ class Command(BaseCommand):
         for photo in qs.iterator():
             try:
                 photo.make_thumbnail()
+                photo.make_webp()
                 done += 1
                 self.stdout.write(f'  OK  {photo.tour.slug} #{photo.order}')
             except Exception as e:

@@ -2828,7 +2828,7 @@ async function loadTour(slug) {
       if (placeholder) placeholder.style.display = 'none';
       if (slot0) {
         var img0 = document.getElementById('mosaicImg0');
-        if (img0) img0.src = photos[0].thumb_url || photos[0].url || photos[0];
+        if (img0) img0.src = photoThumbSrc(photos[0]);
         slot0.style.display = '';
       }
       // Show right 2x2 grid if there are more photos
@@ -2841,7 +2841,7 @@ async function loadTour(slug) {
           if (!slotEl) continue;
           if (pi < photos.length) {
             // This slot has a photo
-            if (imgEl) imgEl.src = photos[pi].thumb_url || photos[pi].url || photos[pi];
+            if (imgEl) imgEl.src = photoThumbSrc(photos[pi]);
             slotEl.style.display = '';
             // "+ещё X" badge on slot 4 (index 4) when there are more than 5 photos
             var moreOverlay = slotEl.querySelector('.mosaic-more');
@@ -3862,7 +3862,9 @@ function photoNav(dir) {
 function buildPhotoSlots() {
   // 1.12 — Use full photo list from API if available (not just 5 mosaic slots)
   if (ALL_PHOTOS && ALL_PHOTOS.length) {
-    PHOTO_SLOTS = ALL_PHOTOS.map(function(ph) { return ph.url || ph; });
+    // The lightbox reads PHOTO_SLOTS, so the WebP choice has to happen here
+    // too — this is the full-size fetch, and the one that actually costs.
+    PHOTO_SLOTS = ALL_PHOTOS.map(function(ph) { return photoFullSrc(ph) || ph; });
     return;
   }
   // Fallback: collect mosaic slot elements
@@ -3888,9 +3890,45 @@ function buildPhotoSlots() {
 // are lazy — a 28-image grid is exactly where that matters.
 var _photoGridOpen = false;
 
+// ── Image format ───────────────────────────────────────────────────
+//
+// The API sends both a JPEG and a WebP for every photo. WebP is roughly a
+// third smaller at the same quality, which on mobile data in the mountains is
+// the difference between a page that loads and one that gets abandoned.
+//
+// Asked once, synchronously, before any image is requested. A browser too old
+// for WebP — or a photo whose conversion never ran — gets the JPEG, so this
+// can only ever make a page lighter, never broken.
+var WEBP_OK = (function () {
+  try {
+    var c = document.createElement('canvas');
+    return !!(c.getContext && c.toDataURL('image/webp').indexOf('data:image/webp') === 0);
+  } catch (e) { return false; }
+})();
+
+// Small version, for cards and the grid.
+function photoThumbSrc(ph) {
+  if (!ph) return '';
+  if (typeof ph === 'string') return ph;
+  return (WEBP_OK && ph.thumb_url_webp) || ph.thumb_url || ph.url || '';
+}
+
+// Full-size version, for the lightbox. This is where the megabytes were.
+function photoFullSrc(ph) {
+  if (!ph) return '';
+  if (typeof ph === 'string') return ph;
+  return (WEBP_OK && ph.url_webp) || ph.url || ph.thumb_url || '';
+}
+
 function _photoThumb(i) {
   var ph = (ALL_PHOTOS && ALL_PHOTOS[i]) || null;
-  if (ph && typeof ph === 'object') return ph.thumb_url || ph.url || '';
+  if (ph && typeof ph === 'object') return photoThumbSrc(ph);
+  return PHOTO_SLOTS[i] || '';
+}
+
+function _photoFull(i) {
+  var ph = (ALL_PHOTOS && ALL_PHOTOS[i]) || null;
+  if (ph && typeof ph === 'object') return photoFullSrc(ph);
   return PHOTO_SLOTS[i] || '';
 }
 

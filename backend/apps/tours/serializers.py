@@ -69,25 +69,36 @@ class CancelPeriodSerializer(serializers.ModelSerializer):
 
 
 class TourPhotoSerializer(serializers.ModelSerializer):
-    url       = serializers.SerializerMethodField()  # full-res original (lightbox)
-    thumb_url = serializers.SerializerMethodField()  # small thumbnail (cards/grid)
+    url            = serializers.SerializerMethodField()  # full-res original (lightbox)
+    thumb_url      = serializers.SerializerMethodField()  # small thumbnail (cards/grid)
+    # WebP twins, sent alongside rather than instead of. The page picks, so a
+    # browser that cannot read WebP is never handed one, and a photo whose
+    # conversion failed simply has no twin and falls back on its own.
+    url_webp       = serializers.SerializerMethodField()
+    thumb_url_webp = serializers.SerializerMethodField()
 
     class Meta:
         model  = TourPhoto
-        fields = ['id', 'url', 'thumb_url', 'order', 'caption']
+        fields = ['id', 'url', 'thumb_url', 'url_webp', 'thumb_url_webp',
+                  'order', 'caption']
+
+    def _abs(self, f):
+        request = self.context.get('request')
+        if not f:
+            return ''
+        return request.build_absolute_uri(f.url) if request else f.url
 
     def get_url(self, obj):
-        request = self.context.get('request')
-        if obj.image and request:
-            return request.build_absolute_uri(obj.image.url)
-        return ''
+        return self._abs(obj.image)
 
     def get_thumb_url(self, obj):
-        request = self.context.get('request')
-        src = obj.thumbnail if obj.thumbnail else obj.image  # fall back to original
-        if src and request:
-            return request.build_absolute_uri(src.url)
-        return ''
+        return self._abs(obj.thumbnail if obj.thumbnail else obj.image)
+
+    def get_url_webp(self, obj):
+        return self._abs(obj.image_webp)
+
+    def get_thumb_url_webp(self, obj):
+        return self._abs(obj.thumbnail_webp)
 
 
 class TourFAQSerializer(serializers.ModelSerializer):
