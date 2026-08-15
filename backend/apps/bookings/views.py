@@ -162,6 +162,79 @@ def send_booking_created_emails(booking):
         pass
 
 
+def send_manual_booking_emails(booking):
+    """
+    A booking we entered by hand, after money arrived outside any processor.
+
+    Both sides need telling, and they need telling different things. The
+    traveller never saw a checkout page, so this email is their only receipt and
+    their only reference. The guide sees a seat disappear from a departure with
+    no webhook behind it, and would otherwise have to guess where it came from.
+    """
+    site    = _site_url()
+    from_em = _from_email()
+    title   = booking.tour.title
+    name    = (booking.first_name or '').strip() or 'Traveller'
+    rows    = _booking_rows_html(booking)
+    paid    = booking.deposit_status == 'paid'
+
+    settled = (
+        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
+        f'We received your payment of <strong>{booking.deposit_paid:.2f} {booking.currency}</strong> '
+        f'and your place is confirmed.</p>'
+    ) if paid else (
+        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
+        f'Your place is held. It is confirmed once your payment reaches us.</p>'
+    )
+
+    tourist_body = (
+        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">Hi {name},</p>'
+        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
+        f'We\'ve booked you onto <strong>{title}</strong>.</p>'
+        f'{settled}{rows}'
+        f'<p style="margin:12px 0 0;font-size:13px;color:#607080;line-height:1.65">'
+        f'Your reference is <strong>{booking.reference}</strong> — keep it for your guide. '
+        f'The same cancellation terms apply as to any booking made on the site.</p>'
+    )
+    try:
+        send_mail(
+            subject=('✓ Booking confirmed: ' if paid else 'Place held: ') + title,
+            message=(f'Hi {name},\n\nWe have booked you onto "{title}".\n'
+                     f'Ref: {booking.reference}\n\nView: {site}/my-bookings.html'),
+            from_email=from_em,
+            html_message=_html_email(('✓ Confirmed: ' if paid else 'Place held: ') + title,
+                                      tourist_body, 'View my bookings', f'{site}/my-bookings.html'),
+            recipient_list=[booking.email],
+            fail_silently=True,
+        )
+    except Exception:
+        pass
+
+    op_body = (
+        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
+        f'<strong>{name}</strong> has been booked onto <strong>{title}</strong> by Kavkazland. '
+        f'They paid us directly rather than through the site — {"the money has arrived" if paid else "we are still waiting on the money"}.</p>'
+        f'{rows}'
+        f'<p style="margin:12px 0 0;font-size:13px;color:#607080;line-height:1.65">'
+        f'Nothing else about this booking is different: the seat has come off your '
+        f'departure, and your payout is calculated exactly as it is for any other.</p>'
+    )
+    try:
+        send_mail(
+            subject=f'New booking (taken by us): {title}',
+            message=(f'{name} has been booked onto "{title}" by Kavkazland.\n'
+                     f'Ref: {booking.reference}\n\n'
+                     f'Dashboard: {site}/operator-dashboard.html#bookings'),
+            from_email=from_em,
+            html_message=_html_email(f'New booking: {title}', op_body,
+                                      'View in dashboard', f'{site}/operator-dashboard.html#bookings'),
+            recipient_list=[booking.tour.operator.email],
+            fail_silently=True,
+        )
+    except Exception:
+        pass
+
+
 def send_booking_confirmed_emails(booking):
     """Tourist confirmation email when operator confirms."""
     site    = _site_url()

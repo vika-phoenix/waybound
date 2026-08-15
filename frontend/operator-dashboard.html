@@ -1892,15 +1892,15 @@ function renderOverview() {
   // Verification checklist
   var u = null;
   try { u = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch(e) {}
-  // Only identity verification gates anything — tour_publish checks
-  // is_verified and nothing else. Showing five warning triangles and "0 / 5
-  // complete" made all five look compulsory, which either stalls a guide who
-  // is already free to list, or buries the one item that genuinely stops them.
-  // The blocker goes first and is the only one marked Required.
+  // Required means "a tour cannot be published without it", and the server
+  // agrees: tour_publish checks is_verified, and incomplete_tour_fields checks
+  // the guide's photo. Nothing else here blocks anything, and marking more
+  // items Required would either stall a guide who is already free to list or
+  // bury the ones that genuinely stop them. Blockers go first.
   var checks = [
-    { label:'Identity verification', sub:'Upload a passport or national ID — we cannot list your tours until this is approved', done: !!(u && u.is_verified), action:'settings.html#verification', id:'identity', required:true },
+    { label:'Identity verification', sub:'Upload a passport or national ID — we cannot list your tours until this is approved', done: !!(u && u.is_verified), action:'settings.html#verification', id:'identity', required:true, blockMsg:'Verify your identity to start listing tours' },
+    { label:'Profile photo', sub:'Travellers book a person, not a logo — a tour cannot go live without one', done: !!(u && u.avatar), action:'settings.html', required:true, blockMsg:'Add a profile photo to start listing tours' },
     { label:'Payout method', sub:'Bank details — we cannot pay you without these', done: !!(u && u.payout_ready), action:'settings.html#payout', recommended:true },
-    { label:'Profile photo & bio', sub:'Travellers book a person, not a logo', done: !!(u && u.avatar && u.bio), action:'settings.html', recommended:true },
     { label:'Guide credentials', sub:'Certificates, past tour proof', done: !!(u && u.credentials_files && u.credentials_files.length), action:'settings.html#credentials' },
     { label:'Phone number', sub:'For verification and urgent contact', done: !!(u && u.phone), action:'settings.html' }
   ];
@@ -1910,16 +1910,20 @@ function renderOverview() {
     if (c.recommended) return '<span class="chk-tag rec">Recommended</span>';
     return '<span class="chk-tag opt">Optional</span>';
   }
-  var blocked  = checks.filter(function(c){ return c.required && !c.done; }).length;
+  // Name the blocker when there is exactly one. "2 things left" is a count;
+  // "Verify your identity" is an instruction.
+  var blocked  = checks.filter(function(c){ return c.required && !c.done; });
   var optional = checks.filter(function(c){ return !c.required; });
   var optDone  = optional.filter(function(c){ return c.done; }).length;
   var prog = document.getElementById('setupProgress');
   if (prog) {
-    prog.textContent = blocked
-      ? 'Verify your identity to start listing tours'
-      : 'You can list tours \u00b7 ' + optDone + ' of ' + optional.length + ' optional steps done';
-    prog.style.color = blocked ? '#c0392b' : '#1a7a40';
-    prog.style.fontWeight = blocked ? '700' : '600';
+    prog.textContent = blocked.length === 1
+      ? blocked[0].blockMsg
+      : (blocked.length
+          ? blocked.length + ' things are needed before you can list a tour'
+          : 'You can list tours \u00b7 ' + optDone + ' of ' + optional.length + ' optional steps done');
+    prog.style.color = blocked.length ? '#c0392b' : '#1a7a40';
+    prog.style.fontWeight = blocked.length ? '700' : '600';
   }
   var cl = document.getElementById('checklistItems');
   if (cl) {

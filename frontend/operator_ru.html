@@ -560,9 +560,9 @@ document.addEventListener('DOMContentLoaded', function() {
 var GD = {
   account:      'Ваш аккаунт',
   emailLocked:  'Это ваш логин — изменить его нельзя.',
-  photo:        'Фото профиля *',
+  photo:        'Фото профиля',
   choosePhoto:  'Выбрать фото',
-  photoHint:    'Путешественники бронируют человека, а не логотип. JPG или PNG, до 2 МБ.',
+  photoHint:    'Путешественники бронируют человека, а не логотип. Можно добавить позже, но без фото тур нельзя опубликовать.',
   country:      'Страна, где вы водите туры *',
   countryPh:    'Грузия',
   phone:        'Телефон *',
@@ -681,7 +681,6 @@ function upgradeToGuide() {
   var terms   = (document.getElementById('gdTerms')    || {}).checked;
 
   // Checked here as well as on the server, so the answer is immediate.
-  if (!_gdPhotoFile)     { gdErr(GD.errPhoto);   return; }
   if (!country)          { gdErr(GD.errCountry); return; }
   if (!phone)            { gdErr(GD.errPhone);   return; }
   if (bio.length < 40)   { gdErr(GD.errBio);     return; }
@@ -708,6 +707,7 @@ function upgradeToGuide() {
     // The photo goes up separately: /auth/me/ takes multipart, the upgrade
     // endpoint takes JSON. A failure here is not worth blocking on — the
     // account already exists, and the dashboard asks for the photo again.
+    if (!_gdPhotoFile) return null;
     var fd = new FormData();
     fd.append('avatar', _gdPhotoFile);
     return fetch(window.API_V1 + '/auth/me/', {

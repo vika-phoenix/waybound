@@ -1,8 +1,8 @@
 """
 apps/bookings/admin.py
 """
-from django.contrib import admin
-from django.db.models import Sum, Count
+from django.contrib import admin, messages
+from django.db.models import Sum, Count, Q
 from django.urls import path, reverse
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -142,7 +142,50 @@ class BookingAdmin(admin.ModelAdmin):
             path('payouts/record/<int:operator_id>/<str:currency>/',
                  self.admin_site.admin_view(self.payout_record_view),
                  name='bookings_booking_payout_record'),
+            path('offline/', self.admin_site.admin_view(self.manual_booking_view),
+                 name='bookings_booking_offline'),
         ] + super().get_urls()
+
+    # ── Booking someone in by hand ───────────────────────────────────────────
+
+    def manual_booking_view(self, request):
+        """
+        For the traveller who cannot pay through the site.
+
+        Django's own "Add booking" form is not this: it exposes every column,
+        computes no prices, takes no seats off the departure, snapshots no
+        commission and tells nobody. Filled in by hand it produces a row that
+        looks like a booking and behaves like none of one.
+        """
+        from .admin_forms import ManualBookingForm
+        from .views import send_manual_booking_emails
+
+        if request.method == 'POST':
+            form = ManualBookingForm(request.POST)
+            if form.is_valid():
+                booking = form.save()
+                if form.cleaned_data.get('notify'):
+                    try:
+                        send_manual_booking_emails(booking)
+                    except Exception as exc:      # a mail outage must not lose the booking
+                        self.message_user(
+                            request,
+                            f'{booking.reference} was created, but the emails failed: {exc}',
+                            level=messages.WARNING)
+                self.message_user(
+                    request,
+                    f'Booking {booking.reference} created for '
+                    f'{booking.first_name} {booking.last_name} on "{booking.tour.title}".',
+                    level=messages.SUCCESS)
+                return redirect('admin:bookings_booking_change', booking.pk)
+        else:
+            form = ManualBookingForm()
+
+        return render(request, 'admin/bookings/manual_booking.html', {
+            **self.admin_site.each_context(request),
+            'title': 'Book a traveller in by hand',
+            'form': form,
+        })
 
     def payout_record_view(self, request, operator_id, currency):
         """
@@ -250,9 +293,94 @@ def _totals_by_currency(qs):
 
 @admin.register(EnquiryMessage)
 class EnquiryMessageAdmin(admin.ModelAdmin):
-    list_display  = ['tour', 'name', 'email', 'adults', 'children',
+    list_display  = ['tour', 'name', 'email', 'col_flagged', 'adults', 'children',
                      'preferred_from', 'preferred_to', 'read_by_operator', 'created_at']
     list_filter   = ['read_by_operator', 'created_at']
     search_fields = ['email', 'name', 'tour__slug', 'sender__email']
     readonly_fields = ['created_at']
     list_editable   = ['read_by_operator']
+    change_list_template = 'admin/bookings/enquirymessage/change_list.html'
+
+    @admin.display(description='Contact details')
+    def col_flagged(self, obj):
+        return format_html('<b style="color:#c0392b">yes</b>') if obj.has_contact_details else '—'
+
+    def get_urls(self):
+        return [
+            path('threads/', self.admin_site.admin_view(self.threads_view),
+                 name='bookings_enquirymessage_threads'),
+        ] + super().get_urls()
+
+    def threads_view(self, request):
+        """
+        Messages as conversations rather than as rows.
+
+        An enquiry and its replies are separate tables, so following one
+        exchange meant opening a record, reading one field, then hunting for
+        the replies somewhere else. This is the same data laid out the way it
+        was written.
+
+        The flags are the reason this page is worth having. The message filter
+        can already tell when a message looks like it carries a phone number or
+        an email address, and until now did nothing with the answer. It still
+        changes nothing a guide or traveller sees — it just means the question
+        "does this actually happen, and how often" has a number behind it
+        instead of a guess.
+        """
+        flagged_only = request.GET.get('flagged') == '1'
+        q = (request.GET.get('q') or '').strip()
+
+        qs = (EnquiryMessage.objects
+              .select_related('tour', 'tour__operator', 'sender')
+              .prefetch_related('replies__sender')
+              .order_by('-created_at'))
+        if q:
+            qs = qs.filter(
+                Q(email__icontains=q) | Q(name__icontains=q) |
+                Q(message__icontains=q) | Q(tour__title__icontains=q) |
+                Q(tour__operator__email__icontains=q))
+
+        threads, flagged_count = [], 0
+        for enq in qs[:300]:
+            replies = list(enq.replies.all())
+            flags = ([1] if enq.has_contact_details else []) + \
+                    [1 for r in replies if r.has_contact_details]
+            if flags:
+                flagged_count += 1
+            if flagged_only and not flags:
+                continue
+            threads.append({
+                'enquiry':  enq,
+                'replies':  replies,
+                'flagged':  bool(flags),
+                'flag_count': len(flags),
+                'booking_ref': _enquiry_booking_ref(enq),
+            })
+
+        return render(request, 'admin/bookings/threads.html', {
+            **self.admin_site.each_context(request),
+            'title': 'Messages',
+            'threads': threads,
+            'flagged_count': flagged_count,
+            'flagged_only': flagged_only,
+            'q': q,
+            'total': qs.count(),
+        })
+
+
+def _enquiry_booking_ref(enq):
+    """
+    Whether this conversation belongs to someone who has actually booked.
+
+    It is the dividing line for everything on this page: before a booking the
+    two sides cannot see each other's contact details, so a message carrying a
+    phone number is someone trying to get around that. Afterwards they have
+    each other's details anyway and a flag means nothing.
+    """
+    if not enq.sender_id:
+        return None
+    bk = (enq.tour.bookings
+          .filter(tourist_id=enq.sender_id,
+                  status__in=['pending', 'confirmed', 'completed'])
+          .order_by('-created_at').first())
+    return bk.reference if bk else None

@@ -484,6 +484,15 @@ def incomplete_tour_fields(tour):
     photos = tour.photos.count()
     if photos < 3:
         missing.append(f'At least 3 photos (currently: {photos})')
+
+    # Not a property of the tour, but it is a property of the listing. A page
+    # selling several days in the mountains with a stranger, showing a grey
+    # circle where the guide should be, is not finished. Asked here rather than
+    # at signup because signup is the worst moment to add friction and because
+    # the ID check already works this way: sign up freely, satisfy the
+    # requirements on the dashboard, then publish.
+    if not tour.operator.avatar:
+        missing.append('Your profile photo (Settings → Profile)')
     return missing
 
 

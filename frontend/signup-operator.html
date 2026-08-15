@@ -658,13 +658,13 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
     <p class="auth-sub">Help us understand your experience and what you offer. This is reviewed by our team — be specific.</p>
 
         <div class="form-group" style="margin-top:20px">
-      <label class="form-label">Profile photo *</label>
+      <label class="form-label">Profile photo</label>
       <div style="display:flex;align-items:center;gap:14px">
         <div id="opPhotoPrev" style="width:64px;height:64px;border-radius:50%;background:var(--ac);border:2px solid var(--ln);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--ink);overflow:hidden;flex-shrink:0">☺</div>
         <div>
           <input type="file" id="op-photo" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="opPhotoPicked(this)">
           <button type="button" onclick="document.getElementById('op-photo').click()" style="height:36px;padding:0 16px;border:1.5px solid var(--ln);background:var(--paper);color:var(--ink);border-radius:7px;font-size:12.5px;font-weight:600;font-family:var(--bf);cursor:pointer">Choose photo</button>
-          <span class="form-hint" style="display:block;margin-top:6px">JPG or PNG, max 2 MB. Shown on every tour you list.</span>
+          <span class="form-hint" style="display:block;margin-top:6px">JPG or PNG, max 2 MB. You can add it later, but a tour cannot be published without one.</span>
         </div>
       </div>
       <div class="field-err" id="errPhoto"></div>
@@ -1013,10 +1013,6 @@ function opPhotoPicked(input) {
 function validateStep2() {
   clearStep2Errs();
   var ok = true;
-  if (!_opPhotoFile) {
-    showErr('errPhoto', null, 'Please add a profile photo \u2014 travellers book a person, not a logo.');
-    ok = false;
-  }
   var checked = document.querySelectorAll('#tourTypeGrid .tour-type-cb:checked');
   if (checked.length === 0) {
     showErr('errTourTypes', null, 'Please select at least one tour type.');

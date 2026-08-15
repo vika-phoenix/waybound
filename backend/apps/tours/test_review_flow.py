@@ -128,7 +128,7 @@ class PublishValidationTest(TestCase):
     def setUpTestData(cls):
         cls.guide = User.objects.create_user(
             email='pub@example.com', password='x', role=User.Role.OPERATOR,
-            is_verified=True)
+            is_verified=True, avatar='avatars/pub.jpg')
 
     def setUp(self):
         from rest_framework.test import APIClient
@@ -184,6 +184,22 @@ class PublishValidationTest(TestCase):
         self.assertEqual(r.status_code, 200, getattr(r, 'data', None))
         t.refresh_from_db()
         self.assertEqual(t.status, Tour.Status.REVIEW)
+
+    def test_a_guide_with_no_photo_cannot_publish(self):
+        """
+        Asked here rather than at signup. Signup is the worst moment to add
+        friction, and the ID check already works this way: sign up freely,
+        satisfy the requirements on the dashboard, then publish.
+        """
+        self.guide.avatar = None
+        self.guide.save(update_fields=['avatar'])
+        t = self._complete_tour()
+        r = self.client.patch(f'/api/v1/tours/{t.slug}/publish/')
+        self.assertEqual(r.status_code, 400)
+        self.assertTrue(any('profile photo' in m.lower() for m in r.data['missing']),
+                        r.data['missing'])
+        t.refresh_from_db()
+        self.assertEqual(t.status, Tour.Status.DRAFT)
 
     def test_two_photos_is_not_three(self):
         t = self._complete_tour()

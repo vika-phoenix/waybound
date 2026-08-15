@@ -649,13 +649,13 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 <h2 class="auth-title" style="margin-bottom:6px">Ваша <em>деятельность в туризме</em></h2>
 <p class="auth-sub">Помогите нам понять ваш опыт и то, что вы предлагаете. Эта информация проверяется нашей командой — будьте конкретны.</p>
     <div class="form-group" style="margin-top:20px">
-      <label class="form-label">Фото профиля *</label>
+      <label class="form-label">Фото профиля</label>
       <div style="display:flex;align-items:center;gap:14px">
         <div id="opPhotoPrev" style="width:64px;height:64px;border-radius:50%;background:var(--ac);border:2px solid var(--ln);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--ink);overflow:hidden;flex-shrink:0">☺</div>
         <div>
           <input type="file" id="op-photo" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="opPhotoPicked(this)">
           <button type="button" onclick="document.getElementById('op-photo').click()" style="height:36px;padding:0 16px;border:1.5px solid var(--ln);background:var(--paper);color:var(--ink);border-radius:7px;font-size:12.5px;font-weight:600;font-family:var(--bf);cursor:pointer">Выбрать фото</button>
-          <span class="form-hint" style="display:block;margin-top:6px">JPG или PNG, до 2 МБ. Показывается во всех ваших турах.</span>
+          <span class="form-hint" style="display:block;margin-top:6px">JPG или PNG, до 2 МБ. Можно добавить позже, но без фото тур нельзя опубликовать.</span>
         </div>
       </div>
       <div class="field-err" id="errPhoto"></div>
@@ -993,10 +993,6 @@ function opPhotoPicked(input) {
 function validateStep2() {
   clearStep2Errs();
   var ok = true;
-  if (!_opPhotoFile) {
-    showErr('errPhoto', null, 'Добавьте фото профиля — путешественники бронируют человека, а не логотип.');
-    ok = false;
-  }
   var checked = document.querySelectorAll('#tourTypeGrid .tour-type-cb:checked');
   if (checked.length === 0) {
     showErr('errTourTypes', null, 'Пожалуйста, выберите хотя бы один тип тура.');

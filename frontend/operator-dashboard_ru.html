@@ -1865,15 +1865,13 @@ function renderOverview() {
   // Verification checklist
   var u = null;
   try { u = JSON.parse(localStorage.getItem('waybound_user') || 'null'); } catch(e) {}
-  // Публикацию блокирует только проверка личности — tour_publish смотрит
-  // на is_verified и больше ни на что. Пять предупреждающих значков и
-  // «0 / 5 завершено» делали обязательными все пять: гид либо ждёт, хотя уже
-  // может публиковать, либо не замечает единственный пункт, который его
-  // действительно останавливает. Блокирующий пункт стоит первым.
+  // «Обязательно» значит «без этого тур нельзя опубликовать», и сервер
+  // с этим согласен: tour_publish проверяет is_verified, а
+  // incomplete_tour_fields — фото гида. Остальное ничего не блокирует.
   var checks = [
-    { label:'Проверка личности', sub:'Загрузите паспорт или удостоверение личности — без одобрения мы не сможем опубликовать ваши туры', done: !!(u && u.is_verified), action:'settings_ru.html#verification', id:'identity', required:true },
+    { label:'Проверка личности', sub:'Загрузите паспорт или удостоверение личности — без одобрения мы не сможем опубликовать ваши туры', done: !!(u && u.is_verified), action:'settings_ru.html#verification', id:'identity', required:true, blockMsg:'Пройдите проверку личности, чтобы публиковать туры' },
+    { label:'Фото профиля', sub:'Путешественники бронируют человека, а не логотип — без фото тур не опубликовать', done: !!(u && u.avatar), action:'settings_ru.html', required:true, blockMsg:'Добавьте фото профиля, чтобы публиковать туры' },
     { label:'Способ получения выплат', sub:'Банковские реквизиты — без них мы не сможем вам заплатить', done: !!(u && u.payout_ready), action:'settings_ru.html#payout', recommended:true },
-    { label:'Фото профиля и био', sub:'Путешественники бронируют человека, а не логотип', done: !!(u && u.avatar && u.bio), action:'settings_ru.html', recommended:true },
     { label:'Квалификация гида', sub:'Сертификаты, подтверждение проведённых туров', done: !!(u && u.credentials_files && u.credentials_files.length), action:'settings_ru.html#credentials' },
     { label:'Номер телефона', sub:'Для проверки и срочной связи', done: !!(u && u.phone), action:'settings_ru.html' }
   ];
@@ -1883,16 +1881,19 @@ function renderOverview() {
     if (c.recommended) return '<span class="chk-tag rec">Желательно</span>';
     return '<span class="chk-tag opt">Необязательно</span>';
   }
-  var blocked  = checks.filter(function(c){ return c.required && !c.done; }).length;
+  // Когда блокирующий пункт один — называем его, а не считаем.
+  var blocked  = checks.filter(function(c){ return c.required && !c.done; });
   var optional = checks.filter(function(c){ return !c.required; });
   var optDone  = optional.filter(function(c){ return c.done; }).length;
   var prog = document.getElementById('setupProgress');
   if (prog) {
-    prog.textContent = blocked
-      ? 'Пройдите проверку личности, чтобы публиковать туры'
-      : 'Вы можете публиковать туры \u00b7 необязательных шагов: ' + optDone + ' из ' + optional.length;
-    prog.style.color = blocked ? '#c0392b' : '#1a7a40';
-    prog.style.fontWeight = blocked ? '700' : '600';
+    prog.textContent = blocked.length === 1
+      ? blocked[0].blockMsg
+      : (blocked.length
+          ? 'Чтобы публиковать туры, осталось шагов: ' + blocked.length
+          : 'Вы можете публиковать туры \u00b7 необязательных шагов: ' + optDone + ' из ' + optional.length);
+    prog.style.color = blocked.length ? '#c0392b' : '#1a7a40';
+    prog.style.fontWeight = blocked.length ? '700' : '600';
   }
   var cl = document.getElementById('checklistItems');
   if (cl) {

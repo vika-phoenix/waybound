@@ -1,0 +1,22 @@
+{% extends "admin/change_list.html" %}
+{% comment %}
+The row list is fine for finding one enquiry. It is useless for reading a
+conversation, because the replies live in another table entirely.
+{% endcomment %}
+
+{% block content %}
+<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+            background:#f6f7f9;border:1px solid #e0e3e8;border-radius:8px;
+            padding:12px 16px;margin-bottom:16px">
+  <div style="flex:1;min-width:260px;font-size:13px;color:#333;line-height:1.6">
+    <b>Reading a conversation:</b> the rows below are enquiries only — replies are a
+    separate table, so a thread never appears whole here. <b>Messages</b> shows each
+    exchange in order, and marks the ones that look like they carry a phone number or
+    an email address.
+  </div>
+  <a class="button" style="background:#417690;color:#fff;padding:8px 16px;border-radius:6px;
+                           text-decoration:none;white-space:nowrap"
+     href="{% url 'admin:bookings_enquirymessage_threads' %}">Messages &rarr;</a>
+</div>
+{{ block.super }}
+{% endblock %}

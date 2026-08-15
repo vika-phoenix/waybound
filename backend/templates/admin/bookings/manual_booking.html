@@ -1,0 +1,113 @@
+{% extends "admin/base_site.html" %}
+{% comment %}
+Deliberately not the standard "add" form. This asks only for what a person
+taking a booking over email actually knows, and derives the rest — prices from
+the tour, seats from the departure, commission from the rate in force today.
+{% endcomment %}
+
+{% block content %}
+<style>
+  .mb-wrap { max-width: 760px; }
+  .mb-intro { background:#f6f7f9; border:1px solid #e0e3e8; border-radius:8px;
+              padding:12px 16px; margin:16px 0; font-size:13px; color:#333; line-height:1.6; }
+  .mb-row { margin:18px 0; }
+  .mb-row > label { display:block; font-weight:600; margin-bottom:4px; font-size:13px; }
+  .mb-row input[type=text], .mb-row input[type=email], .mb-row input[type=number],
+  .mb-row select, .mb-row textarea {
+    width:100%; max-width:460px; padding:8px 10px; font-size:14px;
+    border:1px solid #ccc; border-radius:6px; box-sizing:border-box;
+  }
+  .mb-row .helptext { display:block; font-size:12px; color:#666; margin-top:4px; max-width:460px; line-height:1.5; }
+  .mb-row ul.errorlist { margin:4px 0 0; padding-left:18px; color:#c0392b; font-size:12.5px; }
+  .mb-group { display:flex; gap:14px; flex-wrap:wrap; }
+  .mb-group .mb-row { flex:1; min-width:150px; }
+  .mb-check { display:flex; gap:9px; align-items:flex-start; }
+  .mb-check input { margin-top:3px; }
+  .mb-errors { background:#fdecea; border:1px solid #f5c6c0; border-radius:8px;
+               padding:12px 16px; margin:16px 0; color:#a3271c; font-size:13px; }
+  .mb-errors ul { margin:0; padding-left:18px; }
+</style>
+
+<div class="mb-wrap">
+  <h1>Book a traveller in by hand</h1>
+
+  <div class="mb-intro">
+    For someone who cannot pay through the site — no usable card, an unreachable
+    country, or they wrote to us instead of booking. <b>The money comes to us,</b>
+    not to the guide. Everything downstream then works normally: the seat comes off
+    the departure, the guide is paid the same net share, and the same cancellation
+    terms apply.
+  </div>
+
+  {% if form.non_field_errors %}
+    <div class="mb-errors"><ul>
+      {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+    </ul></div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    <h2 style="font-size:15px;margin:24px 0 0">The trip</h2>
+    {% for f in form %}{% if f.name == 'tour' or f.name == 'departure' %}
+      <div class="mb-row">
+        <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+        {{ f }}
+        {% if f.help_text %}<span class="helptext">{{ f.help_text }}</span>{% endif %}
+        {{ f.errors }}
+      </div>
+    {% endif %}{% endfor %}
+
+    <h2 style="font-size:15px;margin:28px 0 0">The traveller</h2>
+    <div class="mb-group">
+      {% for f in form %}{% if f.name == 'first_name' or f.name == 'last_name' %}
+        <div class="mb-row">
+          <label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}{{ f.errors }}
+        </div>
+      {% endif %}{% endfor %}
+    </div>
+    {% for f in form %}{% if f.name == 'email' or f.name == 'phone' or f.name == 'country' %}
+      <div class="mb-row">
+        <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+        {{ f }}
+        {% if f.help_text %}<span class="helptext">{{ f.help_text }}</span>{% endif %}
+        {{ f.errors }}
+      </div>
+    {% endif %}{% endfor %}
+
+    <div class="mb-group">
+      {% for f in form %}{% if f.name == 'adults' or f.name == 'children' or f.name == 'infants' %}
+        <div class="mb-row">
+          <label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}{{ f.errors }}
+        </div>
+      {% endif %}{% endfor %}
+    </div>
+
+    <h2 style="font-size:15px;margin:28px 0 0">The money</h2>
+    {% for f in form %}{% if f.name == 'amount_received' or f.name == 'how_paid' or f.name == 'notes' %}
+      <div class="mb-row">
+        <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+        {{ f }}
+        {% if f.help_text %}<span class="helptext">{{ f.help_text }}</span>{% endif %}
+        {{ f.errors }}
+      </div>
+    {% endif %}{% endfor %}
+
+    {% for f in form %}{% if f.name == 'notify' %}
+      <div class="mb-row mb-check">
+        {{ f }}
+        <div>
+          <label for="{{ f.id_for_label }}" style="font-weight:600">{{ f.label }}</label>
+          <span class="helptext">{{ f.help_text }}</span>
+        </div>
+      </div>
+    {% endif %}{% endfor %}
+
+    <div style="margin-top:26px">
+      <button type="submit" class="default">Create the booking</button>
+      <a href="{% url 'admin:bookings_booking_changelist' %}" class="button cancel-link"
+         style="margin-left:8px">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
