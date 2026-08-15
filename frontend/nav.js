@@ -378,11 +378,25 @@ function _navInjectLangBtn() {
   burger.innerHTML = '<span></span><span></span><span></span>';
   nav.insertBefore(burger, nav.firstChild);
 
-  // Drawer markup.
+  var home = isRu ? '/index_ru' : '/';
+
+  // Drawer markup. The brand is a link for the same reason the header logo is
+  // one, and because a drawer whose header looks like the site name but does
+  // nothing is a dead end.
   var parts = ['<div class="wb-drawer-head">'
-    + '<span class="wb-drawer-brand">kavkazland</span>'
+    + '<a class="wb-drawer-brand" href="' + home + '">kavkazland</a>'
     + '<button class="wb-drawer-close" id="wbDrawerClose" aria-label="Close menu">&times;</button>'
     + '</div>'];
+
+  // Home, spelled out.
+  //
+  // On desktop the logo is the home button and that convention is old enough
+  // to be invisible — no marketplace puts a "Home" item in its top bar. On
+  // mobile it does not carry: the drawer IS the list of destinations, and this
+  // one listed every page except the one everybody knows how to ask for. The
+  // logo is still there behind the drawer, but reaching it means closing the
+  // menu first, which is not something a list of links should ask.
+  parts.push('<a href="' + home + '">' + (isRu ? 'Главная' : 'Home') + '</a>');
 
   // Main links — cloned from the existing desktop nav (correct per page + language).
   var linkWrap = document.querySelector('.nav-links');

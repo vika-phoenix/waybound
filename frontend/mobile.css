@@ -33,7 +33,11 @@
   display: flex; align-items: center; justify-content: space-between;
   padding: 4px 22px 14px;
 }
-.wb-drawer-brand { font-size: 20px; font-weight: 600; color: #fff; letter-spacing: .01em; }
+/* A link now, so it needs the anchor styling the drawer's own rules would
+   otherwise give it. */
+.wb-drawer-brand { font-size: 20px; font-weight: 600; color: #fff; letter-spacing: .01em;
+                   text-decoration: none; }
+.wb-drawer-brand:hover { color: #fff; }
 .wb-drawer-close {
   background: none; border: none; color: rgba(255,255,255,.7);
   font-size: 26px; line-height: 1; cursor: pointer; padding: 0 4px;
