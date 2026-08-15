@@ -581,7 +581,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <div class="conf-ref">Номер бронирования: <strong id="heroRef" style="color:rgba(255,255,255,.7)">VZ-20260315</strong></div>
 <h1 class="conf-title">Вы отправляетесь <em id="heroDestination">в Грузию!</em></h1>
 <p class="conf-sub" id="heroSub">Ваш депозит получен и место подтверждено. Гид свяжется с вами в течение 24 часов.</p>
-<div style="max-width:480px;margin:14px auto 0;padding:10px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.72);font-family:var(--bf);position:relative;z-index:1">&#x23F1;&#xFE0F; <b style="color:#fff">Передумали?</b> У вас есть <b style="color:#fff">24 часа</b> с момента бронирования, чтобы отменить и вернуть всё, включая комиссию — 2 часа, если до отправления меньше месяца, и 30 минут в последнюю неделю. Дальше действует политика отмены тура. Отменить можно в <a href="my-bookings_ru.html" style="color:#8fd0ee">Моих бронированиях</a>.</div>
+<div id="coolNote" style="max-width:480px;margin:14px auto 0;padding:10px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.72);font-family:var(--bf);position:relative;z-index:1">&#x23F1;&#xFE0F; <b style="color:#fff">Передумали?</b> У вас есть <b style="color:#fff">24 часа</b> с момента бронирования, чтобы отменить и вернуть всё, включая комиссию — 2 часа, если до отправления меньше месяца, и 30 минут в последнюю неделю. Дальше действует политика отмены тура. Отменить можно в <a href="my-bookings_ru.html" style="color:#8fd0ee">Моих бронированиях</a>.</div>
 </div>
 <div class="conf-main">
 <!-- LEFT — BOOKING DETAILS + NEXT STEPS -->
@@ -913,6 +913,29 @@ var _confBookingId = null;
 
     // Hero section
     set('heroRef', ref);
+
+    // Статичный текст начинается с 24 часов, потому что описывает все случаи.
+    // Здесь бронь известна — покажем именно его срок.
+    (function () {
+      var el = document.getElementById('coolNote');
+      if (!el || !b.cooling_off_until) return;
+      var until = new Date(b.cooling_off_until), now = new Date();
+      if (isNaN(until.getTime()) || until <= now) { el.style.display = 'none'; return; }
+      var MON = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+      var mins = Math.round((until - now) / 60000), when;
+      if (mins < 90) {
+        when = 'ещё ' + mins + ' мин';
+      } else {
+        when = 'до ' + ('0' + until.getHours()).slice(-2) + ':'
+             + ('0' + until.getMinutes()).slice(-2)
+             + (until.toDateString() === now.toDateString()
+                 ? ' сегодня' : ' ' + until.getDate() + ' ' + MON[until.getMonth()]);
+      }
+      el.innerHTML = '\u23F1\uFE0F <b style="color:#fff">Передумали?</b> Отмена бесплатна '
+        + '<b style="color:#fff">' + when + '</b> — вернём всё, включая комиссию. '
+        + 'После этого действуют условия отмены тура. Отменить можно в '
+        + '<a href="my-bookings_ru.html" style="color:#8fd0ee">Моих бронях</a>.';
+    })();
     set('heroDestination', t.title || b.tour_title || ref);
     if (method === 'bank') {
       set('heroSub', 'Ваша бронирование ожидает подтверждения банковского перевода. После получения платежа ваше место будет подтверждено.');

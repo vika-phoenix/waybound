@@ -581,7 +581,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   <div class="conf-ref">Booking reference: <strong style="color:rgba(255,255,255,.7)" id="heroRef">VZ-20260315</strong></div>
   <h1 class="conf-title">You're <em id="heroDestination">going to Georgia!</em></h1>
   <p class="conf-sub" id="heroSub">Your deposit has been received and your spot is confirmed. Your guide will contact you within 24 hours.</p>
-<div style="max-width:480px;margin:14px auto 0;padding:10px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.72);font-family:var(--bf);position:relative;z-index:1">&#x23F1;&#xFE0F; <b style="color:#fff">Changed your mind?</b> You have <b style="color:#fff">24 hours</b> from booking to cancel and get everything back, card fee included — 2 hours if your departure is under a month away, 30 minutes inside the last week. After that the tour’s cancellation policy applies. Cancel from <a href="my-bookings.html" style="color:#8fd0ee">My bookings</a>.</div>
+<div id="coolNote" style="max-width:480px;margin:14px auto 0;padding:10px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.72);font-family:var(--bf);position:relative;z-index:1">&#x23F1;&#xFE0F; <b style="color:#fff">Changed your mind?</b> You have <b style="color:#fff">24 hours</b> from booking to cancel and get everything back, card fee included — 2 hours if your departure is under a month away, 30 minutes inside the last week. After that the tour’s cancellation policy applies. Cancel from <a href="my-bookings.html" style="color:#8fd0ee">My bookings</a>.</div>
 </div>
 
 <div class="conf-main">
@@ -930,6 +930,29 @@ var _confBookingId = null;
 
     // Hero section
     set('heroRef', ref);
+
+    // The static copy leads with 24 hours because it has to cover every case.
+    // Here we know the booking, so say the one deadline that is theirs.
+    (function () {
+      var el = document.getElementById('coolNote');
+      if (!el || !b.cooling_off_until) return;
+      var until = new Date(b.cooling_off_until), now = new Date();
+      if (isNaN(until.getTime()) || until <= now) { el.style.display = 'none'; return; }
+      var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var mins = Math.round((until - now) / 60000), when;
+      if (mins < 90) {
+        when = 'for the next ' + mins + ' minute' + (mins === 1 ? '' : 's');
+      } else {
+        when = 'until ' + ('0' + until.getHours()).slice(-2) + ':'
+             + ('0' + until.getMinutes()).slice(-2)
+             + (until.toDateString() === now.toDateString()
+                 ? ' today' : ' on ' + until.getDate() + ' ' + MON[until.getMonth()]);
+      }
+      el.innerHTML = '\u23F1\uFE0F <b style="color:#fff">Changed your mind?</b> You are free '
+        + 'to cancel <b style="color:#fff">' + when + '</b> and get everything back, card fee '
+        + 'included. After that the tour\u2019s cancellation policy applies. Cancel from '
+        + '<a href="my-bookings.html" style="color:#8fd0ee">My bookings</a>.';
+    })();
     set('heroDestination', t.title || b.tour_title || ref);
     if (method === 'bank') {
       set('heroSub', 'Your booking is pending bank transfer confirmation. Once payment is received your spot will be confirmed.');
