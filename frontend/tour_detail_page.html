@@ -2035,6 +2035,22 @@ function updateDepartureInfo() {
     return;
   }
 
+  // A guide cannot book their own tour — the serializer rejects it, because
+  // it takes a real seat off the departure, emails them their own "new
+  // booking" notice and inflates their stats. Say so here rather than after
+  // the whole form has been filled in.
+  if (TOUR_DATA.is_own_tour) {
+    bookBtn.style.display = 'none';
+    if (waitlistPanel) waitlistPanel.style.display = 'none';
+    if (paxWarn) paxWarn.style.display = 'none';
+    bookNote.innerHTML = 'This is your own tour, so you cannot book a seat on it. '
+      + 'To hold seats back, lower the spots on the departure in '
+      + '<a href="operator-dashboard.html" style="color:var(--accent)">your dashboard</a>. '
+      + 'Booking on behalf of a traveller who cannot book online? Contact us and we will add it for you.';
+    document.getElementById('pricePreview').style.display = 'none';
+    return;
+  }
+
   // Normal booking mode — enough spots for the selected group
   bookBtn.style.display = '';
   if (waitlistPanel) waitlistPanel.style.display = 'none';
@@ -3576,6 +3592,7 @@ function patchPage(t) {
   // 1.3 — Update currency symbol from tour data
   var _currMap = { RUB:'₽', USD:'$', EUR:'€', GBP:'£', GEL:'₾', TRY:'₺', KZT:'₸', AMD:'֏' };
   TOUR_DATA.currency = t.currency_symbol || (t.currency && _currMap[t.currency]) || t.currency || '$';
+  TOUR_DATA.is_own_tour = !!t.is_own_tour;
 
   // Refresh total price display with real prices
   updateTotalDisplay();

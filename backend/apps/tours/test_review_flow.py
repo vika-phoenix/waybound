@@ -222,3 +222,43 @@ class PublishValidationTest(TestCase):
         self.assertEqual(r.status_code, 200)
         t.refresh_from_db()
         self.assertEqual(t.status, Tour.Status.LIVE)
+
+
+class OwnTourFlagTest(TestCase):
+    """
+    A guide could open their own tour, fill in the whole booking form and only
+    then be told no — the rejection lives in the booking serializer, and the
+    detail response never carried enough for the page to know sooner.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.owner = User.objects.create_user(
+            email='owner2@example.com', password='x', role=User.Role.OPERATOR)
+        cls.other = User.objects.create_user(
+            email='other2@example.com', password='x', role=User.Role.OPERATOR)
+        cls.tourist = User.objects.create_user(
+            email='t2@example.com', password='x', role=User.Role.TOURIST)
+        cls.tour = Tour.objects.create(
+            operator=cls.owner, title='Own Tour', country='Georgia',
+            destination='Mestia', price_adult=Decimal('400'), currency='USD',
+            status=Tour.Status.LIVE, max_group=6)
+
+    def _flag_for(self, user):
+        from rest_framework.test import APIClient
+        c = APIClient()
+        if user:
+            c.force_authenticate(user)
+        return c.get(f'/api/v1/tours/{self.tour.slug}/').data['is_own_tour']
+
+    def test_the_owner_is_told_it_is_theirs(self):
+        self.assertTrue(self._flag_for(self.owner))
+
+    def test_another_guide_is_not(self):
+        self.assertFalse(self._flag_for(self.other))
+
+    def test_a_traveller_is_not(self):
+        self.assertFalse(self._flag_for(self.tourist))
+
+    def test_an_anonymous_visitor_is_not(self):
+        self.assertFalse(self._flag_for(None))

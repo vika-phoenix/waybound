@@ -174,6 +174,20 @@ class TourDetailSerializer(TourListSerializer):
     operator_bio             = serializers.SerializerMethodField()
     operator_experience_years = serializers.SerializerMethodField()
 
+    is_own_tour = serializers.SerializerMethodField()
+
+    def get_is_own_tour(self, obj):
+        """
+        So the page can stop a guide walking into a wall.
+
+        Booking your own tour is rejected by the serializer, but nothing said
+        so until the form was filled in and submitted. The detail response
+        never carried the operator's identity, so the page could not tell.
+        """
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        return bool(user and user.is_authenticated and obj.operator_id == user.id)
+
     def get_operator_bio(self, obj):
         return obj.operator.bio or ''
 
@@ -183,6 +197,7 @@ class TourDetailSerializer(TourListSerializer):
     class Meta(TourListSerializer.Meta):
         fields = TourListSerializer.Meta.fields + [
             'status',
+            'is_own_tour',
             'operator_bio',
             'operator_experience_years',
             'description', 'highlights', 'includes', 'excludes',

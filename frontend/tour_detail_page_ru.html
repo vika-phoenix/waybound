@@ -1991,6 +1991,22 @@ function updateDepartureInfo() {
     return;
   }
 
+  // Гид не может забронировать собственный тур — сериализатор это отклоняет:
+  // место реально уходит с даты, гиду приходит уведомление о «новом
+  // бронировании», статистика раздувается. Сказать об этом здесь, а не после
+  // заполнения всей формы.
+  if (TOUR_DATA.is_own_tour) {
+    bookBtn.style.display = 'none';
+    if (waitlistPanel) waitlistPanel.style.display = 'none';
+    if (paxWarn) paxWarn.style.display = 'none';
+    bookNote.innerHTML = 'Это ваш собственный тур, забронировать место на нём нельзя. '
+      + 'Чтобы придержать места, уменьшите их количество на дате отправления в '
+      + '<a href="operator-dashboard_ru.html" style="color:var(--accent)">кабинете</a>. '
+      + 'Нужно оформить бронь за путешественника, который не может сделать это сам? Напишите нам, и мы добавим её.';
+    document.getElementById('pricePreview').style.display = 'none';
+    return;
+  }
+
   // Normal booking mode — enough spots for the selected group
   bookBtn.style.display = '';
   if (waitlistPanel) waitlistPanel.style.display = 'none';
@@ -3531,6 +3547,7 @@ function patchPage(t) {
   // 1.3 — Update currency symbol from tour data
   var _currMap = { RUB:'₽', USD:'$', EUR:'€', GBP:'£', GEL:'₾', TRY:'₺', KZT:'₸', AMD:'֏' };
   TOUR_DATA.currency = t.currency_symbol || (t.currency && _currMap[t.currency]) || t.currency || '$';
+  TOUR_DATA.is_own_tour = !!t.is_own_tour;
 
   // Refresh total price display with real prices
   updateTotalDisplay();
