@@ -45,7 +45,8 @@ def auto_cancel_expired_bookings():
     for bk in ghosts:
         bk.status       = Booking.Status.CANCELLED
         bk.cancelled_at = now
-        bk.save(update_fields=['status', 'cancelled_at'])
+        bk.cancelled_by = Booking.CancelledBy.SYSTEM_NO_DEPOSIT
+        bk.save(update_fields=['status', 'cancelled_at', 'cancelled_by'])
         logger.info('Auto-cancelled ghost booking %s (no deposit within 24 h)', bk.reference)
         try:
             send_booking_cancelled_emails(bk, cancelled_by='system_no_deposit')
@@ -67,6 +68,7 @@ def auto_cancel_expired_bookings():
         refund_amount, penalty_pct, tier_label = _compute_refund(bk, cancelled_by='system')
         bk.status        = Booking.Status.CANCELLED
         bk.cancelled_at  = now
+        bk.cancelled_by  = Booking.CancelledBy.OPERATOR_TIMEOUT
         bk.refund_amount = refund_amount
 
         # Attempt automatic YooKassa refund
@@ -76,11 +78,14 @@ def auto_cancel_expired_bookings():
         else:
             bk.refund_status = 'none'
 
-        bk.save(update_fields=['status', 'cancelled_at', 'refund_amount', 'refund_status'])
+        bk.save(update_fields=['status', 'cancelled_at', 'cancelled_by',
+                               'refund_amount', 'refund_status'])
         logger.info('Auto-cancelled unconfirmed booking %s (operator timeout 48 h, refund=%.2f %s)',
                      bk.reference, refund_amount, bk.refund_status)
         try:
             send_booking_cancelled_emails(bk, cancelled_by='operator_timeout')
+            from .views import notify_admin_guide_cancellation
+            notify_admin_guide_cancellation(bk, timed_out=True)
         except Exception as exc:
             logger.error('Email error for operator-timeout cancel %s: %s', bk.reference, exc)
 
@@ -99,6 +104,7 @@ def auto_cancel_expired_bookings():
         refund_amount, _, _ = _compute_refund(bk, cancelled_by='system')
         bk.status        = Booking.Status.CANCELLED
         bk.cancelled_at  = now
+        bk.cancelled_by  = Booking.CancelledBy.SYSTEM_PAST
         bk.refund_amount = refund_amount
 
         if refund_amount > 0:
@@ -107,7 +113,8 @@ def auto_cancel_expired_bookings():
         else:
             bk.refund_status = 'none'
 
-        bk.save(update_fields=['status', 'cancelled_at', 'refund_amount', 'refund_status'])
+        bk.save(update_fields=['status', 'cancelled_at', 'cancelled_by',
+                               'refund_amount', 'refund_status'])
         logger.info(
             'Auto-cancelled past-departure stranded booking %s (departure %s, tour %d days)',
             bk.reference, bk.departure_date, tour_days,

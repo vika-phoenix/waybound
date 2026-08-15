@@ -162,6 +162,67 @@ def send_booking_created_emails(booking):
         pass
 
 
+def notify_admin_guide_cancellation(booking, timed_out=False):
+    """
+    Tell us when a guide pulls out of a booking someone had paid for.
+
+    This is the one cancellation that costs the platform money and costs
+    nobody else anything: the traveller is refunded in full, the guide's payout
+    on it was zero either way, and the processor keeps its fee regardless. A
+    guide who does it occasionally has had a bad week. A guide who does it
+    routinely is running their diary at our expense, and the only way to know
+    which is to be told each time.
+    """
+    to = _admin_recipients()
+    if not to:
+        logger.warning('No ADMIN_NOTIFICATION_EMAIL — guide cancellation of %s not announced.',
+                       booking.reference)
+        return False
+
+    op    = booking.tour.operator
+    site  = _site_url()
+    name  = (op.first_name + ' ' + op.last_name).strip() or op.email
+    # The count is the point. One is noise; the fourth this month is a pattern.
+    prior = Booking.objects.filter(
+        tour__operator=op,
+        cancelled_by__in=[Booking.CancelledBy.OPERATOR,
+                          Booking.CancelledBy.OPERATOR_TIMEOUT],
+    ).exclude(pk=booking.pk).count()
+
+    why = ('never responded, so we cancelled it for them'
+           if timed_out else 'cancelled it')
+    body = (
+        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
+        f'<strong>{name}</strong> {why} — <strong>{booking.tour.title}</strong>, '
+        f'departing {booking.departure_date or "TBC"}.</p>'
+        f'{_booking_rows_html(booking)}'
+        f'<p style="margin:12px 0 0;font-size:13px;color:#607080;line-height:1.65">'
+        f'The traveller is refunded in full. This is their '
+        f'<strong>{prior + 1}</strong> such cancellation.</p>'
+    )
+    try:
+        send_mail(
+            subject=(f'Guide cancellation ({prior + 1} for {name}): {booking.tour.title}'),
+            message=(f'{name} {why}.\nTour: {booking.tour.title}\n'
+                     f'Ref: {booking.reference}\nTotal for this guide: {prior + 1}\n'),
+            from_email=_from_email(),
+            html_message=_html_email('Guide cancellation', body,
+                                      'Open in admin', f'{site}/admin/bookings/booking/'),
+            recipient_list=to,
+            fail_silently=True,
+        )
+        return True
+    except Exception as exc:
+        logger.error('Guide-cancellation notice failed for %s: %s', booking.reference, exc)
+        return False
+
+
+def _admin_recipients():
+    from apps.users.emails import _admin_recipient
+    addr = _admin_recipient()
+    return [addr] if addr else []
+
+
 def send_manual_booking_emails(booking):
     """
     A booking we entered by hand, after money arrived outside any processor.
@@ -845,6 +906,7 @@ def booking_cancel(request, pk):
 
     booking.status       = Booking.Status.CANCELLED
     booking.cancelled_at = timezone.now()
+    booking.cancelled_by = cancelled_by
 
     if refund_amount > 0:
         booking.refund_amount = refund_amount
@@ -858,7 +920,8 @@ def booking_cancel(request, pk):
     else:
         booking.refund_status = 'none'
 
-    booking.save(update_fields=['status', 'cancelled_at', 'refund_amount', 'refund_status'])
+    booking.save(update_fields=['status', 'cancelled_at', 'cancelled_by',
+                                'refund_amount', 'refund_status'])
 
     # Free up the departure spot
     if booking.departure:
@@ -877,6 +940,13 @@ def booking_cancel(request, pk):
 
     reason = (request.data.get('reason') or '').strip()
     send_booking_cancelled_emails(booking, cancelled_by=cancelled_by, reason=reason)
+    # A guide pulling out of a paid booking is the one cancellation we pay for,
+    # so it is the one we hear about.
+    if cancelled_by == 'operator' and float(booking.deposit_paid or 0) > 0:
+        try:
+            notify_admin_guide_cancellation(booking)
+        except Exception as exc:
+            logger.error('Guide-cancellation notice failed for %s: %s', booking.reference, exc)
     if cancelled_by == 'tourist':
         try:
             from apps.tours.telegram import notify_operator_cancellation

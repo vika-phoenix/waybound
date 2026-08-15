@@ -16,7 +16,8 @@ class BookingAdmin(admin.ModelAdmin):
     list_display    = ['reference', 'tourist', 'tour', 'status', 'adults', 'children',
                        'total_price', 'currency', 'col_commission', 'col_payout',
                        'col_payout_status', 'departure_date', 'created_at']
-    list_filter     = ['status', 'payout_status', 'currency', 'payment_method', 'created_at']
+    list_filter     = ['status', 'cancelled_by', 'payout_status', 'currency',
+                       'payment_method', 'created_at']
     search_fields   = ['reference', 'email', 'first_name', 'last_name',
                        'tour__slug', 'tourist__email', 'payout_reference']
     readonly_fields = ['reference', 'created_at', 'updated_at', 'confirmed_at', 'cancelled_at',
@@ -43,7 +44,8 @@ class BookingAdmin(admin.ModelAdmin):
                 'and a cancellation that kept a penalty is charged on the penalty.'
             ),
         }),
-        ('Timestamps',  {'fields': ('created_at', 'updated_at', 'confirmed_at', 'cancelled_at'),
+        ('Timestamps',  {'fields': ('created_at', 'updated_at', 'confirmed_at',
+                                     'cancelled_at', 'cancelled_by'),
                           'classes': ('collapse',)}),
     )
 

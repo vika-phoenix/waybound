@@ -137,6 +137,23 @@ class Booking(models.Model):
     updated_at      = models.DateTimeField(auto_now=True)
     confirmed_at    = models.DateTimeField(null=True, blank=True)
     cancelled_at    = models.DateTimeField(null=True, blank=True)
+    # Who pulled out, and whether they were asked to.
+    #
+    # Every cancellation looked the same in the database, so a guide declining
+    # a booking they never wanted, a guide abandoning a trip three days out,
+    # and a traveller changing their mind were one indistinguishable event.
+    # They are not the same event: the last one is business, and the first two
+    # are refunded in full at the platform's expense.
+    class CancelledBy(models.TextChoices):
+        TOURIST            = 'tourist',               'Traveller'
+        OPERATOR           = 'operator',              'Guide'
+        OPERATOR_TIMEOUT   = 'operator_timeout',      'Guide never responded'
+        SYSTEM_NO_DEPOSIT  = 'system_no_deposit',     'Unpaid, expired'
+        SYSTEM_PAST        = 'system_past_departure', 'Departure passed'
+        ADMIN              = 'admin',                 'Us'
+
+    cancelled_by    = models.CharField(max_length=24, blank=True, default='',
+                                       choices=CancelledBy.choices, db_index=True)
     last_balance_reminder_sent = models.DateTimeField(null=True, blank=True,
         help_text='Last time an operator balance reminder was sent for this booking')
 

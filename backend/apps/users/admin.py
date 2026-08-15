@@ -7,7 +7,8 @@ from .models import User, OTPCode, VerificationDocument
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display  = ('email', 'full_name', 'role', 'col_commission', 'is_active', 'email_verified', 'marketing_emails', 'date_joined')
+    list_display  = ('email', 'full_name', 'role', 'col_commission', 'col_cancels',
+                     'is_active', 'email_verified', 'marketing_emails', 'date_joined')
     list_filter   = ('role', 'is_active', 'is_staff', 'email_verified', 'marketing_emails')
     search_fields = ('email', 'first_name', 'last_name', 'phone')
     ordering      = ('-date_joined',)
@@ -59,6 +60,28 @@ class UserAdmin(BaseUserAdmin):
             from django.conf import settings as _s
             return f'{getattr(_s, "PLATFORM_COMMISSION_PCT", 15):g}% (standard)'
         return format_html('<b>{}%</b>', f'{obj.commission_pct_override:g}')
+
+    @admin.display(description='Cancelled')
+    def col_cancels(self, obj):
+        """
+        How often this guide has pulled out of a paid booking.
+
+        Every one of these refunds a traveller in full at our expense and costs
+        the guide nothing, so without a number here the pattern is invisible
+        until someone happens to notice. One is a bad week. Four is a habit.
+        """
+        if obj.role != 'operator':
+            return '—'
+        from apps.bookings.models import Booking
+        n = Booking.objects.filter(
+            tour__operator=obj,
+            cancelled_by__in=[Booking.CancelledBy.OPERATOR,
+                              Booking.CancelledBy.OPERATOR_TIMEOUT],
+        ).count()
+        if not n:
+            return '0'
+        colour = '#c0392b' if n >= 3 else '#9a6000'
+        return format_html('<b style="color:{}">{}</b>', colour, n)
 
 
 @admin.register(VerificationDocument)
