@@ -3221,7 +3221,10 @@ async function loadTour(slug) {
         {days_before_min:14, days_before_max:29,   penalty_pct:50,  label:'Возврат 50% (14–29 дней до отправления)'},
         {days_before_min:0,  days_before_max:13,   penalty_pct:100, label:'Без возврата (в течение 14 дней до отправления)'},
       ] : t.cancel_policy;
-      var cpHtml = '';
+      // Shown whether or not the guide set their own tiers: the cooling-off
+      // window is a platform rule they cannot override, and hiding it behind
+      // a custom policy hides it from exactly the traveller it protects.
+      var cpHtml = '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b>Передумали?</b> Отмените в течение <b>24 часов</b> после бронирования — вернём всё, включая комиссию. Если до отправления меньше месяца — 2 часа, в последнюю неделю — 30 минут. Это правило действует всегда, гид не может его изменить.</div>';
       if (usingDefault) {
         cpHtml += '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-style:italic">(стандартная политика Кавказленд)</div>';
       }
