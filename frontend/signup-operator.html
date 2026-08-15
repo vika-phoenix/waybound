@@ -1210,6 +1210,24 @@ async function submitOperator() {
   // Shown on every tour page this guide lists. The form has asked for it since
   // it was written and nothing ever sent it, so the line sat empty.
   var years   = (document.getElementById('op-years')     || {}).value || '';
+  // The rest of step 2. These were collected and discarded for as long as the
+  // form has existed. They are kept as application answers rather than as live
+  // profile truth — a tour carries its own categories and group size, so
+  // treating these as current fact would put two answers on the record with no
+  // rule for which wins.
+  var langs   = (document.getElementById('op-langs')      || {}).value || '';
+  var certs   = (document.getElementById('op-certs')      || {}).value || '';
+  var link    = (document.getElementById('op-link')       || {}).value || '';
+  var source  = (document.getElementById('op-source')     || {}).value || '';
+  var grpSize = (document.getElementById('op-groupsize')  || {}).value || '';
+  var types   = Array.prototype.map.call(
+    document.querySelectorAll('#tourTypeGrid .tour-type-cb:checked'),
+    function (cb) {
+      // The label carries an emoji and the text; keep the words only.
+      var t = (cb.parentNode ? cb.parentNode.textContent : '') || '';
+      return t.replace(/[^\p{L}\p{N}\s&\/-]/gu, '').replace(/\s+/g, ' ').trim();
+    }
+  ).filter(Boolean);
   var bio     = (document.getElementById('op-bio')       || {}).value || '';
 
   if (!email || (!UPGRADE && !pw)) {
@@ -1234,7 +1252,13 @@ async function submitOperator() {
       country:      country.trim(),
       company_name: biz.trim(),
       bio:          bio.trim(),
-      experience_years: years.trim(),
+      experience_years:   years.trim(),
+      languages:          langs.trim(),
+      certifications:     certs.trim(),
+      profile_link:       link.trim(),
+      referral_source:    source.trim(),
+      typical_group_size: grpSize.trim(),
+      tour_types:         types,
       // The tick above has always been required to submit, but the answer
       // stayed in the browser. The server records it now, so who agreed and
       // when is a fact about the account.

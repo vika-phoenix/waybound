@@ -57,6 +57,31 @@ class User(AbstractBaseUser, PermissionsMixin):
     telegram_chat_id    = models.CharField(max_length=32, blank=True, default='',
                                             help_text='Operator Telegram chat ID for instant notifications')
 
+    # ── What they told us when they applied ────────────────
+    #
+    # The guide signup form has always asked these six questions and thrown
+    # every answer away. They are kept as application answers, not as live
+    # profile truth: tour_types and typical_group_size overlap with a tour's
+    # own categories and max_group, and if they were treated as current fact
+    # the two would contradict each other the first time a guide listed
+    # something different. Read as "this is what they said when they applied"
+    # there is no contradiction to resolve.
+    #
+    # languages and certifications also give the verification screen something
+    # to check the uploaded documents against — until now an admin opened a
+    # passport scan with no claim to compare it to.
+    languages          = models.CharField(max_length=200, blank=True, default='',
+                                          help_text='Languages this guide says they guide in')
+    certifications     = models.TextField(blank=True, default='',
+                                          help_text='Claimed, not verified — check against their uploaded documents')
+    tour_types         = models.JSONField(default=list, blank=True,
+                                          help_text='Kinds of tour they said they run, at application time')
+    typical_group_size = models.CharField(max_length=40, blank=True, default='')
+    profile_link       = models.CharField(max_length=300, blank=True, default='',
+                                          help_text='Existing reviews or profile they offered as evidence')
+    referral_source    = models.CharField(max_length=80, blank=True, default='',
+                                          help_text='How they heard about us. Attribution only, never shown.')
+
     # When this guide agreed to the Terms for Travel Experts.
     #
     # The signup form has always displayed the terms and refused to submit

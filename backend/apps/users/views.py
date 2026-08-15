@@ -690,6 +690,18 @@ def upgrade_to_operator(request):
     # line sat empty unless someone happened to open their settings page.
     years   = (request.data.get('experience_years') or '').strip()
 
+    # The remaining signup answers. Same six either door, so an upgraded guide
+    # is not a thinner record than one who signed up directly.
+    extra = {}
+    for key in ('languages', 'certifications', 'typical_group_size',
+                'profile_link', 'referral_source'):
+        val = (request.data.get(key) or '').strip()
+        if val:
+            extra[key] = val
+    types = request.data.get('tour_types')
+    if isinstance(types, list) and types:
+        extra['tour_types'] = types
+
     fields = ['role', 'guide_terms_accepted_at']
     user.role = User.Role.OPERATOR
     user.guide_terms_accepted_at = timezone.now()
@@ -720,6 +732,9 @@ def upgrade_to_operator(request):
     if years:
         user.experience_years = years
         fields.append('experience_years')
+    for key, val in extra.items():
+        setattr(user, key, val)
+        fields.append(key)
 
     user.save(update_fields=fields)
     logger.info('Upgraded %s from tourist to operator', user.email)

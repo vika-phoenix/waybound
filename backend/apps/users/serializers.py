@@ -50,7 +50,10 @@ class OperatorRegisterSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'password', 'password2',
             'first_name', 'last_name', 'phone',
-            'company_name', 'country', 'bio', 'experience_years', 'accept_terms',
+            'company_name', 'country', 'bio', 'experience_years',
+            'languages', 'certifications', 'tour_types', 'typical_group_size',
+            'profile_link', 'referral_source',
+            'accept_terms',
         )
 
     def validate(self, data):
@@ -139,6 +142,8 @@ class UserMeSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'full_name',
             'avatar', 'photo_url', 'bio', 'country', 'role',
             'experience_years',
+            'languages', 'certifications', 'tour_types', 'typical_group_size',
+            'profile_link', 'referral_source',
             'is_verified', 'verification_status', 'credentials_files',
             'email_verified', 'phone_verified', 'marketing_emails',
             'telegram_chat_id',
@@ -153,6 +158,9 @@ class UserMeSerializer(serializers.ModelSerializer):
             'is_verified', 'verification_status', 'credentials_files',
             'email_verified', 'phone_verified', 'date_joined', 'has_password',
             'payout_ready', 'guide_terms_accepted_at',
+            # An answer to "how did you hear about us", given once. A guide has
+            # no reason to revise it and we have no reason to let them.
+            'referral_source',
         )
 
 

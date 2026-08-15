@@ -169,3 +169,77 @@ class UpgradeNameFieldsTest(TestCase):
         }, format='json')
         self.user.refresh_from_db()
         self.assertEqual(self.user.experience_years, '5-10 years')
+
+
+class ApplicationAnswersTest(TestCase):
+    """
+    Six questions the signup form has always asked and always discarded.
+
+    They are application answers, not live profile truth: a tour carries its own
+    categories and max_group, so treating tour_types and typical_group_size as
+    current fact would put two contradictory answers on the record.
+    """
+
+    ANSWERS = {
+        'languages': 'English, Russian, Georgian',
+        'certifications': 'UIAA Mountain Guide, Wilderness First Aid',
+        'tour_types': ['Mountain / Trekking', 'Photography'],
+        'typical_group_size': '5-8 (small group)',
+        'profile_link': 'https://tripadvisor.com/x',
+        'referral_source': 'Instagram',
+    }
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_registration_keeps_them(self):
+        payload = {
+            'email': 'sandro@example.com',
+            'password': 'pw-for-testing-1', 'password2': 'pw-for-testing-1',
+            'first_name': 'Sandro', 'country': 'Georgia',
+            'experience_years': '5-10 years', 'accept_terms': True,
+            **self.ANSWERS,
+        }
+        res = self.client.post(reverse('register-operator'), payload, format='json')
+        self.assertIn(res.status_code, (200, 201), res.data)
+        u = User.objects.get(email='sandro@example.com')
+        for field, expected in self.ANSWERS.items():
+            self.assertEqual(getattr(u, field), expected, field)
+
+    def test_upgrading_keeps_them_too(self):
+        """Both doors, or an upgraded guide is a thinner record than a new one."""
+        user = User.objects.create_user(email='t@example.com', password='pw-for-testing-1',
+                                        role=User.Role.TOURIST)
+        self.client.force_authenticate(user)
+        self.client.post(reverse('upgrade-to-operator'),
+                         {'accept_terms': True, **self.ANSWERS}, format='json')
+        user.refresh_from_db()
+        for field, expected in self.ANSWERS.items():
+            self.assertEqual(getattr(user, field), expected, field)
+
+    def test_they_are_readable_on_me(self):
+        user = User.objects.create_user(email='g@example.com', password='pw-for-testing-1',
+                                        role=User.Role.OPERATOR, **self.ANSWERS)
+        self.client.force_authenticate(user)
+        res = self.client.get(reverse('me'))
+        self.assertEqual(res.data['certifications'], self.ANSWERS['certifications'])
+        self.assertEqual(res.data['tour_types'], self.ANSWERS['tour_types'])
+
+    def test_referral_source_cannot_be_edited_afterwards(self):
+        """A one-time attribution answer. Nobody has a reason to revise it."""
+        user = User.objects.create_user(email='g@example.com', password='pw-for-testing-1',
+                                        role=User.Role.OPERATOR, referral_source='Instagram')
+        self.client.force_authenticate(user)
+        self.client.patch(reverse('me'), {'referral_source': 'Google'}, format='json')
+        user.refresh_from_db()
+        self.assertEqual(user.referral_source, 'Instagram')
+
+    def test_certifications_stay_a_claim_not_a_verification(self):
+        user = User.objects.create_user(email='g@example.com', password='pw-for-testing-1',
+                                        role=User.Role.TOURIST)
+        self.client.force_authenticate(user)
+        self.client.post(reverse('upgrade-to-operator'),
+                         {'accept_terms': True, **self.ANSWERS}, format='json')
+        user.refresh_from_db()
+        self.assertFalse(user.is_verified,
+                         'claiming a certification must not verify the account')

@@ -15,6 +15,16 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None,           {'fields': ('email', 'password')}),
         ('Personal',     {'fields': ('first_name', 'last_name', 'phone', 'avatar', 'bio', 'country')}),
+        ('Application answers', {
+            'fields': ('experience_years', 'languages', 'certifications',
+                       'tour_types', 'typical_group_size', 'profile_link',
+                       'referral_source'),
+            'description': (
+                'What this guide told us when they applied. None of it is verified — '
+                'certifications in particular is a claim to check the uploaded '
+                'documents against, not a fact about them.'
+            ),
+        }),
         ('Payout & commission', {
             'fields': ('commission_pct_override', 'payout_type', 'payout_name', 'payout_bank',
                        'payout_account', 'payout_bik', 'payout_corr_account',
