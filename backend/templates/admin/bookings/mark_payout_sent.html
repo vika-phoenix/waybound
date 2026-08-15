@@ -14,6 +14,9 @@ reference to check against their statement.
   .mp-total { background:#f6f7f9; border:1px solid #e0e3e8; border-radius:8px;
               padding:12px 16px; margin:16px 0; font-size:15px; }
   .mp-note { color:#c0392b; font-size:13px; }
+  .mp-skip { background:#fffaf0; border:1px solid #f0e0c0; border-radius:8px;
+             padding:12px 16px; margin:16px 0; font-size:13px; color:#7a5800; }
+  .mp-skip ul { margin:6px 0 0 18px; }
   .mp-field { margin:18px 0; }
   .mp-field input { width:100%; max-width:380px; padding:8px 10px; font-size:14px;
                     border:1px solid #ccc; border-radius:6px; }
@@ -47,16 +50,18 @@ reference to check against their statement.
     </div>
 
     {% if skipped %}
-      <p class="mp-note">{{ skipped }} of the selected booking{{ skipped|pluralize }}
-         {{ skipped|pluralize:"is,are" }} not due for payout and will be left alone.</p>
+      <div class="mp-skip">
+        <b>Left alone ({{ skipped|length }}):</b>
+        <ul>{% for ref, why in skipped %}<li>{{ ref }} — {{ why }}</li>{% endfor %}</ul>
+      </div>
     {% endif %}
 
-    <form method="post">
+    <form method="post"{% if post_url %} action="{{ post_url }}"{% endif %}>
       {% csrf_token %}
       {% for b in bookings %}
         <input type="hidden" name="{{ action_checkbox_name }}" value="{{ b.pk }}">
       {% endfor %}
-      <input type="hidden" name="action" value="mark_payout_sent">
+      {% if not post_url %}<input type="hidden" name="action" value="mark_payout_sent">{% endif %}
 
       <div class="mp-field">
         <label for="payout_reference">Transfer reference</label>
@@ -71,8 +76,20 @@ reference to check against their statement.
          style="margin-left:8px">Cancel</a>
     </form>
   {% else %}
-    <p>None of the selected bookings are due for payout.</p>
-    <a href="{% url 'admin:bookings_booking_changelist' %}" class="button">Back</a>
+    <p><b>None of these are due for payout yet</b>, so there is nothing to record.</p>
+    {% if skipped %}
+      <div class="mp-skip">
+        <ul>{% for ref, why in skipped %}<li>{{ ref }} — {{ why }}</li>{% endfor %}</ul>
+      </div>
+    {% endif %}
+    <p style="font-size:13px;color:#555">
+      A payout only becomes due once the trip has been marked completed. That happens
+      automatically the day after a trip ends, or you can select the bookings on the
+      booking list and choose <em>2. Mark trips as completed</em>.
+    </p>
+    <a href="{% url 'admin:bookings_booking_payouts' %}" class="button">See all payouts</a>
+    <a href="{% url 'admin:bookings_booking_changelist' %}" class="button"
+       style="margin-left:8px">Back to bookings</a>
   {% endif %}
 </div>
 {% endblock %}

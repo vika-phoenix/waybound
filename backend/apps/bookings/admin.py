@@ -3,8 +3,8 @@ apps/bookings/admin.py
 """
 from django.contrib import admin
 from django.db.models import Sum, Count
-from django.urls import path
-from django.shortcuts import render
+from django.urls import path, reverse
+from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.html import format_html
 
@@ -90,7 +90,7 @@ class BookingAdmin(admin.ModelAdmin):
             status='confirmed', confirmed_at=timezone.now()
         )
         self.message_user(request, f'{updated} booking(s) confirmed.')
-    confirm_bookings.short_description = 'Confirm selected pending bookings'
+    confirm_bookings.short_description = '1. Confirm selected pending bookings'
 
     def mark_completed(self, request, qs):
         """
@@ -108,7 +108,7 @@ class BookingAdmin(admin.ModelAdmin):
             bk.save(update_fields=fields)
             done += 1
         self.message_user(request, f'{done} booking(s) completed; payouts now due.')
-    mark_completed.short_description = 'Mark confirmed bookings as completed'
+    mark_completed.short_description = '2. Mark trips as completed (this is what makes a payout due)'
 
     def mark_payout_sent(self, request, qs):
         """
@@ -123,14 +123,15 @@ class BookingAdmin(admin.ModelAdmin):
             n = payable.update(payout_status='paid', payout_sent_at=now, payout_reference=ref)
             self.message_user(request, f'{n} payout(s) marked sent under reference "{ref}".')
             return None
-        skipped = qs.count() - payable.count()
         return render(request, 'admin/bookings/mark_payout_sent.html', {
+            **self.admin_site.each_context(request),
+            'title': 'Record a payout',
             'bookings': payable.select_related('tour__operator'),
             'total_by_currency': _totals_by_currency(payable),
-            'skipped': skipped,
+            'skipped': _why_not_payable(qs.exclude(payout_status='due')),
             'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
         })
-    mark_payout_sent.short_description = 'Mark payout sent (records a transfer reference)'
+    mark_payout_sent.short_description = '3. Record that I paid the guide (asks for a transfer reference)'
 
     # ── "Who am I paying this week" ──────────────────────────────────────────
 
@@ -138,7 +139,37 @@ class BookingAdmin(admin.ModelAdmin):
         return [
             path('payouts/', self.admin_site.admin_view(self.payouts_view),
                  name='bookings_booking_payouts'),
+            path('payouts/record/<int:operator_id>/<str:currency>/',
+                 self.admin_site.admin_view(self.payout_record_view),
+                 name='bookings_booking_payout_record'),
         ] + super().get_urls()
+
+    def payout_record_view(self, request, operator_id, currency):
+        """
+        Record one guide's transfer from the payouts page.
+
+        The Action dropdown can do the same thing, but it is unlabelled, it
+        sits among unrelated actions, and it appears to do nothing when the
+        selection holds no payable booking. Arriving from "this guide is owed
+        X" there is nothing to select and nothing to get wrong.
+        """
+        payable = (Booking.objects.filter(payout_status='due', currency=currency,
+                                          tour__operator_id=operator_id)
+                   .select_related('tour__operator'))
+        if 'apply' in request.POST:
+            ref = (request.POST.get('payout_reference') or '').strip()
+            n = payable.update(payout_status='paid', payout_sent_at=timezone.now(),
+                               payout_reference=ref)
+            self.message_user(request, f'{n} payout(s) marked sent under reference "{ref}".')
+            return redirect('admin:bookings_booking_payouts')
+        return render(request, 'admin/bookings/mark_payout_sent.html', {
+            **self.admin_site.each_context(request),
+            'title': 'Record a payout',
+            'bookings': payable,
+            'total_by_currency': _totals_by_currency(payable),
+            'skipped': [],
+            'post_url': request.path,
+        })
 
     def payouts_view(self, request):
         """
@@ -155,20 +186,52 @@ class BookingAdmin(admin.ModelAdmin):
                 'operator': op, 'currency': bk.currency, 'bookings': [],
                 'owed': 0.0, 'commission': 0.0,
                 'has_bank_details': bool(op.payout_account or op.payout_name),
+                'record_url': reverse('admin:bookings_booking_payout_record',
+                                      args=[op.pk, bk.currency]),
             })
             g['bookings'].append(bk)
             g['owed'] += bk.payout_amount
             g['commission'] += bk.commission_amount
 
+        # Money already taken on trips that have not run yet. Without this the
+        # page is blank until the first trip finishes, which reads as broken
+        # rather than as "nothing is owed yet".
+        upcoming = [b for b in Booking.objects.filter(payout_status='not_due')
+                    .exclude(status=Booking.Status.CANCELLED)
+                    .select_related('tour__operator') if b.payout_amount > 0]
+
         return render(request, 'admin/bookings/payouts.html', {
             **self.admin_site.each_context(request),
-            'title': 'Payouts due',
+            'title': 'Payouts',
             'groups': sorted(groups.values(), key=lambda g: -g['owed']),
             'grand_total': _totals_by_currency(due),
+            'upcoming': upcoming,
+            'upcoming_total': _totals_by_currency(upcoming),
             'paid_recently': (Booking.objects.filter(payout_status='paid')
                               .select_related('tour__operator')
                               .order_by('-payout_sent_at')[:20]),
         })
+
+
+def _why_not_payable(qs):
+    """
+    Turn "nothing happened" into a reason. A booking is skipped because the
+    trip has not run, because no money was kept, or because it is already
+    settled — and each needs a different next step from the admin.
+    """
+    out = []
+    for bk in qs.select_related('tour'):
+        if bk.payout_status == 'paid':
+            when = bk.payout_sent_at.strftime('%d %b %Y') if bk.payout_sent_at else 'earlier'
+            out.append((bk.reference, 'already paid on ' + when))
+        elif bk.payout_amount <= 0:
+            out.append((bk.reference, 'nothing was kept on this booking, so nothing is owed'))
+        elif bk.status != Booking.Status.COMPLETED:
+            out.append((bk.reference,
+                        'the trip is not marked completed yet (status: %s)' % bk.get_status_display()))
+        else:
+            out.append((bk.reference, 'not marked due yet — run action 2 on it first'))
+    return out
 
 
 def _totals_by_currency(qs):

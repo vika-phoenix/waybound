@@ -75,3 +75,68 @@ class PayoutAdminTest(TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertIn('commission_pct_override', r.content.decode(),
                       'a rate you cannot see in admin is a code change, not a setting')
+
+    # ── The exact thing the user hit: nothing is due, so nothing happens ──────
+
+    def _pending_booking(self):
+        """A confirmed booking on a trip that has not run — the normal state."""
+        start = date.today() + timedelta(days=30)
+        dep = DepartureDate.objects.create(tour=self.tour, start_date=start,
+                                           end_date=start + timedelta(days=3),
+                                           spots_total=8, spots_left=7)
+        return Booking.objects.create(
+            tour=self.tour, departure=dep, departure_date=start, adults=1,
+            first_name='C', last_name='D', email='c@d.com', currency='USD',
+            price_adult=Decimal('500'), total_price=Decimal('500'),
+            deposit_paid=Decimal('500'), status=Booking.Status.CONFIRMED,
+            commission_pct=Decimal('15'), payout_status='not_due')
+
+    def test_action_on_a_not_due_booking_explains_why_instead_of_dead_ending(self):
+        bk = self._pending_booking()
+        r = self.client.post('/admin/bookings/booking/', {
+            'action': 'mark_payout_sent', '_selected_action': [str(bk.pk)]})
+        body = r.content.decode()
+        self.assertEqual(r.status_code, 200)
+        self.assertIn('None of these are due for payout yet', body)
+        self.assertIn(bk.reference, body)
+        self.assertIn('not marked completed yet', body)
+        self.assertIn('Mark trips as completed', body,
+                      'the page has to say what to do next')
+
+    def test_payouts_page_lists_money_that_is_not_payable_yet(self):
+        """
+        With no completed trips the page used to be blank, which reads as
+        broken. It has to show what is coming.
+        """
+        bk = self._pending_booking()
+        Booking.objects.filter(pk=self.bk.pk).update(payout_status='paid')
+        r = self.client.get('/admin/bookings/booking/payouts/')
+        body = r.content.decode()
+        self.assertIn('Nothing is owed right now', body)
+        self.assertIn('Not payable yet', body)
+        self.assertIn(bk.reference, body)
+        self.assertIn('425.00', body)   # 500 kept - 15%
+
+    def test_payouts_page_records_a_transfer_without_the_dropdown(self):
+        r = self.client.get('/admin/bookings/booking/payouts/')
+        self.assertIn(f'/admin/bookings/booking/payouts/record/{self.guide.pk}/USD/',
+                      r.content.decode())
+
+        url = f'/admin/bookings/booking/payouts/record/{self.guide.pk}/USD/'
+        form = self.client.get(url)
+        self.assertEqual(form.status_code, 200)
+        self.assertIn('Transfer reference', form.content.decode())
+        self.bk.refresh_from_db()
+        self.assertEqual(self.bk.payout_status, 'due', 'opening the form settles nothing')
+
+        done = self.client.post(url, {'apply': '1', 'payout_reference': 'WISE-3321'}, follow=True)
+        self.assertEqual(done.status_code, 200)
+        self.bk.refresh_from_db()
+        self.assertEqual(self.bk.payout_status, 'paid')
+        self.assertEqual(self.bk.payout_reference, 'WISE-3321')
+
+    def test_the_action_labels_say_what_they_do_and_in_what_order(self):
+        r = self.client.get('/admin/bookings/booking/')
+        body = r.content.decode()
+        self.assertIn('2. Mark trips as completed', body)
+        self.assertIn('3. Record that I paid the guide', body)

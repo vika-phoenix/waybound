@@ -57,7 +57,12 @@ source of truth — this only adds them up.
             {% endif %}
           </div>
         </div>
-        <div class="po-owed">{{ g.owed|floatformat:2 }} {{ g.currency }}</div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div class="po-owed">{{ g.owed|floatformat:2 }} {{ g.currency }}</div>
+          <a class="button" style="background:#417690;color:#fff;padding:8px 14px;
+                    border-radius:6px;text-decoration:none;white-space:nowrap"
+             href="{{ g.record_url }}">I paid this guide &rarr;</a>
+        </div>
       </div>
       <table class="po-table">
         <tr>
@@ -79,15 +84,39 @@ source of truth — this only adds them up.
     </div>
   {% empty %}
     <div class="po-card"><div class="po-empty">
-      Nothing owed right now. A payout becomes due when a trip finishes.
+      <b>Nothing is owed right now.</b><br>
+      A payout falls due when a trip finishes — see what is coming up below.
     </div></div>
   {% endfor %}
 
-  <p style="font-size:13px;color:#555">
-    To record a transfer: open
-    <a href="{% url 'admin:bookings_booking_changelist' %}?payout_status__exact=due">the booking list filtered to Due</a>,
-    select the rows the transfer covers, and choose <em>Mark payout sent</em>.
-  </p>
+  {% if upcoming %}
+    <div class="po-recent">
+      <h2>Not payable yet</h2>
+      <p style="font-size:13px;color:#555;margin-top:-6px">
+        Money already taken on trips that have not run. These become payable
+        when the trip is completed — automatically the day after it ends, or by
+        selecting them on the
+        <a href="{% url 'admin:bookings_booking_changelist' %}">booking list</a>
+        and choosing action 2.
+        {% for cur, t in upcoming_total.items %}
+          <br><b>{{ t.owed|floatformat:2 }} {{ cur }}</b> across
+          {{ t.count }} booking{{ t.count|pluralize }} will be owed.
+        {% endfor %}
+      </p>
+      <table class="po-table">
+        <tr><th>Booking</th><th>Guide</th><th>Departs</th><th>Status</th><th class="po-num">Will be owed</th></tr>
+        {% for b in upcoming %}
+          <tr>
+            <td><a href="{% url 'admin:bookings_booking_change' b.pk %}">{{ b.reference }}</a></td>
+            <td>{{ b.tour.operator.full_name|default:b.tour.operator.email }}</td>
+            <td>{{ b.departure_date|date:"j M Y"|default:"—" }}</td>
+            <td>{{ b.get_status_display }}</td>
+            <td class="po-num">{{ b.payout_amount|floatformat:2 }} {{ b.currency }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% endif %}
 
   {% if paid_recently %}
     <div class="po-recent">
