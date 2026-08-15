@@ -54,7 +54,13 @@ def auto_cancel_expired_bookings():
         except Exception as exc:
             logger.error('Email error for ghost cancel %s: %s', bk.reference, exc)
 
-    # Rule 2: deposit paid but operator never confirmed, > 48 h old
+    # Rule 2: deposit paid but the booking never got confirmed, > 48 h old.
+    #
+    # Under instant book this should never fire: paying confirms the booking on
+    # both rails. It stays as a backstop for the one case that can still leave a
+    # paid booking pending — a payment recorded by hand with the amount entered
+    # before the money actually arrived. Cancelling a paid booking and refunding
+    # it in full is the right outcome there too.
     from .views import _compute_refund, _issue_yookassa_refund
 
     confirm_cutoff = now - timedelta(hours=48)

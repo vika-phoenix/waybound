@@ -1060,10 +1060,17 @@ var currentStep = 1;
       var cpBox  = document.getElementById('cancelPolicyBox');
       var cpRows = document.getElementById('cancelPolicyRows');
       if (t.cancel_policy && t.cancel_policy.length) {
-        var freePeriod = t.cancel_policy.find(function(p) { return p.penalty_pct === 0; });
+        var freePeriod = t.cancel_policy.slice().sort(function(a, b) {
+          return (a.penalty_pct || 0) - (b.penalty_pct || 0);
+        })[0];
+        // The gentlest tier, not a zero one. The top tier keeps 1% to cover
+        // the card fee, so requiring an exact zero left every booking reading
+        // "Cancellation policy applies" — true, and no use to anyone deciding.
+        var freePct = freePeriod ? parseFloat(freePeriod.penalty_pct || 0) : 0;
+        var freeSuffix = freePct > 0 ? ' (less a ' + freePct + '% fee)' : '';
         if (cancelBadge) {
           cancelBadge.textContent = freePeriod && freePeriod.days_before_min != null
-            ? '\uD83D\uDD04 Free cancellation ' + freePeriod.days_before_min + '+ days before'
+            ? '\uD83D\uDD04 Free cancellation ' + freePeriod.days_before_min + '+ days before' + freeSuffix
             : '\uD83D\uDD04 Cancellation policy applies';
         }
         if (cpBox && cpRows) {
@@ -1093,16 +1100,17 @@ var currentStep = 1;
         }
       } else {
         // No operator policy — show Kavkazland standard policy
-        if (cancelBadge) cancelBadge.textContent = '\uD83D\uDD04 Free cancellation 30+ days before';
+        if (cancelBadge) cancelBadge.textContent = '\uD83D\uDD04 Free cancellation 30+ days before (less a 1% fee)';
         if (cpBox && cpRows) {
           cpBox.style.display = 'block';
           cpRows.innerHTML = '<div style="font-size:12px;color:var(--mu);line-height:1.8">'
             + '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln)">'
-            + '<span>✅ 30+ days before departure</span><span style="font-weight:700;color:#1a7a40">Full refund</span></div>'
+            + '<span>✅ 30+ days before departure</span><span style="font-weight:700;color:#1a7a40">Refund less 1% card fee</span></div>'
             + '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln)">'
             + '<span>⚠️ 14–29 days before departure</span><span style="font-weight:700;color:#9a6030">50% refund</span></div>'
             + '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln)">'
             + '<span>❌ Under 14 days before departure</span><span style="font-weight:700;color:#c0392b">No refund</span></div>'
+            + '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b>Changed your mind?</b> Cancel within <b>30 minutes</b> of booking and you get everything back, card fee included — 15 minutes if you are booking within a week of departure.</div>'
             + '<div style="font-size:11px;font-style:italic;margin-top:6px;color:var(--mu)">(Kavkazland standard policy)</div>'
             + '</div>';
         }

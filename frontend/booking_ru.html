@@ -1048,10 +1048,17 @@ var currentStep = 1;
       var cpBox  = document.getElementById('cancelPolicyBox');
       var cpRows = document.getElementById('cancelPolicyRows');
       if (t.cancel_policy && t.cancel_policy.length) {
-        var freePeriod = t.cancel_policy.find(function(p) { return p.penalty_pct === 0; });
+        var freePeriod = t.cancel_policy.slice().sort(function(a, b) {
+          return (a.penalty_pct || 0) - (b.penalty_pct || 0);
+        })[0];
+        // The gentlest tier, not a zero one. The top tier keeps 1% to cover
+        // the card fee, so requiring an exact zero left every booking reading
+        // "Cancellation policy applies" — true, and no use to anyone deciding.
+        var freePct = freePeriod ? parseFloat(freePeriod.penalty_pct || 0) : 0;
+        var freeSuffix = freePct > 0 ? ' (less a ' + freePct + '% fee)' : '';
         if (cancelBadge) {
           cancelBadge.textContent = freePeriod && freePeriod.days_before_min != null
-            ? '🔄 Бесплатная отмена' + freePeriod.days_before_min + '+ дней до'
+            ? '🔄 Бесплатная отмена' + freePeriod.days_before_min + '+ дней до' + freeSuffix
             : '🔄 Применяется политика отмены';
         }
         if (cpBox && cpRows) {
@@ -1081,16 +1088,17 @@ var currentStep = 1;
         }
       } else {
         // No operator policy — show Кавказленд standard policy
-        if (cancelBadge) cancelBadge.textContent = '🔄 Бесплатная отмена за 30+ дней до отправления';
+        if (cancelBadge) cancelBadge.textContent = '🔄 Бесплатная отмена за 30+ дней (минус 1%)';
         if (cpBox && cpRows) {
           cpBox.style.display = 'block';
           cpRows.innerHTML = '<div style="font-size:12px;color:var(--mu);line-height:1.8">'
             + '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln)">'
-            + '<span>✅ За 30+ дней до отправления</span><span style="font-weight:700;color:#1a7a40">Полный возврат</span></div>'
+            + '<span>✅ За 30+ дней до отправления</span><span style="font-weight:700;color:#1a7a40">Возврат минус 1% за эквайринг</span></div>'
             + '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln)">'
             + '<span>⚠️ За 14–29 дней до отправления</span><span style="font-weight:700;color:#9a6030">50% возврата</span></div>'
             + '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln)">'
             + '<span>❌ Менее чем за 14 дней до отправления</span><span style="font-weight:700;color:#c0392b">Без возврата</span></div>'
+            + '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b>Передумали?</b> Отмените в течение <b>30 минут</b> после бронирования — вернём всё, включая комиссию. Если до отправления меньше недели — 15 минут.</div>'
             + '<div style="font-size:11px;font-style:italic;margin-top:6px;color:var(--mu)">(стандартная политика Кавказленд)</div>'
             + '</div>';
         }

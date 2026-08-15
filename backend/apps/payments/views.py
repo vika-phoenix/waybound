@@ -383,9 +383,27 @@ def yookassa_webhook(request):
                     if deposit_in_tour_currency >= float(booking.total_price):
                         booking.balance_status = 'paid'
                         update_fields.append('balance_status')
+                    # Instant book: paying confirms the seat, on this rail as on
+                    # the other one. This path used to leave the booking pending
+                    # for a guide to approve while Stripe and PayPal confirmed
+                    # immediately, so the same tour behaved differently
+                    # depending on which card the traveller reached for — and a
+                    # guide who simply never looked had the booking cancelled
+                    # out from under a traveller who had paid.
+                    if booking.status == Booking.Status.PENDING:
+                        booking.status = Booking.Status.CONFIRMED
+                        booking.confirmed_at = timezone.now()
+                        update_fields += ['status', 'confirmed_at']
                     booking.snapshot_commission(save=False)
                     booking.save(update_fields=update_fields)
-                    logger.info('Deposit paid for booking %s, awaiting operator confirmation', booking.reference)
+                    booking.take_seats()
+                    try:
+                        from apps.bookings.views import send_booking_confirmed_emails
+                        send_booking_confirmed_emails(booking)
+                    except Exception as exc:
+                        logger.error('Confirmation email failed for %s: %s',
+                                     booking.reference, exc)
+                    logger.info('Deposit paid and confirmed for booking %s', booking.reference)
 
         elif event_type == 'payment.canceled':
             if payment_type == 'balance':
