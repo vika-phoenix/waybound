@@ -199,7 +199,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
   <h1 class="hh-title">How can we <em>help you?</em></h1>
   <p class="hh-sub">Search our knowledge base or browse topics below</p>
   <div class="help-search">
-    <input class="hs-input" id="searchInput" placeholder="e.g. 'cancel a booking', 'group size', 'refund'…" oninput="liveSearch(this.value)"/>
+    <input class="hs-input" id="searchInput" placeholder="e.g. 'cancel a booking', 'group size', 'refund'…" data-short-placeholder="Search help…" oninput="liveSearch(this.value)"/>
     <button class="hs-btn" onclick="liveSearch(document.getElementById('searchInput').value)">Search</button>
   </div>
   <div class="popular">
@@ -635,5 +635,20 @@ function liveSearch(query) {
 })();
 </script>
 <script src="nav.js"></script>
+
+<script>
+// The examples in the placeholder are useful on desktop and unreadable in a
+// 251px input, where they truncate mid-word. Keep both, pick by width.
+(function () {
+  var input = document.getElementById('searchInput');
+  if (!input) return;
+  var full = input.getAttribute('placeholder');
+  var short = input.getAttribute('data-short-placeholder');
+  var mq = window.matchMedia('(max-width: 600px)');
+  function apply() { input.setAttribute('placeholder', mq.matches ? short : full); }
+  apply();
+  (mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener(apply));
+})();
+</script>
 </body>
 </html>

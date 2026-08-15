@@ -590,6 +590,66 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .et-pay.paid{background:#e3f4e3;color:#1a7030}
 .et-pay.due{background:#fff4e0;color:#9a6000}
 .et-pay.later{background:var(--paper);color:var(--mu)}
+.sort-btn{font-size:11px;font-family:var(--bf);font-weight:600;color:var(--mu);background:none;border:1.5px solid var(--ln);border-radius:100px;padding:5px 12px;cursor:pointer;transition:all .15s}
+.sort-btn:hover{color:var(--ink);border-color:var(--ac)}
+.sort-btn.active{background:var(--ink);border-color:var(--ink);color:var(--white)}
+
+/* ── Mobile: navigation with nothing hidden ──────────────────────────────────
+   Seven tabs need 564px and the bar is 358px, so 206px of navigation sat
+   off-screen behind a horizontal scroll with no scrollbar and no fade — a
+   guide had no way to know Earnings existed. An edge fade would only advertise
+   the problem. Wrapping removes it: every tab is visible at once. The
+   underline treatment does not survive wrapping (each row would need its own
+   rule), so the phone gets pills instead. */
+@media (max-width: 700px) {
+  .dash-tabs {
+    flex-wrap: wrap; gap: 6px; overflow-x: visible;
+    border-bottom: none; margin-bottom: 20px;
+  }
+  .dash-tab {
+    border: 1.5px solid var(--ln); border-radius: 100px;
+    padding: 7px 14px; margin-bottom: 0; font-size: 12.5px;
+  }
+  .dash-tab.active {
+    background: var(--ac); border-color: var(--ac); color: var(--ink); font-weight: 700;
+  }
+}
+
+/* ── Mobile: the earnings table becomes cards ────────────────────────────────
+   Seven money columns need 720px. At 390px the tour name alone took 53% of
+   what you could see and every figure was off-screen. Scrolling sideways
+   through your own earnings is not reading them. Each departure becomes a
+   card instead: heading, meta line, then the three figures as labelled rows,
+   which is the same information with nothing hidden and no swiping. Labels
+   come from data-l on the cells so there is one source for both layouts. */
+@media (max-width: 700px) {
+  .earnings-table { overflow-x: visible; }
+  .et-head { display: none; }
+  .et-head, .et-row { min-width: 0; }
+  .et-row {
+    display: block; padding: 14px 16px; position: relative;
+  }
+  .et-row > div:nth-child(1) {          /* tour */
+    font-weight: 700; font-size: 13.5px; padding-right: 92px; margin-bottom: 3px;
+  }
+  .et-row > div:nth-child(2),
+  .et-row > div:nth-child(3) {          /* bookings, departure */
+    display: inline; font-size: 12px; color: var(--mu);
+  }
+  .et-row > div:nth-child(2)::after { content: ' · '; }
+  .et-row > div:nth-child(3)::after { content: ''; display: block; margin-bottom: 8px; }
+  .et-row > div[data-l] {               /* the three money rows */
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 4px 0; border-top: 1px solid var(--ln); font-size: 13px;
+  }
+  .et-row > div[data-l]::before {
+    content: attr(data-l); color: var(--mu); font-size: 11.5px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
+  }
+  .et-row > div:last-child {            /* payout chip */
+    position: absolute; top: 13px; right: 16px;
+  }
+}
 .et-row:last-child{border-bottom:none}
 .et-row:hover{background:var(--paper)}
 .dash-empty{text-align:center;padding:50px 20px}
@@ -936,8 +996,8 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
 <div id="earnSortLabel" style="font-size:11px;color:var(--mu);font-family:var(--bf)">Сортировано по дате (новые первыми)</div>
 <div style="display:flex;gap:6px">
-<button class="btn-ghost-sm" onclick="setEarnSort('date')" style="font-size:11px;padding:4px 10px">По дате</button>
-<button class="btn-ghost-sm" onclick="setEarnSort('tour')" style="font-size:11px;padding:4px 10px">По туру</button>
+<button class="sort-btn active" data-sort="date" onclick="setEarnSort('date')">По дате</button>
+<button class="sort-btn" data-sort="tour" onclick="setEarnSort('tour')">По туру</button>
 </div>
 </div>
 <div class="earnings-table">
@@ -2649,6 +2709,11 @@ function setEarnSort(mode) {
   _earnSort = mode;
   var lbl = document.getElementById('earnSortLabel');
   if (lbl) lbl.textContent = mode === 'tour' ? 'Сортировано по названию тура' : 'Сортировано по дате (сначала новые)';
+  // Nothing showed which sort was on except the sentence to the left of them.
+  var btns = document.querySelectorAll('.sort-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle('active', btns[i].getAttribute('data-sort') === mode);
+  }
   renderEarnings();
 }
 
@@ -2758,11 +2823,11 @@ function renderEarnings() {
     var suffix = isPenalty ? ' <span style="font-size:10px;font-weight:400;color:var(--mu)">штраф</span>' : '';
     return '<div class="et-row"' + bg + '>'
       + '<div>' + g.title + badge + '</div>'
-      + '<div>' + bkCount + ' &middot; ' + g.guests + ' гост.</div>'
+      + '<div>' + 'бронирований: ' + bkCount + ' &middot; гостей: ' + g.guests + '</div>'
       + '<div>' + fmtD(g.dep) + '</div>'
-      + '<div class="et-num">' + fmtP(g.amount, g.cur) + suffix + '</div>'
-      + '<div class="et-num" style="color:var(--mu)">&minus;' + fmtP(g.fee, g.cur) + '</div>'
-      + '<div class="et-num" style="font-weight:700">' + fmtP(g.net, g.cur) + '</div>'
+      + '<div class="et-num" data-l="Оплатили">' + fmtP(g.amount, g.cur) + suffix + '</div>'
+      + '<div class="et-num" data-l="Комиссия" style="color:var(--mu)">&minus;' + fmtP(g.fee, g.cur) + '</div>'
+      + '<div class="et-num" data-l="Вы получите" style="font-weight:700">' + fmtP(g.net, g.cur) + '</div>'
       + '<div>' + _payoutChip(g.payouts) + '</div>'
       + '</div>';
   }).join('');

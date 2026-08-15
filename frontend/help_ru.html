@@ -197,7 +197,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 <h1 class="hh-title">Чем мы можем <em>вам помочь?</em></h1>
 <p class="hh-sub">Поищите в нашей базе знаний или просмотрите темы ниже</p>
 <div class="help-search">
-<input class="hs-input" id="searchInput" oninput="liveSearch(this.value)" placeholder="например «отмена бронирования», «численность группы», «возврат средств»…"/>
+<input class="hs-input" id="searchInput" oninput="liveSearch(this.value)" placeholder="например «отмена бронирования», «численность группы», «возврат средств»…" data-short-placeholder="Поиск по справке…"/>
 <button class="hs-btn" onclick="liveSearch(document.getElementById('searchInput').value)">Поиск</button>
 </div>
 <div class="popular">
@@ -616,5 +616,20 @@ function liveSearch(query) {
 })();
 </script>
 <script src="nav.js"></script>
+
+<script>
+// Примеры в подсказке полезны на десктопе и нечитаемы в поле шириной 251px,
+// где они обрезаются на середине слова. Оставляем оба, выбираем по ширине.
+(function () {
+  var input = document.getElementById('searchInput');
+  if (!input) return;
+  var full = input.getAttribute('placeholder');
+  var short = input.getAttribute('data-short-placeholder');
+  var mq = window.matchMedia('(max-width: 600px)');
+  function apply() { input.setAttribute('placeholder', mq.matches ? short : full); }
+  apply();
+  (mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener(apply));
+})();
+</script>
 </body>
 </html>
