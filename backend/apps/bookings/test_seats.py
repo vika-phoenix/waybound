@@ -269,3 +269,70 @@ class CoolingOffWindowTest(TestCase):
             cancel_policy_snapshot=PLATFORM_DEFAULT_CANCEL_POLICY)
         refund, _, _ = _compute_refund(bk, cancelled_by='tourist')
         self.assertAlmostEqual(refund, 500.0, places=2)
+
+
+class CoolingOffAnalyticsTest(TestCase):
+    """
+    Counting the cancellations that landed inside the free window, because
+    "is deferred capture worth building" should be answered with a number.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = User.objects.create_superuser(email='a4@example.com', password='x')
+        cls.guide = User.objects.create_user(email='g4@example.com', password='x',
+                                             role=User.Role.OPERATOR)
+        cls.tour = Tour.objects.create(operator=cls.guide, title='D', country='Georgia',
+                                       destination='M', price_adult=Decimal('500'),
+                                       currency='USD', status=Tour.Status.LIVE, max_group=8)
+
+    def setUp(self):
+        self.client.force_login(self.admin)
+
+    def _cancelled(self, inside, paid='150'):
+        from django.utils import timezone
+        now = timezone.now()
+        return Booking.objects.create(
+            tour=self.tour, adults=1, first_name='A', last_name='B',
+            email='x@example.com', price_adult=Decimal('500'),
+            total_price=Decimal('500'), currency='USD',
+            deposit_paid=Decimal(paid), deposit_status='paid',
+            status=Booking.Status.CANCELLED,
+            cancelled_at=now,
+            cooling_off_until=now + timedelta(minutes=5) if inside
+                              else now - timedelta(minutes=5))
+
+    def test_it_counts_only_the_ones_inside_the_window(self):
+        self._cancelled(inside=True)
+        self._cancelled(inside=True)
+        self._cancelled(inside=False)
+        r = self.client.get('/admin/bookings/booking/')
+        self.assertContains(r, '<b>2</b> of 3')
+
+    def test_it_shows_the_share(self):
+        self._cancelled(inside=True)
+        self._cancelled(inside=False)
+        self.assertContains(self.client.get('/admin/bookings/booking/'), '(50%)')
+
+    def test_it_estimates_the_fee_we_could_not_recover(self):
+        """150 x 2.9% + 0.30 = 4.65 — the number that decides whether to build."""
+        self._cancelled(inside=True, paid='150')
+        self.assertContains(self.client.get('/admin/bookings/booking/'), '4.65 USD')
+
+    def test_the_filter_narrows_to_them(self):
+        inside = self._cancelled(inside=True)
+        outside = self._cancelled(inside=False)
+        r = self.client.get('/admin/bookings/booking/?cooling_off=1')
+        self.assertContains(r, inside.reference)
+        self.assertNotContains(r, outside.reference)
+
+    def test_the_filter_inverts(self):
+        inside = self._cancelled(inside=True)
+        outside = self._cancelled(inside=False)
+        r = self.client.get('/admin/bookings/booking/?cooling_off=0')
+        self.assertContains(r, outside.reference)
+        self.assertNotContains(r, inside.reference)
+
+    def test_nothing_is_claimed_when_nothing_was_cancelled(self):
+        r = self.client.get('/admin/bookings/booking/')
+        self.assertNotContains(r, 'Cooling-off cancellations')

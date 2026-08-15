@@ -2,7 +2,7 @@
 apps/bookings/admin.py
 """
 from django.contrib import admin, messages
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Count, Q, F
 from django.urls import path, reverse
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -11,13 +11,39 @@ from django.utils.html import format_html
 from .models import Booking, EnquiryMessage
 
 
+class CoolingOffFilter(admin.SimpleListFilter):
+    """
+    Cancellations that landed inside the free window.
+
+    These are the ones deferred capture would make free: the money had moved,
+    it all went back, and the processor kept its fee anyway. Counting them is
+    how you find out whether building that is worth the work, rather than
+    guessing — which is what we would otherwise be doing.
+    """
+    title = 'cancelled inside the cooling-off window'
+    parameter_name = 'cooling_off'
+
+    def lookups(self, request, model_admin):
+        return [('1', 'Yes — refund cost us the card fee'),
+                ('0', 'No — cancelled after the window closed')]
+
+    def queryset(self, request, qs):
+        if self.value() not in ('0', '1'):
+            return qs
+        inside = Q(status=Booking.Status.CANCELLED,
+                   cancelled_at__isnull=False,
+                   cooling_off_until__isnull=False,
+                   cancelled_at__lte=F('cooling_off_until'))
+        return qs.filter(inside) if self.value() == '1' else qs.exclude(inside)
+
+
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
     list_display    = ['reference', 'tourist', 'tour', 'status', 'adults', 'children',
                        'total_price', 'currency', 'col_commission', 'col_payout',
                        'col_payout_status', 'departure_date', 'created_at']
-    list_filter     = ['status', 'cancelled_by', 'payout_status', 'currency',
-                       'payment_method', 'created_at']
+    list_filter     = ['status', 'cancelled_by', CoolingOffFilter, 'payout_status',
+                       'currency', 'payment_method', 'created_at']
     search_fields   = ['reference', 'email', 'first_name', 'last_name',
                        'tour__slug', 'tourist__email', 'payout_reference']
     readonly_fields = ['reference', 'created_at', 'updated_at', 'confirmed_at', 'cancelled_at',
@@ -65,6 +91,7 @@ class BookingAdmin(admin.ModelAdmin):
         have to go looking to find out someone is waiting to be paid."""
         extra_context = extra_context or {}
         extra_context['payouts_due_count'] = Booking.objects.filter(payout_status='due').count()
+        extra_context.update(_cooling_off_stats())
         return super().changelist_view(request, extra_context)
 
     # ── Money columns ────────────────────────────────────────────────────────
@@ -394,3 +421,35 @@ def _enquiry_booking_ref(enq):
                   status__in=['pending', 'confirmed', 'completed'])
           .order_by('-created_at').first())
     return bk.reference if bk else None
+
+def _cooling_off_stats():
+    """
+    How much the free window actually costs.
+
+    Two numbers: how many cancellations landed inside it, and roughly what the
+    processors kept on those refunds. Both exist to answer one question —
+    whether authorising the card and capturing it only once the window closes
+    is worth building. A handful a year is not; a steady trickle is.
+
+    The fee estimate is deliberately rough: 2.9% plus a fixed 0.30 of whatever
+    was collected, which is Stripe's card pricing and close enough to the
+    others to size the decision. It is not accounting.
+    """
+    cancelled = Booking.objects.filter(
+        status=Booking.Status.CANCELLED, cancelled_at__isnull=False)
+    inside = cancelled.filter(cooling_off_until__isnull=False,
+                              cancelled_at__lte=F('cooling_off_until'))
+    total = cancelled.count()
+    n = inside.count()
+    lost = {}
+    for bk in inside.only('deposit_paid', 'balance_paid', 'currency'):
+        paid = float(bk.deposit_paid or 0) + float(bk.balance_paid or 0)
+        if paid <= 0:
+            continue
+        lost[bk.currency] = round(lost.get(bk.currency, 0.0) + paid * 0.029 + 0.30, 2)
+    return {
+        'cooling_off_count': n,
+        'cancelled_total': total,
+        'cooling_off_pct': round(100 * n / total) if total else 0,
+        'cooling_off_lost': sorted(lost.items()),
+    }

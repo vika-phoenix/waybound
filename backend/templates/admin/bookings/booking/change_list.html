@@ -41,5 +41,28 @@ dropdown and a custom view has no link at all. This banner is the signpost.
                            text-decoration:none;white-space:nowrap"
      href="{% url 'admin:bookings_booking_offline' %}">Offline booking &rarr;</a>
 </div>
+
+{% comment %}
+What the free window costs. It exists to answer one question — whether it is
+worth authorising cards and capturing them only once the window closes — and
+that question deserves a number rather than a guess.
+{% endcomment %}
+{% if cancelled_total %}
+<div style="background:#f6f7f9;border:1px solid #e0e3e8;border-radius:8px;
+            padding:12px 16px;margin-bottom:16px;font-size:13px;color:#333;line-height:1.6">
+  <b>Cooling-off cancellations:</b>
+  <b>{{ cooling_off_count }}</b> of {{ cancelled_total }}
+  ({{ cooling_off_pct }}%) were cancelled inside the free window.
+  {% if cooling_off_lost %}
+    Card fees we could not recover on those:
+    {% for cur, amt in cooling_off_lost %}<b>{{ amt|floatformat:2 }} {{ cur }}</b>{% if not forloop.last %}, {% endif %}{% endfor %}.
+  {% endif %}
+  <div style="margin-top:4px;color:#666">
+    These are the refunds that would cost nothing if the card were authorised at
+    booking and only charged once the window closed. Rough estimate, not accounting.
+    <a href="?cooling_off=1">See them</a>.
+  </div>
+</div>
+{% endif %}
 {{ block.super }}
 {% endblock %}
