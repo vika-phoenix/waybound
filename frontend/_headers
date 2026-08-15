@@ -1,27 +1,34 @@
 # Cloudflare Pages response headers.
 #
-# NOTE: these rules currently change nothing. Pages already serves every asset
-# as `public, max-age=0, must-revalidate`, so this only restates the default.
-# Verified by comparing a listed file against an unlisted one on
-# waybound.pages.dev — both identical.
+# These were a no-op for a while and are load-bearing again. The zone used to
+# rewrite Cache-Control at the edge for static extensions (Caching ->
+# Configuration -> Browser Cache TTL, set to 4 hours), downstream of the
+# origin, so nothing written here survived. That is now "Respect Existing
+# Headers", verified 2026-08-15:
 #
-# The 4-hour cache people actually hit comes from the ZONE, not from Pages:
-# Cloudflare rewrites Cache-Control at the edge for static extensions (.css,
-# .js) according to Caching -> Configuration -> Browser Cache TTL. HTML passes
-# through untouched, which is why only assets go stale. No _headers rule can
-# override that, because the rewrite happens downstream of the origin.
+#   kavkazland.com/mobile.css -> public, max-age=0, must-revalidate (REVALIDATED)
 #
-#   kavkazland.com/mobile.css      -> max-age=14400   (zone rewrote it)
-#   waybound.pages.dev/mobile.css  -> max-age=0       (what Pages sent)
+# So what follows actually reaches browsers. Check with a GET, not `curl -I` —
+# Cloudflare only caches GET, so a HEAD request reports DYNAMIC regardless:
 #
-# Fix is one dropdown: Browser Cache TTL -> "Respect Existing Headers".
-# Until that is set, assume any change to the files below takes up to 4 hours
-# to reach a returning visitor. It matters most for config.js, which carries
-# the API hostname — a stale copy points the browser at the old backend and
-# fails before the request leaves the machine.
-#
-# These stay as documentation of intent, and become load-bearing the moment
-# Pages' default changes or a rule below diverges from it.
+#   curl -s -o /dev/null -D - <url> | grep -iE 'cf-cache-status|cache-control'
+
+# Webfonts carry Google's content-hashed filenames, so a file at a given path
+# can never change — a new cut of a face arrives under a new name. That makes
+# them safe to cache permanently, which matters here: self-hosting moved about
+# 1.1 MB of woff2 onto our own origin, and without this every returning
+# visitor would revalidate all of it.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The stylesheet that points at them is small and changes when a family or
+# weight changes, so it revalidates like the rest.
+/fonts.css
+  Cache-Control: public, max-age=0, must-revalidate
+
+# config.js carries the API hostname. A stale copy points the browser at the
+# old backend and fails before the request leaves the machine, so this one in
+# particular must never be cached.
 /config.js
   Cache-Control: public, max-age=0, must-revalidate
 
