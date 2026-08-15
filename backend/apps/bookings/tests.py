@@ -216,3 +216,12 @@ class CommissionLedgerTest(TestCase):
                  'amount_kept', 'payout_status', 'payout_reference'}
         exposed = set(BookingDetailSerializer.Meta.fields) & leaky
         self.assertFalse(exposed, f'tourist serializer exposes {exposed}')
+
+    def test_the_free_window_deadline_reaches_the_bookings_page(self):
+        """
+        My bookings shows the policy snapshot, which describes what happens
+        after the window shuts. Without the deadline itself the page tells
+        someone inside the window they would lose money, which is wrong.
+        """
+        from apps.bookings.serializers import BookingDetailSerializer
+        self.assertIn('cooling_off_until', BookingDetailSerializer.Meta.fields)

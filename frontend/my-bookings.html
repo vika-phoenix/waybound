@@ -472,6 +472,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .bk-price{font-family:var(--df);font-size:19px;color:var(--ink);text-align:right}
 .bk-price-sub{font-size:11px;color:var(--mu);font-family:var(--bf);text-align:right;margin-top:1px}
 .bk-card-actions{padding:10px 18px 14px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--ln);flex-wrap:wrap}
+.bk-cooling{margin:0 18px 14px;padding:10px 13px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:7px;font-size:12.5px;line-height:1.6;color:#1a5c38;font-family:var(--bf)}
 .bk-actions-divider{width:1px;height:22px;background:#b0bec8;flex-shrink:0;border-radius:1px}
 .bk-btn{font-size:12px;font-weight:600;font-family:var(--bf);padding:7px 16px;border-radius:7px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s;border:none}
 .bk-btn.primary{background:var(--ac);color:var(--ink)}
@@ -1152,10 +1153,32 @@ function renderBookings(list) {
     html += '<div><div class="bk-price">' + fmtPrice(b.total_price, b) + '</div>' + priceSubLine + '</div>';
     html += '</div></div>';
     html += '<div class="bk-accordion" id="acc-' + i + '"><div class="bk-accordion-inner">' + dhtml + '</div></div>';
+    // The policy in the details panel describes what happens once the free
+    // window shuts. While it is still open that is the wrong number, and this
+    // is the page where someone decides — so put the deadline by the button.
+    var coolUntil = b.cooling_off_until ? new Date(b.cooling_off_until) : null;
+    if (coolUntil && !isNaN(coolUntil.getTime()) && coolUntil > new Date()
+        && b.status !== 'cancelled' && b.status !== 'completed') {
+      html += '<div class="bk-cooling">&#x23F1;&#xFE0F; <b>Free to cancel '
+            + coolingLeft(coolUntil) + '.</b> Change your mind before then and you get '
+            + 'everything back, card fee included \u2014 whatever the policy below says.</div>';
+    }
     html += '<div class="bk-card-actions">' + actions + '</div>';
     html += '</div>';
   }
   document.getElementById('bookingsList').innerHTML = html;
+}
+
+// The window can be 30 minutes or 24 hours, so a bare clock time is useless
+// at the short end and a countdown is noise at the long end. Switch on which
+// one actually tells the traveller something.
+function coolingLeft(until) {
+  var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var now = new Date(), mins = Math.round((until - now) / 60000);
+  if (mins < 90) return 'for the next ' + mins + ' minute' + (mins === 1 ? '' : 's');
+  var hhmm = ('0' + until.getHours()).slice(-2) + ':' + ('0' + until.getMinutes()).slice(-2);
+  return 'until ' + hhmm + (until.toDateString() === now.toDateString()
+    ? ' today' : ' on ' + until.getDate() + ' ' + MON[until.getMonth()]);
 }
 
 function toggleAcc(i) {

@@ -473,6 +473,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .bk-price{font-family:var(--df);font-size:19px;color:var(--ink);text-align:right}
 .bk-price-sub{font-size:11px;color:var(--mu);font-family:var(--bf);text-align:right;margin-top:1px}
 .bk-card-actions{padding:10px 18px 14px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--ln);flex-wrap:wrap}
+.bk-cooling{margin:0 18px 14px;padding:10px 13px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:7px;font-size:12.5px;line-height:1.6;color:#1a5c38;font-family:var(--bf)}
 .bk-actions-divider{width:1px;height:22px;background:#b0bec8;flex-shrink:0;border-radius:1px}
 .bk-btn{font-size:12px;font-weight:600;font-family:var(--bf);padding:7px 16px;border-radius:7px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s;border:none}
 .bk-btn.primary{background:var(--ac);color:var(--ink)}
@@ -1145,10 +1146,30 @@ function renderBookings(list) {
     html += '<div><div class="bk-price">' + fmtPrice(b.total_price, b) + '</div>' + priceSubLine + '</div>';
     html += '</div></div>';
     html += '<div class="bk-accordion" id="acc-' + i + '"><div class="bk-accordion-inner">' + dhtml + '</div></div>';
+    // В деталях показаны условия после закрытия бесплатного окна.
+    // Пока оно открыто это не та цифра, а решение принимают здесь.
+    var coolUntil = b.cooling_off_until ? new Date(b.cooling_off_until) : null;
+    if (coolUntil && !isNaN(coolUntil.getTime()) && coolUntil > new Date()
+        && b.status !== 'cancelled' && b.status !== 'completed') {
+      html += '<div class="bk-cooling">&#x23F1;&#xFE0F; <b>Бесплатная отмена '
+            + coolingLeft(coolUntil) + '.</b> Передумаете до этого момента — вернём '
+            + 'всё, включая комиссию, независимо от условий ниже.</div>';
+    }
     html += '<div class="bk-card-actions">' + actions + '</div>';
     html += '</div>';
   }
   document.getElementById('bookingsList').innerHTML = html;
+}
+
+// Окно бывает и 30 минут, и 24 часа — поэтому где-то нужен остаток,
+// а где-то время на часах.
+function coolingLeft(until) {
+  var MON = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  var now = new Date(), mins = Math.round((until - now) / 60000);
+  if (mins < 90) return 'ещё ' + mins + ' мин';
+  var hhmm = ('0' + until.getHours()).slice(-2) + ':' + ('0' + until.getMinutes()).slice(-2);
+  return 'до ' + hhmm + (until.toDateString() === now.toDateString()
+    ? ' сегодня' : ' ' + until.getDate() + ' ' + MON[until.getMonth()]);
 }
 
 function toggleAcc(i) {

@@ -744,8 +744,8 @@ def _compute_refund(booking, cancelled_by='tourist'):
         return total_paid, 0, 'Full refund (operator cancellation)'
 
     # ── 1. Cooling-off window (highest priority) ──────────────────────────────
-    # Overrides all cancellation policy rules. Set at booking creation:
-    # +30 min if departure >7 days away, +15 min if ≤7 days.
+    # Overrides all cancellation policy rules, including one the guide wrote
+    # themselves. Set at booking creation from the distance to departure.
     from django.utils import timezone as _tz
     cooling_off = getattr(booking, 'cooling_off_until', None)
     if cooling_off and _tz.now() <= cooling_off:
