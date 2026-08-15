@@ -613,13 +613,29 @@ def booking_list(request):
     serializer.is_valid(raise_exception=True)
     booking = serializer.save()
 
-    # Set cooling-off window: 30 min if departure >7 days, 15 min if ≤7 days
+    # How long they have to change their mind at no cost.
+    #
+    # It scales with how easily the seat can be resold. A month out there is no
+    # cost to being generous and the honest use for it — asking whoever they
+    # are travelling with — takes longer than half an hour. A week out the seat
+    # is scarce and every hour it sits unsellable is an hour it might not sell,
+    # so the window shrinks to something that only covers the wrong-date,
+    # wrong-number-of-people mistakes it exists for.
+    #
+    # Every window here is comfortably inside the shortest authorisation hold
+    # any of the three payment rails offers, so this stays compatible with
+    # capturing the card only once the window closes.
     _now = timezone.now()
     if booking.departure_date:
         days_to_dep = (booking.departure_date - _now.date()).days
-        _window_mins = 15 if days_to_dep <= 7 else 30
+        if days_to_dep > 30:
+            _window_mins = 24 * 60
+        elif days_to_dep > 7:
+            _window_mins = 120
+        else:
+            _window_mins = 30
     else:
-        _window_mins = 30
+        _window_mins = 24 * 60
     booking.cooling_off_until = _now + timedelta(minutes=_window_mins)
     booking.save(update_fields=['cooling_off_until'])
 

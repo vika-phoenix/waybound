@@ -209,3 +209,63 @@ class ProcessingFeeTierTest(TestCase):
             cancel_policy_snapshot=PLATFORM_DEFAULT_CANCEL_POLICY)
         refund, _, _ = _compute_refund(bk, cancelled_by='tourist')
         self.assertAlmostEqual(refund, 150.0, places=2)
+
+
+class CoolingOffWindowTest(TestCase):
+    """
+    The window scales with how easily the seat can be resold. A month out
+    there is no cost to being generous; a week out every hour the seat sits
+    unsellable is an hour it might not sell.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.guide = User.objects.create_user(email='g3@example.com', password='x',
+                                             role=User.Role.OPERATOR)
+        cls.traveller = User.objects.create_user(email='t3@example.com', password='x')
+        cls.tour = Tour.objects.create(operator=cls.guide, title='C', country='Georgia',
+                                       destination='M', price_adult=Decimal('500'),
+                                       currency='USD', status=Tour.Status.LIVE, max_group=8)
+
+    def _minutes_for(self, days_out):
+        from django.utils import timezone
+        client = APIClient()
+        client.force_authenticate(self.traveller)
+        start = date.today() + timedelta(days=days_out)
+        dep = DepartureDate.objects.create(
+            tour=self.tour, start_date=start, end_date=start + timedelta(days=2),
+            spots_total=8, spots_left=8)
+        res = client.post('/api/v1/bookings/', {
+            'tour_slug': self.tour.slug, 'departure_id': dep.pk,
+            'adults': 1, 'first_name': 'A', 'last_name': 'B',
+            'email': 't3@example.com', 'phone': '+1', 'country': 'GE',
+            'departure_date': str(start),
+        }, format='json')
+        self.assertIn(res.status_code, (200, 201), res.data)
+        bk = Booking.objects.get(pk=res.data['id'])
+        return round((bk.cooling_off_until - timezone.now()).total_seconds() / 60)
+
+    def test_far_out_gets_a_day(self):
+        self.assertAlmostEqual(self._minutes_for(60), 24 * 60, delta=2)
+
+    def test_a_few_weeks_out_gets_two_hours(self):
+        self.assertAlmostEqual(self._minutes_for(20), 120, delta=2)
+
+    def test_inside_a_week_gets_thirty_minutes(self):
+        self.assertAlmostEqual(self._minutes_for(4), 30, delta=2)
+
+    def test_the_window_still_beats_every_penalty_tier(self):
+        """A cancel inside it is whole, even in the no-refund band."""
+        from apps.bookings.views import PLATFORM_DEFAULT_CANCEL_POLICY, _compute_refund
+        from django.utils import timezone
+        bk = Booking.objects.create(
+            tour=self.tour, departure_date=date.today() + timedelta(days=3),
+            tourist=self.traveller, adults=1,
+            first_name='A', last_name='B', email='t3@example.com',
+            price_adult=Decimal('500'), total_price=Decimal('500'), currency='USD',
+            deposit_paid=Decimal('500'), deposit_status='paid',
+            status=Booking.Status.CONFIRMED,
+            cooling_off_until=timezone.now() + timedelta(minutes=10),
+            cancel_policy_snapshot=PLATFORM_DEFAULT_CANCEL_POLICY)
+        refund, _, _ = _compute_refund(bk, cancelled_by='tourist')
+        self.assertAlmostEqual(refund, 500.0, places=2)
