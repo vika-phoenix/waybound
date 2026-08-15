@@ -33,8 +33,17 @@ _PATTERNS = [
 ]
 
 
+def detect(text):
+    """True if the text appears to carry contact details.
+
+    Used to flag, never to rewrite — see _ScrubbedText. A false positive here
+    costs a needless warning; a false positive in a rewrite costs the message.
+    """
+    return any(p.search(text) for p in _PATTERNS) if text else False
+
+
 def scrub(text):
-    """Return (clean_text, was_changed)."""
+    """Return (clean_text, was_changed). Kept for the admin/report path only."""
     if not text:
         return text, False
     out = text

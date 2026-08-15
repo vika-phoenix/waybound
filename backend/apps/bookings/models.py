@@ -255,26 +255,25 @@ class Booking(models.Model):
 
 class _ScrubbedText:
     """
-    Mixin: strip contact details from a text field before it is stored.
+    Flag contact details in a message. Do not rewrite it.
 
-    Done at the model rather than the serializer so every route is covered —
-    the API, the admin, anything added later. Storing the clean version means
-    the address never sits in the database waiting for a different view to
-    expose it.
+    This used to replace what it found. That was the wrong trade: the filter
+    can misread a long permit number or a price written "1 500 000", and it
+    changed the text without telling the sender — so a guide could give
+    instructions and never know part of them had been swapped for a notice.
+    Silently destroying someone's message to deter something they may not even
+    have been doing is not a trade worth making.
+
+    Detection alone still does the useful work. It makes the rule visible, and
+    it gives an audit trail of who is trying, which is what would justify a
+    conversation. It cannot damage a message, because it never touches one.
     """
     SCRUB_FIELD = None
 
-    def save(self, *args, **kwargs):
-        from .contact_filter import scrub
-        field = self.SCRUB_FIELD
-        if field:
-            cleaned, changed = scrub(getattr(self, field, ''))
-            if changed:
-                setattr(self, field, cleaned)
-                uf = kwargs.get('update_fields')
-                if uf is not None and field not in uf:
-                    kwargs['update_fields'] = list(uf) + [field]
-        return super().save(*args, **kwargs)
+    @property
+    def has_contact_details(self):
+        from .contact_filter import detect
+        return detect(getattr(self, self.SCRUB_FIELD, '')) if self.SCRUB_FIELD else False
 
 
 class EnquiryMessage(_ScrubbedText, models.Model):

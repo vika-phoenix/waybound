@@ -273,47 +273,46 @@ class ContactGatingTest(TestCase):
         self.assertNotIn('example.com', d['email'])
 
 
-class MessageScrubbingTest(TestCase):
+class ContactDetectionTest(TestCase):
     """
-    One message carrying a phone number is the usual first step off-platform.
-    This does not stop two determined people — they meet in person anyway — but
-    it stops the casual exchange, which is most of it.
+    Messages are flagged, never rewritten.
+
+    The filter can misread a long permit number or a price written with spaces,
+    and rewriting changed the text without telling the sender. Detection makes
+    the rule visible and gives an audit trail without ever being able to damage
+    a message.
     """
 
     def _enquiry(self, message):
         from apps.tours.models import Tour
+        from apps.bookings.models import EnquiryMessage
         guide = User.objects.create_user(
             email=f'ms{User.objects.count()}@example.com', password='x',
             role=User.Role.OPERATOR)
         tour = Tour.objects.create(
             operator=guide, title='T', country='Georgia', destination='K',
             price_adult=Decimal('300'), status=Tour.Status.LIVE, max_group=6)
-        from apps.bookings.models import EnquiryMessage
         return EnquiryMessage.objects.create(
             tour=tour, name='Nino', email='nino@example.com', message=message)
 
-    def test_a_phone_number_does_not_survive(self):
-        e = self._enquiry('Call me on +995 555 123 456')
-        e.refresh_from_db()
-        self.assertNotIn('555 123 456', e.message)
-        self.assertIn('Kavkazland', e.message)
-
-    def test_an_email_address_does_not_survive(self):
-        e = self._enquiry('write to nino.t@gmail.com please')
-        e.refresh_from_db()
-        self.assertNotIn('gmail.com', e.message)
-
-    def test_a_telegram_handle_does_not_survive(self):
-        e = self._enquiry('my telegram is @ninoguide')
-        e.refresh_from_db()
-        self.assertNotIn('ninoguide', e.message)
-
-    def test_ordinary_numbers_are_left_alone(self):
-        """A guide must be able to say when the walk starts and how high it goes."""
-        text = 'We start at 07:30 and climb to 2400m. Price is 1,250 USD.'
+    def test_the_message_is_never_altered(self):
+        text = 'Call me on +995 555 123 456'
         e = self._enquiry(text)
         e.refresh_from_db()
-        self.assertEqual(e.message, text)
+        self.assertEqual(e.message, text, 'the sender wrote this; it stays as written')
+
+    def test_a_phone_number_is_flagged(self):
+        self.assertTrue(self._enquiry('Call me on +995 555 123 456').has_contact_details)
+
+    def test_an_email_is_flagged(self):
+        self.assertTrue(self._enquiry('write to nino.t@gmail.com').has_contact_details)
+
+    def test_a_telegram_handle_is_flagged(self):
+        self.assertTrue(self._enquiry('my telegram is @ninoguide').has_contact_details)
+
+    def test_ordinary_trip_detail_is_not_flagged(self):
+        self.assertFalse(self._enquiry(
+            'We start at 07:30 and climb to 2400m. Price is 1,250 USD.').has_contact_details)
 
     def test_the_enquirer_email_is_masked_until_they_book(self):
         from apps.bookings.serializers import EnquiryDetailSerializer
