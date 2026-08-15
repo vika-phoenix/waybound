@@ -593,6 +593,21 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .sort-btn:hover{color:var(--ink);border-color:var(--ac)}
 .sort-btn.active{background:var(--ink);border-color:var(--ink);color:var(--white)}
 
+/* ── Mobile: the three summary cards must not eat the screen ─────────────────
+   Stacked one per row they came to 389px and pushed the earnings themselves to
+   807px on an 844px screen — a guide opening this tab saw three headline
+   numbers and no data at all. The all-time figure keeps the full width because
+   it is the headline; the other two pair up beneath it at a smaller size. */
+@media (max-width: 700px) {
+  .earnings-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  .earnings-card { padding: 13px 14px; }
+  .earnings-card:first-child { grid-column: 1 / -1; }
+  .earnings-card-label { font-size: 11px; margin-bottom: 2px; }
+  .earnings-card-val { font-size: 25px; }
+  .earnings-card:not(:first-child) .earnings-card-val { font-size: 19px; }
+  .earnings-card-note { font-size: 10.5px; margin-top: 3px; line-height: 1.35; }
+}
+
 /* ── Mobile: navigation with nothing hidden ──────────────────────────────────
    Seven tabs need 564px and the bar is 358px, so 206px of navigation sat
    off-screen behind a horizontal scroll with no scrollbar and no fade — a
