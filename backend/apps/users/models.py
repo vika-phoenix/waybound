@@ -57,6 +57,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     telegram_chat_id    = models.CharField(max_length=32, blank=True, default='',
                                             help_text='Operator Telegram chat ID for instant notifications')
 
+    # When this guide agreed to the Terms for Travel Experts.
+    #
+    # The signup form has always displayed the terms and refused to submit
+    # without the tick — but the answer was never sent anywhere, so nothing was
+    # recorded. The upgrade path did not ask at all. Both write this now, which
+    # means "did they agree, and when" is a question with an answer.
+    guide_terms_accepted_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text='When this guide accepted the Terms for Travel Experts')
+
     # ── Payout (operators only) ────────────────────────────
     # Two shapes, because a bank account is described differently depending on
     # where it is. The Russian fields below were the only ones for a while,

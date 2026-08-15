@@ -544,8 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var t5 = document.getElementById('scNote');
       if (t1) t1.textContent = tName ? ('\u041f\u0440\u0438\u0432\u0435\u0442, ' + tName + '!') : '\u0413\u043e\u0442\u043e\u0432\u044b \u0441\u0442\u0430\u0442\u044c \u0433\u0438\u0434\u043e\u043c?';
       if (t2) t2.textContent = '\u0412\u0430\u0448 \u0430\u043a\u043a\u0430\u0443\u043d\u0442 \u043c\u043e\u0436\u043d\u043e \u043f\u0435\u0440\u0435\u0432\u0435\u0441\u0442\u0438 \u0432 \u0430\u043a\u043a\u0430\u0443\u043d\u0442 \u0433\u0438\u0434\u0430. \u0411\u0440\u043e\u043d\u0438, \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u043e\u0435 \u0438 \u043e\u0442\u0437\u044b\u0432\u044b \u0441\u043e\u0445\u0440\u0430\u043d\u044f\u0442\u0441\u044f.';
-      if (t3) t3.innerHTML = '<button class="sc-btn" id="scUpgradeBtn" onclick="upgradeToGuide()">\u0421\u0442\u0430\u0442\u044c \u0433\u0438\u0434\u043e\u043c \u2192</button>'
-                           + '<div id="scUpgradeErr" style="display:none;margin-top:10px;font-size:12.5px;color:#b03030"></div>';
+      if (t3) t3.innerHTML = guideDetailsForm(user);
       if (t4) t4.style.display = 'none';
       if (t5) { t5.style.display = ''; t5.textContent = '\u041f\u0435\u0440\u0435\u0434 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0435\u0439 \u0442\u0443\u0440\u0430 \u043f\u043e\u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u043b\u0438\u0447\u043d\u043e\u0441\u0442\u0438.';
       }
@@ -558,23 +557,143 @@ document.addEventListener('DOMContentLoaded', function() {
   } catch(e) {}
 });
 
-// Convert this traveller account into a guide account. role is a single field,
-// so the backend overwrites it; nothing traveller-side is gated on
-// role === 'tourist', so bookings, saved tours and reviews all survive.
-// Verification is NOT granted here — a tour still cannot go live until an
-// admin approves their ID.
+var GD = {
+  account:      'Ваш аккаунт',
+  emailLocked:  'Это ваш логин — изменить его нельзя.',
+  photo:        'Фото профиля *',
+  choosePhoto:  'Выбрать фото',
+  photoHint:    'Путешественники бронируют человека, а не логотип. JPG или PNG, до 2 МБ.',
+  country:      'Страна, где вы водите туры *',
+  countryPh:    'Грузия',
+  phone:        'Телефон *',
+  bio:          'О себе *',
+  bioPh:        'Где вы водите туры, сколько лет этим занимаетесь, какие у вас поездки.',
+  terms:        'Я прочитал(а) и принимаю <a href="terms-experts_ru.html" target="_blank">Условия для гидов</a> — включая комиссию 15%, лимит 15 человек в группе и приём оплаты через Kavkazland, а не напрямую.',
+  submit:       'Стать гидом →',
+  working:      'Настраиваем…',
+  signin:       'signin_ru.html',
+  dashboard:    'operator-dashboard_ru.html',
+  errPhoto:     'Добавьте фото профиля — пустой кружок никто не забронирует.',
+  errBig:       'Фото больше 2 МБ. Выберите файл поменьше.',
+  errCountry:   'Укажите страну, где вы водите туры.',
+  errPhone:     'Укажите телефон для связи.',
+  errBio:       'Напишите о себе чуть подробнее — хотя бы пару предложений.',
+  errTerms:     'Подтвердите согласие с Условиями для гидов.',
+  errGeneric:   'Не удалось обновить аккаунт. Попробуйте ещё раз.'
+};
+
+// ── Becoming a guide ────────────────────────────────────────
+//
+// Two doors lead to a guide account. Someone signing up as a guide fills in a
+// long form and ticks the Terms for Travel Experts. Someone arriving by
+// upgrade used to answer nothing at all and land straight on the tour builder
+// — same obligations, no agreement on record, and a guide profile with no
+// photo, country or phone. This is the step that was missing.
+//
+// Every field is prefilled from the traveller account, so it reads as a
+// confirmation rather than a re-typing exercise. Email is the login field and
+// is fixed. On success this goes to the dashboard, not the tour builder: the
+// ID document still has to be uploaded before anything can go live, and the
+// dashboard is where that checklist lives.
+
+function _escAttr(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+var _gdPhotoFile = null;
+
+function gdErr(msg) {
+  var el = document.getElementById('scUpgradeErr');
+  if (!el) return;
+  el.textContent = msg || '';
+  el.style.display = msg ? '' : 'none';
+}
+
+function gdPhotoPicked(input) {
+  var f = input.files && input.files[0];
+  if (!f) return;
+  if (f.size > 2 * 1024 * 1024) { input.value = ''; gdErr(GD.errBig); return; }
+  _gdPhotoFile = f;
+  var prev = document.getElementById('gdPhotoPrev');
+  if (prev) prev.innerHTML = '<img src="' + URL.createObjectURL(f)
+    + '" alt="" style="width:100%;height:100%;object-fit:cover">';
+  gdErr('');
+}
+
+function guideDetailsForm(u) {
+  u = u || {};
+  var name = ((u.first_name || '') + ' ' + (u.last_name || '')).trim();
+  var L = 'font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;'
+        + 'color:var(--mu);font-family:var(--bf);margin:0 0 6px;display:block';
+  var hint = 'font-size:11.5px;color:var(--mu);font-family:var(--bf)';
+  return '<div style="text-align:left">'
+    + '<label style="' + L + '">' + GD.account + '</label>'
+    + '<input class="sc-field" value="' + _escAttr(u.email) + '" disabled style="opacity:.6;cursor:not-allowed">'
+    + '<div style="' + hint + ';margin:-4px 0 16px">'
+    +   (name ? _escAttr(name) + ' &middot; ' : '') + GD.emailLocked + '</div>'
+
+    + '<label style="' + L + '">' + GD.photo + '</label>'
+    + '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">'
+    +   '<div id="gdPhotoPrev" style="width:64px;height:64px;border-radius:50%;background:var(--ac);'
+    +     'border:2px solid var(--ln);display:flex;align-items:center;justify-content:center;'
+    +     'font-weight:700;font-size:20px;color:var(--ink);font-family:var(--bf);overflow:hidden;flex-shrink:0">'
+    +     _escAttr(String(u.first_name || u.email || '?').charAt(0).toUpperCase()) + '</div>'
+    +   '<div><input type="file" id="gdPhoto" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="gdPhotoPicked(this)">'
+    +     '<button type="button" class="sc-btn" style="width:auto;height:36px;padding:0 16px;font-size:12.5px;margin:0" '
+    +       'onclick="document.getElementById(\'gdPhoto\').click()">' + GD.choosePhoto + '</button>'
+    +     '<div style="' + hint + ';margin-top:6px">' + GD.photoHint + '</div></div>'
+    + '</div>'
+
+    + '<label style="' + L + '">' + GD.country + '</label>'
+    + '<input class="sc-field" id="gdCountry" placeholder="' + GD.countryPh + '" value="' + _escAttr(u.country) + '">'
+
+    + '<label style="' + L + '">' + GD.phone + '</label>'
+    + '<input class="sc-field" id="gdPhone" type="tel" placeholder="+7 900 000 0000" value="' + _escAttr(u.phone) + '">'
+
+    + '<label style="' + L + '">' + GD.bio + '</label>'
+    + '<textarea class="sc-field" id="gdBio" rows="4" placeholder="' + GD.bioPh + '" '
+    +   'style="height:auto;padding:10px 14px;resize:vertical;line-height:1.5">' + _escAttr(u.bio) + '</textarea>'
+
+    + '<label style="display:flex;gap:9px;align-items:flex-start;margin:6px 0 12px;cursor:pointer">'
+    +   '<input type="checkbox" id="gdTerms" style="accent-color:var(--ac);margin-top:3px;flex-shrink:0">'
+    +   '<span style="font-size:12.5px;line-height:1.5;color:var(--ink);font-family:var(--bf)">' + GD.terms + '</span>'
+    + '</label>'
+
+    + '<button class="sc-btn" id="scUpgradeBtn" onclick="upgradeToGuide()">' + GD.submit + '</button>'
+    + '<div id="scUpgradeErr" style="display:none;margin-top:10px;font-size:12.5px;color:#b03030;font-family:var(--bf)"></div>'
+    + '</div>';
+}
+
+// role is a single field, so the backend overwrites it; nothing traveller-side
+// is gated on role === 'tourist', so bookings, saved tours and reviews all
+// survive. Verification is NOT granted here — a tour still cannot go live
+// until an admin approves their ID.
 function upgradeToGuide() {
   var btn = document.getElementById('scUpgradeBtn');
-  var err = document.getElementById('scUpgradeErr');
   var tok = localStorage.getItem('waybound_access');
-  if (!tok) { window.location.href = 'signin_ru.html'; return; }
-  if (err) err.style.display = 'none';
-  if (btn) { btn.disabled = true; btn.textContent = '\u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435\u2026'; }
+  if (!tok) { window.location.href = GD.signin; return; }
+
+  var country = ((document.getElementById('gdCountry') || {}).value || '').trim();
+  var phone   = ((document.getElementById('gdPhone')   || {}).value || '').trim();
+  var bio     = ((document.getElementById('gdBio')     || {}).value || '').trim();
+  var terms   = (document.getElementById('gdTerms')    || {}).checked;
+
+  // Checked here as well as on the server, so the answer is immediate.
+  if (!_gdPhotoFile)     { gdErr(GD.errPhoto);   return; }
+  if (!country)          { gdErr(GD.errCountry); return; }
+  if (!phone)            { gdErr(GD.errPhone);   return; }
+  if (bio.length < 40)   { gdErr(GD.errBio);     return; }
+  if (!terms)            { gdErr(GD.errTerms);   return; }
+
+  gdErr('');
+  if (btn) { btn.disabled = true; btn.textContent = GD.working; }
 
   fetch(window.API_V1 + '/auth/upgrade-to-operator/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
-    body: JSON.stringify({})
+    body: JSON.stringify({ country: country, phone: phone, bio: bio, accept_terms: true })
   })
   .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
   .then(function (res) {
@@ -586,11 +705,37 @@ function upgradeToGuide() {
       if (res.d && typeof res.d === 'object') { u = Object.assign(u, res.d); }
       localStorage.setItem('waybound_user', JSON.stringify(u));
     } catch (e) {}
-    window.location.href = 'operator-tour-create_ru.html';
+    // The photo goes up separately: /auth/me/ takes multipart, the upgrade
+    // endpoint takes JSON. A failure here is not worth blocking on — the
+    // account already exists, and the dashboard asks for the photo again.
+    var fd = new FormData();
+    fd.append('avatar', _gdPhotoFile);
+    return fetch(window.API_V1 + '/auth/me/', {
+      method: 'PATCH', headers: { 'Authorization': 'Bearer ' + tok }, body: fd
+    })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (!d) return;
+      try {
+        var u2 = JSON.parse(localStorage.getItem('waybound_user') || '{}');
+        if (d.photo_url) u2.photo_url = d.photo_url;
+        localStorage.setItem('waybound_user', JSON.stringify(u2));
+      } catch (e) {}
+    })
+    .catch(function () {});
   })
-  .catch(function () {
-    if (btn) { btn.disabled = false; btn.textContent = '\u0421\u0442\u0430\u0442\u044c \u0433\u0438\u0434\u043e\u043c \u2192'; }
-    if (err) { err.style.display = ''; err.textContent = '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0430\u043a\u043a\u0430\u0443\u043d\u0442.'; }
+  .then(function () {
+    // The dashboard, not the tour builder. An ID document still has to be
+    // uploaded before a tour can be published, and the dashboard is the only
+    // page that says so.
+    window.location.href = GD.dashboard;
+  })
+  .catch(function (e) {
+    if (btn) { btn.disabled = false; btn.textContent = GD.submit; }
+    // Show what the server actually said. It knows why — most often that this
+    // is an admin account, which cannot be upgraded — and "please try again"
+    // sends someone round the same loop forever.
+    gdErr((e && e.message && e.message !== 'failed') ? e.message : GD.errGeneric);
   });
 }
 </script>

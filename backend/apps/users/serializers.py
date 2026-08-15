@@ -4,6 +4,7 @@ All request/response serializers for auth endpoints.
 """
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
+from django.utils import timezone
 from rest_framework import serializers
 from .models import User
 
@@ -38,22 +39,31 @@ class OperatorRegisterSerializer(serializers.ModelSerializer):
     password     = serializers.CharField(write_only=True, validators=[validate_password])
     password2    = serializers.CharField(write_only=True, label='Confirm password')
     company_name = serializers.CharField(max_length=120, required=False, allow_blank=True)
+    # The signup page has always shown the terms and required the tick, but the
+    # answer stayed in the browser. Ticking it is now something the server sees
+    # and records, so agreement is a fact about the account rather than about
+    # one page load.
+    accept_terms = serializers.BooleanField(write_only=True)
 
     class Meta:
         model  = User
         fields = (
             'email', 'password', 'password2',
             'first_name', 'last_name', 'phone',
-            'company_name', 'country', 'bio',
+            'company_name', 'country', 'bio', 'accept_terms',
         )
 
     def validate(self, data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError({'password2': 'Passwords do not match.'})
+        if not data.get('accept_terms'):
+            raise serializers.ValidationError(
+                {'accept_terms': 'You must accept the Terms for Travel Experts.'})
         return data
 
     def create(self, validated_data):
         validated_data.pop('password2')
+        validated_data.pop('accept_terms', None)
         company_name = validated_data.pop('company_name', '')
         password = validated_data.pop('password')
         bio = validated_data.pop('bio', '')
@@ -62,7 +72,8 @@ class OperatorRegisterSerializer(serializers.ModelSerializer):
             full_bio = f'{company_name}\n\n{bio}'
         else:
             full_bio = bio or company_name
-        user = User(role=User.Role.OPERATOR, bio=full_bio, **validated_data)
+        user = User(role=User.Role.OPERATOR, bio=full_bio,
+                    guide_terms_accepted_at=timezone.now(), **validated_data)
         user.set_password(password)
         user.save()
         return user
@@ -134,13 +145,14 @@ class UserMeSerializer(serializers.ModelSerializer):
             'payout_type', 'payout_name', 'payout_bank',
             'payout_account', 'payout_bik', 'payout_corr_account',
             'payout_iban', 'payout_swift', 'payout_bank_country', 'payout_ready',
+            'guide_terms_accepted_at',
             'date_joined', 'has_password',
         )
         read_only_fields = (
             'id', 'email', 'role', 'full_name',
             'is_verified', 'verification_status', 'credentials_files',
             'email_verified', 'phone_verified', 'date_joined', 'has_password',
-            'payout_ready',
+            'payout_ready', 'guide_terms_accepted_at',
         )
 
 

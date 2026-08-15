@@ -28,7 +28,7 @@ class UserAdmin(BaseUserAdmin):
         ('Role & flags', {'fields': ('role', 'is_active', 'is_staff', 'is_superuser',
                                      'email_verified', 'phone_verified', 'marketing_emails')}),
         ('Permissions',  {'fields': ('groups', 'user_permissions')}),
-        ('Timestamps',   {'fields': ('date_joined', 'last_login')}),
+        ('Timestamps',   {'fields': ('date_joined', 'last_login', 'guide_terms_accepted_at')}),
     )
     add_fieldsets = (
         (None, {
@@ -36,7 +36,9 @@ class UserAdmin(BaseUserAdmin):
             'fields':  ('email', 'password1', 'password2', 'role'),
         }),
     )
-    readonly_fields = ('date_joined', 'last_login')
+    # guide_terms_accepted_at is a record of something the guide did. An admin
+    # editing it would be recording an agreement that never happened.
+    readonly_fields = ('date_joined', 'last_login', 'guide_terms_accepted_at')
 
     @admin.display(description='Commission', ordering='commission_pct_override')
     def col_commission(self, obj):

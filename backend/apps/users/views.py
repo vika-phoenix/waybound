@@ -666,24 +666,42 @@ def upgrade_to_operator(request):
         return Response({'detail': 'Only traveller accounts can be upgraded.'},
                         status=status.HTTP_403_FORBIDDEN)
 
+    # Someone signing up as a guide from scratch reads the Terms for Travel
+    # Experts and ticks a box. Someone arriving by upgrade used to skip
+    # straight past them and land on the tour form — same obligations, no
+    # agreement, and a guide profile with none of the details the signup form
+    # collects. The upgrade now asks for both, so the two doors lead to the
+    # same place.
+    if not request.data.get('accept_terms'):
+        return Response(
+            {'detail': 'You must accept the Terms for Travel Experts to become a guide.',
+             'accept_terms': 'required'},
+            status=status.HTTP_400_BAD_REQUEST)
+
     company = (request.data.get('company_name') or '').strip()
     bio     = (request.data.get('bio') or '').strip()
     country = (request.data.get('country') or '').strip()
     phone   = (request.data.get('phone') or '').strip()
 
-    fields = ['role']
+    fields = ['role', 'guide_terms_accepted_at']
     user.role = User.Role.OPERATOR
+    user.guide_terms_accepted_at = timezone.now()
 
+    # These arrive from a form the guide just filled in, prefilled with what we
+    # already held. Whatever comes back is their answer, so it wins — the
+    # earlier version only filled blanks, which silently discarded corrections
+    # to a phone number or country they had typed moments before.
+    #
     # Mirror OperatorRegisterSerializer: company_name is not a column, it is
-    # folded into bio. Only fill blanks — never overwrite what they already set.
+    # folded into bio.
     combined = f'{company}\n\n{bio}' if (company and bio) else (bio or company)
-    if combined and not user.bio:
+    if combined:
         user.bio = combined
         fields.append('bio')
-    if country and not user.country:
+    if country:
         user.country = country
         fields.append('country')
-    if phone and not user.phone:
+    if phone:
         user.phone = phone
         fields.append('phone')
 

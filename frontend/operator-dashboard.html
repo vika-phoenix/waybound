@@ -1900,7 +1900,7 @@ function renderOverview() {
   var checks = [
     { label:'Identity verification', sub:'Upload a passport or national ID — we cannot list your tours until this is approved', done: !!(u && u.is_verified), action:'settings.html#verification', id:'identity', required:true },
     { label:'Payout method', sub:'Bank details — we cannot pay you without these', done: !!(u && u.payout_ready), action:'settings.html#payout', recommended:true },
-    { label:'Profile photo & bio', sub:'Travellers trust guides they can see', done: !!(u && u.avatar && u.bio), action:'settings.html' },
+    { label:'Profile photo & bio', sub:'Travellers book a person, not a logo', done: !!(u && u.avatar && u.bio), action:'settings.html', recommended:true },
     { label:'Guide credentials', sub:'Certificates, past tour proof', done: !!(u && u.credentials_files && u.credentials_files.length), action:'settings.html#credentials' },
     { label:'Phone number', sub:'For verification and urgent contact', done: !!(u && u.phone), action:'settings.html' }
   ];

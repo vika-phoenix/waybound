@@ -1873,7 +1873,7 @@ function renderOverview() {
   var checks = [
     { label:'Проверка личности', sub:'Загрузите паспорт или удостоверение личности — без одобрения мы не сможем опубликовать ваши туры', done: !!(u && u.is_verified), action:'settings_ru.html#verification', id:'identity', required:true },
     { label:'Способ получения выплат', sub:'Банковские реквизиты — без них мы не сможем вам заплатить', done: !!(u && u.payout_ready), action:'settings_ru.html#payout', recommended:true },
-    { label:'Фото профиля и био', sub:'Путешественники доверяют гидам, которых видят', done: !!(u && u.avatar && u.bio), action:'settings_ru.html' },
+    { label:'Фото профиля и био', sub:'Путешественники бронируют человека, а не логотип', done: !!(u && u.avatar && u.bio), action:'settings_ru.html', recommended:true },
     { label:'Квалификация гида', sub:'Сертификаты, подтверждение проведённых туров', done: !!(u && u.credentials_files && u.credentials_files.length), action:'settings_ru.html#credentials' },
     { label:'Номер телефона', sub:'Для проверки и срочной связи', done: !!(u && u.phone), action:'settings_ru.html' }
   ];

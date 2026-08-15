@@ -648,6 +648,18 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf);min-height:1
 <div class="op-badge">Шаг 2 из 3 · Операции туров</div>
 <h2 class="auth-title" style="margin-bottom:6px">Ваша <em>деятельность в туризме</em></h2>
 <p class="auth-sub">Помогите нам понять ваш опыт и то, что вы предлагаете. Эта информация проверяется нашей командой — будьте конкретны.</p>
+    <div class="form-group" style="margin-top:20px">
+      <label class="form-label">Фото профиля *</label>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div id="opPhotoPrev" style="width:64px;height:64px;border-radius:50%;background:var(--ac);border:2px solid var(--ln);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--ink);overflow:hidden;flex-shrink:0">☺</div>
+        <div>
+          <input type="file" id="op-photo" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="opPhotoPicked(this)">
+          <button type="button" onclick="document.getElementById('op-photo').click()" style="height:36px;padding:0 16px;border:1.5px solid var(--ln);background:var(--paper);color:var(--ink);border-radius:7px;font-size:12.5px;font-weight:600;font-family:var(--bf);cursor:pointer">Выбрать фото</button>
+          <span class="form-hint" style="display:block;margin-top:6px">JPG или PNG, до 2 МБ. Показывается во всех ваших турах.</span>
+        </div>
+      </div>
+      <div class="field-err" id="errPhoto"></div>
+    </div>
 <div class="op-two-col" style="margin-top:20px">
 <div class="form-group">
 <label class="form-label">Название компании / торгового предприятия</label>
@@ -925,6 +937,7 @@ function clearStep1Errs() {
 }
 
 function clearStep2Errs() {
+  showErr('errPhoto',     null,     '');
   showErr('errTourTypes', null,     '');
   showErr('errBio',       'op-bio', '');
 }
@@ -957,9 +970,33 @@ function validateStep1() {
   return ok;
 }
 
+// A guide profile without a face is a listing travellers scroll past. This is
+// the only point at which we can ask before the account exists, so it is asked
+// here rather than left to a settings page nobody opens.
+var _opPhotoFile = null;
+
+function opPhotoPicked(input) {
+  var f = input.files && input.files[0];
+  if (!f) return;
+  if (f.size > 2 * 1024 * 1024) {
+    input.value = '';
+    showErr('errPhoto', null, 'Фото больше 2\u00a0МБ. Выберите файл поменьше.');
+    return;
+  }
+  _opPhotoFile = f;
+  var prev = document.getElementById('opPhotoPrev');
+  if (prev) prev.innerHTML = '<img src="' + URL.createObjectURL(f)
+    + '" alt="" style="width:100%;height:100%;object-fit:cover">';
+  showErr('errPhoto', null, '');
+}
+
 function validateStep2() {
   clearStep2Errs();
   var ok = true;
+  if (!_opPhotoFile) {
+    showErr('errPhoto', null, 'Добавьте фото профиля — путешественники бронируют человека, а не логотип.');
+    ok = false;
+  }
   var checked = document.querySelectorAll('#tourTypeGrid .tour-type-cb:checked');
   if (checked.length === 0) {
     showErr('errTourTypes', null, 'Пожалуйста, выберите хотя бы один тип тура.');
@@ -1115,7 +1152,11 @@ async function submitOperator() {
         password:     pw,
         password2:    pw,
         company_name: biz.trim(),
-        bio:          bio.trim()
+        bio:          bio.trim(),
+        // The tick above has always been required to submit, but the answer
+        // stayed in the browser. The server records it now, so who agreed and
+        // when is a fact about the account.
+        accept_terms: true
       })
     });
 
@@ -1128,7 +1169,7 @@ async function submitOperator() {
       if (/already exists|уже существует/i.test(_emailErr)) {
         showErr('errEmail', 'op-email',
           'Этот e-mail уже зарегистрирован. Если это ваш аккаунт путешественника, ' +
-          'войдите и свяжитесь с нами, чтобы перевести его в аккаунт гида, ' +
+          'войдите и нажмите «Стать гидом» на странице для гидов, ' +
           'либо зарегистрируйтесь с другим e-mail.');
         var _ee = document.getElementById('op-email');
         if (_ee && _ee.scrollIntoView) _ee.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1153,6 +1194,27 @@ async function submitOperator() {
     }
     if (data.user) {
       localStorage.setItem('waybound_user', JSON.stringify(data.user));
+    }
+
+    // The photo goes up separately: register/operator/ takes JSON, /auth/me/
+    // takes multipart. Not worth blocking the success screen on — the account
+    // exists either way, and the dashboard checklist asks again.
+    if (_opPhotoFile && data.access) {
+      try {
+        var _fd = new FormData();
+        _fd.append('avatar', _opPhotoFile);
+        var _pr = await fetch(AUTH_API + '/auth/me/', {
+          method:  'PATCH',
+          headers: { 'Authorization': 'Bearer ' + data.access },
+          body:    _fd
+        });
+        if (_pr.ok) {
+          var _pd = await _pr.json();
+          var _pu = JSON.parse(localStorage.getItem('waybound_user') || '{}');
+          if (_pd.photo_url) _pu.photo_url = _pd.photo_url;
+          localStorage.setItem('waybound_user', JSON.stringify(_pu));
+        }
+      } catch (_e) {}
     }
 
     // ── Show success screen (opStep4) ──────────────────────
