@@ -504,6 +504,125 @@ def purge_verification_documents():
         logger.error('Verification document purge failed: %s', exc, exc_info=True)
 
 
+def capture_due_authorisations():
+    """
+    Charge the cards whose free window has shut.
+
+    Runs often, because the shortest window is 30 minutes and an authorisation
+    left uncaptured eventually expires on its own — at which point the money is
+    gone and the seat is still held.
+
+    A failure here is not an error to swallow: it leaves a confirmed booking
+    with nothing behind it, so it starts a grace period and tells the traveller.
+    """
+    from apps.payments.capture import capture_booking
+    from .models import Booking
+
+    now = timezone.now()
+    due = Booking.objects.filter(
+        capture_status=Booking.Capture.AUTHORISED,
+        status__in=[Booking.Status.CONFIRMED, Booking.Status.PENDING],
+        cooling_off_until__isnull=False,
+        cooling_off_until__lte=now,
+    )
+
+    ok = failed = 0
+    for bk in due:
+        if capture_booking(bk):
+            ok += 1
+            continue
+        failed += 1
+        try:
+            send_capture_failed_email(bk)
+        except Exception as exc:
+            logger.error('Capture-failure email error for %s: %s', bk.reference, exc)
+
+    if ok or failed:
+        logger.info('Capture sweep: %d charged, %d failed.', ok, failed)
+
+
+def cancel_unfixed_captures():
+    """
+    Give up on bookings whose card was never fixed.
+
+    The seat has been held since booking on the promise of money that never
+    arrived, so it goes back on sale. One reminder goes out at the halfway
+    point first — a failed capture is far more often an expired card than
+    anyone being difficult.
+    """
+    from .models import Booking
+    from .views import send_booking_cancelled_emails
+
+    now = timezone.now()
+    stuck = Booking.objects.filter(
+        capture_status=Booking.Capture.FAILED,
+        capture_grace_until__isnull=False,
+    ).exclude(status=Booking.Status.CANCELLED)
+
+    reminded = cancelled = 0
+    for bk in stuck:
+        if now < bk.capture_grace_until:
+            # Halfway reminder, once. capture_attempts moves on every retry, so
+            # it cannot be the flag — a dedicated one keeps the two apart.
+            half = bk.capture_grace_until - bk.capture_grace_period(now) / 2
+            if now >= half and not bk.capture_reminder_sent:
+                try:
+                    send_capture_failed_email(bk, reminder=True)
+                    bk.capture_reminder_sent = True
+                    bk.save(update_fields=['capture_reminder_sent'])
+                    reminded += 1
+                except Exception as exc:
+                    logger.error('Capture reminder error for %s: %s', bk.reference, exc)
+            continue
+
+        bk.status       = Booking.Status.CANCELLED
+        bk.cancelled_at = now
+        bk.cancelled_by = Booking.CancelledBy.SYSTEM_NO_DEPOSIT
+        bk.cancel_reason = ('Card could not be charged when the free cancellation '
+                            'window closed, and was not fixed in time.')
+        bk.save(update_fields=['status', 'cancelled_at', 'cancelled_by', 'cancel_reason'])
+        bk.release_seats()
+        cancelled += 1
+        logger.info('Cancelled %s — capture never succeeded.', bk.reference)
+        try:
+            send_booking_cancelled_emails(bk, cancelled_by='system_no_deposit')
+        except Exception as exc:
+            logger.error('Email error for capture cancel %s: %s', bk.reference, exc)
+
+    if reminded or cancelled:
+        logger.info('Capture grace sweep: %d reminded, %d cancelled.', reminded, cancelled)
+
+
+def send_capture_failed_email(booking, reminder=False):
+    """Tell the traveller their card did not go through, and by when to fix it."""
+    from django.conf import settings
+    from django.core.mail import send_mail
+
+    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
+    site    = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
+    name    = (booking.first_name or '').strip() or 'Traveller'
+
+    deadline = booking.capture_grace_until
+    when = deadline.strftime('%H:%M UTC on %d %b') if deadline else 'shortly'
+    subject = (f'Reminder: your card still needs attention for {booking.tour.title}'
+               if reminder else
+               f'We could not charge your card for {booking.tour.title}')
+
+    message = (
+        f'Hi {name},\n\n'
+        f'Your place on "{booking.tour.title}" is still held, but the payment did '
+        f'not go through when we tried to charge your card.\n'
+        f'Ref: {booking.reference}\n\n'
+        f'{booking.capture_last_error or "Your bank declined the charge."}\n\n'
+        f'Please pay by {when} to keep your place — a different card is fine. '
+        f'After that the seat goes back on sale.\n\n'
+        f'Pay now: {site}/my-bookings.html\n\nKavkazland'
+    )
+    send_mail(subject, message, from_em, [booking.email], fail_silently=True)
+    logger.info('Sent capture-%s email for %s',
+                'reminder' if reminder else 'failure', booking.reference)
+
+
 def start_scheduler():
     from apscheduler.schedulers.background import BackgroundScheduler
     from apscheduler.triggers.interval import IntervalTrigger
@@ -557,6 +676,27 @@ def start_scheduler():
         trigger=IntervalTrigger(hours=24),
         id='send_review_reminders',
         name='Send review reminder emails (5 days after completion)',
+        replace_existing=True,
+        misfire_grace_time=300,
+    )
+
+    scheduler.add_job(
+        capture_due_authorisations,
+        # Every 15 minutes, because the shortest free window is 30 and an
+        # authorisation nobody claims expires on its own — leaving a held seat
+        # with no money behind it, which is the failure this whole path exists
+        # to avoid.
+        trigger=IntervalTrigger(minutes=15),
+        id='capture_due_authorisations',
+        name='Charge cards whose cancellation window has closed',
+        replace_existing=True,
+        misfire_grace_time=300,
+    )
+    scheduler.add_job(
+        cancel_unfixed_captures,
+        trigger=IntervalTrigger(minutes=30),
+        id='cancel_unfixed_captures',
+        name='Chase, then release, seats whose card never cleared',
         replace_existing=True,
         misfire_grace_time=300,
     )

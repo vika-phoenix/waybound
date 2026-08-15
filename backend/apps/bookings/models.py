@@ -8,11 +8,13 @@ Status flow:  pending → confirmed → completed  (or → cancelled)
 EnquiryMessage handles tour enquiries. Reply threading is supported
 via EnquiryReply (tourist and operator can exchange follow-up messages).
 """
+from datetime import timedelta
 from decimal import Decimal
 
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 import uuid
 
 
@@ -28,7 +30,21 @@ class Booking(models.Model):
         CONFIRMED  = 'confirmed',  'Confirmed'
         COMPLETED  = 'completed',  'Completed'
         CANCELLED  = 'cancelled',  'Cancelled'
-        REFUNDED   = 'refunded',   'Refunded'
+
+    class Capture(models.TextChoices):
+        """
+        Where a booking's money sits when the card was authorised rather than
+        charged. NONE covers everything charged outright — the bank rail, the
+        wallet methods that will not hold an authorisation long enough, and
+        every booking taken before deferred capture existed.
+        """
+        NONE       = 'none',       'Charged outright'
+        AUTHORISED = 'authorized', 'Authorised, not yet charged'
+        CAPTURED   = 'captured',   'Charged'
+        FAILED     = 'failed',     'Charge failed'
+        VOIDED     = 'voided',     'Authorisation released'
+        # No REFUNDED here on purpose: refund_status already owns that, and
+        # two fields describing the same money is how they end up disagreeing.
 
     # ── Core relations ─────────────────────────────────────
     tourist         = models.ForeignKey(
@@ -130,6 +146,34 @@ class Booking(models.Model):
     refund_status   = models.CharField(
         max_length=12, default='none',
         choices=[('none','None'),('pending','Pending'),('issued','Issued'),('manual','Manual transfer')],
+    )
+
+    # ── Deferred capture ───────────────────────────────────
+    # When the card is authorised at booking and charged only once the free
+    # window shuts, a cancellation inside that window costs nobody anything —
+    # there is no payment to reverse, just an authorisation to drop.
+    #
+    # The cost lands on the other side: a capture attempted a day later can
+    # fail on a card that worked at booking, and that leaves a confirmed
+    # booking holding a seat with no money behind it. These fields track that
+    # gap and the grace period the traveller gets to close it.
+    capture_status = models.CharField(
+        max_length=12, default=Capture.NONE, choices=Capture.choices, db_index=True,
+    )
+    capture_grace_until = models.DateTimeField(
+        null=True, blank=True,
+        help_text='Set when a capture fails. Past this, the booking is cancelled '
+                  'and the seat released.',
+    )
+    capture_attempts   = models.PositiveSmallIntegerField(default=0)
+    capture_reminder_sent = models.BooleanField(
+        default=False,
+        help_text='Halfway nudge sent. Separate from capture_attempts, which '
+                  'moves on every retry and so cannot double as this flag.',
+    )
+    capture_last_error = models.CharField(
+        max_length=200, blank=True, default='',
+        help_text='Why the last capture failed, for support to quote back.',
     )
 
     # ── Timestamps ─────────────────────────────────────────
@@ -304,6 +348,40 @@ class Booking(models.Model):
         self.seats_held = False
         self.save(update_fields=['seats_held'])
         return True
+
+    # How long a traveller gets to fix a card after a capture fails. Near the
+    # departure a held seat is close to unsellable, so the seat stops waiting
+    # long before it does on a booking made months out.
+    CAPTURE_GRACE_NEAR = timedelta(hours=3)    # departure 7 days away or less
+    CAPTURE_GRACE_FAR  = timedelta(hours=24)
+
+    def capture_grace_period(self, now=None):
+        """The grace this booking would get, as a timedelta."""
+        if not self.departure_date:
+            return self.CAPTURE_GRACE_FAR
+        now = now or timezone.now()
+        days_out = (self.departure_date - now.date()).days
+        return self.CAPTURE_GRACE_NEAR if days_out <= 7 else self.CAPTURE_GRACE_FAR
+
+    def mark_capture_failed(self, error='', now=None):
+        """
+        Record a failed capture and start the clock.
+
+        The grace deadline is set once, on the first failure. A retry that also
+        fails must not push it back — otherwise someone with a wallet of dead
+        cards holds the seat indefinitely, which is the same free hold the
+        capture was meant to close.
+        """
+        now = now or timezone.now()
+        self.capture_status     = self.Capture.FAILED
+        self.capture_attempts   = (self.capture_attempts or 0) + 1
+        self.capture_last_error = (error or '')[:200]
+        fields = ['capture_status', 'capture_attempts', 'capture_last_error']
+        if not self.capture_grace_until:
+            self.capture_grace_until = now + self.capture_grace_period(now)
+            fields.append('capture_grace_until')
+        self.save(update_fields=fields)
+        return self.capture_grace_until
 
     def snapshot_commission(self, save=True):
         """
