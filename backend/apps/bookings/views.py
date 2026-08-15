@@ -650,8 +650,21 @@ def booking_detail(request, pk):
     return Response(serializer.data)
 
 
+# The 1% in the top tier is the card fee, not a penalty.
+#
+# The deposit is 30% of the tour, and a processor keeps roughly 2.9% + a fixed
+# charge of whatever it handles. As a fraction of the tour that lands at about
+# 0.9% at every price point — so a flat 1% covers the cost of a cancellation
+# almost exactly, on a 500 tour and on a 5,000 one, in any currency. A larger
+# number would be a penalty inside a window advertised as free; a smaller one
+# would mean each cancellation costs us money.
+#
+# The label says so. A traveller who read "full refund" and received 99% has a
+# fair complaint, and cancel_policy_snapshot freezes these words at booking, so
+# this text is the promise.
 PLATFORM_DEFAULT_CANCEL_POLICY = [
-    {'days_before_min': 30, 'days_before_max': None, 'penalty_pct': 0,   'label': 'Full refund (30+ days)'},
+    {'days_before_min': 30, 'days_before_max': None, 'penalty_pct': 1,
+     'label': 'Free cancellation, less a 1% processing fee (30+ days)'},
     {'days_before_min': 14, 'days_before_max': 29,   'penalty_pct': 50,  'label': '50% refund (14–29 days)'},
     {'days_before_min': 0,  'days_before_max': 13,   'penalty_pct': 100, 'label': 'No refund (within 14 days)'},
 ]
@@ -904,9 +917,10 @@ def booking_cancel(request, pk):
     # Compute refund before changing status
     refund_amount, penalty_pct, tier_label = _compute_refund(booking, cancelled_by)
 
-    booking.status       = Booking.Status.CANCELLED
-    booking.cancelled_at = timezone.now()
-    booking.cancelled_by = cancelled_by
+    booking.status        = Booking.Status.CANCELLED
+    booking.cancelled_at  = timezone.now()
+    booking.cancelled_by  = cancelled_by
+    booking.cancel_reason = (request.data.get('reason') or '').strip()
 
     if refund_amount > 0:
         booking.refund_amount = refund_amount
@@ -921,15 +935,10 @@ def booking_cancel(request, pk):
         booking.refund_status = 'none'
 
     booking.save(update_fields=['status', 'cancelled_at', 'cancelled_by',
-                                'refund_amount', 'refund_status'])
+                                'cancel_reason', 'refund_amount', 'refund_status'])
 
     # Free up the departure spot
-    if booking.departure:
-        booking.departure.spots_left = min(
-            booking.departure.spots_total,
-            booking.departure.spots_left + booking.adults + booking.children,
-        )
-        booking.departure.save(update_fields=['spots_left'])
+    if booking.release_seats():
         # Notify anyone on the waitlist for this departure
         if booking.departure.spots_left > 0:
             try:
@@ -1034,11 +1043,7 @@ def booking_confirm(request, pk):
     booking.confirmed_at = timezone.now()
     booking.save(update_fields=['status', 'confirmed_at'])
 
-    # Decrement departure spots
-    if booking.departure:
-        booked = booking.adults + booking.children
-        booking.departure.spots_left = max(0, booking.departure.spots_left - booked)
-        booking.departure.save(update_fields=['spots_left'])
+    booking.take_seats()
 
     send_booking_confirmed_emails(booking)
 

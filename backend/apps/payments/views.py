@@ -550,6 +550,11 @@ def _settle(booking, payment_type, amount_usd):
     # change cannot rewrite what this guide was owed.
     booking.snapshot_commission(save=False)
     booking.save(update_fields=['deposit_paid', 'deposit_status', 'status', 'commission_pct'])
+    # This path confirms the booking itself rather than going through
+    # booking_confirm, which is where seats used to be deducted — so a paid
+    # Stripe or PayPal booking took no seat at all.
+    if booking.status == Booking.Status.CONFIRMED:
+        booking.take_seats()
     logger.info('Deposit paid for %s via %s', booking.reference, booking.payment_method)
 
     try:

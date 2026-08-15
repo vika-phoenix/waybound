@@ -157,8 +157,6 @@ class ManualBookingForm(forms.Form):
         # rewrite what this guide is owed.
         if paid:
             booking.snapshot_commission()
-            if dep:
-                dep.spots_left = max(0, dep.spots_left - (adults + children))
-                dep.save(update_fields=['spots_left'])
+            booking.take_seats()
 
         return booking

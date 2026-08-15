@@ -47,6 +47,7 @@ def auto_cancel_expired_bookings():
         bk.cancelled_at = now
         bk.cancelled_by = Booking.CancelledBy.SYSTEM_NO_DEPOSIT
         bk.save(update_fields=['status', 'cancelled_at', 'cancelled_by'])
+        bk.release_seats()
         logger.info('Auto-cancelled ghost booking %s (no deposit within 24 h)', bk.reference)
         try:
             send_booking_cancelled_emails(bk, cancelled_by='system_no_deposit')
@@ -80,6 +81,7 @@ def auto_cancel_expired_bookings():
 
         bk.save(update_fields=['status', 'cancelled_at', 'cancelled_by',
                                'refund_amount', 'refund_status'])
+        bk.release_seats()
         logger.info('Auto-cancelled unconfirmed booking %s (operator timeout 48 h, refund=%.2f %s)',
                      bk.reference, refund_amount, bk.refund_status)
         try:
@@ -115,6 +117,7 @@ def auto_cancel_expired_bookings():
 
         bk.save(update_fields=['status', 'cancelled_at', 'cancelled_by',
                                'refund_amount', 'refund_status'])
+        bk.release_seats()
         logger.info(
             'Auto-cancelled past-departure stranded booking %s (departure %s, tour %d days)',
             bk.reference, bk.departure_date, tour_days,

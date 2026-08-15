@@ -154,6 +154,20 @@ class Booking(models.Model):
 
     cancelled_by    = models.CharField(max_length=24, blank=True, default='',
                                        choices=CancelledBy.choices, db_index=True)
+    cancel_reason   = models.TextField(blank=True, default='',
+                                       help_text='Reason given at cancellation. Kept because '
+                                                 '"we review guide cancellations" is not a policy '
+                                                 'if the reason only ever existed in an email.')
+
+    # Whether this booking's travellers have been deducted from the departure.
+    #
+    # Seats used to come off in exactly one place — the guide pressing confirm —
+    # while the Stripe and PayPal webhooks set the booking straight to CONFIRMED
+    # and never went through it. So a paid international booking took no seat at
+    # all, and cancelling it handed those uncounted seats back, putting the
+    # departure above its own capacity. This flag makes taking and releasing
+    # symmetrical and safe to call twice.
+    seats_held      = models.BooleanField(default=False)
     last_balance_reminder_sent = models.DateTimeField(null=True, blank=True,
         help_text='Last time an operator balance reminder was sent for this booking')
 
@@ -252,6 +266,43 @@ class Booking(models.Model):
     def payout_amount(self):
         """What the guide is owed for this booking."""
         return round(self.amount_kept - self.commission_amount, 2)
+
+    def take_seats(self):
+        """
+        Deduct this booking's travellers from the departure, once.
+
+        Called from every path that makes a booking real — the guide
+        confirming, either payment webhook, the offline booking form — because
+        a seat that is only counted on one of those paths is not counted.
+        """
+        if self.seats_held or not self.departure_id:
+            return False
+        seats = self.adults + self.children
+        dep = self.departure
+        dep.spots_left = max(0, dep.spots_left - seats)
+        dep.save(update_fields=['spots_left'])
+        self.seats_held = True
+        self.save(update_fields=['seats_held'])
+        return True
+
+    def release_seats(self):
+        """
+        Hand the seats back — and only seats this booking actually took.
+
+        The old code added them back on every cancellation whether or not they
+        had ever been deducted, so cancelling a booking that never held a seat
+        inflated the departure. It was capped at spots_total, which hid the
+        damage without preventing it: other travellers' seats came back on sale.
+        """
+        if not self.seats_held or not self.departure_id:
+            return False
+        seats = self.adults + self.children
+        dep = self.departure
+        dep.spots_left = min(dep.spots_total, dep.spots_left + seats)
+        dep.save(update_fields=['spots_left'])
+        self.seats_held = False
+        self.save(update_fields=['seats_held'])
+        return True
 
     def snapshot_commission(self, save=True):
         """

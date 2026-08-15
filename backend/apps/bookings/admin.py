@@ -21,7 +21,8 @@ class BookingAdmin(admin.ModelAdmin):
     search_fields   = ['reference', 'email', 'first_name', 'last_name',
                        'tour__slug', 'tourist__email', 'payout_reference']
     readonly_fields = ['reference', 'created_at', 'updated_at', 'confirmed_at', 'cancelled_at',
-                       'col_collected', 'col_kept', 'col_commission', 'col_payout']
+                       'col_collected', 'col_kept', 'col_commission', 'col_payout',
+                       'seats_held']
     ordering        = ['-created_at']
     list_editable   = ['status']
 
@@ -44,8 +45,15 @@ class BookingAdmin(admin.ModelAdmin):
                 'and a cancellation that kept a penalty is charged on the penalty.'
             ),
         }),
-        ('Timestamps',  {'fields': ('created_at', 'updated_at', 'confirmed_at',
-                                     'cancelled_at', 'cancelled_by'),
+        ('Cancellation', {
+            'fields': ('cancelled_at', 'cancelled_by', 'cancel_reason'),
+            'description': (
+                'A guide cancelling a paid booking refunds the traveller in full at '
+                'our expense and costs the guide nothing. The reason is kept so that '
+                '"we review guide cancellations" means something.'
+            ),
+        }),
+        ('Timestamps',  {'fields': ('created_at', 'updated_at', 'confirmed_at', 'seats_held'),
                           'classes': ('collapse',)}),
     )
 
