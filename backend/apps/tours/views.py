@@ -475,14 +475,23 @@ def tour_publish(request, slug):
 
     tour.save(update_fields=['status', 'published_at'])
 
-    # Only an admin can move review -> live, so a submission that nobody is told
-    # about sits invisible until someone opens the admin by chance.
+    # Both directions need a notice, and neither may fail the transition that
+    # already happened: an admin who approves a tour must not see an error
+    # because a mail server was down.
     if tour.status == Tour.Status.REVIEW:
+        # Only an admin can move review -> live, so a submission nobody is told
+        # about sits invisible until someone opens the admin by chance.
         try:
             from .emails import notify_admin_tour_submitted
             notify_admin_tour_submitted(tour)
         except Exception as exc:
             logger.error('Tour-submitted notice failed for %s: %s', tour.slug, exc)
+    elif tour.status == Tour.Status.LIVE:
+        try:
+            from .emails import notify_operator_tour_approved
+            notify_operator_tour_approved(tour)
+        except Exception as exc:
+            logger.error('Tour-approved notice failed for %s: %s', tour.slug, exc)
 
     return Response({'status': tour.status})
 

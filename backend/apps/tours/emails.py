@@ -287,3 +287,78 @@ def notify_admin_tour_submitted(tour) -> bool:
     except Exception as exc:
         logger.error('Could not send tour-submitted notice for %s: %s', tour.slug, exc)
         return False
+
+
+def _operator_email(tour):
+    op = tour.operator
+    return op.email if op and op.email else ''
+
+
+def notify_operator_tour_approved(tour) -> bool:
+    """
+    Tell the guide their tour is live.
+
+    Publishing was a bare queryset.update(): the tour went live and the person
+    who wrote it was told nothing. They had no way to find out except opening
+    the dashboard on the off chance, so a tour could be taking bookings for
+    days before its guide realised.
+    """
+    to = _operator_email(tour)
+    if not to:
+        return False
+    site = getattr(settings, 'FRONTEND_URL', '') or _site_url()
+    op = tour.operator
+    body = (
+        f'Hi {(op.first_name or "").strip() or "there"},\n\n'
+        f'Good news — "{tour.title}" has been approved and is now live on '
+        f'Kavkazland. Travellers can find it and book it from today.\n\n'
+        f'View it: {site}/tour_detail_page.html?slug={tour.slug}\n'
+        f'Manage it: {site}/operator-dashboard.html\n\n'
+        f'A few things worth checking now it is public:\n'
+        f'  - your departure dates are still the ones you want to run\n'
+        f'  - your bank details are on file, or we cannot pay you\n\n'
+        f'The Kavkazland Team\n'
+    )
+    try:
+        send_mail(f'Your tour is live: {tour.title}', body,
+                  settings.DEFAULT_FROM_EMAIL, [to], fail_silently=False)
+        logger.info('Tour-approved notice sent for %s', tour.slug)
+        return True
+    except Exception as exc:
+        logger.error('Could not send tour-approved notice for %s: %s', tour.slug, exc)
+        return False
+
+
+def notify_operator_tour_rejected(tour, reason='') -> bool:
+    """
+    Tell the guide their tour was sent back, and why.
+
+    Rejection moved the tour to draft silently. Without a reason the guide
+    cannot fix whatever the problem was, so they either resubmit the same thing
+    or give up — both of which cost you a listing.
+    """
+    to = _operator_email(tour)
+    if not to:
+        return False
+    site = getattr(settings, 'FRONTEND_URL', '') or _site_url()
+    op = tour.operator
+    why = (f'What needs changing:\n{reason.strip()}\n\n' if (reason or '').strip()
+           else 'No specific reason was recorded. Reply to this email and we will explain.\n\n')
+    body = (
+        f'Hi {(op.first_name or "").strip() or "there"},\n\n'
+        f'We have sent "{tour.title}" back to draft, so it is not visible to '
+        f'travellers yet.\n\n'
+        f'{why}'
+        f'Nothing is lost — everything you wrote is still there. Edit it and '
+        f'submit again whenever you are ready:\n'
+        f'{site}/operator-tour-create.html?slug={tour.slug}\n\n'
+        f'The Kavkazland Team\n'
+    )
+    try:
+        send_mail(f'Changes needed on: {tour.title}', body,
+                  settings.DEFAULT_FROM_EMAIL, [to], fail_silently=False)
+        logger.info('Tour-rejected notice sent for %s', tour.slug)
+        return True
+    except Exception as exc:
+        logger.error('Could not send tour-rejected notice for %s: %s', tour.slug, exc)
+        return False

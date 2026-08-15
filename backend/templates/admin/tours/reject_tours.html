@@ -1,0 +1,74 @@
+{% extends "admin/base_site.html" %}
+{% comment %}
+The reason is the whole point of this page. A tour that reappears as a draft
+with no explanation leaves the guide guessing, so they resubmit the same thing
+or stop bothering — either way you lose the listing.
+{% endcomment %}
+
+{% block content %}
+<style>
+  .rj-wrap { max-width: 720px; }
+  .rj-table { width:100%; border-collapse:collapse; font-size:13px; margin:16px 0; }
+  .rj-table th, .rj-table td { text-align:left; padding:7px 12px; border-top:1px solid #eef0f3; }
+  .rj-field { margin:18px 0; }
+  .rj-field label { display:block; font-weight:600; margin-bottom:4px; }
+  .rj-field textarea { width:100%; min-height:110px; padding:9px 11px; font-size:14px;
+                       border:1px solid #ccc; border-radius:6px; font-family:inherit; }
+  .rj-field .hint { font-size:12px; color:#666; margin-top:4px; }
+  .rj-eg { background:#f6f7f9; border:1px solid #e0e3e8; border-radius:8px;
+           padding:12px 16px; margin:14px 0; font-size:13px; color:#444; }
+  .rj-eg ul { margin:6px 0 0 18px; }
+</style>
+
+<div class="rj-wrap">
+  <h1>Send back to the guide</h1>
+
+  {% if tours %}
+    <p>These tours go back to draft. They stay invisible to travellers, and nothing
+       the guide wrote is lost — they can edit and resubmit.</p>
+
+    <table class="rj-table">
+      <tr><th>Tour</th><th>Guide</th><th>Status</th></tr>
+      {% for t in tours %}
+        <tr>
+          <td>{{ t.title }}</td>
+          <td>{{ t.operator.full_name|default:t.operator.email }}</td>
+          <td>{{ t.get_status_display }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+
+    <form method="post">
+      {% csrf_token %}
+      {% for t in tours %}
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ t.pk }}">
+      {% endfor %}
+      <input type="hidden" name="action" value="reject_tours">
+
+      <div class="rj-field">
+        <label for="reason">What needs changing?</label>
+        <textarea name="reason" id="reason" autofocus
+                  placeholder="e.g. The photos are all of the same viewpoint — we need at least three that show the route and the accommodation. The itinerary also stops at day 4 of 6."></textarea>
+        <div class="hint">This goes to the guide word for word, so write it to them.
+          The same text is sent for every tour selected above.</div>
+      </div>
+
+      <div class="rj-eg">
+        Worth being specific about:
+        <ul>
+          <li>which photos or itinerary days are missing or unusable</li>
+          <li>anything in the description that reads as a safety or legal problem</li>
+          <li>a price or group size that does not match what the tour describes</li>
+        </ul>
+      </div>
+
+      <button type="submit" name="apply" value="1" class="default">Send back to draft</button>
+      <a href="{% url 'admin:tours_tour_changelist' %}" class="button cancel-link"
+         style="margin-left:8px">Cancel</a>
+    </form>
+  {% else %}
+    <p>No tours selected.</p>
+    <a href="{% url 'admin:tours_tour_changelist' %}" class="button">Back</a>
+  {% endif %}
+</div>
+{% endblock %}
