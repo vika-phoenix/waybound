@@ -58,11 +58,59 @@ class User(AbstractBaseUser, PermissionsMixin):
                                             help_text='Operator Telegram chat ID for instant notifications')
 
     # ── Payout (operators only) ────────────────────────────
+    # Two shapes, because a bank account is described differently depending on
+    # where it is. The Russian fields below were the only ones for a while,
+    # which meant a guide in Georgia or Armenia — most of the target market —
+    # had no way to give details anyone could actually pay.
+    class PayoutType(models.TextChoices):
+        RUSSIA        = 'ru',   'Russian bank account'
+        INTERNATIONAL = 'intl', 'Bank account outside Russia'
+
+    payout_type         = models.CharField(max_length=8, blank=True, default='',
+                                           choices=PayoutType.choices)
+    # Shared by both shapes.
     payout_name         = models.CharField(max_length=120, blank=True, default='')
     payout_bank         = models.CharField(max_length=120, blank=True, default='')
+    # Russian domestic transfer.
     payout_account      = models.CharField(max_length=30, blank=True, default='')
     payout_bik          = models.CharField(max_length=12, blank=True, default='')
     payout_corr_account = models.CharField(max_length=30, blank=True, default='')
+    # Everywhere else.
+    payout_iban         = models.CharField(max_length=34, blank=True, default='')
+    payout_swift        = models.CharField(max_length=11, blank=True, default='')
+    payout_bank_country = models.CharField(max_length=60, blank=True, default='')
+
+    @property
+    def payout_ready(self):
+        """
+        Whether this guide could actually be paid.
+
+        Read the shape they chose, not whichever fields happen to be filled —
+        a half-migrated profile can carry stale values from the other form.
+        """
+        if not self.payout_name:
+            return False
+        if self.payout_type == self.PayoutType.INTERNATIONAL:
+            return bool(self.payout_iban and self.payout_swift)
+        if self.payout_type == self.PayoutType.RUSSIA:
+            return bool(self.payout_account and self.payout_bik)
+        # Older profiles predate the choice; they can only be Russian.
+        return bool(self.payout_account and self.payout_bik)
+
+    @property
+    def payout_summary(self):
+        """One line to copy into a banking app, in the right format."""
+        if not self.payout_ready:
+            return ''
+        if self.payout_type == self.PayoutType.INTERNATIONAL:
+            parts = [self.payout_name, self.payout_bank, f'IBAN {self.payout_iban}',
+                     f'SWIFT {self.payout_swift}', self.payout_bank_country]
+        else:
+            parts = [self.payout_name, self.payout_bank, f'acct {self.payout_account}',
+                     f'BIK {self.payout_bik}']
+            if self.payout_corr_account:
+                parts.append(f'corr {self.payout_corr_account}')
+        return ' · '.join(p for p in parts if p)
     # Left null for everyone on the standard rate. Set it only where a guide
     # has actually negotiated something different, so the platform rate stays
     # one number in settings rather than a value copied onto every account.

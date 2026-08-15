@@ -16,8 +16,9 @@ class UserAdmin(BaseUserAdmin):
         (None,           {'fields': ('email', 'password')}),
         ('Personal',     {'fields': ('first_name', 'last_name', 'phone', 'avatar', 'bio', 'country')}),
         ('Payout & commission', {
-            'fields': ('commission_pct_override', 'payout_name', 'payout_bank',
-                       'payout_account', 'payout_bik', 'payout_corr_account'),
+            'fields': ('commission_pct_override', 'payout_type', 'payout_name', 'payout_bank',
+                       'payout_account', 'payout_bik', 'payout_corr_account',
+                       'payout_iban', 'payout_swift', 'payout_bank_country'),
             'description': (
                 'Leave the commission blank for the standard platform rate. Set it only where '
                 'this guide has negotiated something different — it applies to bookings paid '

@@ -525,13 +525,25 @@ footer a:hover{color:rgba(255,255,255,.75)}
             После завершения тура ваш доход (стоимость тура минус 15% комиссия Кавказленд) переводится на банковский счёт ниже. Выплаты обрабатываются в течение 5 рабочих дней после завершения тура.
           </div>
 <div class="field-row">
+<label class="field-label">Где открыт ваш счёт? *</label>
+<select class="field-input" id="payoutType" onchange="switchPayoutType()">
+<option value="">Выберите&hellip;</option>
+<option value="ru">В России</option>
+<option value="intl">За пределами России</option>
+</select>
+</div>
+
+<div id="payoutFields" style="display:none">
+<div class="field-row">
 <label class="field-label">Имя владельца счёта *</label>
-<input class="field-input" id="payoutName" placeholder="Полное имя, как в банковском счёте"/>
+<input class="field-input" id="payoutName" placeholder="Полное имя — точно как в банке"/>
 </div>
 <div class="field-row">
 <label class="field-label">Название банка *</label>
 <input class="field-input" id="payoutBank" placeholder="например Сбербанк, Тинькофф"/>
 </div>
+
+<div class="payout-ru">
 <div class="field-row">
 <label class="field-label">Номер счёта *</label>
 <input class="field-input" id="payoutAccount" placeholder="20-значный номер счёта"/>
@@ -543,6 +555,23 @@ footer a:hover{color:rgba(255,255,255,.75)}
 <div class="field-row">
 <label class="field-label">Корреспондентский счёт</label>
 <input class="field-input" id="payoutCorrAccount" placeholder="Необязательно — 20-значный корреспондентский счёт"/>
+</div>
+</div>
+
+<div class="payout-intl">
+<div class="field-row">
+<label class="field-label">IBAN *</label>
+<input class="field-input" id="payoutIban" placeholder="например GE29NB0000000101904917"/>
+</div>
+<div class="field-row">
+<label class="field-label">SWIFT / BIC *</label>
+<input class="field-input" id="payoutSwift" placeholder="8 или 11 символов, например BAGAGE22"/>
+</div>
+<div class="field-row">
+<label class="field-label">Страна банка *</label>
+<input class="field-input" id="payoutBankCountry" placeholder="например Грузия"/>
+</div>
+</div>
 </div>
 <div style="margin-top:14px;display:flex;align-items:center;gap:12px">
 <button class="btn-save" onclick="savePayout()">Сохранить реквизиты</button>
@@ -780,6 +809,12 @@ function showPanel(name, btn) {
       updateVerifyStatus('approved');
     }
     // Load payout details from localStorage
+    if (user.payout_type) { set('payoutType', user.payout_type); }
+    else if (user.payout_account || user.payout_bik) { set('payoutType', 'ru'); }
+    if (user.payout_iban) set('payoutIban', user.payout_iban);
+    if (user.payout_swift) set('payoutSwift', user.payout_swift);
+    if (user.payout_bank_country) set('payoutBankCountry', user.payout_bank_country);
+    if (typeof switchPayoutType === 'function') switchPayoutType();
     if (user.payout_name) set('payoutName', user.payout_name);
     if (user.payout_bank) set('payoutBank', user.payout_bank);
     if (user.payout_account) set('payoutAccount', user.payout_account);
@@ -855,6 +890,12 @@ function showPanel(name, btn) {
       if (payNav) payNav.style.display = '';
       updateVerifyStatus(data.verification_status || (data.is_verified ? 'approved' : null));
       // Load payout details
+      if (data.payout_type) document.getElementById('payoutType').value = data.payout_type;
+      else if (data.payout_account || data.payout_bik) document.getElementById('payoutType').value = 'ru';
+      if (data.payout_iban) document.getElementById('payoutIban').value = data.payout_iban;
+      if (data.payout_swift) document.getElementById('payoutSwift').value = data.payout_swift;
+      if (data.payout_bank_country) document.getElementById('payoutBankCountry').value = data.payout_bank_country;
+      if (typeof switchPayoutType === 'function') switchPayoutType();
       if (data.payout_name) document.getElementById('payoutName').value = data.payout_name;
       if (data.payout_bank) document.getElementById('payoutBank').value = data.payout_bank;
       if (data.payout_account) document.getElementById('payoutAccount').value = data.payout_account;
@@ -1097,27 +1138,51 @@ function updateCredStatus(files) {
 }
 
 // ── Payout save ──────────────────────────────────────────────────────────────
+// Две формы банковского счёта и один вопрос, который выбирает между ними.
+// Показывать обе сразу — значит показать гиду поля, которые он не может
+// заполнить, а форма из пустых полей выглядит сломанной.
+function switchPayoutType() {
+  var t = document.getElementById('payoutType').value;
+  document.getElementById('payoutFields').style.display = t ? 'block' : 'none';
+  var show = function(sel, on) {
+    var els = document.querySelectorAll(sel);
+    for (var i = 0; i < els.length; i++) els[i].style.display = on ? 'block' : 'none';
+  };
+  show('.payout-ru', t === 'ru');
+  show('.payout-intl', t === 'intl');
+  var bank = document.getElementById('payoutBank');
+  if (bank) bank.placeholder = (t === 'intl') ? 'например Bank of Georgia, Ameriabank'
+                                              : 'например Сбербанк, Тинькофф';
+}
+
 async function savePayout() {
   var token = localStorage.getItem('waybound_access');
   if (!token) { showToast('Пожалуйста, сначала войдите.', 'error'); return; }
 
-  var name = document.getElementById('payoutName').value.trim();
-  var bank = document.getElementById('payoutBank').value.trim();
-  var account = document.getElementById('payoutAccount').value.trim();
-  var bik = document.getElementById('payoutBik').value.trim();
+  var val  = function(id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+  var type = val('payoutType');
+  var name = val('payoutName');
+  var bank = val('payoutBank');
 
-  if (!name || !bank || !account || !bik) {
-    showToast('Пожалуйста, заполните все обязательные поля для выплаты.', 'error');
-    return;
+  if (!type) { showToast('Укажите, где открыт ваш счёт.', 'error'); return; }
+  if (!name || !bank) { showToast('Имя владельца и название банка обязательны.', 'error'); return; }
+
+  // Обязательна только выбранная форма. У гида из Грузии нет БИК, у гида из
+  // России нет IBAN — требовать оба значит не дать сохранить никому.
+  var payload = { payout_type: type, payout_name: name, payout_bank: bank };
+  if (type === 'intl') {
+    var iban = val('payoutIban'), swift = val('payoutSwift');
+    if (!iban || !swift) { showToast('IBAN и SWIFT/BIC обязательны.', 'error'); return; }
+    payload.payout_iban = iban;
+    payload.payout_swift = swift.toUpperCase();
+    payload.payout_bank_country = val('payoutBankCountry');
+  } else {
+    var account = val('payoutAccount'), bik = val('payoutBik');
+    if (!account || !bik) { showToast('Номер счёта и БИК обязательны.', 'error'); return; }
+    payload.payout_account = account;
+    payload.payout_bik = bik;
+    payload.payout_corr_account = val('payoutCorrAccount');
   }
-
-  var payload = {
-    payout_name: name,
-    payout_bank: bank,
-    payout_account: account,
-    payout_bik: bik,
-    payout_corr_account: document.getElementById('payoutCorrAccount').value.trim()
-  };
 
   try {
     var res = await fetch(window.API_V1 + '/auth/me/', {

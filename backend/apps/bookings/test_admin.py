@@ -164,3 +164,57 @@ class DocumentStorageBannerTest(TestCase):
         self.assertIn('stored safely', body)
         self.assertIn('kavkazland-private', body)
         self.assertNotIn('being lost', body)
+
+
+class InternationalPayoutTest(TestCase):
+    """
+    The payout form was Russian-only: a 20-digit account and a 9-digit BIK.
+    A guide in Georgia or Armenia — most of the target market — had no way to
+    give details anyone could actually pay, and the payouts page called them
+    "ready" as soon as a name was filled in.
+    """
+
+    def _guide(self, **kw):
+        return User.objects.create_user(
+            email=f'g{User.objects.count()}@example.com', password='x',
+            role=User.Role.OPERATOR, **kw)
+
+    def test_a_georgian_guide_can_be_paid(self):
+        g = self._guide(payout_type='intl', payout_name='Nino T', payout_bank='Bank of Georgia',
+                        payout_iban='GE29NB0000000101904917', payout_swift='BAGAGE22',
+                        payout_bank_country='Georgia')
+        self.assertTrue(g.payout_ready)
+        self.assertIn('GE29NB0000000101904917', g.payout_summary)
+        self.assertIn('BAGAGE22', g.payout_summary)
+        self.assertNotIn('BIK', g.payout_summary, 'a BIK is meaningless for an IBAN transfer')
+
+    def test_a_russian_guide_still_works(self):
+        g = self._guide(payout_type='ru', payout_name='Ivan P', payout_bank='Sberbank',
+                        payout_account='40817810099910004312', payout_bik='044525225')
+        self.assertTrue(g.payout_ready)
+        self.assertIn('044525225', g.payout_summary)
+        self.assertNotIn('IBAN', g.payout_summary)
+
+    def test_a_profile_from_before_the_choice_existed_is_read_as_russian(self):
+        g = self._guide(payout_name='Old Guide', payout_bank='Tinkoff',
+                        payout_account='40817810099910004312', payout_bik='044525225')
+        self.assertEqual(g.payout_type, '')
+        self.assertTrue(g.payout_ready, 'existing guides must not stop being payable')
+
+    def test_half_filled_details_are_not_payable(self):
+        """The old check passed on a name alone, which is not something you can pay."""
+        self.assertFalse(self._guide(payout_name='Just A Name').payout_ready)
+        self.assertFalse(self._guide(payout_type='intl', payout_name='N',
+                                     payout_bank='B', payout_iban='GE29').payout_ready)
+        self.assertFalse(self._guide(payout_type='ru', payout_name='N',
+                                     payout_bank='B', payout_account='408').payout_ready)
+
+    def test_stale_fields_from_the_other_form_do_not_count(self):
+        """
+        A guide who moved from a Russian account to an IBAN leaves BIK and
+        account behind. Reading the columns rather than the chosen shape would
+        call them payable while the IBAN is still blank.
+        """
+        g = self._guide(payout_type='intl', payout_name='Moved', payout_bank='B',
+                        payout_account='40817810099910004312', payout_bik='044525225')
+        self.assertFalse(g.payout_ready)

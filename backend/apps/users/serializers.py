@@ -131,13 +131,16 @@ class UserMeSerializer(serializers.ModelSerializer):
             'is_verified', 'verification_status', 'credentials_files',
             'email_verified', 'phone_verified', 'marketing_emails',
             'telegram_chat_id',
-            'payout_name', 'payout_bank', 'payout_account', 'payout_bik', 'payout_corr_account',
+            'payout_type', 'payout_name', 'payout_bank',
+            'payout_account', 'payout_bik', 'payout_corr_account',
+            'payout_iban', 'payout_swift', 'payout_bank_country', 'payout_ready',
             'date_joined', 'has_password',
         )
         read_only_fields = (
             'id', 'email', 'role', 'full_name',
             'is_verified', 'verification_status', 'credentials_files',
             'email_verified', 'phone_verified', 'date_joined', 'has_password',
+            'payout_ready',
         )
 
 

@@ -185,7 +185,11 @@ class BookingAdmin(admin.ModelAdmin):
             g = groups.setdefault(key, {
                 'operator': op, 'currency': bk.currency, 'bookings': [],
                 'owed': 0.0, 'commission': 0.0,
-                'has_bank_details': bool(op.payout_account or op.payout_name),
+                # Ask the model, not the columns — a guide who switched from a
+                # Russian account to an IBAN can still have stale values in the
+                # fields they no longer use.
+                'has_bank_details': op.payout_ready,
+                'payout_summary': op.payout_summary,
                 'record_url': reverse('admin:bookings_booking_payout_record',
                                       args=[op.pk, bk.currency]),
             })
