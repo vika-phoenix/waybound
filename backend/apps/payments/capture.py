@@ -43,6 +43,31 @@ def supports_deferred_capture(method):
     return method in CAPTURE_CAPABLE_METHODS
 
 
+def should_defer_capture(booking):
+    """
+    Whether this particular payment should authorise now and charge later.
+
+    False for a retry after a failed capture, and that is the important case.
+    The traveller has already had their free window — its closing is *why* we
+    were capturing — so a retry takes the money outright. Granting a fresh
+    window on every retry would turn a wallet of dead cards into an unlimited
+    free hold on a seat, which is a worse hole than the one deferred capture
+    was built to close.
+    """
+    from django.utils import timezone
+    from apps.bookings.models import Booking
+
+    if booking.capture_status in (Booking.Capture.FAILED, Booking.Capture.CAPTURED):
+        return False
+    if not supports_deferred_capture(booking.payment_method):
+        return False
+    cooling = getattr(booking, 'cooling_off_until', None)
+    if not cooling or cooling <= timezone.now():
+        # No window left to wait out — nothing to defer for.
+        return False
+    return True
+
+
 # The registry the rails fill in. Each entry is (capture_fn, void_fn), both
 # taking a Booking and returning None on success or raising CaptureError.
 _HANDLERS = {}
@@ -92,11 +117,9 @@ def capture_booking(booking):
         booking.mark_capture_failed(f'Unexpected error: {exc}'[:200])
         return False
 
-    booking.capture_status     = Booking.Capture.CAPTURED
-    booking.capture_last_error = ''
-    booking.capture_attempts   = (booking.capture_attempts or 0) + 1
-    booking.save(update_fields=['capture_status', 'capture_last_error',
-                                'capture_attempts'])
+    booking.capture_attempts = (booking.capture_attempts or 0) + 1
+    booking.save(update_fields=['capture_attempts'])
+    booking.mark_capture_settled()
     logger.info('Captured %s', booking.reference)
     return True
 

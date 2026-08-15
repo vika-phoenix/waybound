@@ -160,6 +160,103 @@ class CaptureSeamTest(CaptureBase):
         self.assertEqual(calls['void'], 1)
 
 
+class RetryTest(CaptureBase):
+    """
+    A retry after a failed capture must take the money outright.
+
+    If a retry re-opened the free window, a wallet of dead cards would hold a
+    seat forever at no cost — strictly worse than charging at booking, which is
+    what deferred capture set out to improve on.
+    """
+
+    def test_a_first_payment_inside_the_window_defers(self):
+        self._rail()
+        bk = self._booking(cooling_off_until=timezone.now() + timedelta(hours=5),
+                           capture_status=Booking.Capture.NONE)
+        self.assertTrue(cap.should_defer_capture(bk))
+
+    def test_a_retry_after_failure_charges_immediately(self):
+        self._rail()
+        bk = self._booking(cooling_off_until=timezone.now() + timedelta(hours=5),
+                           capture_status=Booking.Capture.FAILED)
+        self.assertFalse(cap.should_defer_capture(bk))
+
+    def test_a_rail_that_cannot_hold_charges_immediately(self):
+        bk = self._booking(cooling_off_until=timezone.now() + timedelta(hours=5),
+                           payment_method='yoomoney_wallet',
+                           capture_status=Booking.Capture.NONE)
+        self.assertFalse(cap.should_defer_capture(bk))
+
+    def test_nothing_is_deferred_once_the_window_has_shut(self):
+        self._rail()
+        bk = self._booking(cooling_off_until=timezone.now() - timedelta(minutes=1),
+                           capture_status=Booking.Capture.NONE)
+        self.assertFalse(cap.should_defer_capture(bk))
+
+    def test_a_retry_never_reopens_the_window(self):
+        """The deadline the traveller agreed to is the one that stands."""
+        self._rail()
+        original = timezone.now() - timedelta(hours=2)
+        bk = self._booking(cooling_off_until=original,
+                           capture_status=Booking.Capture.FAILED)
+        bk.mark_capture_settled()
+        bk.refresh_from_db()
+        self.assertEqual(bk.cooling_off_until, original)
+
+    def test_settling_clears_the_failure_so_no_sweep_cancels_it(self):
+        bk = self._booking()
+        bk.mark_capture_failed('Card expired')
+        bk.mark_capture_settled()
+        bk.refresh_from_db()
+        self.assertEqual(bk.capture_status, Booking.Capture.CAPTURED)
+        self.assertIsNone(bk.capture_grace_until)
+        scheduler.cancel_unfixed_captures()
+        bk.refresh_from_db()
+        self.assertEqual(bk.status, Booking.Status.CONFIRMED)
+
+    def test_a_confirmed_booking_may_not_pay_again_without_a_failed_capture(self):
+        """
+        The guard that lets a retry through must not become a way to charge a
+        booking that is already settled.
+        """
+        from unittest.mock import patch
+        from rest_framework.test import APIClient
+
+        client = APIClient()
+        client.force_authenticate(self.traveller)
+        blocked = self._booking(status=Booking.Status.CONFIRMED,
+                                capture_status=Booking.Capture.CAPTURED)
+
+        with patch('apps.payments.providers.enabled_codes', return_value=['yookassa']):
+            res = client.post('/api/v1/payments/initiate/',
+                              {'booking_id': blocked.pk, 'payment_method': 'yookassa'},
+                              format='json')
+        self.assertEqual(res.status_code, 400)
+        self.assertIn('not pending', str(res.data).lower())
+
+    def test_a_failed_capture_gets_past_the_confirmed_guard(self):
+        """
+        It should reach the gateway rather than be turned away as 'not pending'.
+        The gateway call itself is stubbed — what matters is which guard ran.
+        """
+        from unittest.mock import patch
+        from rest_framework.test import APIClient
+
+        client = APIClient()
+        client.force_authenticate(self.traveller)
+        retrying = self._booking(status=Booking.Status.CONFIRMED,
+                                 deposit_status='paid',
+                                 capture_status=Booking.Capture.FAILED)
+
+        with patch('apps.payments.providers.enabled_codes', return_value=['yookassa']), \
+             patch('apps.payments.views._yoo_configure', side_effect=RuntimeError('stub')):
+            res = client.post('/api/v1/payments/initiate/',
+                              {'booking_id': retrying.pk, 'payment_method': 'yookassa'},
+                              format='json')
+        self.assertNotIn('not pending', str(res.data).lower())
+        self.assertNotIn('already paid', str(res.data).lower())
+
+
 class CaptureSweepTest(CaptureBase):
 
     def test_only_bookings_past_their_window_are_charged(self):

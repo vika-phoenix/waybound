@@ -170,9 +170,14 @@ def initiate_payment(request):
                             status=status.HTTP_502_BAD_GATEWAY)
 
     # ── Deposit payment (default) ──────────────────────────────
-    if booking.status != Booking.Status.PENDING:
+    # A booking whose capture failed is the one case where an already-confirmed
+    # booking still has to pay: the seat is held, the free window shut long ago,
+    # and the card simply did not go through. Both guards below assume payment
+    # and confirmation happen together, which is exactly what that case breaks.
+    retrying_capture = booking.capture_status == Booking.Capture.FAILED
+    if booking.status != Booking.Status.PENDING and not retrying_capture:
         return Response({'detail': f'Booking is {booking.status}, not pending.'}, status=status.HTTP_400_BAD_REQUEST)
-    if booking.deposit_status == 'paid':
+    if booking.deposit_status == 'paid' and not retrying_capture:
         return Response({'detail': 'Deposit already paid.'}, status=status.HTTP_400_BAD_REQUEST)
 
     from apps.bookings.views import compute_dynamic_deposit_pct
@@ -189,6 +194,10 @@ def initiate_payment(request):
     else:
         balance_due_date = None
 
+    # Bound before the try: the handler below logs it, and anything that fails
+    # earlier than its assignment turned that log line into an UnboundLocalError
+    # — a 500 in place of the 502 this is meant to return.
+    payment_data = None
     try:
         rub_deposit, deposit_rate = convert_to_rub(deposit_amount, currency)
         yookassa = _yoo_configure()

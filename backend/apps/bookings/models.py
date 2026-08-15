@@ -383,6 +383,18 @@ class Booking(models.Model):
         self.save(update_fields=fields)
         return self.capture_grace_until
 
+    def mark_capture_settled(self):
+        """
+        The money is in. Clears the failure state too, so a booking that was
+        rescued by a retry cannot be cancelled by a later grace sweep.
+        """
+        self.capture_status        = self.Capture.CAPTURED
+        self.capture_grace_until   = None
+        self.capture_reminder_sent = False
+        self.capture_last_error    = ''
+        self.save(update_fields=['capture_status', 'capture_grace_until',
+                                 'capture_reminder_sent', 'capture_last_error'])
+
     def snapshot_commission(self, save=True):
         """
         Freeze the rate on first payment. Idempotent: once set it is never
