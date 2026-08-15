@@ -159,9 +159,33 @@ class VerificationDocument(models.Model):
     reviewed_at   = models.DateTimeField(null=True, blank=True)
     status        = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     admin_notes   = models.TextField(blank=True)
+    purged_at     = models.DateTimeField(
+        null=True, blank=True,
+        help_text='When the file itself was deleted under the retention rule. '
+                  'The row stays so the verification decision remains on record.',
+    )
 
     def __str__(self):
         return f'{self.operator.email} — {self.doc_type} — {self.status}'
+
+    def purge_file(self):
+        """
+        Delete the scan, keep the decision.
+
+        A passport is needed to *make* the verification decision, not to hold
+        afterwards — keeping it forever is data you do not need and a breach
+        would expose. The row survives, so who was verified, when, and by what
+        kind of document is still auditable; only the image goes.
+        """
+        if self.purged_at:
+            return False
+        if self.document:
+            # storage delete first: if the row saves and this fails, the file is
+            # orphaned with nothing left pointing at it.
+            self.document.delete(save=False)
+        self.purged_at = timezone.now()
+        self.save(update_fields=['document', 'purged_at'])
+        return True
 
 
 class OTPCode(models.Model):

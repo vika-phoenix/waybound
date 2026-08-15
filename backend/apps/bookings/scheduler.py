@@ -473,6 +473,21 @@ def send_operator_balance_reminders():
             logger.error('Operator balance reminder error for %s: %s', bk.reference, exc)
 
 
+def purge_verification_documents():
+    """
+    Drop verification scans once the decision they supported is old enough.
+
+    Runs the management command so there is one implementation and it can also
+    be invoked by hand — a retention rule that only exists inside a scheduler
+    is one nobody can demonstrate when asked to.
+    """
+    from django.core.management import call_command
+    try:
+        call_command('purge_verification_documents')
+    except Exception as exc:
+        logger.error('Verification document purge failed: %s', exc, exc_info=True)
+
+
 def start_scheduler():
     from apscheduler.schedulers.background import BackgroundScheduler
     from apscheduler.triggers.interval import IntervalTrigger
@@ -528,6 +543,15 @@ def start_scheduler():
         name='Send review reminder emails (5 days after completion)',
         replace_existing=True,
         misfire_grace_time=300,
+    )
+
+    scheduler.add_job(
+        purge_verification_documents,
+        trigger=IntervalTrigger(hours=24),
+        id='purge_verification_documents',
+        name='Delete verification scans past the retention period',
+        replace_existing=True,
+        misfire_grace_time=3600,
     )
 
     try:

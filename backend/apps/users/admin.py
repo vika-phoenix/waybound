@@ -66,9 +66,9 @@ class VerificationDocumentAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context)
 
     list_display  = ('operator_email', 'doc_type', 'original_name', 'status', 'submitted_at', 'reviewed_at', 'document_link')
-    list_filter   = ('status', 'doc_type')
+    list_filter   = ('status', 'doc_type', 'purged_at')
     search_fields = ('operator__email', 'original_name')
-    readonly_fields = ('submitted_at', 'reviewed_at', 'document_link')
+    readonly_fields = ('submitted_at', 'reviewed_at', 'document_link', 'purged_at')
     actions = ['approve_verification', 'reject_verification']
 
     def operator_email(self, obj): return obj.operator.email
@@ -77,6 +77,11 @@ class VerificationDocumentAdmin(admin.ModelAdmin):
     def document_link(self, obj):
         if obj.document:
             return format_html('<a href="{}" target="_blank">View document</a>', obj.document.url)
+        if obj.purged_at:
+            # Distinguish "deleted on purpose" from "never uploaded" — otherwise
+            # a routine retention purge looks like data loss.
+            return format_html('<span style="color:#666">Deleted {} (retention)</span>',
+                               obj.purged_at.strftime('%d %b %Y'))
         return '—'
     document_link.short_description = 'Document'
 

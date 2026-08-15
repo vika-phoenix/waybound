@@ -252,6 +252,14 @@ PAYMENT_METHODS_ENABLED = config(
 # via User.commission_pct_override rather than a change here.
 PLATFORM_COMMISSION_PCT = config('PLATFORM_COMMISSION_PCT', cast=float, default=15.0)
 
+# How long a verification scan is kept after the decision it supported. The
+# document is needed to decide whether to verify a guide, not afterwards, and
+# holding passports indefinitely is personal data with no ongoing purpose.
+# Pending documents are never purged however old — an undecided application
+# still needs the thing it is waiting on. Set to 0 to disable.
+VERIFICATION_DOC_RETENTION_DAYS = config(
+    'VERIFICATION_DOC_RETENTION_DAYS', cast=int, default=90)
+
 STRIPE_SECRET_KEY      = config('STRIPE_SECRET_KEY',      default='')
 STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='')
 STRIPE_WEBHOOK_SECRET  = config('STRIPE_WEBHOOK_SECRET',  default='')
