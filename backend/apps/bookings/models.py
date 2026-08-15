@@ -199,8 +199,9 @@ class Booking(models.Model):
         null=True, blank=True,
         help_text=(
             'Penalty-free cancel deadline set at booking creation. '
-            '+30 min if departure >7 days away, +15 min if ≤7 days. '
-            'Takes precedence over all cancellation policy rules.'
+            '+24 h if departure is >30 days away, +2 h if 8–30 days, '
+            '+30 min if ≤7 days. Takes precedence over all cancellation '
+            'policy rules, including a policy the guide wrote themselves.'
         ),
     )
 
