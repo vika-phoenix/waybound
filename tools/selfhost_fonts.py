@@ -34,13 +34,25 @@ def fetch(url, binary=False):
 def main():
     os.makedirs(FONT_DIR, exist_ok=True)
 
-    urls = set()
+    # Families the pages no longer name in a Google URL but still need. Inter
+    # is here because none of the six original families except Playfair Display
+    # ship a single Cyrillic glyph, so every Russian page was rendering body
+    # text in whatever the visitor's OS happened to supply.
+    urls = {
+        'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+    }
+    # The pages no longer carry Google URLs, so the full set lives beside this
+    # script. Editing that file and re-running is how a family or weight
+    # changes; scanning the HTML too keeps this working if one ever reappears.
+    families = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'font-families.txt')
+    if os.path.exists(families):
+        urls.update(io.open(families, encoding='utf-8').read().split())
     for name in os.listdir(FRONTEND):
         if not name.endswith('.html'):
             continue
         html = io.open(os.path.join(FRONTEND, name), encoding='utf-8', newline='').read()
         urls.update(re.findall(r'https://fonts\.googleapis\.com/css2\?[^"\']+', html))
-    print('distinct Google Fonts URLs found:', len(urls))
+    print('font URLs:', len(urls))
 
     blocks, seen_src = [], {}
     for url in sorted(urls):
@@ -63,7 +75,15 @@ def main():
                 fname = (fam.group(1).replace(' ', '') + '-' + fname) if fam else fname
                 path = os.path.join(FONT_DIR, fname)
                 if not os.path.exists(path):
-                    open(path, 'wb').write(fetch(remote, binary=True))
+                    # One unavailable file must not abandon the other thirty —
+                    # a half-written fonts.css is worse than a reported gap.
+                    try:
+                        open(path, 'wb').write(fetch(remote, binary=True))
+                    except Exception as exc:
+                        if os.path.exists(path):
+                            os.remove(path)
+                        print('SKIPPED %s (%s)' % (fname, exc))
+                        continue
                 seen_src[remote] = fname
                 blocks.append(block.replace(remote, 'fonts/' + fname))
     print('font files:', len(seen_src))
