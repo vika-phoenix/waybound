@@ -1,7 +1,7 @@
 """Prove the payout admin is reachable and renders, not just that it imports."""
 from datetime import date, timedelta
 from decimal import Decimal
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from apps.bookings.models import Booking
 from apps.tours.models import DepartureDate, Tour
 from apps.users.models import User
@@ -140,3 +140,27 @@ class PayoutAdminTest(TestCase):
         body = r.content.decode()
         self.assertIn('2. Mark trips as completed', body)
         self.assertIn('3. Record that I paid the guide', body)
+
+
+class DocumentStorageBannerTest(TestCase):
+    """
+    The system check only prints into a deploy log. The person who cares about
+    these files is looking at the documents page, so it has to say it there.
+    """
+
+    def setUp(self):
+        self.admin = User.objects.create_superuser(email='a2@example.com', password='x')
+        self.client.force_login(self.admin)
+
+    def test_warns_in_red_when_documents_go_to_local_disk(self):
+        with override_settings(R2_PRIVATE_BUCKET=''):
+            body = self.client.get('/admin/users/verificationdocument/').content.decode()
+        self.assertIn('being lost', body)
+        self.assertIn('R2_PRIVATE_BUCKET', body)
+
+    def test_confirms_in_green_once_the_bucket_is_set(self):
+        with override_settings(R2_PRIVATE_BUCKET='kavkazland-private'):
+            body = self.client.get('/admin/users/verificationdocument/').content.decode()
+        self.assertIn('stored safely', body)
+        self.assertIn('kavkazland-private', body)
+        self.assertNotIn('being lost', body)

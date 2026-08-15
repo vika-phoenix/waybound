@@ -50,6 +50,20 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(VerificationDocument)
 class VerificationDocumentAdmin(admin.ModelAdmin):
+    # A deploy-log warning is only useful to someone reading deploy logs. This
+    # is the page you are on when you care about these files, so it says here
+    # whether they are going somewhere permanent.
+    change_list_template = 'admin/users/verificationdocument/change_list.html'
+
+    def changelist_view(self, request, extra_context=None):
+        from django.conf import settings
+        bucket = getattr(settings, 'R2_PRIVATE_BUCKET', '')
+        extra_context = extra_context or {}
+        extra_context['storage_ok'] = bool(bucket)
+        extra_context['storage_where'] = (
+            f'private bucket "{bucket}"' if bucket else 'this server\'s local disk')
+        return super().changelist_view(request, extra_context)
+
     list_display  = ('operator_email', 'doc_type', 'original_name', 'status', 'submitted_at', 'reviewed_at', 'document_link')
     list_filter   = ('status', 'doc_type')
     search_fields = ('operator__email', 'original_name')

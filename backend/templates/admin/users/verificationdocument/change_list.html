@@ -1,0 +1,31 @@
+{% extends "admin/change_list.html" %}
+{% comment %}
+Where the files go, said on the page where you look at them. The system check
+prints the same thing, but only into a deploy log, and nobody watches those
+until something has already been lost.
+{% endcomment %}
+
+{% block content %}
+{% if storage_ok %}
+  <div style="background:#e7f5ec;border:1px solid #b6dfc6;border-radius:8px;
+              padding:11px 16px;margin-bottom:16px;font-size:13px;color:#1a5c34">
+    <b>&#10003; Documents are stored safely.</b>
+    Uploads go to the {{ storage_where }}, served through short-lived signed
+    links, and survive deploys.
+  </div>
+{% else %}
+  <div style="background:#fdecea;border:1px solid #f3b6ae;border-radius:8px;
+              padding:13px 16px;margin-bottom:16px;font-size:13px;color:#8a2018">
+    <b>&#9888; Uploaded documents are being lost.</b>
+    They are going to {{ storage_where }}, which is wiped every time the app
+    deploys — so a guide's passport is accepted, shown as uploaded, and gone by
+    the next release, with the link below returning a 404.
+    <div style="margin-top:8px">
+      Fix: create a private R2 bucket, make sure the R2 API token covers it,
+      and set <code>R2_PRIVATE_BUCKET</code> to its name in Railway. This
+      banner turns green once it is set.
+    </div>
+  </div>
+{% endif %}
+{{ block.super }}
+{% endblock %}
