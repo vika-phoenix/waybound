@@ -33,9 +33,16 @@ class Command(BaseCommand):
         self.stdout.write(f'Generating thumbnails for {total} photo(s)…')
         done = failed = 0
         for photo in qs.iterator():
+            # Only redo what is actually missing. This runs on every deploy, and
+            # re-encoding a photo that already has all three files is a download
+            # from object storage, two Pillow passes and three uploads — paid for
+            # every release, for nothing. Once backfilled the loop does not run
+            # at all and the command costs one query.
             try:
-                photo.make_thumbnail()
-                photo.make_webp()
+                if opts['all'] or not photo.thumbnail or not photo.thumbnail_webp:
+                    photo.make_thumbnail()
+                if opts['all'] or not photo.image_webp:
+                    photo.make_webp()
                 done += 1
                 self.stdout.write(f'  OK  {photo.tour.slug} #{photo.order}')
             except Exception as e:

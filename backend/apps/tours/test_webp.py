@@ -96,3 +96,25 @@ class WebPTwinTest(TestCase):
         p.refresh_from_db()
         self.assertTrue(p.thumbnail_webp)
         self.assertTrue(p.image_webp)
+
+    def test_the_backfill_leaves_a_complete_photo_alone(self):
+        """
+        It runs on every deploy. Re-encoding a photo that already has all three
+        files is a storage round-trip and two Pillow passes, paid for every
+        release, for nothing.
+        """
+        from django.core.management import call_command
+        p = self._photo()
+        before = (p.thumbnail.name, p.thumbnail_webp.name, p.image_webp.name)
+        call_command('generate_thumbnails', verbosity=0)
+        p.refresh_from_db()
+        self.assertEqual((p.thumbnail.name, p.thumbnail_webp.name, p.image_webp.name),
+                         before, 'a complete photo must not be re-encoded')
+
+    def test_all_forces_a_regenerate(self):
+        from django.core.management import call_command
+        p = self._photo()
+        before = p.thumbnail_webp.name
+        call_command('generate_thumbnails', '--all', verbosity=0)
+        p.refresh_from_db()
+        self.assertNotEqual(p.thumbnail_webp.name, before)
