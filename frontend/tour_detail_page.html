@@ -3688,7 +3688,13 @@ function patchPage(t) {
   // ── Operator experience years ────────────────────────────
   var expEl = document.getElementById('guideExperience');
   if (expEl) {
-    if (t.operator_experience_years) { expEl.textContent = '· ' + t.operator_experience_years; expEl.style.display = ''; }
+    // Stored as a code so both language pages agree on the answer. Anything
+    // that is not a code predates that and is shown as written.
+    var EXP_LABELS = { 'lt1': 'Less than 1 year', '1-3': '1–3 years', '3-5': '3–5 years', '5-10': '5–10 years', '10+': '10+ years' };
+    if (t.operator_experience_years) {
+      var _exp = EXP_LABELS[t.operator_experience_years] || t.operator_experience_years;
+      expEl.textContent = '· ' + _exp; expEl.style.display = '';
+    }
     else expEl.style.display = 'none';
   }
 
