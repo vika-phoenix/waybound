@@ -156,3 +156,65 @@ class GuideCancellationNoticeTest(TestCase):
         r = self.client.get("/admin/users/user/")
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, 'Cancelled')
+
+
+class ChurnColumnTest(TestCase):
+    """
+    The churn column exists to catch what the guide-cancellation count cannot:
+    a guide whose friends book to manufacture demand and then cancel
+    themselves. Those read as ordinary traveller cancellations one at a time.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = User.objects.create_superuser(email='a@example.com', password='x')
+        cls.guide = User.objects.create_user(email='guide@example.com', password='x',
+                                             role=User.Role.OPERATOR, first_name='Sandro')
+        cls.tour = Tour.objects.create(operator=cls.guide, title='Ushba', country='Georgia',
+                                       destination='M', price_adult=Decimal('500'),
+                                       currency='USD', status=Tour.Status.LIVE, max_group=8)
+
+    def setUp(self):
+        self.client.force_login(self.admin)
+
+    def _bookings(self, total, cancelled, cancelled_by=Booking.CancelledBy.TOURIST):
+        for i in range(total):
+            Booking.objects.create(
+                tour=self.tour, adults=1, first_name='A', last_name=str(i),
+                email=f'{i}@example.com', price_adult=Decimal('500'),
+                total_price=Decimal('500'), currency='USD',
+                status=(Booking.Status.CANCELLED if i < cancelled
+                        else Booking.Status.CONFIRMED),
+                cancelled_by=(cancelled_by if i < cancelled else ''))
+
+    def test_the_column_is_on_the_guide_list(self):
+        r = self.client.get('/admin/users/user/')
+        self.assertContains(r, 'Churn')
+
+    def test_traveller_cancellations_still_count_toward_churn(self):
+        """The whole point — the guide-initiated count would show zero here."""
+        self._bookings(total=10, cancelled=6)
+        r = self.client.get('/admin/users/user/')
+        self.assertContains(r, '6/10 (60%)')
+
+    def test_a_guide_with_almost_no_bookings_is_left_alone(self):
+        """Two out of three is not a signal, and colouring it red would lie."""
+        self._bookings(total=3, cancelled=2)
+        r = self.client.get('/admin/users/user/')
+        self.assertContains(r, '2/3 (67%)')
+        self.assertNotContains(r, '#c0392b">2/3')
+
+    def test_a_high_rate_is_flagged(self):
+        self._bookings(total=10, cancelled=5)
+        r = self.client.get('/admin/users/user/')
+        self.assertContains(r, '#c0392b')
+
+    def test_a_healthy_rate_is_not(self):
+        self._bookings(total=20, cancelled=2)
+        r = self.client.get('/admin/users/user/')
+        self.assertContains(r, '2/20 (10%)')
+        self.assertNotContains(r, '#c0392b">2/20')
+
+    def test_a_guide_with_no_bookings_shows_nothing(self):
+        r = self.client.get('/admin/users/user/')
+        self.assertContains(r, '—')

@@ -8,7 +8,8 @@ from .models import User, OTPCode, VerificationDocument
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display  = ('email', 'full_name', 'role', 'col_commission', 'col_cancels',
-                     'is_active', 'email_verified', 'marketing_emails', 'date_joined')
+                     'col_churn', 'is_active', 'email_verified', 'marketing_emails',
+                     'date_joined')
     list_filter   = ('role', 'is_active', 'is_staff', 'email_verified', 'marketing_emails')
     search_fields = ('email', 'first_name', 'last_name', 'phone')
     ordering      = ('-date_joined',)
@@ -60,6 +61,50 @@ class UserAdmin(BaseUserAdmin):
             from django.conf import settings as _s
             return f'{getattr(_s, "PLATFORM_COMMISSION_PCT", 15):g}% (standard)'
         return format_html('<b>{}%</b>', f'{obj.commission_pct_override:g}')
+
+    def get_queryset(self, request):
+        """
+        Count every booking on this guide's tours, and how many died.
+
+        Annotated rather than counted per row so the column can be sorted —
+        the whole value of a churn figure is being able to put the worst at the
+        top.
+        """
+        from django.db.models import Count, Q
+        return super().get_queryset(request).annotate(
+            _bk_total=Count('tours__bookings', distinct=True),
+            _bk_dead=Count('tours__bookings', distinct=True,
+                           filter=Q(tours__bookings__status='cancelled')),
+        )
+
+    @admin.display(description='Churn', ordering='_bk_dead')
+    def col_churn(self, obj):
+        """
+        What share of this guide's bookings ended in a cancellation, whoever
+        clicked the button.
+
+        The Cancelled column beside this one counts only what the guide did,
+        and that misses the version worth catching: a guide who asks friends to
+        book so a departure looks nearly full, then has them cancel. Those
+        cancellations are traveller-initiated and read as ordinary churn one at
+        a time. In aggregate they do not — a tour where half the bookings
+        evaporate is worth a look regardless of who pressed cancel.
+
+        It is a prompt to go and read the bookings, never a verdict. Small
+        numbers say almost nothing, so a guide with under five is left alone.
+        """
+        if obj.role != 'operator':
+            return '—'
+        total = getattr(obj, '_bk_total', 0) or 0
+        dead  = getattr(obj, '_bk_dead', 0) or 0
+        if not total:
+            return '—'
+        pct = round(100 * dead / total)
+        text = f'{dead}/{total} ({pct}%)'
+        if total < 5:
+            return format_html('<span style="color:#888">{}</span>', text)
+        colour = '#c0392b' if pct >= 40 else ('#9a6000' if pct >= 25 else '#1a7a40')
+        return format_html('<b style="color:{}">{}</b>', colour, text)
 
     @admin.display(description='Cancelled')
     def col_cancels(self, obj):
