@@ -557,6 +557,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .chk-tag{font-size:9.5px;font-weight:700;font-family:var(--bf);text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:10px;margin-left:7px;vertical-align:middle;white-space:nowrap}
 .chk-tag.req{background:#fdecea;color:#c0392b}
 .chk-tag.opt{background:var(--paper);color:var(--mu)}
+.chk-tag.rec{background:#fff4e0;color:#9a6000}
 .checklist-label{flex:1;font-size:13px;color:var(--ink);font-family:var(--bf)}
 .checklist-sub{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:1px}
 .checklist-action{font-size:12px;font-weight:600;color:var(--ac);font-family:var(--bf);cursor:pointer;white-space:nowrap;text-decoration:none}
@@ -1898,15 +1899,16 @@ function renderOverview() {
   // The blocker goes first and is the only one marked Required.
   var checks = [
     { label:'Identity verification', sub:'Upload a passport or national ID — we cannot list your tours until this is approved', done: !!(u && u.is_verified), action:'settings.html#verification', id:'identity', required:true },
-    { label:'Payout method', sub:'Bank details, so we can pay you after a trip runs', done: !!(u && u.payout_ready), action:'settings.html#payout' },
+    { label:'Payout method', sub:'Bank details — we cannot pay you without these', done: !!(u && u.payout_ready), action:'settings.html#payout', recommended:true },
     { label:'Profile photo & bio', sub:'Travellers trust guides they can see', done: !!(u && u.avatar && u.bio), action:'settings.html' },
     { label:'Guide credentials', sub:'Certificates, past tour proof', done: !!(u && u.credentials_files && u.credentials_files.length), action:'settings.html#credentials' },
     { label:'Phone number', sub:'For verification and urgent contact', done: !!(u && u.phone), action:'settings.html' }
   ];
   function tag(c) {
     if (c.done) return '';
-    return c.required ? '<span class="chk-tag req">Required</span>'
-                      : '<span class="chk-tag opt">Optional</span>';
+    if (c.required)    return '<span class="chk-tag req">Required</span>';
+    if (c.recommended) return '<span class="chk-tag rec">Recommended</span>';
+    return '<span class="chk-tag opt">Optional</span>';
   }
   var blocked  = checks.filter(function(c){ return c.required && !c.done; }).length;
   var optional = checks.filter(function(c){ return !c.required; });

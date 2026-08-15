@@ -558,6 +558,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--bf,'DM Sans',san
 .chk-tag{font-size:9.5px;font-weight:700;font-family:var(--bf);text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:10px;margin-left:7px;vertical-align:middle;white-space:nowrap}
 .chk-tag.req{background:#fdecea;color:#c0392b}
 .chk-tag.opt{background:var(--paper);color:var(--mu)}
+.chk-tag.rec{background:#fff4e0;color:#9a6000}
 .checklist-label{flex:1;font-size:13px;color:var(--ink);font-family:var(--bf)}
 .checklist-sub{font-size:11.5px;color:var(--mu);font-family:var(--bf);margin-top:1px}
 .checklist-action{font-size:12px;font-weight:600;color:var(--ac);font-family:var(--bf);cursor:pointer;white-space:nowrap;text-decoration:none}
@@ -1871,15 +1872,16 @@ function renderOverview() {
   // действительно останавливает. Блокирующий пункт стоит первым.
   var checks = [
     { label:'Проверка личности', sub:'Загрузите паспорт или удостоверение личности — без одобрения мы не сможем опубликовать ваши туры', done: !!(u && u.is_verified), action:'settings_ru.html#verification', id:'identity', required:true },
-    { label:'Способ получения выплат', sub:'Банковские реквизиты, чтобы мы могли заплатить вам после тура', done: !!(u && u.payout_ready), action:'settings_ru.html#payout' },
+    { label:'Способ получения выплат', sub:'Банковские реквизиты — без них мы не сможем вам заплатить', done: !!(u && u.payout_ready), action:'settings_ru.html#payout', recommended:true },
     { label:'Фото профиля и био', sub:'Путешественники доверяют гидам, которых видят', done: !!(u && u.avatar && u.bio), action:'settings_ru.html' },
     { label:'Квалификация гида', sub:'Сертификаты, подтверждение проведённых туров', done: !!(u && u.credentials_files && u.credentials_files.length), action:'settings_ru.html#credentials' },
     { label:'Номер телефона', sub:'Для проверки и срочной связи', done: !!(u && u.phone), action:'settings_ru.html' }
   ];
   function tag(c) {
     if (c.done) return '';
-    return c.required ? '<span class="chk-tag req">Обязательно</span>'
-                      : '<span class="chk-tag opt">Необязательно</span>';
+    if (c.required)    return '<span class="chk-tag req">Обязательно</span>';
+    if (c.recommended) return '<span class="chk-tag rec">Желательно</span>';
+    return '<span class="chk-tag opt">Необязательно</span>';
   }
   var blocked  = checks.filter(function(c){ return c.required && !c.done; }).length;
   var optional = checks.filter(function(c){ return !c.required; });
