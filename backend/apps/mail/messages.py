@@ -52,6 +52,21 @@ SHELL = {
 }
 
 
+# Labels for the detail table that rides along with the booking emails. Same
+# rows, same order, so a Russian reader and an English one see the same shape.
+ROWS = {
+    'en': {'ref': 'Booking ref', 'tour': 'Tour', 'departure': 'Departure',
+           'travellers': 'Travellers', 'total': 'Total', 'tbc': 'To be confirmed',
+           'adult': 'adult', 'adults': 'adults', 'child': 'child',
+           'children': 'children', 'infant': 'infant', 'infants': 'infants'},
+    'ru': {'ref': 'Номер брони', 'tour': 'Тур', 'departure': 'Отправление',
+           'travellers': 'Путешественники', 'total': 'Итого',
+           'tbc': 'Уточняется',
+           'adult': 'взрослый', 'adults': 'взрослых', 'child': 'ребёнок',
+           'children': 'детей', 'infant': 'младенец', 'infants': 'младенцев'},
+}
+
+
 MESSAGES = {
     '_langs': LANGS,
 
@@ -60,8 +75,7 @@ MESSAGES = {
         'en': {
             'subject': 'Booking received: {tour} — complete your payment',
             'body': ('Hi {name},\n\n'
-                     'We have your booking for "{tour}".\n'
-                     'Reference: {ref}\n\n'
+                     'We have your booking for "{tour}".\n\n'
                      'Your place is not held until the deposit is paid. If we do not '
                      'receive it within 24 hours, the booking is cancelled and the '
                      'seat goes back on sale.'),
@@ -70,8 +84,7 @@ MESSAGES = {
         'ru': {
             'subject': 'Бронирование получено: {tour} — завершите оплату',
             'body': ('Здравствуйте, {name}!\n\n'
-                     'Мы получили вашу бронь на «{tour}».\n'
-                     'Номер брони: {ref}\n\n'
+                     'Мы получили вашу бронь на «{tour}».\n\n'
                      'Место закрепляется только после оплаты депозита. Если он не '
                      'поступит в течение 24 часов, бронь будет отменена, а место '
                      'вернётся в продажу.'),
@@ -82,21 +95,19 @@ MESSAGES = {
     # ── Paid and confirmed ──────────────────────────────────────────────────
     'booking_confirmed': {
         'en': {
+            # The detail table below carries the reference, departure and
+            # total, so the body does not repeat them.
             'subject': 'Booking confirmed: {tour}',
             'body': ('Hi {name},\n\n'
                      'Your place on "{tour}" is confirmed and your deposit has been '
-                     'received.\n'
-                     'Reference: {ref}\n'
-                     'Departure: {departure}\n\n'
+                     'received.\n\n'
                      'Your guide has been told and can now message you here.'),
             'cta': 'View my booking',
         },
         'ru': {
             'subject': 'Бронь подтверждена: {tour}',
             'body': ('Здравствуйте, {name}!\n\n'
-                     'Ваше место на «{tour}» подтверждено, депозит получен.\n'
-                     'Номер брони: {ref}\n'
-                     'Дата отправления: {departure}\n\n'
+                     'Ваше место на «{tour}» подтверждено, депозит получен.\n\n'
                      'Гид уже знает о брони и может написать вам здесь.'),
             'cta': 'Открыть бронь',
         },

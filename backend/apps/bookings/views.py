@@ -124,24 +124,14 @@ def send_booking_created_emails(booking):
     name    = (booking.first_name or '').strip() or 'Traveller'
     rows    = _booking_rows_html(booking)
 
-    tourist_body = (
-        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">Hi {name},</p>'
-        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-        f'We\'ve received your booking request for <strong>{title}</strong>. '
-        f'Please complete payment to confirm your spot.</p>{rows}'
-    )
-    try:
-        send_mail(
-            subject=f'Booking received: {title} — complete your payment',
-            message=f'Hi {name},\n\nBooking received for "{title}".\nRef: {booking.reference}\n\nComplete payment: {site}/my-bookings.html',
-            from_email=from_em,
-            html_message=_html_email(f'Booking received: {title}', tourist_body,
-                                      'View my bookings', f'{site}/my-bookings.html'),
-            recipient_list=[booking.email],
-            fail_silently=True,
-        )
-    except Exception:
-        pass
+    from apps.mail import lang_for, send
+    _lang = lang_for(booking.tourist)
+    send(booking.email, 'booking_created', _lang,
+         url=f'{site}/' + ('my-bookings_ru.html' if _lang == 'ru' else 'my-bookings.html'),
+         booking=booking,
+         name=(booking.first_name or '').strip()
+              or ('Путешественник' if _lang == 'ru' else 'Traveller'),
+         tour=title, ref=booking.reference)
 
     op_body = (
         f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
@@ -313,18 +303,15 @@ def send_booking_confirmed_emails(booking):
         f'<p style="margin:12px 0 0;font-size:13px;color:#607080;line-height:1.65">'
         f'Your reference is <strong>{booking.reference}</strong> — keep this handy for your guide.</p>'
     )
-    try:
-        send_mail(
-            subject=f'\u2713 Booking confirmed: {title}',
-            message=f'Hi {name},\n\nYour booking for "{title}" is confirmed!\nRef: {booking.reference}\n\nView: {site}/my-bookings.html',
-            from_email=from_em,
-            html_message=_html_email(f'\u2713 Confirmed: {title}', tourist_body,
-                                      'View my bookings', f'{site}/my-bookings.html'),
-            recipient_list=[booking.email],
-            fail_silently=True,
-        )
-    except Exception:
-        pass
+    from apps.mail import lang_for, send
+    _lang = lang_for(booking.tourist)
+    send(booking.email, 'booking_confirmed', _lang,
+         url=f'{site}/' + ('my-bookings_ru.html' if _lang == 'ru' else 'my-bookings.html'),
+         booking=booking,
+         name=(booking.first_name or '').strip()
+              or ('\u041f\u0443\u0442\u0435\u0448\u0435\u0441\u0442\u0432\u0435\u043d\u043d\u0438\u043a' if _lang == 'ru' else 'Traveller'),
+         tour=title, ref=booking.reference,
+         departure=str(booking.departure_date) if booking.departure_date else '\u2014')
 
 
 def send_booking_cancelled_emails(booking, cancelled_by='tourist', reason=''):
