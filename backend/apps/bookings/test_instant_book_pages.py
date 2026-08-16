@@ -45,6 +45,12 @@ class NoPageDescribesTheOldApprovalStepTest(TestCase):
         (r'не подтвердит в течение 48', 'auto-cancel if not accepted (ru)'),
         (r'either confirm or decline the booking', 'confirm-or-decline (contract)'),
         (r'либо подтвердить, либо отклонить бронирование', 'confirm-or-decline (ru)'),
+        # Same flow, restated further down the contract in British spelling —
+        # which is how it survived the first pass over this page.
+        (r'declines the Traveler.{0,40}booking request', 'decline-for-non-availability'),
+        (r'отклонил запрос Путешественника', 'decline-for-non-availability (ru)'),
+        (r'cancel any pre-authoris\w+', 'auto-release of a hold that flat never takes'),
+        (r'автоматически отменит предварительную авторизацию', 'same (ru)'),
     ]
 
     def test_no_page_says_a_booking_waits_on_the_guide(self):
