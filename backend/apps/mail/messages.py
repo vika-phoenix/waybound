@@ -52,6 +52,43 @@ SHELL = {
 }
 
 
+# Why a booking was cancelled and what happens to the money. One sentence,
+# dropped into booking_cancelled as {refund_line}, so there is a single
+# cancellation email rather than four near-identical ones.
+CANCEL_REASONS = {
+    'en': {
+        'tourist': 'The cancellation was made from your account. Any refund due under '
+                   'the tour\'s cancellation policy is on its way to your original '
+                   'payment method, and takes 3–10 business days to appear.',
+        'operator': 'Your guide cancelled it. That is their decision, not yours, so you '
+                    'are refunded in full — everything you paid, whatever the '
+                    'cancellation policy says. It takes 3–10 business days to appear.',
+        'operator_timeout': 'Your guide did not confirm it in time, so it was cancelled '
+                            'automatically. You are refunded in full, and it takes '
+                            '3–10 business days to appear.',
+        'system_past_departure': 'The departure date passed without the booking being '
+                                 'confirmed, so it was cancelled automatically. You are '
+                                 'refunded in full, and it takes 3–10 business days to '
+                                 'appear. We are sorry — this should not have happened.',
+    },
+    'ru': {
+        'tourist': 'Отмена сделана из вашего аккаунта. Возврат, положенный по условиям '
+                   'отмены тура, уже отправлен на ту же карту и появится в течение '
+                   '3–10 рабочих дней.',
+        'operator': 'Бронь отменил гид. Это его решение, а не ваше, поэтому вам '
+                    'возвращается всё, что вы оплатили, независимо от условий отмены. '
+                    'Деньги придут в течение 3–10 рабочих дней.',
+        'operator_timeout': 'Гид не подтвердил бронь вовремя, поэтому она отменена '
+                            'автоматически. Вам возвращается полная сумма, деньги '
+                            'придут в течение 3–10 рабочих дней.',
+        'system_past_departure': 'Дата отправления прошла, а бронь так и не была '
+                                 'подтверждена, поэтому она отменена автоматически. '
+                                 'Вам возвращается полная сумма в течение 3–10 рабочих '
+                                 'дней. Извините — так быть не должно было.',
+    },
+}
+
+
 # Labels for the detail table that rides along with the booking emails. Same
 # rows, same order, so a Russian reader and an English one see the same shape.
 ROWS = {

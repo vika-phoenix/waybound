@@ -328,53 +328,32 @@ def send_booking_cancelled_emails(booking, cancelled_by='tourist', reason=''):
     if cancelled_by == 'system_no_deposit':
         return
 
-    # Tour date passed with booking still pending — notify tourist of full refund
+    # The traveller's half of every remaining case is the same message with a
+    # different sentence about why and what happens to the money. The guide's
+    # half differs by case and is still handled below.
+    from apps.mail import lang_for, send
+    from apps.mail.messages import CANCEL_REASONS
+
+    _lang = lang_for(booking.tourist)
+    _reasons = CANCEL_REASONS.get(_lang) or CANCEL_REASONS['en']
+    if cancelled_by in _reasons:
+        _line = _reasons[cancelled_by]
+        if cancelled_by == 'operator' and reason:
+            _line += (f'\n\nСообщение от гида: {reason}' if _lang == 'ru'
+                      else f'\n\nMessage from your guide: {reason}')
+        send(booking.email, 'booking_cancelled', _lang,
+             url=f'{site}/' + ('my-bookings_ru.html' if _lang == 'ru' else 'my-bookings.html'),
+             booking=booking,
+             name=(booking.first_name or '').strip()
+                  or ('Путешественник' if _lang == 'ru' else 'Traveller'),
+             tour=title, ref=booking.reference, refund_line=_line)
+
+    # The traveller has already been told, above. What is left in each branch
+    # is the guide's side of it.
     if cancelled_by == 'system_past_departure':
-        body = (
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">Hi {name},</p>'
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'Your booking for <strong>{title}</strong> was never confirmed by the operator '
-            f'and the departure date has now passed. Your booking has been automatically cancelled '
-            f'and your deposit will be fully refunded within 5–10 business days.</p>{rows}'
-            f'<p style="margin:12px 0 0;font-size:13px;color:#607080">We apologise for the inconvenience. '
-            f'Please <a href="{site}/adventures.html" style="color:#4fa8d4">browse other tours</a> or '
-            f'contact support if you have questions.</p>'
-        )
-        try:
-            send_mail(
-                subject=f'Booking auto-cancelled (departure passed): {title}',
-                message=f'Hi {name},\n\nYour booking for "{title}" was never confirmed and the departure date has passed. It has been auto-cancelled and your deposit will be fully refunded.',
-                from_email=from_em,
-                html_message=_html_email('Booking auto-cancelled', body, 'Browse tours', f'{site}/adventures.html'),
-                recipient_list=[booking.email],
-                fail_silently=True,
-            )
-        except Exception:
-            pass
         return
 
-    # Operator timed out — notify tourist (refund) + operator (missed booking)
     if cancelled_by == 'operator_timeout':
-        body = (
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">Hi {name},</p>'
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'Unfortunately, your booking for <strong>{title}</strong> was not confirmed by the operator '
-            f'within the required 48 hours. It has been automatically cancelled and your deposit '
-            f'will be fully refunded within 5–10 business days.</p>{rows}'
-            f'<p style="margin:12px 0 0;font-size:13px;color:#607080">We\'re sorry for the inconvenience. '
-            f'Please <a href="{site}/adventures.html" style="color:#4fa8d4">browse other tours</a> or contact support.</p>'
-        )
-        try:
-            send_mail(
-                subject=f'Your booking was not confirmed: {title}',
-                message=f'Hi {name},\n\nYour booking for "{title}" was not confirmed in time and has been automatically cancelled. Your deposit will be refunded.',
-                from_email=from_em,
-                html_message=_html_email('Booking not confirmed', body, 'Browse tours', f'{site}/adventures.html'),
-                recipient_list=[booking.email],
-                fail_silently=True,
-            )
-        except Exception:
-            pass
         # Notify operator they missed the confirmation window
         op_body = (
             f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
@@ -415,33 +394,8 @@ def send_booking_cancelled_emails(booking, cancelled_by='tourist', reason=''):
             )
         except Exception:
             pass
-    else:
-        reason_html = (
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'<strong>Message from operator:</strong> {reason}</p>'
-        ) if reason else ''
-        tourist_body = (
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">Hi {name},</p>'
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'Your booking for <strong>{title}</strong> has been cancelled by the operator. '
-            f'If a deposit was paid, a refund will be processed within 5–10 business days.</p>'
-            f'{reason_html}{rows}'
-            f'<p style="margin:14px 0 0;font-size:13px;color:#555;line-height:1.6">'
-            f'If you have any questions or concerns, please don\'t hesitate to '
-            f'<a href="{site}/contact.html" style="color:#2a7ae2">contact our support team</a>.</p>'
-        )
-        try:
-            send_mail(
-                subject=f'Your booking has been cancelled: {title}',
-                message=f'Hi {name},\n\nYour booking for "{title}" was cancelled by the operator.\nRef: {booking.reference}' + (f'\n\nMessage: {reason}' if reason else '') + f'\n\nIf you have any questions or concerns, please contact us at {site}/contact.html',
-                from_email=from_em,
-                html_message=_html_email('Booking cancelled', tourist_body,
-                                          'Contact support', f'{site}/contact.html'),
-                recipient_list=[booking.email],
-                fail_silently=True,
-            )
-        except Exception:
-            pass
+    # A guide cancelling has already produced the traveller's email above,
+    # carrying their message and the full-refund promise.
 
 
 # kept for backward-compat — now unused

@@ -420,15 +420,8 @@ def password_reset_request(request):
     frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
     reset_link   = f'{frontend_url}/reset-password.html?uid={uid}&token={token}'
 
-    subject = 'Reset your Kavkazland password'
-    message = (
-        f'Hi {user.first_name or user.email},\n\n'
-        f'You requested a password reset for your Kavkazland account.\n\n'
-        f'Click the link below to set a new password:\n{reset_link}\n\n'
-        f'This link expires in 24 hours and can only be used once.\n\n'
-        f'If you did not request this, you can safely ignore this email.\n\n'
-        f'The Kavkazland team'
-    )
+    from apps.mail import lang_for
+    lang = lang_for(user)
 
     if settings.DEBUG:
         # Dev: print to console so you can test without an email account
@@ -440,13 +433,10 @@ def password_reset_request(request):
         print(f'Token: {token}')
         print(f'{"="*60}\n')
     else:
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
-            fail_silently=False,
-        )
+        from apps.mail import send
+        send(email, 'password_reset', lang, url=reset_link,
+             name=user.first_name or user.email,
+             valid_for='24 часа' if lang == 'ru' else '24 hours')
 
     return SUCCESS
 

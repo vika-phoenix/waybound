@@ -307,12 +307,14 @@ def send_balance_reminders():
     """
     import datetime
     from .models import Booking
-    from django.core.mail import send_mail
     from django.conf import settings
 
-    today   = timezone.now().date()
-    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
-    site    = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
+    from apps.mail import lang_for, send
+
+    today = timezone.now().date()
+    site  = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
+    LABELS = {'en': {14: '14 days', 7: '7 days', 3: '3 days'},
+              'ru': {14: '14 дней', 7: '7 дней', 3: '3 дня'}}
 
     for days, label in [(14, '14 days'), (7, '7 days'), (3, '3 days')]:
         target = today + datetime.timedelta(days=days)
@@ -325,21 +327,18 @@ def send_balance_reminders():
             balance = float(bk.total_price) - float(bk.deposit_paid)
             if balance <= 0:
                 continue  # fully paid via deposit — nothing to remind
-            name    = (bk.first_name or '').strip() or 'Traveller'
-            due_str = bk.balance_due_date.strftime('%d %b %Y')
-            subject = f'Balance due in {label}: {bk.tour.title}'
-            message = (
-                f'Hi {name},\n\n'
-                f'Your balance of {bk.currency} {balance:,.2f} for "{bk.tour.title}" '
-                f'is due in {label} ({due_str}).\n'
-                f'Ref: {bk.reference}\n\n'
-                f'Pay now: {site}/my-bookings.html\n\nKavkazland'
-            )
-            try:
-                send_mail(subject, message, from_em, [bk.email], fail_silently=True)
-                logger.info('Sent balance reminder (%s days) for %s', days, bk.reference)
-            except Exception as exc:
-                logger.error('Balance reminder email error for %s: %s', bk.reference, exc)
+            lang = lang_for(bk.tourist)
+            page = 'my-bookings_ru.html' if lang == 'ru' else 'my-bookings.html'
+            send(bk.email, 'balance_reminder', lang,
+                 url=f'{site}/{page}',
+                 name=(bk.first_name or '').strip()
+                      or ('Путешественник' if lang == 'ru' else 'Traveller'),
+                 tour=bk.tour.title,
+                 ref=bk.reference,
+                 label=LABELS[lang][days],
+                 amount=f'{bk.currency} {balance:,.2f}',
+                 due_date=bk.balance_due_date.strftime('%d.%m.%Y' if lang == 'ru'
+                                                       else '%d %b %Y'))
 
 
 def send_operator_balance_reminders():
