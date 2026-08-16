@@ -22,7 +22,10 @@ language.
 """
 from django.conf import settings
 
-DEFAULT_SCHEME = 'tiered'
+# The one default. settings.py reads the env var and leaves it empty when
+# unset, so this stays the single answer to "which scheme is running" — for
+# the app and for tools/cooling_sync.py, which cannot import Django settings.
+DEFAULT_SCHEME = 'flat'
 
 # Bands are matched top to bottom on days-until-departure, so the first whose
 # min_days is met wins. The last must be min_days 0 or a near booking matches
@@ -114,7 +117,7 @@ SCHEMES = {
 
 
 def active_scheme_name():
-    name = getattr(settings, 'COOLING_OFF_SCHEME', DEFAULT_SCHEME)
+    name = getattr(settings, 'COOLING_OFF_SCHEME', '') or DEFAULT_SCHEME
     return name if name in SCHEMES else DEFAULT_SCHEME
 
 

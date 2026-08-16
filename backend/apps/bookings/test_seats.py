@@ -9,7 +9,7 @@ it handed uncounted seats back and put other people's seats on sale again.
 from datetime import date, timedelta
 from decimal import Decimal
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 
 from apps.bookings.models import Booking
@@ -245,9 +245,13 @@ class CoolingOffWindowTest(TestCase):
         bk = Booking.objects.get(pk=res.data['id'])
         return round((bk.cooling_off_until - timezone.now()).total_seconds() / 60)
 
+    # These describe the tiered scheme specifically, so they pin it rather than
+    # relying on whichever one happens to be the default.
+    @override_settings(COOLING_OFF_SCHEME='tiered')
     def test_far_out_gets_a_day(self):
         self.assertAlmostEqual(self._minutes_for(60), 24 * 60, delta=2)
 
+    @override_settings(COOLING_OFF_SCHEME='tiered')
     def test_a_few_weeks_out_gets_two_hours(self):
         self.assertAlmostEqual(self._minutes_for(20), 120, delta=2)
 

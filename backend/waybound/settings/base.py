@@ -262,7 +262,10 @@ PLATFORM_COMMISSION_PCT = config('PLATFORM_COMMISSION_PCT', cast=float, default=
 # Changing it does not update the published pages by itself. Run
 # `python tools/cooling_sync.py --write` and commit, or the site keeps
 # promising the old scheme. `--check` fails if the two ever disagree.
-COOLING_OFF_SCHEME = config('COOLING_OFF_SCHEME', default='tiered')
+# Empty means "whatever cooling.DEFAULT_SCHEME says", so the default lives in
+# exactly one place — including for tools/cooling_sync.py, which reads that
+# module directly and cannot see Django settings.
+COOLING_OFF_SCHEME = config('COOLING_OFF_SCHEME', default='')
 
 # How long a verification scan is kept after the decision it supported. The
 # document is needed to decide whether to verify a guide, not afterwards, and

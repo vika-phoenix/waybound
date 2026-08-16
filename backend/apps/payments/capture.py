@@ -50,6 +50,27 @@ GENERIC_FAILURE = 'The payment could not be completed. Please try again.'
 CAPTURE_CAPABLE_METHODS = set()
 
 
+def register_rails():
+    """
+    Wire up the providers that can hold an authorisation.
+
+    Called from AppConfig.ready(). Registration is unconditional — the scheme
+    decides whether anything actually defers, and should_defer_capture() asks
+    it first. Keeping the rails wired under the flat scheme is what lets a
+    switch back drain authorisations that are still outstanding, instead of
+    stranding money on someone's card.
+
+    Not registered: PayPal (an order is authorised differently and needs its
+    own handling) and YooKassa (7 days on cards, but 2 hours on the wallet
+    methods, which is under our longest window).
+    """
+    from django.conf import settings
+    if not getattr(settings, 'STRIPE_SECRET_KEY', ''):
+        return
+    from .international import capture_stripe, void_stripe
+    register('stripe', capture_stripe, void_stripe)
+
+
 def supports_deferred_capture(method):
     return method in CAPTURE_CAPABLE_METHODS
 

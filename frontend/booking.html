@@ -729,9 +729,9 @@ body{min-height:100vh;display:flex;flex-direction:column}
          straight to the pay button never opens it. This is the one fact worth
          seeing without a click, at the moment of committing. -->
     <div style="margin:0 0 14px;padding:10px 13px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:7px;font-size:12.5px;line-height:1.6;color:#1a5c38;font-family:var(--bf)" id="payCoolingNote">
-      &#x23F1;&#xFE0F; <b><!--cooling:headline-->24 hours to change your mind.<!--/cooling--></b> Your card is charged now
+      &#x23F1;&#xFE0F; <b><!--cooling:headline-->30 minutes to change your mind.<!--/cooling--></b> Your card is charged now
       to hold your place — cancel within that window and we refund everything, card
-      fee included. <!--cooling:detail-->That window is 2 hours if your departure is under a month away, and 30 minutes inside the last week.<!--/cooling-->
+      fee included. <!--cooling:detail-->The same window applies to every booking, whenever you travel.<!--/cooling-->
     </div>
 
     <div class="bk-nav">
@@ -1104,7 +1104,7 @@ var currentStep = 1;
               + '<span style="color:var(--mu)">' + when + '</span>'
               + '<span style="font-weight:700;color:' + col + '">' + refund + '</span>'
               + '</div>';
-          }).join('') + '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b>Changed your mind?</b> Cancel within <b>24 hours</b> of booking and you get everything back, card fee included. That window is 2 hours if the departure is under a month away, and 30 minutes inside the last week. This applies to every booking and your guide cannot change it.</div>';
+          }).join('') + '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b><!--cooling:headline:js-->30 minutes to change your mind.<!--/cooling--></b> You get everything back, card fee included. <!--cooling:detail:js-->The same window applies to every booking, whenever you travel.<!--/cooling--> Your guide cannot change this.</div>';
         }
       } else {
         // No operator policy — show Kavkazland standard policy
@@ -1118,7 +1118,7 @@ var currentStep = 1;
             + '<span>⚠️ 14–29 days before departure</span><span style="font-weight:700;color:#9a6030">50% refund</span></div>'
             + '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln)">'
             + '<span>❌ Under 14 days before departure</span><span style="font-weight:700;color:#c0392b">No refund</span></div>'
-            + '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b>Changed your mind?</b> Cancel within <b>24 hours</b> of booking and you get everything back, card fee included. That window is 2 hours if the departure is under a month away, and 30 minutes inside the last week. This applies to every booking and your guide cannot change it.</div>'
+            + '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b><!--cooling:headline:js-->30 minutes to change your mind.<!--/cooling--></b> You get everything back, card fee included. <!--cooling:detail:js-->The same window applies to every booking, whenever you travel.<!--/cooling--> Your guide cannot change this.</div>'
             + '<div style="font-size:11px;font-style:italic;margin-top:6px;color:var(--mu)">(Kavkazland standard policy)</div>'
             + '</div>';
         }

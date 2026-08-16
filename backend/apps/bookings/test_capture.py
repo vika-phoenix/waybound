@@ -14,7 +14,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from apps.bookings import scheduler
@@ -189,6 +189,7 @@ class RetryTest(CaptureBase):
     what deferred capture set out to improve on.
     """
 
+    @override_settings(COOLING_OFF_SCHEME='tiered')
     def test_a_first_payment_inside_the_window_defers(self):
         self._rail()
         bk = self._booking(cooling_off_until=timezone.now() + timedelta(hours=5),

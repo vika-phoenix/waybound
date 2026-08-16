@@ -41,8 +41,17 @@ class WindowMathTest(TestCase):
     @override_settings(COOLING_OFF_SCHEME='nonsense')
     def test_an_unknown_scheme_falls_back_rather_than_crashing(self):
         """A typo in an env var must not stop bookings being taken."""
-        self.assertEqual(cooling.active_scheme_name(), 'tiered')
-        self.assertEqual(cooling.window_minutes(60), 1440)
+        self.assertEqual(cooling.active_scheme_name(), cooling.DEFAULT_SCHEME)
+        self.assertIn(cooling.DEFAULT_SCHEME, cooling.SCHEMES)
+
+    @override_settings(COOLING_OFF_SCHEME='')
+    def test_an_unset_env_var_uses_the_one_default(self):
+        """
+        settings leaves this empty deliberately, so DEFAULT_SCHEME is the only
+        answer to which scheme is running — including for cooling_sync.py,
+        which reads this module without Django.
+        """
+        self.assertEqual(cooling.active_scheme_name(), cooling.DEFAULT_SCHEME)
 
     def test_every_scheme_ends_in_a_band_that_matches_any_booking(self):
         """A last band above 0 days would leave near bookings with no window."""

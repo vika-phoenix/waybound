@@ -680,13 +680,19 @@ def start_scheduler():
         misfire_grace_time=300,
     )
 
+    # Under a scheme that charges at booking there is nothing time-critical to
+    # catch: no authorisation is ever created, so these find nothing. They stay
+    # scheduled, hourly, precisely because a switch back to a deferring scheme
+    # can leave authorisations outstanding, and money sitting on someone's card
+    # has to be claimed by someone. Frequency is the only thing that changes.
+    from . import cooling
+    _deferring = cooling.defers_capture()
     scheduler.add_job(
         capture_due_authorisations,
-        # Every 15 minutes, because the shortest free window is 30 and an
-        # authorisation nobody claims expires on its own — leaving a held seat
-        # with no money behind it, which is the failure this whole path exists
-        # to avoid.
-        trigger=IntervalTrigger(minutes=15),
+        # Every 15 minutes while deferring: the shortest free window is 30, and
+        # an authorisation nobody claims expires on its own — leaving a held
+        # seat with no money behind it, the failure this path exists to avoid.
+        trigger=IntervalTrigger(minutes=15) if _deferring else IntervalTrigger(hours=1),
         id='capture_due_authorisations',
         name='Charge cards whose cancellation window has closed',
         replace_existing=True,
@@ -694,7 +700,7 @@ def start_scheduler():
     )
     scheduler.add_job(
         cancel_unfixed_captures,
-        trigger=IntervalTrigger(minutes=30),
+        trigger=IntervalTrigger(minutes=30) if _deferring else IntervalTrigger(hours=1),
         id='cancel_unfixed_captures',
         name='Chase, then release, seats whose card never cleared',
         replace_existing=True,

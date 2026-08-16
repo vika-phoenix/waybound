@@ -73,9 +73,23 @@ def _stripe_ready():
 def create_stripe_checkout(booking, amount_usd, description, success_url, cancel_url, payment_type):
     """Create a Stripe Checkout Session. Returns (session_id, redirect_url)."""
     _stripe_ready()
+
+    # Under a scheme that holds the card, the session authorises rather than
+    # charges, and the money moves when the free window shuts. Stripe honours
+    # an authorisation for 7 days, comfortably past our longest window.
+    #
+    # Only ever on the deposit. A balance payment happens long after any window
+    # has closed, so there is nothing to wait for and holding it would only add
+    # a way to fail.
+    from apps.bookings import cooling
+    from apps.payments.capture import should_defer_capture
+    defer = payment_type != 'balance' and should_defer_capture(booking) and cooling.defers_capture()
+
     try:
+        extra = {'payment_intent_data': {'capture_method': 'manual'}} if defer else {}
         session = stripe.checkout.Session.create(
             mode='payment',
+            **extra,
             line_items=[{
                 'quantity': 1,
                 'price_data': {
@@ -97,7 +111,76 @@ def create_stripe_checkout(booking, amount_usd, description, success_url, cancel
     except stripe.error.StripeError as exc:
         logger.error('Stripe checkout failed for %s: %s', booking.reference, exc)
         raise PaymentError('Card payment is unavailable right now. Please try again.')
+
+    if defer:
+        from apps.bookings.models import Booking
+        booking.capture_status = Booking.Capture.AUTHORISED
+        booking.save(update_fields=['capture_status'])
     return session.id, session.url
+
+
+# ── Claiming and dropping a Stripe authorisation ────────────────────────────
+#
+# The session id is what we store, but a session is not chargeable — the
+# payment_intent behind it is. Both of these resolve that first.
+
+def _stripe_intent(booking):
+    """The payment_intent behind this booking's checkout session."""
+    from apps.payments.capture import CaptureError
+
+    session_id = booking.yookassa_payment_id
+    if not session_id:
+        raise CaptureError('No Stripe session on this booking', retryable=False)
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+    except stripe.error.StripeError as exc:
+        raise CaptureError(f'Could not read the payment: {exc}')
+    intent = session.get('payment_intent')
+    if not intent:
+        raise CaptureError('That payment was never completed', retryable=False)
+    return intent
+
+
+def capture_stripe(booking):
+    """Charge a held Stripe authorisation. Raises CaptureError if it will not."""
+    from apps.payments.capture import CaptureError
+
+    _stripe_ready()
+    intent_id = _stripe_intent(booking)
+    try:
+        intent = stripe.PaymentIntent.capture(intent_id)
+    except stripe.error.CardError as exc:
+        # The bank's own words: the useful ones for a traveller to act on.
+        raise CaptureError(getattr(exc, 'user_message', None) or str(exc))
+    except stripe.error.InvalidRequestError as exc:
+        # Already captured is success arriving twice, not a failure. The sweep
+        # retries and webhooks duplicate, so this has to be survivable.
+        if 'already been captured' in str(exc).lower():
+            logger.info('Stripe intent %s was already captured', intent_id)
+            return
+        raise CaptureError(f'Stripe refused the charge: {exc}', retryable=False)
+    except stripe.error.StripeError as exc:
+        raise CaptureError(f'Stripe was unreachable: {exc}')
+
+    if intent.status != 'succeeded':
+        raise CaptureError(f'The charge did not complete (status: {intent.status})')
+    logger.info('Captured Stripe intent %s for %s', intent_id, booking.reference)
+
+
+def void_stripe(booking):
+    """Drop a held authorisation without charging it. Costs nothing."""
+    _stripe_ready()
+    intent_id = _stripe_intent(booking)
+    try:
+        stripe.PaymentIntent.cancel(intent_id)
+    except stripe.error.InvalidRequestError as exc:
+        # A void that cannot happen because the money already moved is a real
+        # problem; one that cannot happen because it is already released is not.
+        if 'already canceled' in str(exc).lower():
+            logger.info('Stripe intent %s was already voided', intent_id)
+            return
+        raise
+    logger.info('Voided Stripe intent %s for %s', intent_id, booking.reference)
 
 
 def verify_stripe_event(request):
