@@ -25,9 +25,8 @@ class TourReviewSerializer(serializers.ModelSerializer):
                             'tourist_name', 'tour_title', 'tour_slug', 'hero_photo_url', 'guide_name']
 
     def get_tourist_name(self, obj):
-        u = obj.tourist
-        name = ((u.first_name or '') + ' ' + (u.last_name or '')).strip()
-        return name or u.email
+        # Reviews are public, so this must never fall back to the email.
+        return obj.tourist.public_display_name
 
     def get_tour_title(self, obj):
         return obj.tour.title
@@ -40,9 +39,7 @@ class TourReviewSerializer(serializers.ModelSerializer):
         return request.build_absolute_uri(photo.image.url) if request else photo.image.url
 
     def get_guide_name(self, obj):
-        op = obj.tour.operator
-        name = ((op.first_name or '') + ' ' + (op.last_name or '')).strip()
-        return name or op.email
+        return obj.tour.operator.public_display_name
 
     def validate_tour(self, value):
         return value

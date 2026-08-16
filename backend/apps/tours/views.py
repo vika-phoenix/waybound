@@ -494,6 +494,12 @@ def incomplete_tour_fields(tour):
     # requirements on the dashboard, then publish.
     if not tour.operator.avatar:
         missing.append('Your profile photo (Settings → Profile)')
+    # Same reasoning as the photo, and the same page. Names are optional on the
+    # model, and the public display name falls back to a placeholder rather
+    # than the email — so without this a live listing reads "Kavkazland Guide"
+    # where the person's name belongs, which is not what anyone is buying.
+    if not f'{tour.operator.first_name} {tour.operator.last_name}'.strip():
+        missing.append('Your name (Settings → Profile)')
     return missing
 
 

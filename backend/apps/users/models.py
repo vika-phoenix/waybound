@@ -173,7 +173,27 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def full_name(self):
+        """
+        For staff screens and our own alerts, where falling back to the email
+        is the useful thing. Never render this on a page a visitor can see —
+        use public_display_name.
+        """
         return f'{self.first_name} {self.last_name}'.strip() or self.email
+
+    @property
+    def public_display_name(self):
+        """
+        A name safe to show a stranger.
+
+        Names are optional, and full_name falls back to the email address —
+        so a guide who skipped theirs had a personal email printed on every
+        tour page, and a traveller who skipped theirs had one printed under
+        their review. Neither of them ever agreed to that.
+        """
+        name = f'{self.first_name} {self.last_name}'.strip()
+        if name:
+            return name
+        return 'Kavkazland Guide' if self.role == self.Role.OPERATOR else 'Traveller'
 
 
 class VerificationDocument(models.Model):

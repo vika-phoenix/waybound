@@ -131,7 +131,9 @@ class TourListSerializer(serializers.ModelSerializer):
         ]
 
     def get_guide_display(self, obj):
-        return obj.operator.full_name or obj.operator.email
+        # This is the guide's name on a public tour page. full_name falls back
+        # to the email address, which put personal addresses on live listings.
+        return obj.operator.public_display_name
 
     def get_operator_photo_url(self, obj):
         if not obj.operator.avatar:

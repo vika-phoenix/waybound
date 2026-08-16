@@ -97,7 +97,7 @@ def _notify_operator_new_review(review):
     try:
         from apps.bookings.views import _html_email
         op = review.tour.operator
-        tourist_name = ((review.tourist.first_name or '') + ' ' + (review.tourist.last_name or '')).strip() or review.tourist.email
+        tourist_name = review.tourist.public_display_name
         stars = '\u2605' * review.rating + '\u2606' * (5 - review.rating)
         site = getattr(settings, 'SITE_URL', 'http://127.0.0.1:5500')
         from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
