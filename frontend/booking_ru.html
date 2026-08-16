@@ -1451,6 +1451,28 @@ function goBackToTour() {
 })();
 
 </script>
-<script src="nav.js"></script>
+<script src="nav.js">
+// Заметка выше обещает бесплатный период. Тот, кто использовал его
+// дважды за месяц, его не получит — и узнать об этом после оплаты было бы нечестно.
+(function () {
+  if (!window.API_V1) return;
+  var h = (typeof authHeaders === 'function') ? authHeaders() : null;
+  if (!h) return;
+  fetch(window.API_V1 + '/bookings/cooling-off/', { headers: h })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (!d || d.you_get_one !== false) return;
+      var el = document.getElementById('payCoolingNote');
+      if (!el) return;
+      el.style.background = '#fdf3ec';
+      el.style.borderColor = '#f0d3bd';
+      el.style.color = '#8a4b1a';
+      el.innerHTML = '\u26A0\uFE0F <b>Бесплатного периода отмены на этой брони нет.</b> '
+        + 'Вы использовали его дважды за последние 30 дней, поэтому условия отмены тура '
+        + 'действуют с момента бронирования. Он вернётся по мере прохождения этих 30 дней.';
+    })
+    .catch(function () {});
+})();
+</script>
 </body>
 </html>

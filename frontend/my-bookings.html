@@ -1163,8 +1163,16 @@ function renderBookings(list) {
     // window shuts. While it is still open that is the wrong number, and this
     // is the page where someone decides — so put the deadline by the button.
     var coolUntil = b.cooling_off_until ? new Date(b.cooling_off_until) : null;
+    var liveBk = b.status !== 'cancelled' && b.status !== 'completed';
+    // A missing deadline is a fact about this booking, not nothing to say:
+    // it means the free window was not granted, and silence would leave the
+    // policy below reading as if one applied.
+    if (!b.cooling_off_until && liveBk && b.status !== 'pending') {
+      html += '<div class="bk-capfail">\u26A0\uFE0F <b>No free cancellation window '
+            + 'on this booking.</b> The policy below applied from the moment you booked.</div>';
+    }
     if (coolUntil && !isNaN(coolUntil.getTime()) && coolUntil > new Date()
-        && b.status !== 'cancelled' && b.status !== 'completed') {
+        && liveBk) {
       html += '<div class="bk-cooling">&#x23F1;&#xFE0F; <b>Free to cancel '
             + coolingLeft(coolUntil) + '.</b> Change your mind before then and you get '
             + 'everything back, card fee included \u2014 whatever the policy below says.</div>';

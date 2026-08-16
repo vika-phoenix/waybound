@@ -43,8 +43,13 @@ class WindowAbuseTest(TestCase):
             cancelled_at=when, cooling_off_until=when + timedelta(minutes=10),
         )
 
+    _dep_offset = 0
+
     def _book(self, days_out=60):
-        start = date.today() + timedelta(days=days_out)
+        # A departure date is unique per tour, so repeated bookings need
+        # distinct ones — several of these tests book the same tour many times.
+        type(self)._dep_offset += 1
+        start = date.today() + timedelta(days=days_out + type(self)._dep_offset)
         dep = DepartureDate.objects.create(tour=self.tour, start_date=start,
                                            end_date=start + timedelta(days=3),
                                            spots_total=8, spots_left=8)
@@ -127,3 +132,43 @@ class WindowAbuseTest(TestCase):
 
     def test_an_anonymous_booking_is_not_charged_for_a_stranger(self):
         self.assertTrue(cooling.grants_window(None))
+
+    def test_a_party_of_four_counts_once_not_four_times(self):
+        """The count is per booking, as the terms say — not per traveller."""
+        b = self._cancelled_inside_window()
+        b.adults, b.children = 3, 1
+        b.save(update_fields=['adults', 'children'])
+        self.assertEqual(cooling.recent_window_cancellations(self.traveller), 1)
+
+    def test_booking_repeatedly_without_cancelling_costs_nothing(self):
+        """
+        Bookings are not counted, only uses of the window. Wording that said
+        otherwise made this look like a limit on how often you may book.
+        """
+        for _ in range(6):
+            self.assertIsNotNone(self._book().cooling_off_until)
+
+
+class TheTravellerIsToldTest(WindowAbuseTest):
+    """
+    Withholding the window is only fair if the person is told, and every page
+    otherwise keeps promising one. The API answers per user when signed in.
+    """
+
+    def _ask(self, authed=True):
+        client = APIClient()
+        if authed:
+            client.force_authenticate(self.traveller)
+        return client.get('/api/v1/bookings/cooling-off/')
+
+    def test_a_signed_in_traveller_is_told_they_still_get_one(self):
+        res = self._ask()
+        self.assertIs(res.data['you_get_one'], True)
+
+    def test_and_told_when_they_no_longer_do(self):
+        for _ in range(cooling.COOLING_OFF_ABUSE_LIMIT):
+            self._cancelled_inside_window()
+        self.assertIs(self._ask().data['you_get_one'], False)
+
+    def test_a_signed_out_visitor_is_told_nothing_about_anyone(self):
+        self.assertNotIn('you_get_one', self._ask(authed=False).data)

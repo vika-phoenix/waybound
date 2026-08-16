@@ -1158,8 +1158,13 @@ function renderBookings(list) {
     // В деталях показаны условия после закрытия бесплатного окна.
     // Пока оно открыто это не та цифра, а решение принимают здесь.
     var coolUntil = b.cooling_off_until ? new Date(b.cooling_off_until) : null;
+    var liveBk = b.status !== 'cancelled' && b.status !== 'completed';
+    if (!b.cooling_off_until && liveBk && b.status !== 'pending') {
+      html += '<div class="bk-capfail">\u26A0\uFE0F <b>Бесплатного периода отмены '
+            + 'на этой брони нет.</b> Условия ниже действуют с момента бронирования.</div>';
+    }
     if (coolUntil && !isNaN(coolUntil.getTime()) && coolUntil > new Date()
-        && b.status !== 'cancelled' && b.status !== 'completed') {
+        && liveBk) {
       html += '<div class="bk-cooling">&#x23F1;&#xFE0F; <b>Бесплатная отмена '
             + coolingLeft(coolUntil) + '.</b> Передумаете до этого момента — вернём '
             + 'всё, включая комиссию, независимо от условий ниже.</div>';

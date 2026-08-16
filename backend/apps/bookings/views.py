@@ -597,7 +597,13 @@ def cooling_off_policy(request):
     Open to anyone: the tour and terms pages need it before sign-in.
     """
     from . import cooling
-    return Response(cooling.as_payload())
+    payload = cooling.as_payload()
+    # Signed in, we can say whether this particular person still gets one.
+    # Without it every page would keep promising a free window to the one
+    # traveller it no longer applies to, which is worse than not mentioning it.
+    if request.user.is_authenticated:
+        payload['you_get_one'] = cooling.grants_window(request.user)
+    return Response(payload)
 
 
 # ── Tourist: own bookings ─────────────────────────────────────────────────────

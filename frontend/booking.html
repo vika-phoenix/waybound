@@ -1468,6 +1468,29 @@ function goBackToTour() {
 })();
 
 </script>
-<script src="nav.js"></script>
+<script src="nav.js">
+// The note above promises a free window. Someone who has used theirs twice
+// in the last month will not get one, and telling them only after they pay
+// is how a fair rule turns into a nasty surprise.
+(function () {
+  if (!window.API_V1) return;
+  var h = (typeof authHeaders === 'function') ? authHeaders() : null;
+  if (!h) return;
+  fetch(window.API_V1 + '/bookings/cooling-off/', { headers: h })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (!d || d.you_get_one !== false) return;
+      var el = document.getElementById('payCoolingNote');
+      if (!el) return;
+      el.style.background = '#fdf3ec';
+      el.style.borderColor = '#f0d3bd';
+      el.style.color = '#8a4b1a';
+      el.innerHTML = '\u26A0\uFE0F <b>No free cancellation window on this booking.</b> '
+        + 'You have used it twice in the last 30 days, so this tour\u2019s cancellation '
+        + 'policy applies from the moment you book. It comes back as those 30 days pass.';
+    })
+    .catch(function () {});
+})();
+</script>
 </body>
 </html>
