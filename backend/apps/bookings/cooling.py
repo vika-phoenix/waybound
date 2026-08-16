@@ -45,11 +45,13 @@ SCHEMES = {
         'text': {
             'en': {
                 'headline': '24 hours to change your mind.',
+                # "Card fee included" earns its place: the very next tier in the
+                # default policy deducts that fee, so the contrast is the point.
                 'sentence': ('If your departure is more than 30 days away, you may cancel '
-                             'within 24 hours of booking for a full refund. Between 8 and '
-                             '30 days the window is 2 hours, and 7 days or less it is 30 '
-                             'minutes — a seat close to departure is harder to resell, so '
-                             'it is held open for less time.'),
+                             'within 24 hours of booking for a full refund, card fee '
+                             'included. Between 8 and 30 days the window is 2 hours, and '
+                             '7 days or less it is 30 minutes — a seat close to departure '
+                             'is harder to resell, so it is held open for less time.'),
                 'detail': ('That window is 2 hours if your departure is under a month '
                            'away, and 30 minutes inside the last week.'),
                 # Brackets belong to the value: it is always dropped mid-sentence.
@@ -64,10 +66,11 @@ SCHEMES = {
             'ru': {
                 'headline': '24 часа на раздумья.',
                 'sentence': ('Если до отправления больше 30 дней, вы можете отменить в '
-                             'течение 24 часов после бронирования с полным возвратом. '
-                             'При 8–30 днях период составляет 2 часа, а при 7 днях или '
-                             'меньше — 30 минут: место близко к дате сложнее перепродать, '
-                             'поэтому оно держится открытым меньше.'),
+                             'течение 24 часов после бронирования с полным возвратом, '
+                             'включая комиссию за оплату картой. При 8–30 днях период '
+                             'составляет 2 часа, а при 7 днях или меньше — 30 минут: '
+                             'место близко к дате сложнее перепродать, поэтому оно '
+                             'держится открытым меньше.'),
                 'detail': ('Если до отправления меньше месяца — 2 часа, '
                            'в последнюю неделю — 30 минут.'),
                 'parenthetical': ('(24 ч, если до отправления больше 30 дней; '
@@ -94,7 +97,7 @@ SCHEMES = {
             'en': {
                 'headline': '30 minutes to change your mind.',
                 'sentence': ('You may cancel within 30 minutes of booking for a full '
-                             'refund, whatever your departure date.'),
+                             'refund, card fee included, whatever your departure date.'),
                 # One band, so there is nothing further to qualify. Under the
                 # tiered scheme this carries the other two figures; here it
                 # would only say thirty minutes a second time on the same page.
@@ -107,7 +110,8 @@ SCHEMES = {
             'ru': {
                 'headline': '30 минут на раздумья.',
                 'sentence': ('Вы можете отменить в течение 30 минут после бронирования '
-                             'с полным возвратом, независимо от даты отправления.'),
+                             'с полным возвратом, включая комиссию за оплату картой, '
+                             'независимо от даты отправления.'),
                 'detail': '',
                 'parenthetical': '(30 минут с момента бронирования)',
                 'rows': [
