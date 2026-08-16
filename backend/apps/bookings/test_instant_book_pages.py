@@ -117,6 +117,17 @@ class TheTravellerIsToldTheGuideCanStillCancelTest(TestCase):
         self.assertIn('contact.html', read('booking-confirmation.html'))
         self.assertIn('contact_ru.html', read('booking-confirmation_ru.html'))
 
+    def test_the_promise_and_the_fallback_agree_on_when_to_worry(self):
+        """
+        The pages promised contact within 24 hours and the fallback offered to
+        chase at 48, which left a day in which the promise was broken and the
+        site said nothing. The outer bound has to be the same number in both
+        places or one of them is wrong.
+        """
+        for name in ('booking.html', 'booking_ru.html',
+                     'booking-confirmation.html', 'booking-confirmation_ru.html'):
+            self.assertIn('48', read(name), f'{name}: no outer bound on guide contact')
+
     def test_the_guide_contract_states_what_cancelling_costs_them(self):
         for name, phrase in (('terms-experts.html', 'full refund of every amount paid'),
                              ('terms-experts_ru.html', 'возвращается вся уплаченная сумма')):
