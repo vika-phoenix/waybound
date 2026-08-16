@@ -43,6 +43,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     # ── Profile ────────────────────────────────────────────
     avatar           = models.ImageField(upload_to='avatars/', blank=True, null=True)
     bio              = models.TextField(blank=True)
+
+    class Language(models.TextChoices):
+        EN = 'en', 'English'
+        RU = 'ru', 'Русский'
+
+    language = models.CharField(
+        max_length=5, choices=Language.choices, default=Language.EN, db_index=True,
+        help_text='Which language to write to this person in. Set from the page '
+                  'they signed up on, and changeable in their settings. The site '
+                  'has always been bilingual; the emails were not.',
+    )
     country          = models.CharField(max_length=80, blank=True)
     experience_years = models.CharField(max_length=20, blank=True, default='',
                                         help_text='Operator: years of guiding experience (e.g. "5–10 years")')

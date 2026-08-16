@@ -268,12 +268,14 @@ def send_deposit_reminders():
       - 22 h after booking: final warning (auto-cancel at 24 h)
     """
     from .models import Booking
-    from django.core.mail import send_mail
     from django.conf import settings
 
-    now     = timezone.now()
-    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
-    site    = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
+    from apps.mail import lang_for, send
+
+    now  = timezone.now()
+    site = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
+    LABELS = {'en': {12: 'Reminder', 22: 'Final reminder — act now'},
+              'ru': {12: 'Напоминание', 22: 'Последнее напоминание — нужно действовать'}}
 
     for hours, label in [(12, 'Reminder'), (22, 'Final reminder — act now')]:
         lower = now - timedelta(hours=hours + 1)
@@ -285,20 +287,16 @@ def send_deposit_reminders():
             created_at__lt=upper,
         ).select_related('tour')
         for bk in bookings:
-            name = (bk.first_name or '').strip() or 'Traveller'
-            subject = f'{label}: complete your booking for {bk.tour.title}'
-            message = (
-                f'Hi {name},\n\n'
-                f'Your booking for "{bk.tour.title}" is waiting for your deposit payment.\n'
-                f'Ref: {bk.reference}\n\n'
-                f'Your spot will be released in {24 - hours} hour(s) if payment is not received.\n\n'
-                f'Pay now: {site}/my-bookings.html\n\nKavkazland'
-            )
-            try:
-                send_mail(subject, message, from_em, [bk.email], fail_silently=True)
-                logger.info('Sent deposit %s for %s', label.lower(), bk.reference)
-            except Exception as exc:
-                logger.error('Deposit reminder email error for %s: %s', bk.reference, exc)
+            lang = lang_for(bk.tourist)
+            page = 'my-bookings_ru.html' if lang == 'ru' else 'my-bookings.html'
+            send(bk.email, 'deposit_reminder', lang,
+                 url=f'{site}/{page}',
+                 name=(bk.first_name or '').strip() or ('Путешественник' if lang == 'ru'
+                                                        else 'Traveller'),
+                 tour=bk.tour.title,
+                 ref=bk.reference,
+                 label=LABELS[lang][hours],
+                 hours_left=24 - hours)
 
 
 def send_balance_reminders():
@@ -594,33 +592,34 @@ def cancel_unfixed_captures():
 
 
 def send_capture_failed_email(booking, reminder=False):
-    """Tell the traveller their card did not go through, and by when to fix it."""
+    """
+    Tell the traveller their card did not go through, and by when to fix it.
+
+    In their own language: this one is time-limited, costs them a seat if they
+    miss it, and is the worst of all our messages to send to someone who has
+    been reading the site in Russian.
+    """
     from django.conf import settings
-    from django.core.mail import send_mail
 
-    from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
-    site    = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
-    name    = (booking.first_name or '').strip() or 'Traveller'
+    from apps.mail import lang_for, send
 
+    lang = lang_for(booking.tourist)
+    site = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
+    page = 'my-bookings_ru.html' if lang == 'ru' else 'my-bookings.html'
     deadline = booking.capture_grace_until
-    when = deadline.strftime('%H:%M UTC on %d %b') if deadline else 'shortly'
-    subject = (f'Reminder: your card still needs attention for {booking.tour.title}'
-               if reminder else
-               f'We could not charge your card for {booking.tour.title}')
+    fallback = ('Банк отклонил списание.' if lang == 'ru'
+                else 'Your bank declined the charge.')
 
-    message = (
-        f'Hi {name},\n\n'
-        f'Your place on "{booking.tour.title}" is still held, but the payment did '
-        f'not go through when we tried to charge your card.\n'
-        f'Ref: {booking.reference}\n\n'
-        f'{booking.capture_last_error or "Your bank declined the charge."}\n\n'
-        f'Please pay by {when} to keep your place — a different card is fine. '
-        f'After that the seat goes back on sale.\n\n'
-        f'Pay now: {site}/my-bookings.html\n\nKavkazland'
-    )
-    send_mail(subject, message, from_em, [booking.email], fail_silently=True)
-    logger.info('Sent capture-%s email for %s',
-                'reminder' if reminder else 'failure', booking.reference)
+    send(booking.email,
+         'capture_reminder' if reminder else 'capture_failed',
+         lang,
+         url=f'{site}/{page}',
+         name=(booking.first_name or '').strip() or ('Путешественник' if lang == 'ru'
+                                                     else 'Traveller'),
+         tour=booking.tour.title,
+         ref=booking.reference,
+         reason=booking.capture_last_error or fallback,
+         deadline=deadline.strftime('%H:%M UTC, %d %b') if deadline else '—')
 
 
 def start_scheduler():

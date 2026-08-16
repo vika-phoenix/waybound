@@ -18,7 +18,11 @@ class TouristRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = User
-        fields = ('email', 'password', 'password2', 'first_name', 'last_name', 'phone')
+        # language: which site they signed up on. Sent by the page rather than
+        # guessed, and the only thing that decides what language we write to
+        # them in afterwards.
+        fields = ('email', 'password', 'password2', 'first_name', 'last_name',
+                  'phone', 'language')
 
     def validate(self, data):
         if data['password'] != data['password2']:
@@ -53,7 +57,7 @@ class OperatorRegisterSerializer(serializers.ModelSerializer):
             'company_name', 'country', 'bio', 'experience_years',
             'languages', 'certifications', 'tour_types', 'typical_group_size',
             'profile_link', 'referral_source',
-            'accept_terms',
+            'accept_terms', 'language',
         )
 
     def validate(self, data):
@@ -146,6 +150,7 @@ class UserMeSerializer(serializers.ModelSerializer):
             'profile_link', 'referral_source',
             'is_verified', 'verification_status', 'credentials_files',
             'email_verified', 'phone_verified', 'marketing_emails',
+            'language',
             'telegram_chat_id',
             'payout_type', 'payout_name', 'payout_bank',
             'payout_account', 'payout_bik', 'payout_corr_account',
