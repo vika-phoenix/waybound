@@ -61,29 +61,22 @@ def notify_operator_verification_result(user, approved):
     """
     if not user.email:
         return False
+
+    from apps.mail import lang_for, send
+
+    lang = lang_for(user)
+    site = getattr(settings, 'FRONTEND_URL', '')
+    name = user.first_name or ('Гид' if lang == 'ru' else 'there')
     if approved:
-        subject = 'Your Kavkazland guide account is verified'
-        body = (
-            f'Good news — your identity has been verified.\n\n'
-            f'You can now submit tours for review. Our team checks each one and '
-            f'publishes it once approved.\n\n'
-            f'{getattr(settings, "FRONTEND_URL", "")}/operator-tour-create.html\n'
-        )
-    else:
-        subject = 'Kavkazland verification needs another look'
-        body = (
-            'We could not verify your identity from the document provided.\n\n'
-            'Please upload a clearer photo or a different document from your '
-            'settings page, and we will review it again.\n\n'
-            f'{getattr(settings, "FRONTEND_URL", "")}/settings.html#verification\n'
-        )
-    try:
-        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email],
-                  fail_silently=False)
-        return True
-    except Exception as exc:
-        logger.error('Could not send verification result to %s: %s', user.email, exc)
-        return False
+        return send(user.email, 'operator_verified', lang,
+                    url=f'{site}/operator-dashboard.html', name=name)
+    return send(user.email, 'operator_verification_rejected', lang,
+                url=f'{site}/settings.html#verification', name=name,
+                reason=('Документ не удалось разобрать — обычно дело в качестве '
+                        'снимка или в том, что видна не вся страница.'
+                        if lang == 'ru' else
+                        'The document could not be read clearly — usually that means '
+                        'the photo quality, or part of the page being cut off.'))
 
 def notify_admin_operator_upgrade(user):
     """

@@ -95,34 +95,16 @@ def review_reply(request, pk):
 def _notify_operator_new_review(review):
     """Send email to operator when a new review is submitted for their tour."""
     try:
-        from apps.bookings.views import _html_email
+        from apps.mail import lang_for, send
+
         op = review.tour.operator
-        tourist_name = review.tourist.public_display_name
-        stars = '\u2605' * review.rating + '\u2606' * (5 - review.rating)
         site = getattr(settings, 'SITE_URL', 'http://127.0.0.1:5500')
-        from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
-
-        body = (
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'<strong>{tourist_name}</strong> left a <strong>{stars} ({review.rating}/5)</strong> '
-            f'review for <strong>{review.tour.title}</strong>.</p>'
-        )
-        if review.title:
-            body += f'<p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#0d1f2d">{review.title}</p>'
-        body += f'<p style="margin:0 0 14px;font-size:14px;color:#4a5568;line-height:1.65">{review.body}</p>'
-
-        send_mail(
-            subject=f'New review for {review.tour.title}: {review.rating}/5 stars',
-            message=f'{tourist_name} left a {review.rating}/5 review for "{review.tour.title}".\n\n{review.body}',
-            from_email=from_em,
-            html_message=_html_email(
-                f'New review: {review.tour.title}',
-                body,
-                'View in dashboard',
-                f'{site}/operator-dashboard.html?tab=reviews',
-            ),
-            recipient_list=[op.email],
-            fail_silently=True,
-        )
+        text = f'{review.title}\n\n{review.body}' if review.title else review.body
+        send(op.email, 'operator_new_review', lang_for(op),
+             url=f'{site}/operator-dashboard.html?tab=reviews',
+             name=review.tourist.public_display_name,
+             tour=review.tour.title,
+             rating=review.rating,
+             message=text)
     except Exception:
         logger.exception('Failed to send review notification email')

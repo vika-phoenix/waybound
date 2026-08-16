@@ -193,24 +193,14 @@ def auto_complete_bookings():
                 tourist=bk.tourist, tour=bk.tour
             ).exists()
             if not already_reviewed:
-                name = (bk.first_name or '').strip() or 'Traveller'
-                tour_title = bk.tour.title
-                review_url = f'{site}/my-bookings.html?review={bk.reference}'
-                try:
-                    send_mail(
-                        f'How was {tour_title}? Leave a review',
-                        f'Hi {name},\n\n'
-                        f'We hope you enjoyed "{tour_title}"!\n\n'
-                        f'Your feedback helps future travellers and supports your guide. '
-                        f'It only takes a minute.\n\n'
-                        f'Leave a review: {review_url}\n\n'
-                        f'Ref: {bk.reference}\n\n'
-                        f'Thanks,\nKavkazland',
-                        from_em, [bk.email], fail_silently=True,
-                    )
-                    logger.info('Sent review request email for %s', bk.reference)
-                except Exception as exc:
-                    logger.error('Review request email error for %s: %s', bk.reference, exc)
+                from apps.mail import lang_for, send
+                lang = lang_for(bk.tourist)
+                page = 'my-bookings_ru.html' if lang == 'ru' else 'my-bookings.html'
+                send(bk.email, 'review_reminder', lang,
+                     url=f'{site}/{page}?review={bk.reference}',
+                     name=(bk.first_name or '').strip()
+                          or ('Путешественник' if lang == 'ru' else 'Traveller'),
+                     tour=bk.tour.title)
 
 
 def send_review_reminders():
@@ -243,22 +233,14 @@ def send_review_reminders():
         if TourReview.objects.filter(tourist=bk.tourist, tour=bk.tour).exists():
             continue
 
-        name = (bk.first_name or '').strip() or 'Traveller'
-        review_url = f'{site}/my-bookings.html?review={bk.reference}'
-        try:
-            send_mail(
-                f'Still thinking about {bk.tour.title}? Share your experience',
-                f'Hi {name},\n\n'
-                f'You completed "{bk.tour.title}" a few days ago and we\'d love to hear how it went.\n\n'
-                f'Your review helps other travellers discover great experiences '
-                f'and means a lot to your guide.\n\n'
-                f'Leave a review: {review_url}\n\n'
-                f'Thanks,\nKavkazland',
-                from_em, [bk.email], fail_silently=True,
-            )
-            logger.info('Sent review reminder for %s', bk.reference)
-        except Exception as exc:
-            logger.error('Review reminder email error for %s: %s', bk.reference, exc)
+        from apps.mail import lang_for, send
+        lang = lang_for(bk.tourist)
+        page = 'my-bookings_ru.html' if lang == 'ru' else 'my-bookings.html'
+        send(bk.email, 'review_reminder', lang,
+             url=f'{site}/{page}?review={bk.reference}',
+             name=(bk.first_name or '').strip()
+                  or ('Путешественник' if lang == 'ru' else 'Traveller'),
+             tour=bk.tour.title)
 
 
 def send_deposit_reminders():
@@ -459,23 +441,12 @@ def send_operator_balance_reminders():
         if balance_overdue:
             overdue_note = '\n⚠ The balance due date has already passed.\n'
 
-        subject = f'Balance unpaid: {trav} — {bk.tour.title} ({dep_str})'
-        message = (
-            f'Hi {op_name},\n\n'
-            f'Tourist {trav} still has an unpaid balance for their booking.\n\n'
-            f'Tour: {bk.tour.title}\n'
-            f'Departure: {dep_str}\n'
-            f'Booking ref: {bk.reference}\n'
-            f'Balance owed: {sym}{balance:,.2f}\n'
-            f'Current cancellation penalty: {current_penalty}%\n'
-            f'{escalation_warning}{overdue_note}\n'
-            f'You can cancel the booking or message the tourist from your dashboard:\n'
-            f'{site}/operator-dashboard.html#bookings\n\n'
-            f'Kavkazland'
-        )
-
+        from apps.mail import lang_for, send
         try:
-            send_mail(subject, message, from_em, [op.email], fail_silently=True)
+            send(op.email, 'operator_balance_unpaid', lang_for(op),
+                 url=f'{site}/operator-dashboard.html#bookings',
+                 name=trav, tour=bk.tour.title, ref=bk.reference,
+                 departure=dep_str, amount=f'{sym}{balance:,.2f}')
             bk.last_balance_reminder_sent = now
             bk.save(update_fields=['last_balance_reminder_sent'])
             logger.info(

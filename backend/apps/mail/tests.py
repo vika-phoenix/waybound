@@ -92,6 +92,15 @@ class SendingTest(TestCase):
         self.assertIn('lang="ru"', html)
         self.assertIn('не отвечайте', html)
 
+    def test_the_plain_text_carries_the_link(self):
+        """
+        The link is a button in the HTML part. Without it spelled out here, a
+        plain-text reader is told to do something and given no way to do it.
+        """
+        send('t@example.com', 'booking_created', 'en', url='https://kavkazland/x',
+             name='Nino', tour='Ushba', ref='VZ-1')
+        self.assertIn('https://kavkazland/x', djmail.outbox[0].body)
+
     def test_an_unknown_key_does_not_take_down_the_caller(self):
         """A notification failing must never fail the payment behind it."""
         self.assertFalse(send('t@example.com', 'no_such_message', 'en'))

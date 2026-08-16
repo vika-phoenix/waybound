@@ -153,6 +153,11 @@ def send(to, key, lang=DEFAULT_LANG, url=None, booking=None, **vars):
         rows_html, rows_text = booking_rows(booking, lang)
         plain = f'{body}\n\n{rows_text}'
 
+    # The link is a button in the HTML part. Plain-text readers need it spelled
+    # out or the message tells them to do something and gives them no way to.
+    if url:
+        plain = f'{plain}\n\n{cta}: {url}' if cta else f'{plain}\n\n{url}'
+
     from_em = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com')
     try:
         msg = EmailMultiAlternatives(subject, plain, from_em, [to])

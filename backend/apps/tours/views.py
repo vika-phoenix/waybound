@@ -717,20 +717,21 @@ def _email_departure_cancelled(booking, reason):
     to = booking.email or (booking.tourist.email if booking.tourist else '')
     if not to:
         return
-    why = f'\n\nReason given: {reason}' if reason else ''
-    try:
-        send_mail(
-            f'Cancelled: {booking.tour.title} on {booking.departure_date}',
-            (f'We are sorry — the {booking.departure_date} departure of '
-             f'"{booking.tour.title}" has been cancelled by the guide.{why}\n\n'
-             f'You are being refunded in full: '
-             f'{booking.currency} {booking.refund_amount}.\n'
-             f'Booking reference: {booking.reference}\n\n'
-             f'Refunds normally reach your account within 5-10 working days. '
-             f'You do not need to do anything.\n\n'
-             f'{getattr(_s, "FRONTEND_URL", "")}/adventures.html\n'),
-            getattr(_s, 'DEFAULT_FROM_EMAIL', 'noreply@kavkazland.com'),
-            [to], fail_silently=True,
-        )
-    except Exception as exc:
-        logger.error('Cancellation email failed for %s: %s', booking.reference, exc)
+
+    from apps.mail import lang_for, send
+
+    lang = lang_for(booking.tourist)
+    site = getattr(_s, 'FRONTEND_URL', '')
+    page = 'adventures_ru.html' if lang == 'ru' else 'adventures.html'
+    why = ''
+    if reason:
+        why = (f'\n\nПричина, которую назвал гид: {reason}' if lang == 'ru'
+               else f'\n\nThe reason they gave: {reason}')
+    send(to, 'departure_cancelled', lang,
+         url=f'{site}/{page}',
+         booking=booking,
+         name=(booking.first_name or '').strip()
+              or ('Путешественник' if lang == 'ru' else 'Traveller'),
+         tour=booking.tour.title,
+         departure=str(booking.departure_date),
+         reason=why)

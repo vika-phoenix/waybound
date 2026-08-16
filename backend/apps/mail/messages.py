@@ -285,6 +285,48 @@ MESSAGES = {
         },
     },
 
+    # ── We entered the booking by hand, money having arrived elsewhere ──────
+    # The traveller never saw a checkout page, so this is their only receipt.
+    'booking_offline': {
+        'en': {
+            'subject': 'Booking confirmed: {tour}',
+            'body': ('Hi {name},\n\n'
+                     'We have booked you onto "{tour}".\n\n'
+                     '{settled}\n\n'
+                     'Keep your reference for your guide. The same cancellation terms '
+                     'apply as to any booking made on the site.'),
+            'cta': 'View my booking',
+        },
+        'ru': {
+            'subject': 'Бронь подтверждена: {tour}',
+            'body': ('Здравствуйте, {name}!\n\n'
+                     'Мы оформили вашу бронь на «{tour}».\n\n'
+                     '{settled}\n\n'
+                     'Сохраните номер брони для гида. Условия отмены такие же, как у '
+                     'любой брони, оформленной на сайте.'),
+            'cta': 'Открыть бронь',
+        },
+    },
+    'operator_offline_booking': {
+        'en': {
+            'subject': 'New booking, taken by us — {tour}',
+            'body': ('{name} has been booked onto "{tour}" by Kavkazland. They paid us '
+                     'directly rather than through the site — {settled}\n\n'
+                     'Nothing else about this booking is different: the seat has come '
+                     'off your departure, and your payout is worked out exactly as it '
+                     'is for any other.'),
+            'cta': 'Open booking',
+        },
+        'ru': {
+            'subject': 'Новая бронь, оформлена нами — {tour}',
+            'body': ('{name} записан(а) на тур «{tour}» через Kavkazland. Оплата прошла '
+                     'напрямую нам, а не через сайт — {settled}\n\n'
+                     'В остальном это обычная бронь: место списано с даты, выплата '
+                     'считается так же, как по любой другой.'),
+            'cta': 'Открыть бронь',
+        },
+    },
+
     # ── Enquiries, before there is a booking ────────────────────────────────
     'enquiry_received': {
         'en': {
@@ -407,19 +449,20 @@ MESSAGES = {
             'subject': 'Your departure was cancelled — {tour}',
             'body': ('Hi {name},\n\n'
                      'The {departure} departure of "{tour}" has been called off by the '
-                     'guide.\n\n'
+                     'guide.{reason}\n\n'
                      'This was not your decision, so you are refunded in full — '
                      'everything you paid, whatever the cancellation policy says. It '
-                     'takes 3–10 business days to appear.'),
+                     'takes 3–10 business days to appear. You do not need to do '
+                     'anything.'),
             'cta': 'Find another tour',
         },
         'ru': {
             'subject': 'Отправление отменено — {tour}',
             'body': ('Здравствуйте, {name}!\n\n'
-                     'Отправление тура «{tour}» {departure} отменено гидом.\n\n'
+                     'Отправление тура «{tour}» {departure} отменено гидом.{reason}\n\n'
                      'Это не ваше решение, поэтому вам возвращается вся оплаченная '
                      'сумма, независимо от условий отмены. Деньги придут в течение '
-                     '3–10 рабочих дней.'),
+                     '3–10 рабочих дней. От вас ничего не требуется.'),
             'cta': 'Выбрать другой тур',
         },
     },
@@ -575,8 +618,8 @@ MESSAGES = {
             'body': ('Hi {name},\n\n'
                      '"{tour}" is not ready to go live yet.\n\n'
                      '{reason}\n\n'
-                     'Make the changes and submit it again — there is no limit on '
-                     'resubmissions.'),
+                     'Nothing is lost — everything you wrote is still there. Make the '
+                     'changes and submit it again, as many times as you need.'),
             'cta': 'Edit the tour',
         },
         'ru': {
@@ -584,8 +627,8 @@ MESSAGES = {
             'body': ('Здравствуйте, {name}!\n\n'
                      'Тур «{tour}» пока не готов к публикации.\n\n'
                      '{reason}\n\n'
-                     'Внесите правки и отправьте снова — количество попыток не '
-                     'ограничено.'),
+                     'Ничего не потеряно — всё, что вы написали, на месте. Внесите '
+                     'правки и отправьте снова, сколько потребуется.'),
             'cta': 'Редактировать тур',
         },
     },

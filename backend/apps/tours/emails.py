@@ -90,29 +90,20 @@ def notify_tourists_of_tour_change(tour, changed_fields: list) -> int:
             continue
         seen_emails.add(recipient)
 
-        name    = (booking.first_name or '').strip() or 'Traveller'
-        subject = f'Update to your booking — {tour.title}'
-        body    = (
-            f'Hi {name},\n\n'
-            f'The operator has made changes to the tour you have booked:\n\n'
-            f'  Tour:         {tour.title}\n'
-            f'  Booking ref:  {booking.reference}\n'
-            f'  Departure:    {booking.departure_date}\n\n'
-            f'The following details were updated:\n'
-            f'{change_summary}\n\n'
-            f'Your original booking terms (price and cancellation policy at the time\n'
-            f'you booked) remain in effect. If you are not happy with these changes,\n'
-            f'you may cancel your booking penalty-free within {window_hours} hours.\n\n'
-            f'View your booking: {site}/my-bookings.html\n\n'
-            f'If you have any questions, reply to this email or contact us at {from_email}.\n\n'
-            f'Kind regards,\n'
-            f'The Kavkazland Team'
-        )
-        try:
-            send_mail(subject, body, from_email, [recipient], fail_silently=False)
+        from apps.mail import lang_for, send as send_mail_catalogued
+        lang = lang_for(booking.tourist)
+        page = 'my-bookings_ru.html' if lang == 'ru' else 'my-bookings.html'
+        if send_mail_catalogued(
+                recipient, 'tour_changed', lang,
+                url=f'{site}/{page}',
+                booking=booking,
+                name=(booking.first_name or '').strip()
+                     or ('Путешественник' if lang == 'ru' else 'Traveller'),
+                tour=tour.title,
+                changes=change_summary,
+                deadline=(f'{window_hours} ч.' if lang == 'ru'
+                          else f'{window_hours} hours from now')):
             sent += 1
-        except Exception as exc:
-            logger.error('Failed to send tour-change email to %s: %s', recipient, exc)
 
     return sent
 
@@ -170,41 +161,18 @@ def send_waitlist_confirmation(tour, entry, departure=None):
         or (departure.start_date.strftime('%-d %b %Y') if departure else 'your selected date')
     )
 
-    # ── Tourist confirmation ──────────────────────────────────────────────────
-    tourist_subject = f"You're on the waitlist — {tour.title}"
-    tourist_body = (
-        f'Hi {name},\n\n'
-        f"You've been added to the waitlist for:\n\n"
-        f'  Tour:       {tour.title}\n'
-        f'  Departure:  {dep_str}\n\n'
-        f"If a spot becomes available we'll notify you within 24–48 hours.\n"
-        f'Spots are allocated on a first-come, first-served basis.\n\n'
-        f'View tour: {site}/tour_detail_page.html?slug={tour.slug}\n\n'
-        f'Kind regards,\nThe Kavkazland Team'
-    )
-    try:
-        send_mail(tourist_subject, tourist_body, from_email, [entry.email], fail_silently=True)
-    except Exception as exc:
-        logger.error('Failed to send waitlist confirmation to %s: %s', entry.email, exc)
+    from apps.mail import lang_for, send
 
-    # ── Operator notification ─────────────────────────────────────────────────
-    op_email   = tour.operator.email
-    op_subject = f'New waitlist entry — {tour.title}'
-    op_body    = (
-        f'Hi,\n\n'
-        f'A traveller has joined the waitlist for your tour:\n\n'
-        f'  Tour:       {tour.title}\n'
-        f'  Departure:  {dep_str}\n'
-        f'  Traveller:  {name} ({entry.email})\n\n'
-        f'This indicates demand for this date. If you can free up a spot\n'
-        f'(e.g. by following up on unpaid balances), the waitlisted traveller\n'
-        f'will be notified automatically.\n\n'
-        f'The Kavkazland Team'
-    )
-    try:
-        send_mail(op_subject, op_body, from_email, [op_email], fail_silently=True)
-    except Exception as exc:
-        logger.error('Failed to send waitlist operator notification to %s: %s', op_email, exc)
+    t_lang = lang_for(getattr(entry, 'tourist', None))
+    page = 'tour_detail_page_ru.html' if t_lang == 'ru' else 'tour_detail_page.html'
+    send(entry.email, 'waitlist_joined', t_lang,
+         url=f'{site}/{page}?slug={tour.slug}',
+         name=name, tour=tour.title, departure=dep_str)
+
+    op = tour.operator
+    send(op.email, 'operator_waitlist_entry', lang_for(op),
+         url=f'{site}/operator-tour-create.html?slug={tour.slug}',
+         name=name, tour=tour.title, departure=dep_str)
 
 
 def notify_waitlist_for_departure(departure):
@@ -232,23 +200,16 @@ def notify_waitlist_for_departure(departure):
     )
     sent = 0
 
+    from apps.mail import lang_for, send
+
     for entry in entries:
-        name    = (entry.name or 'Traveller').strip()
-        subject = f'A spot just opened — {departure.tour.title}'
-        body    = (
-            f'Hi {name},\n\n'
-            f'Good news — a spot has opened for:\n\n'
-            f'  Tour:       {departure.tour.title}\n'
-            f'  Departure:  {dep_label}\n\n'
-            f'Spots are filled on a first-come, first-served basis — book now:\n'
-            f'{site}/tour_detail_page.html?slug={departure.tour.slug}\n\n'
-            f'Kind regards,\nThe Kavkazland Team'
-        )
-        try:
-            send_mail(subject, body, from_email, [entry.email], fail_silently=False)
+        lang = lang_for(getattr(entry, 'tourist', None))
+        page = 'tour_detail_page_ru.html' if lang == 'ru' else 'tour_detail_page.html'
+        if send(entry.email, 'waitlist_spot_open', lang,
+                url=f'{site}/{page}?slug={departure.tour.slug}',
+                name=(entry.name or 'Traveller').strip(),
+                tour=departure.tour.title, departure=dep_label):
             sent += 1
-        except Exception as exc:
-            logger.error('Failed to send waitlist open notification to %s: %s', entry.email, exc)
 
     return sent
 
@@ -308,25 +269,13 @@ def notify_operator_tour_approved(tour) -> bool:
         return False
     site = getattr(settings, 'FRONTEND_URL', '') or _site_url()
     op = tour.operator
-    body = (
-        f'Hi {(op.first_name or "").strip() or "there"},\n\n'
-        f'Good news — "{tour.title}" has been approved and is now live on '
-        f'Kavkazland. Travellers can find it and book it from today.\n\n'
-        f'View it: {site}/tour_detail_page.html?slug={tour.slug}\n'
-        f'Manage it: {site}/operator-dashboard.html\n\n'
-        f'A few things worth checking now it is public:\n'
-        f'  - your departure dates are still the ones you want to run\n'
-        f'  - your bank details are on file, or we cannot pay you\n\n'
-        f'The Kavkazland Team\n'
-    )
-    try:
-        send_mail(f'Your tour is live: {tour.title}', body,
-                  settings.DEFAULT_FROM_EMAIL, [to], fail_silently=False)
-        logger.info('Tour-approved notice sent for %s', tour.slug)
-        return True
-    except Exception as exc:
-        logger.error('Could not send tour-approved notice for %s: %s', tour.slug, exc)
-        return False
+    from apps.mail import lang_for, send
+    lang = lang_for(op)
+    page = 'tour_detail_page_ru.html' if lang == 'ru' else 'tour_detail_page.html'
+    return send(to, 'tour_live', lang,
+                url=f'{site}/{page}?slug={tour.slug}',
+                name=(op.first_name or '').strip() or ('Гид' if lang == 'ru' else 'there'),
+                tour=tour.title)
 
 
 def notify_operator_tour_rejected(tour, reason='') -> bool:
@@ -342,23 +291,13 @@ def notify_operator_tour_rejected(tour, reason='') -> bool:
         return False
     site = getattr(settings, 'FRONTEND_URL', '') or _site_url()
     op = tour.operator
-    why = (f'What needs changing:\n{reason.strip()}\n\n' if (reason or '').strip()
-           else 'No specific reason was recorded. Reply to this email and we will explain.\n\n')
-    body = (
-        f'Hi {(op.first_name or "").strip() or "there"},\n\n'
-        f'We have sent "{tour.title}" back to draft, so it is not visible to '
-        f'travellers yet.\n\n'
-        f'{why}'
-        f'Nothing is lost — everything you wrote is still there. Edit it and '
-        f'submit again whenever you are ready:\n'
-        f'{site}/operator-tour-create.html?slug={tour.slug}\n\n'
-        f'The Kavkazland Team\n'
-    )
-    try:
-        send_mail(f'Changes needed on: {tour.title}', body,
-                  settings.DEFAULT_FROM_EMAIL, [to], fail_silently=False)
-        logger.info('Tour-rejected notice sent for %s', tour.slug)
-        return True
-    except Exception as exc:
-        logger.error('Could not send tour-rejected notice for %s: %s', tour.slug, exc)
-        return False
+    from apps.mail import lang_for, send
+    lang = lang_for(op)
+    why = (reason or '').strip() or (
+        'Конкретная причина не записана — ответьте на это письмо, и мы объясним.'
+        if lang == 'ru' else
+        'No specific reason was recorded. Reply to this email and we will explain.')
+    return send(to, 'tour_changes_needed', lang,
+                url=f'{site}/operator-tour-create.html?slug={tour.slug}',
+                name=(op.first_name or '').strip() or ('Гид' if lang == 'ru' else 'there'),
+                tour=tour.title, reason=why)

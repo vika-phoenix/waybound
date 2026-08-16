@@ -220,61 +220,31 @@ def send_manual_booking_emails(booking):
     rows    = _booking_rows_html(booking)
     paid    = booking.deposit_status == 'paid'
 
-    settled = (
-        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-        f'We received your payment of <strong>{booking.deposit_paid:.2f} {booking.currency}</strong> '
-        f'and your place is confirmed.</p>'
-    ) if paid else (
-        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-        f'Your place is held. It is confirmed once your payment reaches us.</p>'
-    )
+    from apps.mail import lang_for, send
 
-    tourist_body = (
-        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">Hi {name},</p>'
-        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-        f'We\'ve booked you onto <strong>{title}</strong>.</p>'
-        f'{settled}{rows}'
-        f'<p style="margin:12px 0 0;font-size:13px;color:#607080;line-height:1.65">'
-        f'Your reference is <strong>{booking.reference}</strong> — keep it for your guide. '
-        f'The same cancellation terms apply as to any booking made on the site.</p>'
-    )
-    try:
-        send_mail(
-            subject=('✓ Booking confirmed: ' if paid else 'Place held: ') + title,
-            message=(f'Hi {name},\n\nWe have booked you onto "{title}".\n'
-                     f'Ref: {booking.reference}\n\nView: {site}/my-bookings.html'),
-            from_email=from_em,
-            html_message=_html_email(('✓ Confirmed: ' if paid else 'Place held: ') + title,
-                                      tourist_body, 'View my bookings', f'{site}/my-bookings.html'),
-            recipient_list=[booking.email],
-            fail_silently=True,
-        )
-    except Exception:
-        pass
+    t_lang = lang_for(booking.tourist)
+    if t_lang == 'ru':
+        settled = (f'Мы получили оплату {booking.deposit_paid:.2f} {booking.currency}, '
+                   f'место закреплено за вами.') if paid else (
+                  'Место придержано за вами и будет подтверждено, как только придёт оплата.')
+    else:
+        settled = (f'We received your payment of {booking.deposit_paid:.2f} '
+                   f'{booking.currency} and your place is confirmed.') if paid else (
+                  'Your place is held. It is confirmed once your payment reaches us.')
+    send(booking.email, 'booking_offline', t_lang,
+         url=f'{site}/' + ('my-bookings_ru.html' if t_lang == 'ru' else 'my-bookings.html'),
+         booking=booking, name=name, tour=title, settled=settled)
 
-    op_body = (
-        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-        f'<strong>{name}</strong> has been booked onto <strong>{title}</strong> by Kavkazland. '
-        f'They paid us directly rather than through the site — {"the money has arrived" if paid else "we are still waiting on the money"}.</p>'
-        f'{rows}'
-        f'<p style="margin:12px 0 0;font-size:13px;color:#607080;line-height:1.65">'
-        f'Nothing else about this booking is different: the seat has come off your '
-        f'departure, and your payout is calculated exactly as it is for any other.</p>'
-    )
-    try:
-        send_mail(
-            subject=f'New booking (taken by us): {title}',
-            message=(f'{name} has been booked onto "{title}" by Kavkazland.\n'
-                     f'Ref: {booking.reference}\n\n'
-                     f'Dashboard: {site}/operator-dashboard.html#bookings'),
-            from_email=from_em,
-            html_message=_html_email(f'New booking: {title}', op_body,
-                                      'View in dashboard', f'{site}/operator-dashboard.html#bookings'),
-            recipient_list=[booking.tour.operator.email],
-            fail_silently=True,
-        )
-    except Exception:
-        pass
+    op = booking.tour.operator
+    op_lang = lang_for(op)
+    if op_lang == 'ru':
+        op_settled = 'деньги получены.' if paid else 'оплату мы ещё ждём.'
+    else:
+        op_settled = ('the money has arrived.' if paid
+                      else 'we are still waiting on the money.')
+    send(op.email, 'operator_offline_booking', op_lang,
+         url=f'{site}/operator-dashboard.html#bookings',
+         booking=booking, name=name, tour=title, settled=op_settled)
 
 
 def send_booking_confirmed_emails(booking):
@@ -345,46 +315,21 @@ def send_booking_cancelled_emails(booking, cancelled_by='tourist', reason=''):
         return
 
     if cancelled_by == 'operator_timeout':
-        # Notify operator they missed the confirmation window
-        op_body = (
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'A booking for <strong>{title}</strong> by <strong>{name}</strong> was automatically '
-            f'cancelled because it was not confirmed within 48 hours.</p>{rows}'
-            f'<p style="margin:12px 0 0;font-size:13px;color:#607080">'
-            f'Please confirm bookings promptly to avoid losing customers.</p>'
-        )
-        try:
-            send_mail(
-                subject=f'Booking auto-cancelled (not confirmed in time): {title}',
-                message=f'Booking for "{title}" by {name} was auto-cancelled because it was not confirmed within 48 hours.\nRef: {booking.reference}',
-                from_email=from_em,
-                html_message=_html_email('Missed booking', op_body,
-                                          'View bookings', f'{site}/operator-dashboard.html#bookings'),
-                recipient_list=[booking.tour.operator.email],
-                fail_silently=True,
-            )
-        except Exception:
-            pass
+        _op = booking.tour.operator
+        send(_op.email, 'operator_missed_booking', lang_for(_op),
+             url=f'{site}/operator-dashboard.html#bookings',
+             booking=booking, name=name, tour=title, ref=booking.reference)
         return
 
     if cancelled_by == 'tourist':
-        op_body = (
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'The booking for <strong>{title}</strong> by <strong>{name}</strong> '
-            f'has been cancelled by the traveller.</p>{rows}'
-        )
-        try:
-            send_mail(
-                subject=f'Booking cancelled: {title}',
-                message=f'Booking for "{title}" by {name} was cancelled.\nRef: {booking.reference}',
-                from_email=from_em,
-                html_message=_html_email('Booking cancelled', op_body,
-                                          'View bookings', f'{site}/operator-dashboard.html#bookings'),
-                recipient_list=[booking.tour.operator.email],
-                fail_silently=True,
-            )
-        except Exception:
-            pass
+        _op = booking.tour.operator
+        _op_lang = lang_for(_op)
+        send(_op.email, 'booking_cancelled', _op_lang,
+             url=f'{site}/operator-dashboard.html#bookings',
+             booking=booking, name=name, tour=title, ref=booking.reference,
+             refund_line=('Бронь отменил путешественник. Место снова в продаже.'
+                          if _op_lang == 'ru' else
+                          'The traveller cancelled it. The seat is back on sale.'))
     # A guide cancelling has already produced the traveller's email above,
     # carrying their message and the full-refund promise.
 
@@ -402,57 +347,21 @@ def send_enquiry_notifications(enquiry):
     name      = enquiry.name or 'A traveller'
     msg_preview = (enquiry.message or '(no message)')[:200]
 
-    # ── Notify operator ──
-    op_url  = f'{site}/operator-dashboard.html?tab=messages&open={enquiry.id}'
-    op_body = (
-        f'<p style="margin:0 0 12px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-        f'You have a new enquiry for <strong>{title}</strong>.</p>'
-        f'<table style="width:100%;border-collapse:collapse;margin-bottom:16px">'
-        f'<tr><td style="padding:8px 12px;background:#f4f8fb;border-radius:6px 6px 0 0;'
-        f'font-size:12px;font-weight:700;color:#607080;text-transform:uppercase;'
-        f'letter-spacing:.05em">From</td>'
-        f'<td style="padding:8px 12px;background:#f4f8fb;border-radius:6px 6px 0 0;'
-        f'font-size:13px;color:#0d1f2d">{name}</td></tr>'
-        f'<tr><td style="padding:8px 12px;border-top:1px solid #e0eaf0;font-size:12px;'
-        f'font-weight:700;color:#607080;text-transform:uppercase;letter-spacing:.05em">Message</td>'
-        f'<td style="padding:8px 12px;border-top:1px solid #e0eaf0;font-size:13px;'
-        f'color:#0d1f2d;font-style:italic">{msg_preview}</td></tr>'
-        f'</table>'
-    )
-    try:
-        send_mail(
-            subject=f'New enquiry: {title}',
-            message=f'New enquiry for "{title}" from {name}.\n\nMessage: {msg_preview}\n\nReply on Kavkazland: {op_url}',
-            from_email=from_em,
-            html_message=_html_email(f'New enquiry for {title}', op_body, 'Reply on Kavkazland', op_url),
-            recipient_list=[enquiry.tour.operator.email],
-            fail_silently=True,
-        )
-    except Exception:
-        pass
+    from apps.mail import lang_for, send
 
-    # ── Confirm to tourist ──
+    op = enquiry.tour.operator
+    op_lang = lang_for(op)
+    send(op.email, 'operator_new_enquiry', op_lang,
+         url=f'{site}/operator-dashboard.html?tab=messages&open={enquiry.id}',
+         name=name, tour=title, message=msg_preview)
+
     tourist_em = _tourist_email(enquiry)
     if tourist_em:
-        tourist_url  = f'{site}/my-messages.html'
-        tourist_body = (
-            f'<p style="margin:0 0 12px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'Hi {name},</p>'
-            f'<p style="margin:0 0 16px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'Thanks for your interest in <strong>{title}</strong>. '
-            f'The operator will review your message and reply within 48 hours.</p>'
-        )
-        try:
-            send_mail(
-                subject=f'We received your enquiry for {title}',
-                message=f'Hi {name},\n\nThanks for your interest in "{title}".\nThe operator will reply within 48 hours.\n\nView your messages: {tourist_url}',
-                from_email=from_em,
-                html_message=_html_email(f'Enquiry received: {title}', tourist_body, 'View your messages', tourist_url),
-                recipient_list=[tourist_em],
-                fail_silently=True,
-            )
-        except Exception:
-            pass
+        t_lang = lang_for(getattr(enquiry, 'tourist', None))
+        send(tourist_em, 'enquiry_received', t_lang,
+             url=f'{site}/' + ('tour_detail_page_ru.html' if t_lang == 'ru'
+                               else 'tour_detail_page.html') + f'?slug={enquiry.tour.slug}',
+             name=name, tour=title, message=msg_preview)
 
 
 def send_enquiry_reply_notification(enquiry):
@@ -464,28 +373,12 @@ def send_enquiry_reply_notification(enquiry):
     title  = enquiry.tour.title
     name   = enquiry.name or 'there'
     reply_preview = (enquiry.operator_reply or '')[:300]
-    url    = f'{site}/my-messages.html'
-    body   = (
-        f'<p style="margin:0 0 12px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-        f'Hi {name},</p>'
-        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-        f'The operator has replied to your enquiry about <strong>{title}</strong>:</p>'
-        f'<blockquote style="margin:0 0 16px;padding:12px 18px;background:#f0faf4;'
-        f'border-left:3px solid #2e9e5a;border-radius:0 8px 8px 0;'
-        f'font-size:13px;color:#0d1f2d;line-height:1.65;font-style:italic">'
-        f'{reply_preview}</blockquote>'
-    )
-    try:
-        send_mail(
-            subject=f'Reply to your enquiry: {title}',
-            message=f'Hi {name},\n\nThe operator replied to your enquiry about "{title}":\n\n"{reply_preview}"\n\nView and reply: {url}',
-            from_email=_from_email(),
-            html_message=_html_email(f'Operator replied: {title}', body, 'View & reply on Kavkazland', url),
-            recipient_list=[tourist_em],
-            fail_silently=True,
-        )
-    except Exception:
-        pass
+
+    from apps.mail import lang_for, send
+    lang = lang_for(getattr(enquiry, 'tourist', None))
+    send(tourist_em, 'enquiry_reply', lang,
+         url=f'{site}/' + ('my-messages_ru.html' if lang == 'ru' else 'my-messages.html'),
+         name=name, tour=title, message=reply_preview)
 
 
 def send_tourist_reply_notification(enquiry):
@@ -497,25 +390,11 @@ def send_tourist_reply_notification(enquiry):
     # Get last tourist reply body for preview
     last_reply = enquiry.replies.filter(is_operator=False).order_by('-created_at').first()
     preview  = (last_reply.body[:200] if last_reply else '')
-    body     = (
-        f'<p style="margin:0 0 12px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-        f'<strong>{name}</strong> has replied to the enquiry about <strong>{title}</strong>:</p>'
-        f'<blockquote style="margin:0 0 16px;padding:12px 18px;background:#f4f8fb;'
-        f'border-left:3px solid #4fa8d4;border-radius:0 8px 8px 0;'
-        f'font-size:13px;color:#0d1f2d;line-height:1.65;font-style:italic">'
-        f'{preview}</blockquote>'
-    )
-    try:
-        send_mail(
-            subject=f'Tourist replied: {title}',
-            message=f'{name} replied to the enquiry about "{title}".\n\nMessage: {preview}\n\nView on Kavkazland: {op_url}',
-            from_email=_from_email(),
-            html_message=_html_email(f'New reply from {name}', body, 'View conversation', op_url),
-            recipient_list=[enquiry.tour.operator.email],
-            fail_silently=True,
-        )
-    except Exception:
-        pass
+
+    from apps.mail import lang_for, send
+    op = enquiry.tour.operator
+    send(op.email, 'operator_enquiry_reply', lang_for(op),
+         url=op_url, name=name, tour=title, message=preview)
 
 
 @api_view(['GET'])
