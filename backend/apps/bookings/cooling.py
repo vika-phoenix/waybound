@@ -95,20 +95,23 @@ SCHEMES = {
                 'headline': '30 minutes to change your mind.',
                 'sentence': ('You may cancel within 30 minutes of booking for a full '
                              'refund, whatever your departure date.'),
-                'detail': 'The same window applies to every booking, whenever you travel.',
-                'parenthetical': '(30 minutes from booking, on every booking)',
+                # One band, so there is nothing further to qualify. Under the
+                # tiered scheme this carries the other two figures; here it
+                # would only say thirty minutes a second time on the same page.
+                'detail': '',
+                'parenthetical': '(30 minutes from booking)',
                 'rows': [
-                    ('Every booking', '30 minutes'),
+                    ('Every booking, whenever you travel', '30 minutes'),
                 ],
             },
             'ru': {
                 'headline': '30 минут на раздумья.',
                 'sentence': ('Вы можете отменить в течение 30 минут после бронирования '
                              'с полным возвратом, независимо от даты отправления.'),
-                'detail': 'Один и тот же срок для любого бронирования.',
-                'parenthetical': '(30 минут с момента бронирования, для всех броней)',
+                'detail': '',
+                'parenthetical': '(30 минут с момента бронирования)',
                 'rows': [
-                    ('Любое бронирование', '30 минут'),
+                    ('Любое бронирование, в любую дату', '30 минут'),
                 ],
             },
         },

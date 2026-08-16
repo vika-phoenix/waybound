@@ -2764,7 +2764,7 @@ async function loadTour(slug) {
     TOUR_DATA.days        = t.days || 1;
     TOUR_DATA.depositPct  = t.deposit_pct || 30;
     TOUR_DATA.cancelPolicy = (t.cancel_policy && t.cancel_policy.length) ? t.cancel_policy : [
-      {days_before_min:30, days_before_max:null, penalty_pct:0,   label:'Полный возврат (более 30 дней)'},
+      {days_before_min:30, days_before_max:null, penalty_pct:1,   label:'Возврат за вычетом 1% комиссии (более 30 дней)'},
       {days_before_min:14, days_before_max:29,   penalty_pct:50,  label:'50% возврата (14–29 дней)'},
       {days_before_min:0,  days_before_max:13,   penalty_pct:100, label:'Без возврата (в течение 14 дней)'},
     ];
@@ -3217,14 +3217,14 @@ async function loadTour(slug) {
     if (cancelWidget && cancelItems) {
       var usingDefault = !(t.cancel_policy && t.cancel_policy.length);
       var policy = usingDefault ? [
-        {days_before_min:30, days_before_max:null, penalty_pct:0,   label:'Полный возврат (более 30 дней до отправления)'},
+        {days_before_min:30, days_before_max:null, penalty_pct:1,   label:'Возврат за вычетом 1% комиссии (более 30 дней до отправления)'},
         {days_before_min:14, days_before_max:29,   penalty_pct:50,  label:'Возврат 50% (14–29 дней до отправления)'},
         {days_before_min:0,  days_before_max:13,   penalty_pct:100, label:'Без возврата (в течение 14 дней до отправления)'},
       ] : t.cancel_policy;
       // Shown whether or not the guide set their own tiers: the cooling-off
       // window is a platform rule they cannot override, and hiding it behind
       // a custom policy hides it from exactly the traveller it protects.
-      var cpHtml = '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b><!--cooling:headline:js-->30 минут на раздумья.<!--/cooling--></b> Вернём всё, включая комиссию. <!--cooling:detail:js-->Один и тот же срок для любого бронирования.<!--/cooling--> Это правило действует всегда, гид не может его изменить.</div>';
+      var cpHtml = '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b><!--cooling:headline:js-->30 минут на раздумья.<!--/cooling--></b> Вернём всё, включая комиссию. <!--cooling:detail:js--><!--/cooling--> Это правило действует всегда, гид не может его изменить.</div>';
       if (usingDefault) {
         cpHtml += '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-style:italic">(стандартная политика Кавказленд)</div>';
       }

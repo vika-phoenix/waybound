@@ -718,7 +718,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <p class="bk-sub" id="paySubLine">Депозит зарезервирует место. Остаток оплачивается перед отправлением.</p>
 <div class="pay-methods" id="payMethods"></div>
     <div style="margin:0 0 14px;padding:10px 13px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:7px;font-size:12.5px;line-height:1.6;color:#1a5c38;font-family:var(--bf)" id="payCoolingNote">
-      &#x23F1;&#xFE0F; <b><!--cooling:headline-->30 минут на раздумья.<!--/cooling--></b> Карта списывается сразу, чтобы закрепить за вами место — отмените в этот срок, и вернём всё, включая комиссию. <!--cooling:detail-->Один и тот же срок для любого бронирования.<!--/cooling-->
+      &#x23F1;&#xFE0F; <b><!--cooling:headline-->30 минут на раздумья.<!--/cooling--></b> Карта списывается сразу, чтобы закрепить за вами место — отмените в этот срок, и вернём всё, включая комиссию. <!--cooling:detail--><!--/cooling-->
     </div>
 
     <div class="bk-nav">
@@ -934,7 +934,7 @@ var currentStep = 1;
 
       // Dynamic deposit: use max of base deposit % and applicable cancel penalty %
       var cancelPolicy = (t.cancel_policy && t.cancel_policy.length) ? t.cancel_policy : [
-        {days_before_min:30, days_before_max:null, penalty_pct:0},
+        {days_before_min:30, days_before_max:null, penalty_pct:1},
         {days_before_min:14, days_before_max:29,   penalty_pct:50},
         {days_before_min:0,  days_before_max:13,   penalty_pct:100},
       ];
@@ -1087,7 +1087,7 @@ var currentStep = 1;
               + '<span style="color:var(--mu)">' + when + '</span>'
               + '<span style="font-weight:700;color:' + col + '">' + refund + '</span>'
               + '</div>';
-          }).join('') + '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b><!--cooling:headline:js-->30 минут на раздумья.<!--/cooling--></b> Вернём всё, включая комиссию. <!--cooling:detail:js-->Один и тот же срок для любого бронирования.<!--/cooling--> Гид не может это изменить.</div>';
+          }).join('') + '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; Срок бесплатной отмены, указанный выше, — это правило платформы. Гид не может его изменить, какие бы условия ни были ниже.</div>';
         }
       } else {
         // No operator policy — show Кавказленд standard policy
@@ -1101,7 +1101,7 @@ var currentStep = 1;
             + '<span>⚠️ За 14–29 дней до отправления</span><span style="font-weight:700;color:#9a6030">50% возврата</span></div>'
             + '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln)">'
             + '<span>❌ Менее чем за 14 дней до отправления</span><span style="font-weight:700;color:#c0392b">Без возврата</span></div>'
-            + '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b><!--cooling:headline:js-->30 минут на раздумья.<!--/cooling--></b> Вернём всё, включая комиссию. <!--cooling:detail:js-->Один и тот же срок для любого бронирования.<!--/cooling--> Гид не может это изменить.</div>'
+            + '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; Срок бесплатной отмены, указанный выше, — это правило платформы. Гид не может его изменить, какие бы условия ни были ниже.</div>'
             + '<div style="font-size:11px;font-style:italic;margin-top:6px;color:var(--mu)">(стандартная политика Кавказленд)</div>'
             + '</div>';
         }

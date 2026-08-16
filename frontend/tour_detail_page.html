@@ -2809,7 +2809,7 @@ async function loadTour(slug) {
     TOUR_DATA.days        = t.days || 1;
     TOUR_DATA.depositPct  = t.deposit_pct || 30;
     TOUR_DATA.cancelPolicy = (t.cancel_policy && t.cancel_policy.length) ? t.cancel_policy : [
-      {days_before_min:30, days_before_max:null, penalty_pct:0,   label:'Full refund (30+ days)'},
+      {days_before_min:30, days_before_max:null, penalty_pct:1,   label:'Refund less a 1% processing fee (30+ days)'},
       {days_before_min:14, days_before_max:29,   penalty_pct:50,  label:'50% refund (14–29 days)'},
       {days_before_min:0,  days_before_max:13,   penalty_pct:100, label:'No refund (within 14 days)'},
     ];
@@ -3263,14 +3263,14 @@ async function loadTour(slug) {
     if (cancelWidget && cancelItems) {
       var usingDefault = !(t.cancel_policy && t.cancel_policy.length);
       var policy = usingDefault ? [
-        {days_before_min:30, days_before_max:null, penalty_pct:0,   label:'Full refund (30+ days before departure)'},
+        {days_before_min:30, days_before_max:null, penalty_pct:1,   label:'Refund less a 1% processing fee (30+ days before departure)'},
         {days_before_min:14, days_before_max:29,   penalty_pct:50,  label:'50% refund (14–29 days before departure)'},
         {days_before_min:0,  days_before_max:13,   penalty_pct:100, label:'No refund (within 14 days of departure)'},
       ] : t.cancel_policy;
       // Shown whether or not the guide set their own tiers: the cooling-off
       // window is a platform rule they cannot override, and hiding it behind
       // a custom policy hides it from exactly the traveller it protects.
-      var cpHtml = '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b><!--cooling:headline:js-->30 minutes to change your mind.<!--/cooling--></b> You get everything back, card fee included. <!--cooling:detail:js-->The same window applies to every booking, whenever you travel.<!--/cooling--> Your guide cannot change this.</div>';
+      var cpHtml = '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b><!--cooling:headline:js-->30 minutes to change your mind.<!--/cooling--></b> You get everything back, card fee included. <!--cooling:detail:js--><!--/cooling--> Your guide cannot change this.</div>';
       if (usingDefault) {
         cpHtml += '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-style:italic">(Kavkazland standard policy)</div>';
       }

@@ -581,7 +581,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   <div class="conf-ref">Booking reference: <strong style="color:rgba(255,255,255,.7)" id="heroRef">VZ-20260315</strong></div>
   <h1 class="conf-title">You're <em id="heroDestination">going to Georgia!</em></h1>
   <p class="conf-sub" id="heroSub">Your deposit has been received and your spot is confirmed. Your guide will contact you within 24 hours.</p>
-<div id="coolNote" style="max-width:480px;margin:14px auto 0;padding:10px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.72);font-family:var(--bf);position:relative;z-index:1">&#x23F1;&#xFE0F; <b style="color:#fff">Changed your mind?</b> <b style="color:#fff"><!--cooling:headline-->30 minutes to change your mind.<!--/cooling--></b> Cancel within that window and get everything back, card fee included. <!--cooling:detail-->The same window applies to every booking, whenever you travel.<!--/cooling--> After that the tour’s cancellation policy applies. Cancel from <a href="my-bookings.html" style="color:#8fd0ee">My bookings</a>.</div>
+<div id="coolNote" style="max-width:480px;margin:14px auto 0;padding:10px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.72);font-family:var(--bf);position:relative;z-index:1">&#x23F1;&#xFE0F; <b style="color:#fff">Changed your mind?</b> <b style="color:#fff"><!--cooling:headline-->30 minutes to change your mind.<!--/cooling--></b> Cancel within that window and get everything back, card fee included. <!--cooling:detail--><!--/cooling--> After that the tour’s cancellation policy applies. Cancel from <a href="my-bookings.html" style="color:#8fd0ee">My bookings</a>.</div>
 </div>
 
 <div class="conf-main">
@@ -1066,7 +1066,7 @@ var _confBookingId = null;
     var cpRows = document.getElementById('cancelPolicyRows');
     var cpNote = document.getElementById('cancelPolicyNote');
     var PLATFORM_POLICY = [
-      {days_before_min:30, days_before_max:null, penalty_pct:0,   label:'30+ days before departure', refundLabel:'Full refund', color:'#1a7a40', icon:'✅'},
+      {days_before_min:30, days_before_max:null, penalty_pct:1,   label:'30+ days before departure', refundLabel:'Refund less 1% fee', color:'#1a7a40', icon:'✅'},
       {days_before_min:14, days_before_max:29,   penalty_pct:50,  label:'14–29 days before departure', refundLabel:'50% refund', color:'#9a6030', icon:'⚠️'},
       {days_before_min:0,  days_before_max:13,   penalty_pct:100, label:'Under 14 days before departure', refundLabel:'No refund', color:'#c0392b', icon:'❌'},
     ];
