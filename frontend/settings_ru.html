@@ -336,6 +336,9 @@ footer a:hover{color:rgba(255,255,255,.75)}
 <button class="btn-outline-sm" id="removePhotoBtn" onclick="removeAvatar()" style="display:none">Удалить фото</button>
 </div>
 <div class="avatar-hint" style="margin-top:6px">JPG или PNG, макс. 2 МБ</div>
+<div class="req-note" data-guide-only style="display:none;margin-top:6px;font-size:11.5px;line-height:1.55;font-family:var(--bf);color:#8a4b1a;background:#fdf3ec;border:1px solid #f0d3bd;border-radius:6px;padding:7px 10px">
+<b>Обязательно для публикации тура.</b> Страница тура, где вы продаёте несколько дней в горах с незнакомым человеком, не может выйти без вашего фото.
+</div>
 <div id="avatarUploadMsg" style="font-size:11.5px;font-family:var(--bf);margin-top:6px;display:none"></div>
 </div>
 </div>
@@ -915,6 +918,9 @@ function showPanel(name, btn) {
     localStorage.setItem('waybound_user', JSON.stringify(data));
     // Update verification status if operator
     if (data.role === 'operator') {
+      // Подсказки, которые имеют смысл только для того, кто публикует туры.
+      var reqNotes = document.querySelectorAll('[data-guide-only]');
+      for (var rn = 0; rn < reqNotes.length; rn++) reqNotes[rn].style.display = '';
       var verNav = document.getElementById('navVerification');
       if (verNav) verNav.style.display = '';
       var credNav = document.getElementById('navCredentials');
