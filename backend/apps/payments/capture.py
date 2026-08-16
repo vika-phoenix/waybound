@@ -65,10 +65,21 @@ def register_rails():
     methods, which is under our longest window).
     """
     from django.conf import settings
-    if not getattr(settings, 'STRIPE_SECRET_KEY', ''):
-        return
-    from .international import capture_stripe, void_stripe
-    register('stripe', capture_stripe, void_stripe)
+
+    if getattr(settings, 'STRIPE_SECRET_KEY', ''):
+        from .international import capture_stripe, void_stripe
+        register('stripe', capture_stripe, void_stripe)
+
+    if getattr(settings, 'PAYPAL_CLIENT_ID', ''):
+        from .international import capture_paypal, void_paypal
+        register('paypal', capture_paypal, void_paypal)
+
+    if getattr(settings, 'YOOKASSA_SHOP_ID', ''):
+        # Cards only. 'sbp' is a bank transfer and the wallet methods hold for
+        # two hours, which is under our longest window — both keep being
+        # charged outright, whichever scheme is running.
+        from .yookassa_capture import capture_yookassa, void_yookassa
+        register('yookassa', capture_yookassa, void_yookassa)
 
 
 def supports_deferred_capture(method):

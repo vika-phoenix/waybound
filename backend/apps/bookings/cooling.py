@@ -145,6 +145,21 @@ def defers_capture():
     return bool(active_scheme().get('defers_capture'))
 
 
+# How many free-window cancellations an account gets before it stops being
+# offered one, and over what period. The window costs us the card fee every
+# time it is used, and a booking that is made and dropped also holds a seat
+# out of sale in the meantime — so someone cycling it is doing real damage to
+# a guide's departure even when the money comes back.
+#
+# Two free uses in a rolling month, and the next booking gets none. Changing
+# your mind twice is a person; a third inside a month is a habit somebody else
+# is paying for. Nothing is blocked either way — the booking still works, it
+# simply follows the tour's cancellation policy from the start, like any other
+# booking once its window has shut.
+COOLING_OFF_ABUSE_LIMIT = 2
+COOLING_OFF_ABUSE_DAYS = 30
+
+
 def window_minutes(days_to_departure):
     """
     How long this booking gets, in minutes.
@@ -159,6 +174,41 @@ def window_minutes(days_to_departure):
         if days_to_departure >= band['min_days']:
             return band['minutes']
     return bands[-1]['minutes']
+
+
+def recent_window_cancellations(user, now=None):
+    """How many times this account has used the free window lately."""
+    from datetime import timedelta
+
+    from django.db.models import F
+    from django.utils import timezone as tz
+
+    from .models import Booking
+
+    if not user or not getattr(user, 'pk', None):
+        return 0
+    now = now or tz.now()
+    return Booking.objects.filter(
+        tourist=user,
+        status=Booking.Status.CANCELLED,
+        cancelled_by=Booking.CancelledBy.TOURIST,
+        cancelled_at__isnull=False,
+        cancelled_at__gte=now - timedelta(days=COOLING_OFF_ABUSE_DAYS),
+        cooling_off_until__isnull=False,
+        cancelled_at__lte=F('cooling_off_until'),
+    ).count()
+
+
+def grants_window(user, now=None):
+    """
+    Whether this account still gets a free window on its next booking.
+
+    Only counts cancellations the traveller made themselves, inside the window.
+    A guide cancelling, a departure being called off, or a refund we issued are
+    not the traveller's doing and must not count against them — which is the
+    trap in any "too many cancellations" rule.
+    """
+    return recent_window_cancellations(user, now) < COOLING_OFF_ABUSE_LIMIT
 
 
 def text(lang='en'):

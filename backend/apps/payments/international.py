@@ -230,9 +230,17 @@ def _paypal_token():
 
 def create_paypal_order(booking, amount_usd, description, return_url, cancel_url, payment_type):
     """Create a PayPal order. Returns (order_id, approval_url)."""
+    # AUTHORIZE holds the money without taking it, so a cancellation inside the
+    # free window costs nothing. PayPal honours an authorisation for 29 days and
+    # guarantees the first 3, well past our longest window.
+    from apps.bookings import cooling
+    from apps.payments.capture import should_defer_capture
+    defer = (payment_type != 'balance' and cooling.defers_capture()
+             and should_defer_capture(booking))
+
     token = _paypal_token()
     payload = {
-        'intent': 'CAPTURE',
+        'intent': 'AUTHORIZE' if defer else 'CAPTURE',
         'purchase_units': [{
             'reference_id': booking.reference,
             # custom_id comes back on the webhook, so the booking is
@@ -268,7 +276,118 @@ def create_paypal_order(booking, amount_usd, description, return_url, cancel_url
     if not approve:
         logger.error('PayPal order %s has no approve link: %s', data.get('id'), data)
         raise PaymentError('PayPal did not return a checkout link.')
+
+    if defer:
+        from apps.bookings.models import Booking
+        booking.capture_status = Booking.Capture.AUTHORISED
+        booking.save(update_fields=['capture_status'])
     return data['id'], approve
+
+
+def authorize_paypal_order(order_id):
+    """
+    Place the hold on an approved order, without taking the money.
+
+    The AUTHORIZE counterpart of capture_paypal_order: approval only means the
+    customer clicked pay. Returns the authorised USD amount, or None.
+    """
+    token = _paypal_token()
+    try:
+        r = requests.post(
+            f'{_paypal_base()}/v2/checkout/orders/{order_id}/authorize',
+            headers={'Authorization': f'Bearer {token}',
+                     'Content-Type': 'application/json'},
+            json={}, timeout=25,
+        )
+        if r.status_code == 422 and 'ORDER_ALREADY_AUTHORIZED' in r.text:
+            logger.info('PayPal order %s was already authorised.', order_id)
+            return None
+        r.raise_for_status()
+        data = r.json()
+    except Exception as exc:
+        logger.error('PayPal authorize failed for %s: %s', order_id, exc)
+        raise PaymentError('Could not place the hold on your PayPal account.')
+    try:
+        auth = data['purchase_units'][0]['payments']['authorizations'][0]
+        return float(auth['amount']['value'])
+    except (KeyError, IndexError, TypeError, ValueError):
+        logger.error('Unexpected PayPal authorize shape for %s: %s', order_id, data)
+        return None
+
+
+def _paypal_authorization_id(booking):
+    """
+    The authorisation behind this booking's order.
+
+    Held rather than stored: the order id is what we keep, and PayPal will tell
+    us the authorisation, the same way refund_paypal_order finds the capture.
+    """
+    from apps.payments.capture import CaptureError
+
+    order_id = booking.yookassa_payment_id
+    if not order_id:
+        raise CaptureError('No PayPal order on this booking', retryable=False)
+    token = _paypal_token()
+    try:
+        r = requests.get(
+            f'{_paypal_base()}/v2/checkout/orders/{order_id}',
+            headers={'Authorization': f'Bearer {token}'}, timeout=20,
+        )
+        r.raise_for_status()
+        data = r.json()
+    except Exception as exc:
+        raise CaptureError(f'Could not read the PayPal order: {exc}')
+    auths = (data.get('purchase_units') or [{}])[0].get('payments', {}).get('authorizations') or []
+    if not auths:
+        raise CaptureError('That PayPal payment was never authorised', retryable=False)
+    return auths[0]['id'], auths[0].get('status', '')
+
+
+def capture_paypal(booking):
+    """Take the money PayPal is holding."""
+    from apps.payments.capture import CaptureError
+
+    auth_id, state = _paypal_authorization_id(booking)
+    if state == 'CAPTURED':
+        logger.info('PayPal authorisation %s was already captured', auth_id)
+        return
+    try:
+        r = requests.post(
+            f'{_paypal_base()}/v2/payments/authorizations/{auth_id}/capture',
+            headers={'Authorization': f'Bearer {_paypal_token()}',
+                     'Content-Type': 'application/json'},
+            json={'final_capture': True}, timeout=25,
+        )
+        if r.status_code == 422 and 'AUTHORIZATION_ALREADY_CAPTURED' in r.text:
+            logger.info('PayPal authorisation %s was already captured', auth_id)
+            return
+        if r.status_code == 422 and 'AUTHORIZATION_EXPIRED' in r.text:
+            raise CaptureError('The PayPal hold expired before we could take payment.',
+                               retryable=False)
+        r.raise_for_status()
+    except CaptureError:
+        raise
+    except Exception as exc:
+        raise CaptureError(f'PayPal refused the charge: {exc}')
+    logger.info('Captured PayPal authorisation %s for %s', auth_id, booking.reference)
+
+
+def void_paypal(booking):
+    """Release a PayPal hold without charging it."""
+    auth_id, state = _paypal_authorization_id(booking)
+    if state in ('VOIDED', 'EXPIRED'):
+        logger.info('PayPal authorisation %s was already released', auth_id)
+        return
+    r = requests.post(
+        f'{_paypal_base()}/v2/payments/authorizations/{auth_id}/void',
+        headers={'Authorization': f'Bearer {_paypal_token()}',
+                 'Content-Type': 'application/json'},
+        json={}, timeout=20,
+    )
+    if r.status_code == 422 and 'AUTHORIZATION_ALREADY_VOIDED' in r.text:
+        return
+    r.raise_for_status()
+    logger.info('Voided PayPal authorisation %s for %s', auth_id, booking.reference)
 
 
 def capture_paypal_order(order_id):

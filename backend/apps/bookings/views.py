@@ -644,8 +644,18 @@ def booking_list(request):
     from . import cooling
     _now = timezone.now()
     _days = (booking.departure_date - _now.date()).days if booking.departure_date else None
-    booking.cooling_off_until = _now + timedelta(minutes=cooling.window_minutes(_days))
-    booking.save(update_fields=['cooling_off_until'])
+    if cooling.grants_window(booking.tourist, _now):
+        booking.cooling_off_until = _now + timedelta(minutes=cooling.window_minutes(_days))
+        booking.save(update_fields=['cooling_off_until'])
+    else:
+        # Left unset rather than blocked. The booking works normally; it simply
+        # follows the tour's cancellation policy from the start, as any booking
+        # does once its window shuts. Every use of the window costs us the card
+        # fee and holds a seat out of sale, so an account cycling it is doing
+        # real damage to a guide's departure even though the money comes back.
+        logger.info('No cooling-off window for %s — %d recent window cancellations.',
+                    booking.reference,
+                    cooling.recent_window_cancellations(booking.tourist, _now))
 
     send_booking_created_emails(booking)
     try:
@@ -811,6 +821,23 @@ def _issue_refund(booking, refund_amount_tour_currency):
     money and refund_status is set to 'manual'.
     """
     method = booking.payment_method
+
+    # Money that was only ever held is dropped, not refunded. This is the whole
+    # point of holding it: a cancellation inside the free window costs nobody
+    # anything, where a charge-then-refund loses the card fee every time. It
+    # also has to come first — refunding a payment that was never captured
+    # fails on every rail, so without this the free window would have been the
+    # one case that could not be cancelled cleanly.
+    from apps.bookings.models import Booking as _B
+    if booking.capture_status == _B.Capture.AUTHORISED:
+        from apps.payments.capture import void_booking
+        if void_booking(booking):
+            return True, 'Authorisation released — nothing was ever charged.'
+        # A void that fails costs nothing either: the hold lapses on its own.
+        # Say so rather than reporting a refund that is not coming.
+        logger.error('Could not release the hold on %s; it will expire on its own.',
+                     booking.reference)
+        return True, 'Hold could not be released; it expires on its own.'
 
     if method in ('stripe', 'paypal'):
         # Everything here is wrapped: a cancellation must never fail because a

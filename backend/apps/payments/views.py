@@ -198,6 +198,15 @@ def initiate_payment(request):
     # earlier than its assignment turned that log line into an UnboundLocalError
     # — a 500 in place of the 502 this is meant to return.
     payment_data = None
+    # YooKassa holds a card authorisation for 7 days, but only 2 hours on the
+    # wallet-backed methods, which is under our longest window — so only the
+    # plain card rail ever defers. should_defer_capture enforces that through
+    # CAPTURE_CAPABLE_METHODS; this is the same question asked before the
+    # payment exists.
+    from apps.bookings import cooling
+    from .capture import should_defer_capture
+    defer_deposit = (cooling.defers_capture() and payment_method == 'yookassa'
+                     and should_defer_capture(booking))
     try:
         rub_deposit, deposit_rate = convert_to_rub(deposit_amount, currency)
         yookassa = _yoo_configure()
@@ -214,7 +223,9 @@ def initiate_payment(request):
                 'booking_ref':  booking.reference,
                 'payment_type': 'deposit',
             },
-            'capture': True,
+            # False leaves the payment in waiting_for_capture: the money is held
+            # and moves only when we claim it, once the free window shuts.
+            'capture': not defer_deposit,
         }
         if payment_method == 'sbp':
             payment_data['payment_method_data'] = {'type': 'sbp'}
@@ -223,7 +234,11 @@ def initiate_payment(request):
         booking.yookassa_payment_id = payment.id
         booking.payment_method      = payment_method
         booking.balance_due_date    = balance_due_date
-        booking.save(update_fields=['yookassa_payment_id', 'payment_method', 'balance_due_date'])
+        _fields = ['yookassa_payment_id', 'payment_method', 'balance_due_date']
+        if defer_deposit:
+            booking.capture_status = Booking.Capture.AUTHORISED
+            _fields.append('capture_status')
+        booking.save(update_fields=_fields)
         resp = {
             'confirmation_url': payment.confirmation.confirmation_url,
             'deposit_pct':      deposit_pct,
@@ -359,7 +374,13 @@ def yookassa_webhook(request):
         meta         = obj.get('metadata', {})
         payment_type = meta.get('payment_type', 'deposit')
 
-        if event_type == 'payment.succeeded':
+        # waiting_for_capture is what arrives instead of succeeded when the
+        # payment was created with capture=False: the money is held and the
+        # traveller has committed, so the booking confirms exactly as it does
+        # on the other rails, which also settle at authorisation. The charge
+        # itself happens later, when the free window shuts. Without this the
+        # deferred rail confirmed nothing and took no seat.
+        if event_type in ('payment.succeeded', 'payment.waiting_for_capture'):
             amount = Decimal(obj.get('amount', {}).get('value', '0'))
 
             if payment_type == 'balance':
@@ -669,10 +690,18 @@ def paypal_webhook(request):
 
     amount = None
     if etype == 'CHECKOUT.ORDER.APPROVED':
+        # An order created with intent AUTHORIZE cannot be captured here — the
+        # hold has to be placed first, and the money moves when the free window
+        # shuts. capture_status was set when the order was created, so it is
+        # what says which kind of order this is.
+        from .international import authorize_paypal_order
+        deferred = booking.capture_status == Booking.Capture.AUTHORISED
         try:
-            amount = capture_paypal_order(order_id)
+            amount = (authorize_paypal_order(order_id) if deferred
+                      else capture_paypal_order(order_id))
         except PaymentError as exc:
-            logger.error('PayPal capture failed for %s: %s', booking.reference, exc)
+            logger.error('PayPal %s failed for %s: %s',
+                         'authorize' if deferred else 'capture', booking.reference, exc)
             return Response({'status': 'capture failed'},
                             status=status.HTTP_502_BAD_GATEWAY)
     else:

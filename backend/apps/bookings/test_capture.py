@@ -278,6 +278,48 @@ class RetryTest(CaptureBase):
         self.assertNotIn('already paid', str(res.data).lower())
 
 
+class CancellingAHeldBookingTest(CaptureBase):
+    """
+    Cancelling inside the free window has to drop the hold, not refund it.
+
+    Refunding a payment that was never captured fails on every rail, so without
+    this the free window would be the one case that could not be cancelled
+    cleanly — and the saving deferred capture exists for would never arrive.
+    """
+
+    def test_a_held_booking_is_voided_rather_than_refunded(self):
+        from apps.bookings.views import _issue_refund
+
+        calls = self._rail()
+        bk = self._booking(deposit_paid=Decimal('150'))
+        ok, msg = _issue_refund(bk, 150)
+        self.assertTrue(ok)
+        self.assertEqual(calls['void'], 1)
+        self.assertIn('released', msg.lower())
+        bk.refresh_from_db()
+        self.assertEqual(bk.capture_status, Booking.Capture.VOIDED)
+
+    def test_a_charged_booking_still_goes_through_the_refund_path(self):
+        calls = self._rail()
+        bk = self._booking(capture_status=Booking.Capture.CAPTURED,
+                           payment_method='bank', deposit_paid=Decimal('150'))
+        from apps.bookings.views import _issue_refund
+        _issue_refund(bk, 150)
+        self.assertEqual(calls['void'], 0)
+
+    def test_a_failed_void_does_not_block_the_cancellation(self):
+        """An expiring hold costs nothing, so this must not raise."""
+        def _boom(bk):
+            raise RuntimeError('provider down')
+
+        cap.register('stripe', lambda bk: None, _boom)
+        bk = self._booking(deposit_paid=Decimal('150'))
+        from apps.bookings.views import _issue_refund
+        ok, msg = _issue_refund(bk, 150)
+        self.assertTrue(ok)
+        self.assertIn('expires', msg.lower())
+
+
 class CaptureSweepTest(CaptureBase):
 
     def test_only_bookings_past_their_window_are_charged(self):
