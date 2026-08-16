@@ -66,8 +66,14 @@ def should_defer_capture(booking):
     was built to close.
     """
     from django.utils import timezone
+    from apps.bookings import cooling
     from apps.bookings.models import Booking
 
+    # The scheme decides. Under a flat 30-minute window the card is charged at
+    # booking like any shop, so no authorisation is ever left outstanding and
+    # the capture sweeps have nothing to find.
+    if not cooling.defers_capture():
+        return False
     if booking.capture_status in (Booking.Capture.FAILED, Booking.Capture.CAPTURED):
         return False
     if not supports_deferred_capture(booking.payment_method):

@@ -96,6 +96,48 @@ class SchemeReachesBookingsTest(TestCase):
         self.assertAlmostEqual(mins, 30, delta=2)
 
 
+class CaptureTimingFollowsSchemeTest(TestCase):
+    """
+    One setting decides both the window and how the money is held, because the
+    two are one decision: a long window makes charge-then-refund expensive, a
+    short one makes deferring more machinery than it saves.
+    """
+
+    @override_settings(COOLING_OFF_SCHEME='tiered')
+    def test_the_long_window_holds_the_card(self):
+        self.assertTrue(cooling.defers_capture())
+
+    @override_settings(COOLING_OFF_SCHEME='flat')
+    def test_the_short_window_charges_at_booking(self):
+        self.assertFalse(cooling.defers_capture())
+
+    @override_settings(COOLING_OFF_SCHEME='flat')
+    def test_nothing_defers_under_the_flat_scheme_even_on_a_capable_rail(self):
+        """
+        Switching scheme must be enough on its own. If a registered rail could
+        still defer, flipping to flat would leave authorisations outstanding
+        with no window left to wait for.
+        """
+        from datetime import timedelta
+        from django.utils import timezone
+        from apps.payments import capture as cap
+        from apps.bookings.models import Booking
+
+        cap.register('stripe', lambda bk: None, lambda bk: None)
+        try:
+            bk = Booking(payment_method='stripe',
+                         capture_status=Booking.Capture.NONE,
+                         cooling_off_until=timezone.now() + timedelta(hours=5))
+            self.assertFalse(cap.should_defer_capture(bk))
+        finally:
+            cap._HANDLERS.pop('stripe', None)
+            cap.CAPTURE_CAPABLE_METHODS.discard('stripe')
+
+    def test_every_scheme_says_which_way_it_holds_money(self):
+        for name, scheme in cooling.SCHEMES.items():
+            self.assertIn('defers_capture', scheme, name)
+
+
 class PolicyEndpointTest(TestCase):
 
     @override_settings(COOLING_OFF_SCHEME='flat')

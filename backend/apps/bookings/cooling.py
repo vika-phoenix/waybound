@@ -29,6 +29,11 @@ DEFAULT_SCHEME = 'tiered'
 # nothing.
 SCHEMES = {
     'tiered': {
+        # The window is long enough that charging up front and refunding would
+        # cost us the processor fee on every change of mind, so the card is
+        # authorised at booking and charged only once the window shuts. A
+        # cancellation before that is a dropped authorisation: free to everyone.
+        'defers_capture': True,
         'bands': [
             {'min_days': 31, 'minutes': 24 * 60},
             {'min_days': 8,  'minutes': 120},
@@ -73,6 +78,12 @@ SCHEMES = {
         },
     },
     'flat': {
+        # Half an hour is short enough that few people use it, so the simpler
+        # machine wins: charge at booking like any shop, refund in full if they
+        # cancel inside the window, and absorb the processor fee on the few who
+        # do. No authorisations outstanding, no capture to schedule, nothing to
+        # fail a day later.
+        'defers_capture': False,
         'bands': [
             {'min_days': 0, 'minutes': 30},
         ],
@@ -109,6 +120,19 @@ def active_scheme_name():
 
 def active_scheme():
     return SCHEMES[active_scheme_name()]
+
+
+def defers_capture():
+    """
+    Whether the active scheme holds the card and charges later, or charges at
+    booking like any shop.
+
+    It belongs to the scheme rather than a flag of its own because the two are
+    one decision: a long window makes charge-then-refund expensive, and a short
+    one makes deferring more machinery than it saves. Splitting them into two
+    settings would let someone pick the pair that has the costs of both.
+    """
+    return bool(active_scheme().get('defers_capture'))
 
 
 def window_minutes(days_to_departure):
