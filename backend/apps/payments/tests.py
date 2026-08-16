@@ -37,6 +37,18 @@ def succeeded(payment_id, amount='1000.00'):
     }
 
 
+def held(payment_id, instrument=None, amount='1000.00'):
+    """A payment created with capture=false, waiting for us to claim it."""
+    obj = {
+        'id': payment_id,
+        'amount': {'value': amount, 'currency': 'RUB'},
+        'metadata': {'payment_type': 'deposit'},
+    }
+    if instrument is not None:
+        obj['payment_method'] = {'type': instrument}
+    return {'event': 'payment.waiting_for_capture', 'object': obj}
+
+
 class YooKassaWebhookTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -66,6 +78,62 @@ class YooKassaWebhookTest(TestCase):
 
     def _post(self, payload):
         return self.client.post(WEBHOOK, payload, content_type='application/json')
+
+    # ── what we are willing to leave held ────────────────────────────────────
+    #
+    # We ask YooKassa for a hold because the traveller chose card in our UI.
+    # That does not stop them picking a wallet on YooKassa's own page, and a
+    # wallet holds for two hours against a window of up to twenty-four — so
+    # waiting would let the hold die and leave a confirmed booking with a seat
+    # and no money. Only a card is left held.
+
+    def _held_booking(self, payment_id):
+        b = self._booking('yookassa', payment_id)
+        b.capture_status = Booking.Capture.AUTHORISED
+        b.save(update_fields=['capture_status'])
+        return b
+
+    def _capture_calls(self):
+        """Record captures instead of calling YooKassa."""
+        from apps.payments import capture as cap
+        calls = []
+        orig = dict(cap._HANDLERS)
+        cap.register('yookassa', lambda bk: calls.append(bk.reference), lambda bk: None)
+        self.addCleanup(lambda: (cap._HANDLERS.clear(), cap._HANDLERS.update(orig)))
+        return calls
+
+    @override_settings(PAYMENT_METHODS_ENABLED=['yookassa'], YOOKASSA_WEBHOOK_IPS=YOO_IPS)
+    def test_a_card_is_left_held(self):
+        calls = self._capture_calls()
+        self._held_booking('pay-card')
+        self._post(held('pay-card', 'bank_card'))
+        self.assertEqual(calls, [])
+
+    @override_settings(PAYMENT_METHODS_ENABLED=['yookassa'], YOOKASSA_WEBHOOK_IPS=YOO_IPS)
+    def test_a_wallet_is_charged_before_its_two_hours_run_out(self):
+        calls = self._capture_calls()
+        b = self._held_booking('pay-wallet')
+        self._post(held('pay-wallet', 'yoo_money'))
+        self.assertEqual(calls, [b.reference])
+
+    @override_settings(PAYMENT_METHODS_ENABLED=['yookassa'], YOOKASSA_WEBHOOK_IPS=YOO_IPS)
+    def test_an_instrument_we_do_not_recognise_is_charged_too(self):
+        calls = self._capture_calls()
+        b = self._held_booking('pay-new')
+        self._post(held('pay-new', 'some_method_added_next_year'))
+        self.assertEqual(calls, [b.reference])
+
+    @override_settings(PAYMENT_METHODS_ENABLED=['yookassa'], YOOKASSA_WEBHOOK_IPS=YOO_IPS)
+    def test_a_payload_that_does_not_say_is_charged_rather_than_trusted(self):
+        """
+        The dangerous default. Assuming a card when the payload is silent costs
+        a dead hold and a seat held against no money; assuming otherwise costs
+        only the fee we would have saved.
+        """
+        calls = self._capture_calls()
+        b = self._held_booking('pay-quiet')
+        self._post(held('pay-quiet', instrument=None))
+        self.assertEqual(calls, [b.reference])
 
     # ── fence 1: the rail is switched off ────────────────────────────────────
 

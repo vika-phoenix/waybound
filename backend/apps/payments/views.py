@@ -440,11 +440,20 @@ def yookassa_webhook(request):
                     # they use it, exactly as on the rails that never defer.
                     if (event_type == 'payment.waiting_for_capture'
                             and booking.capture_status == Booking.Capture.AUTHORISED):
+                        # Only a card is left holding. Anything else — a wallet,
+                        # an instant transfer, or a payload that does not say —
+                        # is charged now.
+                        #
+                        # The unknown case belongs on this side. Treating it as
+                        # a card costs a dead hold and a seat held against no
+                        # money; treating a card as unknown costs only the fee
+                        # we would have saved. One of those is a bug and the
+                        # other is a missed optimisation.
                         instrument = (obj.get('payment_method') or {}).get('type', '')
-                        if instrument and instrument != 'bank_card':
-                            logger.info('Booking %s paid by %s, which will not hold — '
-                                        'charging now rather than waiting.',
-                                        booking.reference, instrument)
+                        if instrument != 'bank_card':
+                            logger.info('Booking %s paid by %r, which we cannot rely on '
+                                        'holding — charging now rather than waiting.',
+                                        booking.reference, instrument or 'unknown')
                             from .capture import capture_booking
                             capture_booking(booking)
 
