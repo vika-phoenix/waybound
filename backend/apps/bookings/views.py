@@ -586,6 +586,20 @@ def send_tourist_reply_notification(enquiry):
         pass
 
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def cooling_off_policy(request):
+    """
+    GET /api/v1/bookings/cooling-off/
+
+    The active scheme and the words for it, so a page describes the window the
+    code actually applies rather than whatever was true when it was written.
+    Open to anyone: the tour and terms pages need it before sign-in.
+    """
+    from . import cooling
+    return Response(cooling.as_payload())
+
+
 # ── Tourist: own bookings ─────────────────────────────────────────────────────
 
 @api_view(['GET', 'POST'])
@@ -625,18 +639,12 @@ def booking_list(request):
     # Every window here is comfortably inside the shortest authorisation hold
     # any of the three payment rails offers, so this stays compatible with
     # capturing the card only once the window closes.
+    # The bands live in cooling.py alongside the words that describe them, so
+    # changing scheme cannot leave the pages promising something else.
+    from . import cooling
     _now = timezone.now()
-    if booking.departure_date:
-        days_to_dep = (booking.departure_date - _now.date()).days
-        if days_to_dep > 30:
-            _window_mins = 24 * 60
-        elif days_to_dep > 7:
-            _window_mins = 120
-        else:
-            _window_mins = 30
-    else:
-        _window_mins = 24 * 60
-    booking.cooling_off_until = _now + timedelta(minutes=_window_mins)
+    _days = (booking.departure_date - _now.date()).days if booking.departure_date else None
+    booking.cooling_off_until = _now + timedelta(minutes=cooling.window_minutes(_days))
     booking.save(update_fields=['cooling_off_until'])
 
     send_booking_created_emails(booking)

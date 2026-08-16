@@ -6,6 +6,7 @@ from . import views
 
 urlpatterns = [
     # Tourist
+    path('cooling-off/',              views.cooling_off_policy,     name='cooling-off-policy'),
     path('',                          views.booking_list,           name='booking-list'),
     path('<int:pk>/',                  views.booking_detail,         name='booking-detail'),
     path('<int:pk>/cancel/',           views.booking_cancel,         name='booking-cancel'),

@@ -252,6 +252,18 @@ PAYMENT_METHODS_ENABLED = config(
 # via User.commission_pct_override rather than a change here.
 PLATFORM_COMMISSION_PCT = config('PLATFORM_COMMISSION_PCT', cast=float, default=15.0)
 
+# Which free-cancellation scheme is in force. The bands and the wording live
+# together in apps/bookings/cooling.py, so this one value decides both.
+#
+#   tiered  the window scales with how resellable the seat is — 24 h a month
+#           out, 2 h inside a month, 30 min inside the last week
+#   flat    30 minutes for everyone, whenever they travel
+#
+# Changing it does not update the published pages by itself. Run
+# `python tools/cooling_sync.py --write` and commit, or the site keeps
+# promising the old scheme. `--check` fails if the two ever disagree.
+COOLING_OFF_SCHEME = config('COOLING_OFF_SCHEME', default='tiered')
+
 # How long a verification scan is kept after the decision it supported. The
 # document is needed to decide whether to verify a guide, not afterwards, and
 # holding passports indefinitely is personal data with no ongoing purpose.
