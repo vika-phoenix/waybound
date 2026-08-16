@@ -133,23 +133,14 @@ def send_booking_created_emails(booking):
               or ('Путешественник' if _lang == 'ru' else 'Traveller'),
          tour=title, ref=booking.reference)
 
-    op_body = (
-        f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-        f'New booking request for <strong>{title}</strong> from <strong>{name}</strong>. '
-        f'Payment is pending.</p>{rows}'
-    )
-    try:
-        send_mail(
-            subject=f'New booking request: {title}',
-            message=f'New booking for "{title}" from {name}.\nRef: {booking.reference}\n\nDashboard: {site}/operator-dashboard.html#bookings',
-            from_email=from_em,
-            html_message=_html_email(f'New booking: {title}', op_body,
-                                      'View in dashboard', f'{site}/operator-dashboard.html#bookings'),
-            recipient_list=[booking.tour.operator.email],
-            fail_silently=True,
-        )
-    except Exception:
-        pass
+    op = booking.tour.operator
+    op_lang = lang_for(op)
+    send(op.email, 'operator_new_booking', op_lang,
+         url=f'{site}/operator-dashboard.html#bookings',
+         booking=booking,
+         name=name, tour=title, ref=booking.reference,
+         departure=str(booking.departure_date) if booking.departure_date else '—',
+         guests=booking.adults + booking.children + booking.infants)
 
 
 def notify_admin_guide_cancellation(booking, timed_out=False):
@@ -1109,52 +1100,25 @@ def operator_message(request, pk):
     from_em = _from_email()
     title   = booking.tour.title
 
-    if is_operator:
-        # Operator → notify tourist
-        name    = (booking.first_name or '').strip() or 'Traveller'
-        op_name = f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.email
-        recipient = booking.email
-        email_subject = f'Message from your tour operator — {title}'
-        email_body = (
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">Hi {name},</p>'
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'You have a message from <strong>{op_name}</strong> regarding your booking '
-            f'<strong>{booking.reference}</strong> — {title}.</p>'
-            f'<div style="background:#f4f9fc;border-left:3px solid #4fa8d4;border-radius:0 8px 8px 0;'
-            f'padding:12px 16px;margin:0 0 16px;font-size:14px;color:#0d1f2d;line-height:1.7">'
-            f'{body}</div>'
-        )
-        view_link = f'{site}/my-messages.html'
-        link_label = 'View in messages'
-    else:
-        # Tourist → notify operator
-        tourist_name = f'{tourist.first_name} {tourist.last_name}'.strip() or tourist.email if tourist else booking.email
-        recipient = operator.email
-        email_subject = f'Message from traveller — {booking.reference}'
-        email_body = (
-            f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
-            f'Hi, you have a message from <strong>{tourist_name}</strong> regarding booking '
-            f'<strong>{booking.reference}</strong> — {title}.</p>'
-            f'<div style="background:#f4f9fc;border-left:3px solid #4fa8d4;border-radius:0 8px 8px 0;'
-            f'padding:12px 16px;margin:0 0 16px;font-size:14px;color:#0d1f2d;line-height:1.7">'
-            f'{body}</div>'
-        )
-        view_link = f'{site}/operator-dashboard.html'
-        link_label = 'View in dashboard'
+    # This block used to build `email_body` and then hand `tourist_body` to the
+    # HTML renderer — a name defined only in other functions. Every send raised
+    # NameError into a bare except, so neither side has ever been emailed about
+    # a message. Going through the catalogue removes the second variable.
+    from apps.mail import lang_for, send
 
-    try:
-        from django.core.mail import send_mail
-        send_mail(
-            subject        = email_subject,
-            message        = body,
-            from_email     = from_em,
-            html_message   = _html_email(email_subject, tourist_body, link_label, view_link),
-            recipient_list = [recipient],
-            fail_silently  = True,
-        )
-    except Exception as exc:
-        import logging
-        logging.getLogger(__name__).error('operator_message email error: %s', exc)
+    if is_operator:
+        lang = lang_for(booking.tourist)
+        send(booking.email, 'operator_message', lang,
+             url=f'{site}/' + ('my-messages_ru.html' if lang == 'ru' else 'my-messages.html'),
+             name=(booking.first_name or '').strip()
+                  or ('Путешественник' if lang == 'ru' else 'Traveller'),
+             tour=title, message=body)
+    else:
+        lang = lang_for(operator)
+        send(operator.email, 'traveller_message', lang,
+             url=f'{site}/operator-dashboard.html',
+             name=(tourist.public_display_name if tourist else booking.email),
+             tour=title, ref=booking.reference, message=body)
 
     return Response({'status': 'sent'})
 

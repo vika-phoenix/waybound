@@ -105,6 +105,64 @@ class SendingTest(TestCase):
         self.assertFalse(send('', 'booking_confirmed', 'en'))
 
 
+class MessageNotificationTest(TestCase):
+    """
+    Messages between a traveller and a guide.
+
+    The old code built `email_body` and then rendered `tourist_body`, a name
+    that only exists in other functions — so every send raised NameError into a
+    bare except and nobody was ever notified. It failed silently for as long as
+    it existed, which is why this is pinned.
+    """
+
+    def setUp(self):
+        from datetime import date, timedelta
+        from decimal import Decimal
+
+        from apps.tours.models import Tour
+        from apps.bookings.models import Booking
+
+        djmail.outbox = []
+        self.guide = User.objects.create_user(email='g@example.com', password='x',
+                                              role=User.Role.OPERATOR)
+        self.traveller = User.objects.create_user(
+            email='t@example.com', password='x', language=User.Language.RU,
+            first_name='Нино', last_name='Беридзе')
+        tour = Tour.objects.create(operator=self.guide, title='Ушба', country='Georgia',
+                                   destination='Mestia', price_adult=Decimal('500'),
+                                   currency='USD', status=Tour.Status.LIVE, max_group=8)
+        self.booking = Booking.objects.create(
+            tour=tour, tourist=self.traveller, adults=1,
+            departure_date=date.today() + timedelta(days=30),
+            first_name='Нино', last_name='Беридзе', email='t@example.com',
+            price_adult=Decimal('500'), total_price=Decimal('500'), currency='USD',
+            status=Booking.Status.CONFIRMED)
+
+    def _post(self, as_user, text):
+        from rest_framework.test import APIClient
+        c = APIClient()
+        c.force_authenticate(as_user)
+        return c.post(f'/api/v1/bookings/{self.booking.pk}/message/',
+                      {'message': text}, format='json')
+
+    def test_a_guide_writing_reaches_the_traveller(self):
+        res = self._post(self.guide, 'Встречаемся у подъёмника в 8 утра.')
+        self.assertEqual(res.status_code, 200, getattr(res, 'data', None))
+        self.assertEqual(len(djmail.outbox), 1)
+        self.assertEqual(djmail.outbox[0].to, ['t@example.com'])
+        self.assertIn('подъёмника', djmail.outbox[0].body)
+
+    def test_and_in_the_travellers_language(self):
+        self._post(self.guide, 'Привет')
+        self.assertIn('Сообщение от гида', djmail.outbox[0].subject)
+
+    def test_a_traveller_writing_reaches_the_guide(self):
+        res = self._post(self.traveller, 'Do I need crampons?')
+        self.assertEqual(res.status_code, 200, getattr(res, 'data', None))
+        self.assertEqual(djmail.outbox[0].to, ['g@example.com'])
+        self.assertIn('crampons', djmail.outbox[0].body)
+
+
 class LanguageChoiceTest(TestCase):
 
     def test_it_uses_what_the_person_chose(self):
