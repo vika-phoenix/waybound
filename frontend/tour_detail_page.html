@@ -3270,7 +3270,7 @@ async function loadTour(slug) {
       // Shown whether or not the guide set their own tiers: the cooling-off
       // window is a platform rule they cannot override, and hiding it behind
       // a custom policy hides it from exactly the traveller it protects.
-      var cpHtml = '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b>Changed your mind?</b> Cancel within <b>24 hours</b> of booking and you get everything back, card fee included. That window is 2 hours if the departure is under a month away, and 30 minutes inside the last week. This applies to every booking and your guide cannot change it.</div>';
+      var cpHtml = '<div style="margin-top:8px;padding:8px 10px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:6px;color:#1a5c38;font-size:11.5px;line-height:1.55">&#x23F1;&#xFE0F; <b><!--cooling:headline:js-->24 hours to change your mind.<!--/cooling--></b> You get everything back, card fee included. <!--cooling:detail:js-->That window is 2 hours if your departure is under a month away, and 30 minutes inside the last week.<!--/cooling--> Your guide cannot change this.</div>';
       if (usingDefault) {
         cpHtml += '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-style:italic">(Kavkazland standard policy)</div>';
       }

@@ -1052,13 +1052,16 @@ function renderBookings(list) {
     var depositAmt  = parseFloat(b.deposit_paid  || 0);
     var balanceDue  = parseFloat(b.balance_due   || 0);
 
+    // Раньше здесь была ссылка на booking.html, то есть на форму бронирования:
+    // она создавала вторую бронь вместо оплаты уже существующей. Оплачиваем ту,
+    // которая есть, как на английской версии страницы.
     if (b.status === 'pending' && b.deposit_status !== 'paid') {
-      actions += '<a class="bk-btn primary" href="booking.html?slug=' + slug + '">Оплатить депозит</a>';
+      actions += '<button class="bk-btn primary" onclick="payDeposit(' + b.id + ')">Оплатить депозит</button>';
     }
     // Неудачное списание — единственный случай, когда подтверждённая бронь
     // всё ещё должна деньги.
     if (b.capture_status === 'failed') {
-      actions += '<button class="bk-btn primary" onclick="payRetry(' + b.id + ')">Оплатить сейчас</button>';
+      actions += '<button class="bk-btn primary" onclick="payDeposit(' + b.id + ')">Оплатить сейчас</button>';
     }
     if (b.status === 'confirmed' && b.balance_status !== 'paid' && balanceDue > 0) {
       actions += '<button class="bk-btn primary" onclick="payBalance(' + b.id + ')">Оплатить остаток:' + fmtAmt(balanceDue, b) + '</button>';
@@ -1223,10 +1226,10 @@ async function payBalance(bookingId) {
   }
 }
 
-// Оплата после неудачного списания. Отдельная функция, а не ссылка на
-// booking.html: бронь уже существует, нужно оплатить именно её, а не создать
-// новую.
-async function payRetry(bookingId) {
+// Оплата существующей брони — и первый депозит, и повтор после неудачного
+// списания. Не ссылка на booking.html: бронь уже создана, платить нужно
+// именно за неё.
+async function payDeposit(bookingId) {
   var btn = event && event.target;
   var _label = btn ? btn.textContent : '';
   if (btn) { btn.disabled = true; btn.textContent = 'Перенаправление…'; }

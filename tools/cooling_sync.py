@@ -46,9 +46,21 @@ DEFAULT_SCHEME = _ns['DEFAULT_SCHEME']
 FRONTEND = os.path.join(ROOT, 'frontend')
 
 MARKER = re.compile(
-    r'(<!--cooling:(?P<key>[a-z_]+)-->)(?P<body>.*?)(<!--/cooling-->)',
+    r'(<!--cooling:(?P<key>[a-z_]+)(?P<mode>:js)?-->)(?P<body>.*?)(<!--/cooling-->)',
     re.DOTALL,
 )
+
+
+def js_escape(s):
+    """
+    For markers inside a single-quoted JavaScript string.
+
+    The markers themselves are HTML comments, so they stay invisible when the
+    string is injected into the page — but the text between them still has to
+    survive being JavaScript source, and one apostrophe in a future wording
+    would otherwise end the string and break the page.
+    """
+    return s.replace('\\', '\\\\').replace("'", "\\'")
 
 
 def scheme_name():
@@ -78,9 +90,11 @@ def process(path, scheme, write):
 
     def repl(m):
         want = render(m.group('key'), lang, scheme)
+        if m.group('mode') == ':js':
+            want = js_escape(want)
         if m.group('body') != want:
             stale.append(m.group('key'))
-        return m.group(1) + want + m.group(4)
+        return m.group(1) + want + m.group(5)
 
     updated = MARKER.sub(repl, original)
     if stale and write:
