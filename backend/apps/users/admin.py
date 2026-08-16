@@ -5,12 +5,58 @@ from django.utils.html import format_html
 from .models import User, OTPCode, VerificationDocument
 
 
+def _publish_blockers(user):
+    """
+    What stops this guide publishing, as a list of short labels.
+
+    The same three checks incomplete_tour_fields makes about the person rather
+    than the tour, plus the verification gate from tour_publish. Duplicated
+    deliberately: this is a staff screen and must keep working if the tour
+    module changes shape, and there is a test holding the two in step.
+    """
+    if user.role != User.Role.OPERATOR:
+        return []
+    missing = []
+    if not f'{user.first_name} {user.last_name}'.strip():
+        missing.append('name')
+    if not (user.bio or '').strip():
+        missing.append('bio')
+    if not user.avatar:
+        missing.append('photo')
+    if not user.is_verified:
+        missing.append('ID check')
+    return missing
+
+
+class PublishBlockedFilter(admin.SimpleListFilter):
+    """
+    Which guides cannot publish yet.
+
+    Name, bio and photo became requirements after some accounts already
+    existed, so this is how you find the ones that need a nudge rather than
+    waiting for them to hit a rejection they will not understand.
+    """
+    title = 'able to publish'
+    parameter_name = 'publish_ready'
+
+    def lookups(self, request, model_admin):
+        return [('0', 'No — something is missing'), ('1', 'Yes')]
+
+    def queryset(self, request, qs):
+        if self.value() not in ('0', '1'):
+            return qs
+        blocked = [u.pk for u in qs.filter(role=User.Role.OPERATOR)
+                   if _publish_blockers(u)]
+        return qs.filter(pk__in=blocked) if self.value() == '0' else qs.exclude(pk__in=blocked)
+
+
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display  = ('email', 'full_name', 'role', 'col_commission', 'col_cancels',
-                     'col_churn', 'is_active', 'email_verified', 'marketing_emails',
-                     'date_joined')
-    list_filter   = ('role', 'is_active', 'is_staff', 'email_verified', 'marketing_emails')
+    list_display  = ('email', 'full_name', 'role', 'col_can_publish', 'col_commission',
+                     'col_cancels', 'col_churn', 'is_active', 'email_verified',
+                     'marketing_emails', 'date_joined')
+    list_filter   = ('role', PublishBlockedFilter, 'is_active', 'is_staff',
+                     'email_verified', 'marketing_emails')
     search_fields = ('email', 'first_name', 'last_name', 'phone')
     ordering      = ('-date_joined',)
 
@@ -78,6 +124,16 @@ class UserAdmin(BaseUserAdmin):
         )
 
     @admin.display(description='Churn', ordering='_bk_dead')
+    @admin.display(description='Can publish')
+    def col_can_publish(self, obj):
+        if obj.role != User.Role.OPERATOR:
+            return ''
+        missing = _publish_blockers(obj)
+        if not missing:
+            return format_html('<span style="color:#1a7a40">Yes</span>')
+        return format_html('<b style="color:#c0392b">No</b> <span style="color:#888">'
+                           '&mdash; no {}</span>', ', '.join(missing))
+
     def col_churn(self, obj):
         """
         What share of this guide's bookings ended in a cancellation, whoever

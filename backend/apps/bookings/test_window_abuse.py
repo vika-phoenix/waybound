@@ -149,6 +149,51 @@ class WindowAbuseTest(TestCase):
             self.assertIsNotNone(self._book().cooling_off_until)
 
 
+class TheRuleFollowsTheSchemeTest(WindowAbuseTest):
+    """
+    The count is of cancellations made inside whatever window that booking had,
+    not inside thirty minutes. Each booking carries its own deadline, so
+    switching scheme changes what counts as "inside" without changing the rule.
+    """
+
+    def _cancelled_within(self, minutes):
+        """A cancellation made just inside a window of the given length."""
+        booked = timezone.now() - timedelta(days=1)
+        return Booking.objects.create(
+            tour=self.tour, tourist=self.traveller, adults=1,
+            first_name='A', last_name='B', email='t@example.com',
+            price_adult=Decimal('500'), total_price=Decimal('500'), currency='USD',
+            status=Booking.Status.CANCELLED, cancelled_by=Booking.CancelledBy.TOURIST,
+            cancelled_at=booked + timedelta(minutes=minutes - 1),
+            cooling_off_until=booked + timedelta(minutes=minutes),
+        )
+
+    def test_a_thirty_minute_window_counts_under_the_flat_scheme(self):
+        with self.settings(COOLING_OFF_SCHEME='flat'):
+            for _ in range(cooling.COOLING_OFF_ABUSE_LIMIT):
+                self._cancelled_within(30)
+            self.assertFalse(cooling.grants_window(self.traveller))
+
+    def test_a_twenty_four_hour_window_counts_the_same_under_tiered(self):
+        with self.settings(COOLING_OFF_SCHEME='tiered'):
+            for _ in range(cooling.COOLING_OFF_ABUSE_LIMIT):
+                self._cancelled_within(24 * 60)
+            self.assertFalse(cooling.grants_window(self.traveller))
+
+    def test_switching_scheme_does_not_rewrite_history(self):
+        """
+        Bookings made under one scheme keep the deadline they were given, so a
+        switch cannot turn a cancellation that was inside its window into one
+        that was outside it, or the other way round.
+        """
+        for _ in range(cooling.COOLING_OFF_ABUSE_LIMIT):
+            self._cancelled_within(24 * 60)
+        with self.settings(COOLING_OFF_SCHEME='flat'):
+            self.assertFalse(cooling.grants_window(self.traveller))
+        with self.settings(COOLING_OFF_SCHEME='tiered'):
+            self.assertFalse(cooling.grants_window(self.traveller))
+
+
 class TheTravellerIsToldTest(WindowAbuseTest):
     """
     Withholding the window is only fair if the person is told, and every page

@@ -427,6 +427,27 @@ def yookassa_webhook(request):
                     booking.snapshot_commission(save=False)
                     booking.save(update_fields=update_fields)
                     booking.take_seats()
+
+                    # We ask YooKassa to hold the money because we chose the
+                    # card rail — but the rail is what the traveller picked in
+                    # our UI, not what they picked on YooKassa's page. A wallet
+                    # or instant bank transfer holds for two hours, not seven
+                    # days, so waiting out a 24-hour window would let the hold
+                    # die and leave a confirmed booking with nothing behind it.
+                    #
+                    # Take those straight away instead. The traveller keeps the
+                    # same window as everybody else; we simply absorb the fee if
+                    # they use it, exactly as on the rails that never defer.
+                    if (event_type == 'payment.waiting_for_capture'
+                            and booking.capture_status == Booking.Capture.AUTHORISED):
+                        instrument = (obj.get('payment_method') or {}).get('type', '')
+                        if instrument and instrument != 'bank_card':
+                            logger.info('Booking %s paid by %s, which will not hold — '
+                                        'charging now rather than waiting.',
+                                        booking.reference, instrument)
+                            from .capture import capture_booking
+                            capture_booking(booking)
+
                     try:
                         from apps.bookings.views import send_booking_confirmed_emails
                         send_booking_confirmed_emails(booking)
