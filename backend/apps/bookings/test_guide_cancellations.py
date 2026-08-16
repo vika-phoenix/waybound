@@ -100,10 +100,11 @@ class GuideCancellationNoticeTest(TestCase):
             deposit_status='paid' if paid else 'pending',
             status=Booking.Status.CONFIRMED)
 
-    def _cancel_as_guide(self, bk):
+    def _cancel_as_guide(self, bk, reason=None):
         client = APIClient()
         client.force_authenticate(self.guide)
-        return client.patch(f'/api/v1/bookings/{bk.pk}/cancel/', {}, format='json')
+        payload = {'reason': reason} if reason else {}
+        return client.patch(f'/api/v1/bookings/{bk.pk}/cancel/', payload, format='json')
 
     def _admin_mail(self):
         return [m for m in mail.outbox if 'Guide cancellation' in m.subject]
@@ -143,6 +144,36 @@ class GuideCancellationNoticeTest(TestCase):
         with self.settings(ADMIN_NOTIFICATION_EMAIL='ops@kavkazland.com'):
             client.patch(f'/api/v1/bookings/{bk.pk}/cancel/', {}, format='json')
         self.assertEqual(self._admin_mail(), [])
+
+    def test_the_notice_carries_the_reason_the_guide_gave(self):
+        """
+        The count says a guide is cancelling; only the reason says whether to
+        worry. Four dropped for "in hospital" and four for "found a better
+        group" are the same number and different problems.
+        """
+        with self.settings(ADMIN_NOTIFICATION_EMAIL='ops@kavkazland.com'):
+            self._cancel_as_guide(self._booking(), reason='Road to Mestia closed by snow')
+        notice = self._admin_mail()[0]
+        self.assertIn('Road to Mestia closed by snow', notice.body)
+        self.assertIn('Road to Mestia closed by snow', notice.alternatives[0][0])
+
+    def test_a_reason_with_html_in_it_cannot_reach_our_inbox_as_markup(self):
+        with self.settings(ADMIN_NOTIFICATION_EMAIL='ops@kavkazland.com'):
+            self._cancel_as_guide(self._booking(), reason='<script>alert(1)</script> sorry')
+        html = self._admin_mail()[0].alternatives[0][0]
+        self.assertNotIn('<script>', html)
+        self.assertIn('&lt;script&gt;', html)
+
+    def test_a_cancellation_with_no_reason_says_so_rather_than_going_quiet(self):
+        """
+        The form makes it required, but the API does not — so a blank one has to
+        read as blank, not as an ordinary notice with a gap where the reason was.
+        """
+        with self.settings(ADMIN_NOTIFICATION_EMAIL='ops@kavkazland.com'):
+            self._cancel_as_guide(self._booking())
+        notice = self._admin_mail()[0]
+        self.assertIn('none given', notice.body)
+        self.assertIn('gave no reason', notice.alternatives[0][0])
 
     def test_a_missing_admin_address_does_not_break_the_cancellation(self):
         with self.settings(ADMIN_NOTIFICATION_EMAIL=None, DEFAULT_FROM_EMAIL=None):

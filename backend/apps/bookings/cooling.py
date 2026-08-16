@@ -57,6 +57,21 @@ SCHEMES = {
                 # Brackets belong to the value: it is always dropped mid-sentence.
                 'parenthetical': ('(24 h if departure is more than 30 days away; '
                                   '2 h if 8–30 days; 30 min if 7 days or less)'),
+                # Whether the money moves at booking is the scheme's other half,
+                # and the pages that answer "when is my card charged?" were
+                # written when only one answer existed. They say it in the
+                # traveller's voice here and the guide's voice below.
+                'charge': ('Your card is authorised when you book, not charged — your '
+                           'bank sets the amount aside but it does not leave your '
+                           'account until your free cancellation window closes. Cancel '
+                           'inside the window and the hold is released: there is no '
+                           'charge, and no refund to wait for. Your place is confirmed '
+                           'and held from the moment the authorisation succeeds.'),
+                'charge_expert': ('The Traveler\'s card is authorised at the moment of '
+                                  'booking and charged once their free cancellation '
+                                  'window closes. A booking cancelled inside that '
+                                  'window releases the authorisation and is never '
+                                  'charged.'),
                 'rows': [
                     ('Departure more than 30 days away', '24 hours'),
                     ('Departure 8–30 days away', '2 hours'),
@@ -75,6 +90,17 @@ SCHEMES = {
                            'в последнюю неделю — 30 минут.'),
                 'parenthetical': ('(24 ч, если до отправления больше 30 дней; '
                                   '2 ч при 8–30 днях; 30 мин, если 7 дней или меньше)'),
+                'charge': ('При бронировании карта не списывается, а авторизуется: банк '
+                           'резервирует сумму, но она не уходит со счёта, пока не '
+                           'закроется период бесплатной отмены. Если вы отмените внутри '
+                           'этого периода, удержание просто снимается — списания не '
+                           'было, и возврата ждать не нужно. Место закрепляется за вами '
+                           'с момента успешной авторизации.'),
+                'charge_expert': ('Карта Путешественника авторизуется в момент '
+                                  'бронирования и списывается после закрытия его периода '
+                                  'бесплатной отмены. Бронирование, отменённое внутри '
+                                  'этого периода, снимает удержание, и списания не '
+                                  'происходит.'),
                 'rows': [
                     ('До отправления больше 30 дней', '24 часа'),
                     ('До отправления 8–30 дней', '2 часа'),
@@ -103,6 +129,14 @@ SCHEMES = {
                 # would only say thirty minutes a second time on the same page.
                 'detail': '',
                 'parenthetical': '(30 minutes from booking)',
+                'charge': ('Your card is charged when you book — a real charge, not a '
+                           'pre-authorisation. Your place is confirmed and held the '
+                           'moment the payment goes through, with nobody left to approve '
+                           'it. Cancel inside your free window and the whole amount comes '
+                           'back, card fee included.'),
+                'charge_expert': ('The Traveler\'s card is charged in full at the moment '
+                                  'of booking. A booking cancelled inside their free '
+                                  'window is refunded in full.'),
                 'rows': [
                     ('Every booking, whenever you travel', '30 minutes'),
                 ],
@@ -114,6 +148,14 @@ SCHEMES = {
                              'независимо от даты отправления.'),
                 'detail': '',
                 'parenthetical': '(30 минут с момента бронирования)',
+                'charge': ('Карта списывается в момент бронирования — это реальный '
+                           'платёж, а не предварительная авторизация. Место закрепляется '
+                           'за вами, как только платёж проходит, и подтверждать его '
+                           'никому не нужно. Если вы отмените внутри бесплатного периода, '
+                           'вернётся вся сумма, включая комиссию за оплату картой.'),
+                'charge_expert': ('Карта Путешественника списывается полностью в момент '
+                                  'бронирования. Бронирование, отменённое внутри его '
+                                  'бесплатного периода, возвращается в полном объёме.'),
                 'rows': [
                     ('Любое бронирование, в любую дату', '30 минут'),
                 ],

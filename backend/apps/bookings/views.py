@@ -172,10 +172,32 @@ def notify_admin_guide_cancellation(booking, timed_out=False):
 
     why = ('never responded, so we cancelled it for them'
            if timed_out else 'cancelled it')
+
+    # A count tells you a guide is cancelling; only the reason tells you whether
+    # to worry. Four bookings dropped for "hospital" and four for "found a better
+    # group" are the same number and completely different problems, and the
+    # difference is not visible from the booking list.
+    from django.utils.html import escape
+    said = (booking.cancel_reason or '').strip()
+    if said:
+        reason_html = (
+            f'<p style="margin:0 0 14px;padding:10px 13px;background:#f4f8fb;'
+            f'border-left:3px solid #c0392b;font-size:13.5px;color:#0d1f2d;'
+            f'line-height:1.6"><strong>Their reason:</strong> {escape(said)}</p>'
+        )
+    elif timed_out:
+        reason_html = ''
+    else:
+        reason_html = (
+            f'<p style="margin:0 0 14px;font-size:13px;color:#a02010;'
+            f'line-height:1.6">They gave no reason.</p>'
+        )
+
     body = (
         f'<p style="margin:0 0 14px;font-size:14px;color:#0d1f2d;line-height:1.65">'
         f'<strong>{name}</strong> {why} — <strong>{booking.tour.title}</strong>, '
         f'departing {booking.departure_date or "TBC"}.</p>'
+        f'{reason_html}'
         f'{_booking_rows_html(booking)}'
         f'<p style="margin:12px 0 0;font-size:13px;color:#607080;line-height:1.65">'
         f'The traveller is refunded in full. This is their '
@@ -185,7 +207,9 @@ def notify_admin_guide_cancellation(booking, timed_out=False):
         send_mail(
             subject=(f'Guide cancellation ({prior + 1} for {name}): {booking.tour.title}'),
             message=(f'{name} {why}.\nTour: {booking.tour.title}\n'
-                     f'Ref: {booking.reference}\nTotal for this guide: {prior + 1}\n'),
+                     f'Ref: {booking.reference}\n'
+                     f'Reason: {said or "(none given)"}\n'
+                     f'Total for this guide: {prior + 1}\n'),
             from_email=_from_email(),
             html_message=_html_email('Guide cancellation', body,
                                       'Open in admin', f'{site}/admin/bookings/booking/'),

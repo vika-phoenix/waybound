@@ -59,11 +59,36 @@ class WindowMathTest(TestCase):
             self.assertEqual(scheme['bands'][-1]['min_days'], 0, name)
 
     def test_every_scheme_is_described_in_both_languages(self):
-        keys = {'headline', 'sentence', 'detail', 'parenthetical', 'rows'}
+        keys = {'headline', 'sentence', 'detail', 'parenthetical', 'rows',
+                'charge', 'charge_expert'}
         for name, scheme in cooling.SCHEMES.items():
             for lang in ('en', 'ru'):
                 self.assertIn(lang, scheme['text'], name)
                 self.assertEqual(keys, set(scheme['text'][lang]), f'{name}/{lang}')
+
+    def test_what_each_scheme_says_about_the_charge_matches_what_it_does(self):
+        """
+        The help page and the guide contract both answer "when is the card
+        charged?", and the honest answer changes with the scheme: flat takes the
+        money at booking, tiered only holds it. Getting these two out of step
+        would put a false statement about someone's money on a contractual page,
+        which is exactly how the refund tiers went wrong before.
+        """
+        marks = {'en': 'not a pre-authorisation', 'ru': 'не предварительная авторизация'}
+        for name, scheme in cooling.SCHEMES.items():
+            charges_now = not scheme['defers_capture']
+            for lang, phrase in marks.items():
+                said = scheme['text'][lang]['charge']
+                self.assertEqual(
+                    charges_now, phrase in said,
+                    f'{name}/{lang}: charge wording and defers_capture disagree')
+
+    def test_both_charge_statements_are_written_for_their_reader(self):
+        """One is read by the traveller, the other sits in the guide contract."""
+        for name, scheme in cooling.SCHEMES.items():
+            en = scheme['text']['en']
+            self.assertIn('Your card', en['charge'], name)
+            self.assertIn("Traveler's card", en['charge_expert'], name)
 
 
 class SchemeReachesBookingsTest(TestCase):
