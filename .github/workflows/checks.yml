@@ -1,0 +1,67 @@
+name: checks
+
+# Two things that have each broken silently before.
+#
+# The published cancellation wording drifted from the code twice: once when the
+# free window was widened from 30 minutes to 24 hours and five pages were
+# missed, two of them contractual, and once on a Russian page that stayed wrong
+# for weeks because nothing compared it to anything.
+#
+# And the model drifted from its migrations at some point without anyone
+# noticing, which makemigrations --check would have caught the same day.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Models match migrations
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Tests
+        run: python manage.py test
+
+  published-wording:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Exits non-zero when a page describes a cancellation window the code
+      # does not apply. Run it for both schemes: switching is meant to be a
+      # settings change, so the wording has to be correct under either.
+      - name: Pages match the active scheme
+        run: python tools/cooling_sync.py --check
+
+      # Switching scheme and switching back has to land exactly where it
+      # started. If it does not, --write is corrupting a marker rather than
+      # replacing what is between them, and the damage would arrive on the
+      # terms pages of whichever scheme was written second.
+      - name: Switching scheme and back is lossless
+        run: |
+          COOLING_OFF_SCHEME=tiered python tools/cooling_sync.py --write
+          python tools/cooling_sync.py --write
+          git diff --quiet || {
+            echo "::error::cooling_sync round-trip is not lossless."
+            git diff
+            exit 1
+          }

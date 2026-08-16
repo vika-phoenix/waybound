@@ -39,11 +39,12 @@ class CoolingOffFilter(admin.SimpleListFilter):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display    = ['reference', 'tourist', 'tour', 'status', 'adults', 'children',
+    list_display    = ['reference', 'tourist', 'tour', 'status', 'col_capture',
+                       'adults', 'children',
                        'total_price', 'currency', 'col_commission', 'col_payout',
                        'col_payout_status', 'departure_date', 'created_at']
-    list_filter     = ['status', 'cancelled_by', CoolingOffFilter, 'payout_status',
-                       'currency', 'payment_method', 'created_at']
+    list_filter     = ['status', 'capture_status', 'cancelled_by', CoolingOffFilter,
+                       'payout_status', 'currency', 'payment_method', 'created_at']
     search_fields   = ['reference', 'email', 'first_name', 'last_name',
                        'tour__slug', 'tourist__email', 'payout_reference']
     readonly_fields = ['reference', 'created_at', 'updated_at', 'confirmed_at', 'cancelled_at',
@@ -69,6 +70,18 @@ class BookingAdmin(admin.ModelAdmin):
                 'normally be edited — changing it rewrites what this guide is owed. '
                 'Commission is charged on what was kept, so a refunded booking owes nothing '
                 'and a cancellation that kept a penalty is charged on the penalty.'
+            ),
+        }),
+        ('Card hold', {
+            'fields': ('capture_status', 'capture_grace_until', 'capture_attempts',
+                       'capture_reminder_sent', 'capture_last_error'),
+            'classes': ('collapse',),
+            'description': (
+                'Only meaningful while the cooling-off scheme holds cards rather than '
+                'charging them. "Charge failed" is the one to watch: the seat is held '
+                'and no money is behind it, and the booking is cancelled if the '
+                'traveller does not fix their card before the grace deadline. '
+                'capture_last_error is shown to them, so keep it readable.'
             ),
         }),
         ('Cancellation', {
@@ -119,6 +132,27 @@ class BookingAdmin(admin.ModelAdmin):
         if obj.payout_status == 'paid' and obj.payout_sent_at:
             label += f' {obj.payout_sent_at:%d %b}'
         return format_html('<b style="color:{}">{}</b>', colour, label)
+
+    @admin.display(description='Card', ordering='capture_status')
+    def col_capture(self, obj):
+        """
+        Silent unless something needs doing. Under a scheme that charges at
+        booking every row would otherwise read "Charged outright", which is a
+        column of noise hiding the one row that matters.
+        """
+        if obj.capture_status == Booking.Capture.NONE:
+            return ''
+        if obj.capture_status == Booking.Capture.FAILED:
+            left = ''
+            if obj.capture_grace_until:
+                mins = int((obj.capture_grace_until - timezone.now()).total_seconds() // 60)
+                left = f' · {mins // 60}h{mins % 60:02d} left' if mins > 0 else ' · expired'
+            return format_html('<b style="color:#c0392b">Charge failed{}</b>', left)
+        colour = {Booking.Capture.AUTHORISED: '#9a6030',
+                  Booking.Capture.CAPTURED:   '#1a7a40',
+                  Booking.Capture.VOIDED:     '#888'}.get(obj.capture_status, '#888')
+        return format_html('<span style="color:{}">{}</span>',
+                           colour, obj.get_capture_status_display())
 
     # ── Actions ──────────────────────────────────────────────────────────────
 

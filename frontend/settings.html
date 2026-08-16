@@ -403,6 +403,10 @@ footer a:hover{color:rgba(255,255,255,.75)}
             <label class="field-label" id="bioLabel">About you</label>
             <textarea class="field-input" id="bioField" rows="3" placeholder="Tell guides and fellow travellers a little about yourself…" style="resize:vertical;min-height:70px;"></textarea>
             <div id="bioRequiredMsg" style="font-size:11.5px;color:#c03020;font-family:var(--bf);margin-top:4px;display:none">Required for operators — describe your tours and experience.</div>
+            <div class="req-note" data-guide-only style="display:none;margin-top:6px;font-size:11.5px;line-height:1.55;font-family:var(--bf);color:#8a4b1a;background:#fdf3ec;border:1px solid #f0d3bd;border-radius:6px;padding:7px 10px">
+              <b>Required to publish a tour.</b> This is what travellers read when
+              deciding whether to spend several days with you.
+            </div>
           </div>
           <div class="save-row">
             <button class="btn-save" onclick="saveProfile()">Save changes</button>
@@ -1319,16 +1323,11 @@ async function saveProfile() {
     if (msgEl) msgEl.style.display = 'none';
   }
 
-  // Validate bio for operators
-  var bioVal = document.getElementById('bioField').value.trim();
-  var userCheck = null;
-  try { userCheck = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ userCheck = {}; }
+  // "About you" is required to publish a tour, not to save this page. Blocking
+  // the save meant a guide could not correct their phone number until they had
+  // written a bio, and it only ever ran here — a direct API call skipped it.
+  // The check now lives with the other publish requirements, server-side.
   var bioMsg = document.getElementById('bioRequiredMsg');
-  if (userCheck.role === 'operator' && !bioVal) {
-    if (bioMsg) bioMsg.style.display = 'block';
-    document.getElementById('bioField').focus();
-    return;
-  }
   if (bioMsg) bioMsg.style.display = 'none';
 
   // Save text fields

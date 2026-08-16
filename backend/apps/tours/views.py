@@ -500,6 +500,13 @@ def incomplete_tour_fields(tour):
     # where the person's name belongs, which is not what anyone is buying.
     if not f'{tour.operator.first_name} {tour.operator.last_name}'.strip():
         missing.append('Your name (Settings → Profile)')
+    # Was enforced in the settings page's save handler instead, which had it
+    # backwards twice: a guide could not correct their phone number without
+    # writing a bio, and a direct API call skipped it entirely. It belongs with
+    # the photo and the name — things a listing needs, checked where listings
+    # are checked.
+    if not (tour.operator.bio or '').strip():
+        missing.append('Your "About you" text (Settings → Profile)')
     return missing
 
 

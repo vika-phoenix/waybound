@@ -129,7 +129,8 @@ class PublishValidationTest(TestCase):
         cls.guide = User.objects.create_user(
             email='pub@example.com', password='x', role=User.Role.OPERATOR,
             is_verified=True, avatar='avatars/pub.jpg',
-            first_name='Nino', last_name='Beridze')
+            first_name='Nino', last_name='Beridze',
+            bio='Fifteen years guiding in Svaneti.')
 
     def setUp(self):
         from rest_framework.test import APIClient

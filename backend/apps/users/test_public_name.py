@@ -58,6 +58,38 @@ class GuideNameIsAPublishGateTest(TestCase):
                          incomplete_tour_fields(Tour.objects.get(pk=tour.pk)))
 
 
+class BioIsAPublishGateNotASaveGateTest(TestCase):
+    """
+    "About you" was enforced in the settings page's save handler, which had it
+    backwards twice: a guide could not correct their phone number until they
+    had written a bio, and a direct API call skipped the check entirely.
+    """
+
+    def setUp(self):
+        self.guide = User.objects.create_user(
+            email='g2@example.com', password='x', role=User.Role.OPERATOR,
+            first_name='Nino', last_name='Beridze', avatar='avatars/x.jpg')
+        self.tour = Tour.objects.create(
+            operator=self.guide, title='Ushba', country='Georgia',
+            destination='Mestia', price_adult=Decimal('500'), currency='USD',
+            max_group=8)
+
+    def test_publishing_asks_for_it(self):
+        from apps.tours.views import incomplete_tour_fields
+        self.assertTrue(any('About you' in m for m in incomplete_tour_fields(self.tour)))
+
+    def test_saving_the_profile_does_not(self):
+        """Changing a phone number must not require writing a bio first."""
+        from rest_framework.test import APIClient
+        client = APIClient()
+        client.force_authenticate(self.guide)
+        res = client.patch('/api/v1/auth/me/', {'phone': '+995555000111'}, format='json')
+        self.assertIn(res.status_code, (200, 202), getattr(res, 'data', None))
+        self.guide.refresh_from_db()
+        self.assertEqual(self.guide.phone, '+995555000111')
+        self.assertEqual(self.guide.bio, '')
+
+
 class PublicSerialisersTest(TestCase):
 
     def test_the_tour_page_shows_no_email_for_a_nameless_guide(self):

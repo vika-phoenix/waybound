@@ -389,6 +389,9 @@ footer a:hover{color:rgba(255,255,255,.75)}
 <label class="field-label" id="bioLabel">О вас</label>
 <textarea class="field-input" id="bioField" placeholder="Расскажите гидам и другим путешественникам о себе…" rows="3" style="resize:vertical;min-height:70px;"></textarea>
 <div id="bioRequiredMsg" style="font-size:11.5px;color:#c03020;font-family:var(--bf);margin-top:4px;display:none">Обязательно для операторов — опишите ваши туры и опыт.</div>
+<div class="req-note" data-guide-only style="display:none;margin-top:6px;font-size:11.5px;line-height:1.55;font-family:var(--bf);color:#8a4b1a;background:#fdf3ec;border:1px solid #f0d3bd;border-radius:6px;padding:7px 10px">
+<b>Обязательно для публикации тура.</b> Это то, что читают путешественники, решая, провести ли с вами несколько дней.
+</div>
 </div>
 <div class="save-row">
 <button class="btn-save" onclick="saveProfile()">Сохранить изменения</button>
@@ -1276,16 +1279,11 @@ async function saveProfile() {
     if (msgEl) msgEl.style.display = 'none';
   }
 
-  // Validate bio for operators
-  var bioVal = document.getElementById('bioField').value.trim();
-  var userCheck = null;
-  try { userCheck = JSON.parse(localStorage.getItem('waybound_user') || '{}'); } catch(e){ userCheck = {}; }
+  // «О себе» нужно для публикации тура, а не для сохранения этой страницы.
+  // Блокировка сохранения не давала гиду исправить телефон, пока он не напишет
+  // о себе, и работала только здесь — прямой вызов API её обходил. Проверка
+  // теперь рядом с остальными требованиями к публикации, на сервере.
   var bioMsg = document.getElementById('bioRequiredMsg');
-  if (userCheck.role === 'operator' && !bioVal) {
-    if (bioMsg) bioMsg.style.display = 'block';
-    document.getElementById('bioField').focus();
-    return;
-  }
   if (bioMsg) bioMsg.style.display = 'none';
 
   // Save text fields
