@@ -60,9 +60,10 @@ def register_rails():
     switch back drain authorisations that are still outstanding, instead of
     stranding money on someone's card.
 
-    Not registered: PayPal (an order is authorised differently and needs its
-    own handling) and YooKassa (7 days on cards, but 2 hours on the wallet
-    methods, which is under our longest window).
+    All three rails register. What varies is which instruments inside them can
+    actually be held: YooKassa cards hold for 7 days, but SBP is a bank
+    transfer and the wallet methods hold for only 2 hours, which is under our
+    longest window — so those keep being charged outright under either scheme.
     """
     from django.conf import settings
 

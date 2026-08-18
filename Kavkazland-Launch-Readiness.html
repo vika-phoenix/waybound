@@ -1,0 +1,474 @@
+<title>Kavkazland Launch Readiness</title>
+<style>
+:root{
+  --ground:#F6F7F6; --surface:#FFFFFF; --raise:#EDF0EF;
+  --ink:#14202A; --mute:#5E6F7A; --faint:#8A99A2;
+  --line:#DCE2E1; --hair:#E7EBEA;
+  --accent:#1C6F6A; --accent-soft:#E2EEEC;
+  --blocked:#A63A2B; --blocked-soft:#F7E5E1;
+  --done:#2C7A56; --done-soft:#E3F0E9;
+  --wait:#8A6420; --wait-soft:#F6EDDC;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Display","Segoe UI",system-ui,Roboto,sans-serif;
+  --mono:ui-monospace,"Cascadia Code","SF Mono",Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#101619; --surface:#161E22; --raise:#1D272C;
+    --ink:#E7EDEE; --mute:#93A3AA; --faint:#6D7D85;
+    --line:#28343A; --hair:#212C31;
+    --accent:#54B5AC; --accent-soft:#16302E;
+    --blocked:#E38473; --blocked-soft:#33201C;
+    --done:#63C093; --done-soft:#162C23;
+    --wait:#D3A552; --wait-soft:#2C2416;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101619; --surface:#161E22; --raise:#1D272C;
+  --ink:#E7EDEE; --mute:#93A3AA; --faint:#6D7D85;
+  --line:#28343A; --hair:#212C31;
+  --accent:#54B5AC; --accent-soft:#16302E;
+  --blocked:#E38473; --blocked-soft:#33201C;
+  --done:#63C093; --done-soft:#162C23;
+  --wait:#D3A552; --wait-soft:#2C2416;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.62;
+  margin:0; padding:0 20px 100px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:840px; margin:0 auto}
+p,li{max-width:70ch}
+
+header{padding:56px 0 0}
+.eyebrow{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 14px;
+}
+h1{
+  font-size:clamp(34px,6vw,50px); line-height:1.05; letter-spacing:-.028em;
+  font-weight:700; margin:0 0 16px; text-wrap:balance;
+}
+.standfirst{font-size:17.5px; color:var(--mute); margin:0 0 30px; line-height:1.6}
+
+.tally{
+  display:flex; flex-wrap:wrap; gap:1px; background:var(--line);
+  border:1px solid var(--line); border-radius:3px; overflow:hidden; margin-bottom:14px;
+}
+.tally div{background:var(--surface); padding:13px 20px; flex:1 1 130px}
+.tally .n{
+  font-family:var(--mono); font-size:25px; font-weight:600;
+  font-variant-numeric:tabular-nums; display:block; line-height:1.2;
+}
+.tally .l{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--faint);
+}
+.n.stop{color:var(--blocked)} .n.go{color:var(--accent)} .n.ok{color:var(--done)}
+.asof{font-family:var(--mono); font-size:11.5px; color:var(--faint); margin:0 0 48px}
+
+section{border-top:2px solid var(--ink); padding-top:14px; margin-top:52px}
+section.minor{border-top-width:1px; border-top-color:var(--line)}
+.sec-head{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:6px}
+h2{font-size:24px; letter-spacing:-.02em; font-weight:700; margin:0}
+.sec-note{font-size:14.5px; color:var(--mute); margin:0 0 8px; max-width:66ch}
+
+.task{border-bottom:1px solid var(--hair); padding:26px 0}
+.task:last-child{border-bottom:none}
+.task-head{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:9px}
+.ref{font-family:var(--mono); font-size:12.5px; font-weight:600; color:var(--faint); flex:0 0 auto}
+h3{font-size:19px; font-weight:650; letter-spacing:-.012em; margin:0; flex:1 1 260px}
+.task p{margin:0 0 11px; font-size:15.3px}
+.task p:last-child{margin-bottom:0}
+
+.chip{
+  font-family:var(--mono); font-size:10.5px; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase;
+  padding:3px 8px; border-radius:2px; white-space:nowrap;
+  background:var(--raise); color:var(--mute);
+}
+.chip.stop{background:var(--blocked-soft); color:var(--blocked)}
+.chip.wait{background:var(--wait-soft); color:var(--wait)}
+.chip.ok{background:var(--done-soft); color:var(--done)}
+.chip.go{background:var(--accent-soft); color:var(--accent)}
+
+ol.steps{margin:12px 0 0; padding:0; list-style:none; counter-reset:s}
+ol.steps li{counter-increment:s; position:relative; padding:0 0 0 30px; margin-bottom:9px; font-size:15px}
+ol.steps li::before{
+  content:counter(s); position:absolute; left:0; top:2px;
+  font-family:var(--mono); font-size:11.5px; font-weight:600;
+  color:var(--accent); border:1px solid var(--line);
+  width:20px; height:20px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+ul.plain{margin:11px 0 0; padding-left:19px}
+ul.plain li{margin-bottom:7px; font-size:15px}
+
+code,kbd{
+  font-family:var(--mono); font-size:.875em;
+  background:var(--raise); padding:1.5px 5px; border-radius:2px;
+  overflow-wrap:break-word;
+}
+
+.scroll{overflow-x:auto; margin:16px 0 6px; border:1px solid var(--line); border-radius:3px}
+table{border-collapse:collapse; width:100%; font-size:14.3px; background:var(--surface)}
+th{
+  text-align:left; font-family:var(--mono); font-size:10.5px;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--faint);
+  font-weight:600; padding:10px 15px; border-bottom:1px solid var(--line);
+  white-space:nowrap; background:var(--raise);
+}
+td{padding:11px 15px; border-bottom:1px solid var(--hair); vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.num{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+.note{
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:3px; padding:15px 18px; margin:16px 0 0; font-size:14.6px;
+}
+.note.warn{background:var(--blocked-soft); border-color:transparent}
+.note strong{font-weight:650}
+.note p{margin:0}
+.note p + p{margin-top:9px}
+
+.verdict{
+  font-family:var(--mono); font-size:12px; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--accent); margin:20px 0 6px;
+  padding-top:14px; border-top:1px dashed var(--line);
+}
+footer{
+  margin-top:60px; padding-top:22px; border-top:1px solid var(--line);
+  font-size:13.5px; color:var(--faint);
+}
+a{color:var(--accent); text-decoration-thickness:1px; text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+@media (max-width:560px){
+  body{padding:0 15px 70px; font-size:15.5px}
+  header{padding-top:34px}
+  .tally div{padding:11px 15px; flex-basis:100px}
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Kavkazland &middot; pre-launch</p>
+  <h1>What is left before you can take a booking</h1>
+  <p class="standfirst">Everything in the codebase is built and tested. What remains is registration, review and verification &mdash; work that happens in provider dashboards and in reading, not in the repo.</p>
+
+  <div class="tally">
+    <div><span class="n stop">1</span><span class="l">blocks everything</span></div>
+    <div><span class="n go">5</span><span class="l">primary</span></div>
+    <div><span class="n">4</span><span class="l">secondary</span></div>
+    <div><span class="n ok">310</span><span class="l">tests passing</span></div>
+  </div>
+  <p class="asof">as of 18 August 2026 &middot; main @ b60b6ad</p>
+</header>
+
+<section>
+  <div class="sec-head"><h2>Primary</h2><span class="chip go">your list</span></div>
+  <p class="sec-note">The five you named. P1 gates the others in the sense that nothing else matters if money cannot move &mdash; but P2 to P5 can all be worked in parallel while registration is pending.</p>
+
+  <div class="task">
+    <div class="task-head">
+      <span class="ref">P1</span>
+      <h3>Take all three payment providers out of sandbox</h3>
+      <span class="chip stop">blocks launch</span>
+    </div>
+    <p>Every rail is currently on test credentials, so the site cannot charge a real card by any route.</p>
+
+    <div class="scroll"><table>
+      <thead><tr><th>Rail</th><th>State now</th><th>What live needs</th><th>Realistic?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>YooKassa</strong></td><td class="num">test_ key<br>7-digit test shop</td><td>Russian &#1048;&#1055;, &#1054;&#1054;&#1054; or &#1089;&#1072;&#1084;&#1086;&#1079;&#1072;&#1085;&#1103;&#1090;&#1099;&#1081;; documents, signed agreement, live shop ID and secret</td><td>Yes &mdash; days</td></tr>
+        <tr><td><strong>Stripe</strong></td><td class="num">sk_test_ key<br>US corporation<br>payouts disabled</td><td>Account activation: entity, tax ID, bank account. Stripe does not serve RU, GE, TR or KZ, so the US entity has to be real</td><td>Weeks, via Atlas</td></tr>
+        <tr><td><strong>PayPal</strong></td><td class="num">sandbox</td><td>Business account in a served country. PayPal left Russia in 2022 and Turkey in 2016; Georgia and Kazakhstan are send-only</td><td>Needs a foreign entity</td></tr>
+      </tbody>
+    </table></div>
+
+    <p class="verdict">recommended order</p>
+    <ol class="steps">
+      <li>Complete YooKassa onboarding and collect the live shop ID and secret key.</li>
+      <li>In Railway set <code>YOOKASSA_SHOP_ID</code>, <code>YOOKASSA_SECRET_KEY</code> and <code>PAYMENT_METHODS_ENABLED=yookassa</code>, dropping <code>stripe,paypal</code> so nobody can reach a checkout that cannot charge them.</li>
+      <li>Recreate the webhook endpoint <strong>in live mode</strong> and copy that secret. Webhook secrets are per-mode: the test one silently rejects every live callback, so a booking would take money and never confirm.</li>
+      <li>Put one real card through end to end. Confirm the booking reaches <code>confirmed</code> and the seat count drops.</li>
+      <li>Start Stripe Atlas separately if international travellers matter. That rail is already written and tested &mdash; it needs credentials, not development.</li>
+    </ol>
+
+    <div class="note"><p><strong>Launching YooKassa-only is the right call anyway.</strong> It takes Russian cards and SBP, which is the market your tours are in, and it is the one rail Stripe cannot serve at any price. Russian-issued Visa and Mastercard do not work internationally, so Stripe would not reach your core customer even once it is live.</p></div>
+  </div>
+
+  <div class="task">
+    <div class="task-head">
+      <span class="ref">P2</span>
+      <h3>Verify the Russian email templates</h3>
+      <span class="chip wait">needs your eyes</span>
+    </div>
+    <p>Every email a traveller or guide can receive &mdash; 30 messages, English and Russian &mdash; lives in one file:</p>
+    <p><code>backend/apps/mail/messages.py</code></p>
+
+    <div class="scroll"><table>
+      <thead><tr><th>Block in the file</th><th>What it holds</th></tr></thead>
+      <tbody>
+        <tr><td class="num">SHELL</td><td>Header and footer wrapper, per language</td></tr>
+        <tr><td class="num">CANCEL_REASONS</td><td>Four sentences on who cancelled and where the money goes</td></tr>
+        <tr><td class="num">ROWS</td><td>Booking detail-table labels, including Russian plural forms</td></tr>
+        <tr><td class="num">MESSAGES</td><td>All 30 messages &mdash; subject, body and button label, in <code>en</code> and <code>ru</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <p>Change any words you like. Keep the <code>{braces}</code> &mdash; those are the variables filled in with names, dates and amounts. Drop a variable from one language and not the other and the test suite fails immediately, rather than crashing in production for Russian readers only.</p>
+
+    <p class="verdict">worth a closer look while you read</p>
+    <ul class="plain">
+      <li><code>CANCEL_REASONS['operator']</code> promises a full refund <em>whatever the cancellation policy says</em>. It matches the code, but it is a firm commitment in writing.</li>
+      <li><code>waitlist_spot_open</code> says places are not held for the waitlist, first come first served. Honest, possibly blunter than you want.</li>
+      <li><code>operator_verification_rejected</code> is written to blame photo quality, never the person.</li>
+      <li>Russian register throughout is &laquo;&#1074;&#1099;&raquo;, with no exclamation marks on anything about money.</li>
+    </ul>
+
+    <p class="verdict">already found and fixed in the Russian pages</p>
+    <ul class="plain">
+      <li>&laquo;&#1042;&#1072;&#1096;&#1072; &#1082;&#1072;&#1088;&#1090;&#1072; &#1073;&#1091;&#1076;&#1077;&#1090; <em>&#1079;&#1072;&#1088;&#1103;&#1078;&#1077;&#1085;&#1072;</em>&raquo; &mdash; a card charged like a battery.</li>
+      <li>&laquo;&#1042;&#1072;&#1096;&#1072; &#1073;&#1088;&#1086;&#1085;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1080;&#1077;&raquo; &mdash; a neuter noun given a feminine adjective.</li>
+      <li>Two FAQ entries describing a booking flow that no longer exists, one of which contradicted the answer seven lines above it.</li>
+    </ul>
+    <p>Three artifacts of that kind in the few pages I happened to touch means the Russian was machine-translated and never fully proofread. That is the case for reading this file properly rather than skimming it, and it is the same case behind P4.</p>
+  </div>
+
+  <div class="task">
+    <div class="task-head">
+      <span class="ref">P3</span>
+      <h3>Cancellation and cooling-off, stated in full</h3>
+      <span class="chip ok">verified in code</span>
+    </div>
+    <p>Three rules stack, in this order. The first that applies wins.</p>
+
+    <p class="verdict">1 &middot; cooling-off window &mdash; platform rule, a guide cannot override it</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Scheme</th><th>Window</th><th>How the money is held</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>flat</strong></td>
+          <td class="num">30 min<br>every booking</td>
+          <td>Charged at booking, like any shop. Cancel inside the window and the whole amount comes back, card fee included.</td>
+          <td><span class="chip ok">live</span></td>
+        </tr>
+        <tr>
+          <td><strong>tiered</strong></td>
+          <td class="num">24 h if &gt;30 days out<br>2 h at 8&ndash;30 days<br>30 min at 7 days or less</td>
+          <td>Card authorised at booking, charged when the window shuts. Cancelling inside it drops the authorisation &mdash; no charge, and no refund to wait for.</td>
+          <td><span class="chip wait">standby</span></td>
+        </tr>
+      </tbody>
+    </table></div>
+    <p>Switching is one environment variable, <code>COOLING_OFF_SCHEME</code>, followed by <code>python tools/cooling_sync.py --write</code>, which rewrites the wording on 16 pages across both languages so no page can promise terms the code does not keep.</p>
+
+    <p class="verdict">why flat is the live one &mdash; the merchant-fee question</p>
+    <ul class="plain">
+      <li>A refund never returns the processor's fee. Under <strong>flat</strong>, every cancellation inside the window costs you roughly 2.8&ndash;3.5% of that booking, absorbed by you. Thirty minutes is short enough that few travellers use it, so the loss is small and the machinery is simple: no authorisations outstanding, no capture to schedule, nothing to fail a day later.</li>
+      <li>Under <strong>tiered</strong>, a 24-hour window would make charge-then-refund expensive, so it holds the card instead and charges only once the window closes. A cancellation inside the window then costs nobody anything.</li>
+      <li>But tiered only helps on instruments that can be held. <strong>SBP is a bank transfer and cannot be authorised at all</strong>, and YooKassa's wallet methods hold for two hours, which is under the longest window. Both keep being charged outright whichever scheme is running.</li>
+      <li>You are launching YooKassa-first with SBP prominent, so tiered's saving would apply to card payments only. <strong>Stay on flat for launch.</strong> Revisit if card volume grows and in-window cancellations turn out to cost real money.</li>
+    </ul>
+
+    <p class="verdict">2 &middot; repeat-use limit</p>
+    <p>Two free-window cancellations per account in a rolling 30 days. The third booking is taken normally but granted no window, so the tour's cancellation policy applies from the start. Nothing is ever blocked. The count includes only cancellations the traveller made themselves inside a window &mdash; a guide cancelling, a departure being called off, or a refund you issued never count against them.</p>
+
+    <p class="verdict">3 &middot; the tour's cancellation policy, once the window closes</p>
+    <p>A guide may set their own, stricter or more generous, shown before payment and snapshotted at booking so later edits cannot reach an existing traveller. Where a guide sets none, this is the platform default:</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Days before departure</th><th>Refund</th><th>Kept back</th></tr></thead>
+      <tbody>
+        <tr><td class="num">30+</td><td>Full, less a 1% processing fee</td><td class="num">1%</td></tr>
+        <tr><td class="num">14&ndash;29</td><td>Half</td><td class="num">50%</td></tr>
+        <tr><td class="num">0&ndash;13</td><td>None</td><td class="num">100%</td></tr>
+      </tbody>
+    </table></div>
+
+    <p class="verdict">the guide's side</p>
+    <ul class="plain">
+      <li>A guide can cancel a confirmed booking at any point up to departure. The traveller receives <strong>100% of everything paid</strong> &mdash; no policy tiers, no timing test &mdash; and the guide is paid nothing for it.</li>
+      <li>The guide must now give a reason. It reaches the traveller's email and inbox, and reaches you in the alert.</li>
+      <li>Your alert carries that guide's running total, and the admin user list has a <em>Cancelled</em> column that turns amber at one and red at three. There is no automatic penalty &mdash; that call is yours.</li>
+      <li>Guides are told in writing, in both languages, that repeated cancellations may pause their listings or remove their account.</li>
+    </ul>
+
+    <div class="note"><p><strong>Confirmed as current.</strong> Window lengths, the repeat-use limit, the guide-cancels-full-refund rule and the default tiers are all pinned by tests, and a build-time check proves all 16 published pages state the live scheme in both languages. The one judgement left to you is whether <strong>1% at 30 days or more</strong> is the right number &mdash; a pricing decision, not a correctness one.</p></div>
+  </div>
+
+  <div class="task">
+    <div class="task-head">
+      <span class="ref">P4</span>
+      <h3>Read the Russian content pages</h3>
+      <span class="chip wait">needs your eyes</span>
+    </div>
+    <p>Every English page has a Russian twin &mdash; 28 of them &mdash; and the twins were machine-translated. Three genuine errors surfaced in the handful of pages I worked on, which is a high rate for a small sample and the reason this sits in the primary list rather than the secondary one.</p>
+
+    <div class="scroll"><table>
+      <thead><tr><th>Page</th><th>Lines</th><th>Read it for</th></tr></thead>
+      <tbody>
+        <tr><td class="num">about_ru.html</td><td class="num">433</td><td>Voice, and claims made about the company</td></tr>
+        <tr><td class="num">operator_ru.html</td><td class="num">563</td><td>The list-a-tour pitch &mdash; figures, promises, the guide checklist</td></tr>
+        <tr><td class="num">help_ru.html</td><td class="num">635</td><td>FAQ accuracy against how the product now behaves</td></tr>
+        <tr><td class="num">contact_ru.html</td><td class="num">382</td><td>Response times, addresses, form labels</td></tr>
+        <tr><td class="num">terms_ru.html</td><td class="num">324</td><td>Contractual wording, traveller side</td></tr>
+        <tr><td class="num">terms-experts_ru.html</td><td class="num">387</td><td>Contractual wording, guide side</td></tr>
+        <tr><td class="num">privacy_ru.html</td><td class="num">348</td><td>Data claims, retention periods, response deadlines</td></tr>
+        <tr><td class="num">trust-safety_ru.html</td><td class="num">698</td><td>Refund guarantees and safety promises</td></tr>
+      </tbody>
+    </table></div>
+
+    <p class="verdict">what to watch for, based on what has already turned up</p>
+    <ul class="plain">
+      <li><strong>False friends from the machine.</strong> &laquo;&#1079;&#1072;&#1088;&#1103;&#1078;&#1077;&#1085;&#1072;&raquo; for a charged card is the type &mdash; grammatical, and wrong.</li>
+      <li><strong>Gender and case agreement</strong> on nouns the translator guessed at.</li>
+      <li><strong>Claims that drifted from the product</strong>, especially anything describing a step a guide takes or a time you promise to respond in.</li>
+      <li><strong>Numbers that no longer match</strong> &mdash; window lengths, fee percentages, day counts.</li>
+    </ul>
+
+    <div class="note"><p><strong>Do not edit inside the cooling markers.</strong> Text between <code>&lt;!--cooling:key--&gt;</code> and <code>&lt;!--/cooling--&gt;</code> is generated from <code>backend/apps/bookings/cooling.py</code>, and an edit there would be overwritten by the next sync. Change the wording in that file instead &mdash; it updates both languages on every page at once. Anything outside a marker is hand-written and fair game.</p></div>
+  </div>
+
+  <div class="task">
+    <div class="task-head">
+      <span class="ref">P5</span>
+      <h3>Final pass on mobile and laptop</h3>
+      <span class="chip wait">needs your eyes</span>
+    </div>
+    <p>A shared <code>mobile.css</code> and <code>nav.js</code> cover the responsive layer, so breakage tends to show up as one page fighting the shared rules rather than as a general failure. Walk the four flows end to end at both sizes, in both languages.</p>
+
+    <div class="scroll"><table>
+      <thead><tr><th>Flow</th><th>Pages</th><th>Watch for</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Traveller browsing</strong></td>
+          <td>Home, search, tour detail, about, help, contact</td>
+          <td>Photo galleries and the enquiry modal on a narrow screen; the departure picker</td>
+        </tr>
+        <tr>
+          <td><strong>Booking</strong></td>
+          <td>Booking form, checkout redirect, confirmation, My bookings</td>
+          <td>The cooling-off note and the new guide-cancellation line, both added recently and neither yet seen on a phone</td>
+        </tr>
+        <tr>
+          <td><strong>Creating a tour</strong></td>
+          <td>Operator dashboard, tour create, settings</td>
+          <td>The longest forms on the site. Also the cancel-booking modal, where the reason field became required and gained a validation message</td>
+        </tr>
+        <tr>
+          <td><strong>Admin</strong></td>
+          <td>Django admin &mdash; bookings, users, verification documents</td>
+          <td>Django admin is desktop-first; confirm the columns you rely on are reachable. Check <em>Cancelled</em> and <em>Can publish</em> in the user list</td>
+        </tr>
+      </tbody>
+    </table></div>
+    <p>Recent edits concentrated in three places, so those deserve the first look: the confirmation page hero, the cancel-booking modal in the operator dashboard, and the help page FAQ entries.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Charging in euros</h2><span class="chip">decision aid</span></div>
+  <p class="sec-note">Not a task &mdash; a reference for when European travellers start mattering. Two halves that are usually confused: <em>presenting</em> a price in euros is easy, <em>settling</em> in euros is not.</p>
+
+  <div class="task">
+    <div class="task-head"><span class="ref">EUR&nbsp;1</span><h3>What your account can and cannot do</h3></div>
+    <p>Your Stripe account is registered as a <strong>US corporation</strong>, and that decides everything below. Entity type is irrelevant here &mdash; a US sole trader settles in dollars exactly as a US company does.</p>
+    <div class="scroll"><table>
+      <thead><tr><th></th><th>Possible today</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Show and charge &euro; on Stripe</strong></td><td>Yes</td><td>Presentment currency is independent of account country. The customer sees euros and their bank does no conversion</td></tr>
+        <tr><td><strong>Receive &euro; from Stripe without conversion</strong></td><td>No</td><td>A US account settles in USD. Stripe converts and charges you for it</td></tr>
+        <tr><td><strong>Hold a &euro; balance on PayPal</strong></td><td>Yes</td><td>PayPal lets a US business hold multiple currency balances &mdash; the one route to euros without an EU entity</td></tr>
+        <tr><td><strong>Settle &euro; to a Wise or Payoneer IBAN</strong></td><td>No</td><td>Stripe requires the payout account to match the account country. A foreign IBAN does not get around it</td></tr>
+      </tbody>
+    </table></div>
+    <p>Genuine EUR settlement on Stripe means a Stripe account registered in a SEPA country, which means a legal entity there. That is the requirement there is no way around.</p>
+  </div>
+
+  <div class="task">
+    <div class="task-head"><span class="ref">EUR&nbsp;2</span><h3>The drawbacks, in the order they will bite</h3><span class="chip wait">read before deciding</span></div>
+    <ul class="plain">
+      <li><strong>The fee moves to you, it does not disappear.</strong> Today a European customer&rsquo;s own bank converts and charges them 1&ndash;3%. Price in euros and that stops &mdash; then Stripe converts EUR to USD on the way to your account and bills you roughly 1&ndash;2% instead. You are buying the customer&rsquo;s goodwill with your margin. That can be worth it, because showing local currency lifts checkout completion, often by more than 2% &mdash; but it is a bet to measure, not a saving.</li>
+      <li><strong>PayPal&rsquo;s spread is worse than Stripe&rsquo;s.</strong> If you hold euros on PayPal and later convert them, expect around 3&ndash;4%, against Stripe&rsquo;s 1&ndash;2%. Holding a EUR balance only pays off if you actually spend euros. Otherwise you have moved the conversion to the more expensive provider and delayed it.</li>
+      <li><strong>Refunds carry exchange-rate risk, and your cooling-off promise makes that concrete.</strong> You charge at today&rsquo;s rate and refund at the rate on the day of the refund. Your published guarantee is that a cancellation inside the window returns <em>everything, card fee included</em> &mdash; but if the rate moved, the customer sees a different number land in their account than the one that left it. Small in absolute terms, and exactly the kind of thing that generates a support message accusing you of shortchanging them.</li>
+      <li><strong>Two currencies to reconcile.</strong> Tour priced in one, charged in another, settled in a third. Deposit and balance can be taken weeks apart at different rates, so a booking no longer has one clean number attached to it.</li>
+      <li><strong>Displayed price can drift from charged price.</strong> Rates are cached for 24 hours. A euro figure shown on a listing and the euro figure at checkout can disagree if the rate moves inside that window, which is a complaint at best and a consumer-law problem at worst.</li>
+    </ul>
+  </div>
+
+  <div class="task">
+    <div class="task-head"><span class="ref">EUR&nbsp;3</span><h3>What would actually have to be switched on</h3></div>
+
+    <p class="verdict">stripe</p>
+    <ul class="plain">
+      <li><strong>Activate the live account first.</strong> None of this is reachable in test mode.</li>
+      <li><strong>Nothing to enable for EUR itself</strong> &mdash; card charges accept a currency per transaction. It is a code change, not a dashboard toggle.</li>
+      <li><strong>Enable European payment methods,</strong> under Settings &rarr; Payment methods. SEPA Direct Debit, iDEAL in the Netherlands, Bancontact in Belgium, giropay in Germany. In several European markets these convert far better than cards, and most of them require EUR presentment to appear at all &mdash; which is often the real reason to price in euros.</li>
+      <li><strong>Strong Customer Authentication is mandatory</strong> on European cards under PSD2. Stripe Checkout handles the 3-D Secure step for you, so nothing to build &mdash; but expect a visibly longer checkout, and a higher abandon rate than you see on Russian cards.</li>
+      <li><strong>SCA interacts badly with the tiered cooling-off scheme.</strong> An authorisation that is held and captured later can require re-authentication if it sits too long, and iDEAL and SEPA cannot be authorised-then-captured at all. If you ever run <code>tiered</code> alongside European methods, that combination needs testing before it is trusted.</li>
+    </ul>
+
+    <p class="verdict">paypal</p>
+    <ul class="plain">
+      <li><strong>Live app credentials</strong>, and <code>PAYPAL_ENV=live</code>.</li>
+      <li><strong>Add EUR to your account</strong> under Money &rarr; Currencies. Without it PayPal auto-converts every euro payment to USD on arrival, at its own spread, and the decision is made for you.</li>
+      <li><strong>Set the auto-convert preference deliberately</strong> &mdash; hold euros, or convert on receipt. Leaving the default is choosing the expensive option by not choosing.</li>
+    </ul>
+
+    <p class="verdict">in the code</p>
+    <ul class="plain">
+      <li>USD is hardcoded in three places in <code>backend/apps/payments/international.py</code>, and a tour carries a single currency.</li>
+      <li>What is missing is a presentment layer: choose the display currency from the visitor, convert once, and keep the deposit and balance split in one consistent currency so <code>balance_due</code> stays correct.</li>
+      <li>The FX source is already shared &mdash; both rails use the same cached CBR rates, so there is one place to change and nothing to re-price by hand.</li>
+    </ul>
+
+    <div class="note"><p><strong>Recommendation: not yet.</strong> You have no European bookings to measure, the work is real, and the saving is negative until conversion lift pays for the fee you would be absorbing. Revisit when European traffic is worth counting. Until then the currency problem that costs you money is the other one &mdash; a Russian traveller cannot pay at all until YooKassa is live.</p></div>
+  </div>
+</section>
+
+<section class="minor">
+  <div class="sec-head"><h2>Secondary</h2><span class="chip">not blocking</span></div>
+  <p class="sec-note">Worth doing, none of it in the way of launch.</p>
+
+  <div class="task">
+    <div class="task-head"><span class="ref">S1</span><h3>Re-price the two RUB tours</h3></div>
+    <p>Carried over from earlier. Quick, and visible to every visitor.</p>
+  </div>
+
+  <div class="task">
+    <div class="task-head"><span class="ref">S2</span><h3>A domain address you can also reply from</h3></div>
+    <p>Your Terms, Privacy, Help and Contact pages all publish a gmail address as the company contact. Cloudflare Email Routing receives <code>support@kavkazland.com</code> into your existing inbox for free, and adding Brevo's SMTP under Gmail's <em>Send mail as</em> lets you reply from it with no <em>on behalf of</em> showing in the recipient's client. About twenty minutes, no monthly cost.</p>
+    <p>Worth moving <code>ADMIN_NOTIFICATION_EMAIL</code> to a domain alias too, so platform alerts are not tied to one person's personal inbox. It accepts a single address only &mdash; use a forwarding alias if more than one person should see them.</p>
+  </div>
+
+  <div class="task">
+    <div class="task-head"><span class="ref">S3</span><h3>Tighten DMARC to quarantine</h3></div>
+    <p>SPF, DKIM and DMARC all pass now. After a week or two of clean aggregate reports at <code>rua@dmarc.brevo.com</code>, change <code>p=none</code> to <code>p=quarantine</code> on the <code>_dmarc</code> record so forged mail from your domain gets junked. Check first that nothing else sends as <code>@kavkazland.com</code> &mdash; today that is only Brevo.</p>
+  </div>
+
+  <div class="task">
+    <div class="task-head"><span class="ref">S4</span><h3>Update the payment FAQs when you add a second rail</h3><span class="chip wait">triggered</span></div>
+    <p>The help and trust-safety pages say payment is bank card or SBP through YooKassa, all charges in roubles. That is exactly right for a YooKassa-only launch and wrong the day you enable Stripe or PayPal, which charge in USD and are not listed. Nothing tests it, because it depends on an environment variable rather than on code &mdash; so it has to live on a checklist, which is why it is here.</p>
+  </div>
+</section>
+
+<section class="minor">
+  <div class="sec-head"><h2>Already handled</h2><span class="chip ok">no action</span></div>
+  <p class="sec-note">Listed so you are not re-checking work that is finished and pinned by tests.</p>
+  <ul class="plain">
+    <li><strong>Email authentication.</strong> SPF now includes Brevo, DKIM resolves on both keys, DMARC reports to Brevo. One SPF record, no duplicate.</li>
+    <li><strong>Instant book described consistently.</strong> The old confirm-or-decline flow is gone from the help pages and the guide contract in both languages, including a second copy hiding further down the contract in British spelling.</li>
+    <li><strong>Guide cancellation is disclosed and instrumented.</strong> Stated on the confirmation page where the word <em>confirmed</em> appears; the reason is required and reaches your alert; repeated cancellations are covered in the guide contract.</li>
+    <li><strong>Guide contact time is 24&ndash;48 hours</strong> everywhere, with the chase link at 48 so the promise and the fallback name the same moment.</li>
+    <li><strong>Both cooling-off schemes are correct and switchable</strong>, with the published wording generated from the code and checked in CI.</li>
+    <li><strong>All 30 emails are bilingual</strong>, chosen by the reader's saved language, with the plain-text versions carrying the link.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>310 tests passing &middot; no migration drift &middot; 16 marked pages in step with the live scheme &middot; working tree clean at <code>b60b6ad</code></p>
+</footer>
+
+</div>
