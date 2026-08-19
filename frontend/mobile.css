@@ -501,3 +501,57 @@
   .belief-h { margin-bottom: 0 !important; }
   .belief-p { grid-column: 1 / -1 !important; margin-top: 9px !important; }
 }
+
+/* ── Multi-column grids that never collapsed ─────────────────────────────────
+   Found by measuring text width rather than by eye: on a 390px phone these
+   were setting body copy into columns between 65px and 145px wide. At that
+   measure a sentence is mostly line breaks, so each one read as a tall,
+   unreadable ribbon — the same fault as the About page, in five more places.
+   Widths quoted below are the text measure before the fix. */
+
+/* contact — 3 cards across, 65px of text each. The worst on the site. */
+@media (max-width: 720px) {
+  .trust-strip { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 520px) {
+  .trust-strip { grid-template-columns: 1fr !important; }
+  .trust-item  { text-align: left !important; }
+}
+
+/* list a tour — the stat cards, already halved to two by an earlier rule but
+   still only 119px of text; and the checklist, two columns of 129px. */
+@media (max-width: 560px) {
+  .promise-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 820px) {
+  .checklist { grid-template-columns: 1fr !important; gap: 28px !important; padding: 40px 20px !important; }
+}
+
+/* small groups — 116px of text per card. */
+@media (max-width: 560px) {
+  .benefits-grid { grid-template-columns: 1fr !important; }
+}
+
+/* how it works — an 80px rail for a 56px circle, leaving the step text 188px
+   and running it to fifteen lines. Shrink the rail rather than stacking, so
+   the numbers still read as a sequence down the page. */
+@media (max-width: 600px) {
+  .step-row  { grid-template-columns: 46px 1fr !important; gap: 12px !important; }
+  .step-num  { width: 42px !important; height: 42px !important; font-size: 17px !important; border-width: 2px !important; }
+  .step-content { padding: 16px !important; }
+}
+
+/* privacy — a real table cannot reflow, so let it scroll inside itself
+   instead of crushing its columns to 119px. */
+@media (max-width: 700px) {
+  .data-table { display: block !important; overflow-x: auto !important; white-space: nowrap !important; }
+  .data-table td, .data-table th { white-space: normal !important; min-width: 150px !important; }
+}
+
+/* reset password — the decorative quote panel sat beside the form on a phone,
+   taking half the width off it. Its twin on sign-in and sign-up is hidden by
+   a rule naming .auth-visual; this page calls the same thing .auth-side, so
+   that rule never matched it and nobody noticed. */
+@media (max-width: 820px) {
+  .auth-side { display: none !important; }
+}
