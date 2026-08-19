@@ -462,3 +462,42 @@
   }
   .bk-page > * { min-width: 0 !important; }
 }
+
+/* ── About: the founder story and the beliefs grid ───────────────────────────
+   Both are two-column grids with no media query, so at 390px the story was
+   setting its text in a 143px column and the belief cards in 161px ones. That
+   is what made them feel endless: a paragraph three words wide is mostly
+   line breaks, and the section grows to fit them. Widening the measure makes
+   the same words markedly shorter as well as readable. */
+@media (max-width: 700px) {
+  .story {
+    grid-template-columns: 1fr !important;
+    gap: 22px !important;
+    padding: 40px 20px !important;
+  }
+  /* A tall portrait crop wastes the fold on a phone; a banner still sets the
+     place without pushing the story itself below the screen. */
+  .story-img { height: 200px !important; }
+  .story-title { font-size: 25px !important; }
+}
+
+@media (max-width: 560px) {
+  .beliefs { padding: 40px 18px !important; }
+  .beliefs-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+
+  /* Icon above heading costs 54px of height per card and buys nothing once
+     the card is full width. On one line it reads as a label instead. */
+  .belief-card {
+    display: grid !important;
+    grid-template-columns: 34px 1fr !important;
+    column-gap: 12px !important;
+    align-items: center !important;
+    padding: 15px 16px !important;
+  }
+  .belief-icon {
+    width: 34px !important; height: 34px !important;
+    font-size: 16px !important; margin-bottom: 0 !important;
+  }
+  .belief-h { margin-bottom: 0 !important; }
+  .belief-p { grid-column: 1 / -1 !important; margin-top: 9px !important; }
+}
