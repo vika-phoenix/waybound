@@ -390,3 +390,75 @@
      viewport or it grows past the modal and gets clipped. */
   .photo-modal-content.is-grid { height: 72vh !important; }
 }
+
+/* ── About: the team grid ────────────────────────────────────────────────────
+   Ten cards in a hard-coded four-column grid, each photo a fixed 180px, and
+   not one media query on the page. The photos are what pin it: a 1fr track
+   cannot shrink below its content, so the grid stays 774px wide inside a
+   390px phone. Worse, the overflow is clipped rather than scrollable — so
+   seven of the ten people were not merely awkward to read, they were
+   unreachable.
+
+   The photo has to become fluid before the columns can give way; changing the
+   column count alone would leave the tracks pinned exactly where they are. */
+@media (max-width: 860px) {
+  .team-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  .team-card { min-width: 0 !important; }
+  .team-photo {
+    width: 100% !important;
+    max-width: 150px !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1 !important;
+  }
+}
+@media (max-width: 680px) {
+  .team-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 24px 14px !important; }
+}
+@media (max-width: 430px) {
+  .team-grid  { gap: 20px 10px !important; }
+  .team-photo { max-width: 118px !important; }
+}
+
+/* ── Nav: swap to the burger at 900px, not 768px ─────────────────────────────
+   The drawer took over at 768px, but the desktop bar stopped fitting well
+   before that — around 780px in English and around 900px in Russian, where
+   "Вход / Регистрация" and "Добавить тур" are simply longer words. In the band
+   between, the right-hand group pushed the page sideways: 176px of it at 780px
+   in Russian, on every page of the site, because this bar is shared.
+
+   Only the nav swap moves up. The 768px block keeps the rest of its layout
+   work, and deliberately keeps its overflow-x:clip guard down there too —
+   raising that as well would hide any future tablet-band overflow instead of
+   letting the screenshot QA catch it. */
+@media (max-width: 900px) {
+  .wb-burger {
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; margin-right: 10px; flex-shrink: 0;
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+    border-radius: 9px; cursor: pointer; padding: 0;
+  }
+  .wb-burger span {
+    display: block; width: 18px; height: 2px; margin: 2.5px 0;
+    background: #fff; border-radius: 2px;
+  }
+  .nav-links  { display: none !important; }
+  .nav-search { display: none !important; }
+  .nav-r, .nav-r-wrap { display: none !important; }
+  .nav, .site-nav { justify-content: flex-start !important; }
+}
+
+/* ── Booking: stack at the same 900px the nav does ───────────────────────────
+   The page dropped to one column at 840px, which was enough for English and
+   20px short for Russian: a 1fr track will not shrink below its own
+   min-content, and the Russian labels are wider, so the two-column layout
+   pushed the page sideways in the 841–880px band.
+
+   Matching the nav breakpoint gives one tablet story instead of three, and
+   min-width:0 stops a longer string in either language doing this again. */
+@media (max-width: 900px) {
+  .bk-page {
+    grid-template-columns: 1fr !important;
+    padding: 24px 16px 48px !important;
+  }
+  .bk-page > * { min-width: 0 !important; }
+}
